@@ -1,0 +1,26 @@
+name: Comment or Question
+description: A comment or question about WikiSim.
+title: "I liked ... / I was wondering about ..."
+labels: ["comment", "question"]
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: "Is this a comment or a question?"
+      options:
+        - Comment
+        - Question
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: "I can confirm:"
+      options:
+        - label: "**Please confirm you have read [\"TODO: our community requirements\"](https://wikisim.org/help/community-requirements#commenting) before posting**"
+          required: true
+
+  - type: textarea
+    id: comment
+    attributes:
+      label: "Your comment or question"
+      description: Please provide your comment or question below. If you have a question, please try to be as specific as possible. If you have a comment that's providing critical feedback or suggestions, please use the [**Suggested improvement**](#suggested-improvement) issue template instead.

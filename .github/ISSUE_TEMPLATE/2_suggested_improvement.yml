@@ -1,0 +1,92 @@
+name: "🎁 Suggested Improvement or Potential Problem"
+description: Suggest an improvement or highlight a potential problem with the simulation, or the model or data that powers it.
+title: "[Improvement/Problem]: "
+labels: [enhancement, feedback]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping us improve the simulation! Please provide as much detail as possible.
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: "I can confirm:"
+      options:
+        - label: "**Please confirm you have read [\"our community requirements\"](https://wikisim.org/help/community-requirements#commenting) before posting**"
+          required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Briefly describe your suggested improvement or the potential problem you've noticed.
+      placeholder: e.g., "I think the simulation could be more realistic if..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Please provide more details, including why you think this is important and any supporting information.
+      placeholder: e.g., "When I run the simulation, I notice that..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce (if reporting a problem)
+      description: If this is about a potential problem, please describe how to reproduce it.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error/issue
+    validations:
+      required: false
+
+  - type: textarea
+    id: suggestions
+    attributes:
+      label: Suggested Solution or Improvement
+      description: If you have ideas for how to address this, please share them here.
+      placeholder: e.g., "I suggest changing the model to... please see this wikisim page for more details: [link](https://wikisim.org/data/alternative-model)"
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Simulation Version
+      description: What version of the simulation are you using? (if known)
+      placeholder: e.g., "v1.2.3"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: browser_device
+    attributes:
+      label: Browser and Device
+      description: What browser and device are you using?
+      options:
+        - label: "Chrome on Desktop"
+          value: "chrome_desktop"
+        - label: "Firefox on Desktop"
+          value: "firefox_desktop"
+        - label: "Safari on Desktop"
+          value: "safari_desktop"
+        - label: "Edge on Desktop"
+          value: "edge_desktop"
+        - label: "Chrome on Mobile"
+          value: "chrome_mobile"
+        - label: "Firefox on Mobile"
+          value: "firefox_mobile"
+        - label: "Safari on Mobile"
+          value: "safari_mobile"
+        - label: "Edge on Mobile"
+          value: "edge_mobile"
+        - label: "Other"
+          value: "other"
+    validations:
+      required: false
