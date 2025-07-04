@@ -5,7 +5,6 @@ import Underline from "@tiptap/extension-underline"
 import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { useCallback, useEffect, useMemo, useRef } from "preact/hooks"
-import { NodeSelection } from "prosemirror-state"
 
 import pub_sub from "../pub_sub"
 import { CustomReferences } from "./CustomReferences"
@@ -68,17 +67,6 @@ export function TextEditorV2({
                 class: `prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none ${singleLine ? "single-line" : ""}`,
             },
             handleKeyDown: (view, event) => {
-                // Handle deletion of custom mention nodes to prevent deleting following character
-                if (event.key === "Backspace" || event.key === "Delete") {
-                    const { selection } = view.state
-                    if (selection instanceof NodeSelection && selection.node.type.name === "customMention") {
-                        // Delete only the mention node, not the following character
-                        const tr = view.state.tr.deleteRange(selection.from, selection.to)
-                        view.dispatch(tr)
-                        return true
-                    }
-                }
-
                 // Prevent new lines in single line mode
                 if (singleLine && event.key === "Enter") {
                     event.preventDefault()
@@ -140,7 +128,6 @@ export function TextEditorV2({
         console.log(`Subscribing "${search_requester_id}" to search_for_reference_completed`)
         const unsubscribe = pub_sub.sub("search_for_reference_completed", data =>
         {
-            // debugger
             if (data.search_requester_id !== search_requester_id) return
             const editor_chain = editor
                 .chain()
