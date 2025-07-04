@@ -27,7 +27,9 @@ We have several different text entry field use cases that we need to support.
 
 ### General Behaviors
 
+* Should allow for enabling/disabling editing.
 * Should allow for enforcing single line input or allow multi line input.
+* Should allow for enabling/disabling markdown and rich text and indepedent of that, disabling/enabling chips.
 * 1st Focus -- Should allow for specifying whether it is focused when it first renders
 * Select all text -- Should allow for specifying whether when it is focused on first render, if all of it's text is then selected automatically for the user.
 

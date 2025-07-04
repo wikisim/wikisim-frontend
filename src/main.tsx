@@ -3,9 +3,10 @@ import "@mantine/core/styles.css"
 import { render } from "preact"
 import { useState } from "preact/hooks"
 
-import { TipTapEditor } from "./text_editor/TipTapDemo"
+import { TextEditorV2 } from "./text_editor/TextEditorV2"
 
 import "./monkey_patch"
+import { SearchModal } from "./text_editor/SearchModal"
 import { TextEditorV1 } from "./text_editor/TextEditorV1"
 
 function App() {
@@ -20,6 +21,8 @@ function App() {
             }
         }}
     >
+        <SearchModal />
+
         <div>
             <h1>WikiSim</h1>
             <p>An open source platform for back of the envelope calculations, data, and models of complex problems.</p>
@@ -31,28 +34,26 @@ function App() {
         </div>
 
         <div style={{ padding: '20px' }}>
-            <h3>Single Line Editor with @ mentions:</h3>
-            <TipTapEditor
+            <h3>Single Line Editor</h3>
+            <TextEditorV2
                 initialContent={title}
                 singleLine={true}
                 autoFocus={true}
                 selectAllOnFocus={false}
-                label="Type @ to trigger mentions..."
+                label="Title"
                 onUpdate={(json, html) => {
-                    console.log('Single line content:', { json, html })
                     set_title(html)
                 }}
             />
 
-            <h3 style={{ marginTop: '30px' }}>Multi Line Rich Editor:</h3>
-            <TipTapEditor
+            <h3 style={{ marginTop: '30px' }}>Multi Line Rich Editor</h3>
+            <TextEditorV2
                 initialContent={description}
                 singleLine={false}
                 autoFocus={false}
                 selectAllOnFocus={false}
-                label="Try markdown shortcuts like ## for headings, * for bullets, @ for mentions..."
+                label="Description"
                 onUpdate={(json, html) => {
-                    console.log('Multi line content:', { json, html })
                     set_description(html)
                 }}
             />

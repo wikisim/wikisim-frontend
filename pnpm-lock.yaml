@@ -44,9 +44,6 @@ importers:
       preact:
         specifier: 10.19.6
         version: 10.19.6
-      tippy.js:
-        specifier: 6.3.7
-        version: 6.3.7
     devDependencies:
       '@preact/preset-vite':
         specifier: 2.8.2
