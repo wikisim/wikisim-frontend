@@ -7,25 +7,25 @@ import StarterKit from "@tiptap/starter-kit"
 import { useCallback, useEffect, useMemo, useRef } from "preact/hooks"
 
 import pub_sub from "../pub_sub"
-import { CustomReferencesAndSearch } from "./CustomReferencesAndSearch"
+import { CustomReferences } from "./CustomReferences"
 import "./TextEditorV2.css"
 import { SingleLineExtension } from "./extension_enforce_single_line"
 
 
 interface TextEditorV2 {
+    editable: boolean
     initialContent?: string
     singleLine?: boolean
     autoFocus?: boolean
-    selectAllOnFocus?: boolean
     onUpdate?: (json: any, html: string) => void
     label?: string
 }
 
 export function TextEditorV2({
+    editable,
     initialContent = "",
     singleLine = false,
     autoFocus = false,
-    selectAllOnFocus = false,
     onUpdate,
     label = "Start typing..."
 }: TextEditorV2) {
@@ -52,7 +52,7 @@ export function TextEditorV2({
             Highlight,
             Typography,
             Underline,
-            CustomReferencesAndSearch,
+            CustomReferences,
             Link.configure({
                 openOnClick: false,
                 HTMLAttributes: {
@@ -116,14 +116,8 @@ export function TextEditorV2({
         },
     })
 
-    // Select all text on focus if specified
-    useEffect(() => {
-        if (editor && selectAllOnFocus && autoFocus) {
-            setTimeout(() => {
-                editor.commands.selectAll()
-            }, 100)
-        }
-    }, [editor, selectAllOnFocus, autoFocus])
+
+    editor?.setEditable(editable)
 
 
     useEffect(() =>
@@ -148,8 +142,6 @@ export function TextEditorV2({
 
             // If no data_component_id was selected then do nothing
             if (!data.data_component_id) return
-            const current_content = editor.getJSON()
-            debugger
 
             // Insert the selected search result into the editor
             editor_chain
@@ -186,18 +178,21 @@ export function TextEditorV2({
         <div className="tiptap-editor-container">
             <div className="editor-toolbar">
                 <button
+                    disabled={!editable}
                     onClick={() => editor?.chain().focus().toggleBold().run()}
                     className={editor?.isActive("bold") ? "active" : ""}
                 >
                     Bold
                 </button>
                 <button
+                    disabled={!editable}
                     onClick={() => editor?.chain().focus().toggleItalic().run()}
                     className={editor?.isActive("italic") ? "active" : ""}
                 >
                     Italic
                 </button>
                 <button
+                    disabled={!editable}
                     onClick={() => editor?.chain().focus().toggleHighlight().run()}
                     className={editor?.isActive("highlight") ? "active" : ""}
                 >
@@ -206,12 +201,14 @@ export function TextEditorV2({
                 {!singleLine && (
                     <>
                         <button
+                            disabled={!editable}
                             onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
                             className={editor?.isActive("heading", { level: 2 }) ? "active" : ""}
                         >
                             H2
                         </button>
                         <button
+                            disabled={!editable}
                             onClick={() => editor?.chain().focus().toggleBulletList().run()}
                             className={editor?.isActive("bulletList") ? "active" : ""}
                         >

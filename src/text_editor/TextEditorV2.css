@@ -30,119 +30,6 @@
     min-height: 200px;
 }
 
-.single-line .ProseMirror {
-    white-space: nowrap;
-    overflow-x: auto;
-}
-
-.mention-chip {
-    background: #e3f2fd;
-    color: #1976d2;
-    padding: 2px 6px;
-    border-radius: 12px;
-    font-size: 0.9em;
-    cursor: pointer;
-    border: 1px solid #1976d2;
-    display: inline-block;
-    margin: 0 2px;
-}
-
-.mention-chip:hover {
-    background: #bbdefb;
-}
-
-.editor-link {
-    color: #1976d2;
-    text-decoration: underline;
-}
-
-.context-menu {
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 4px 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    min-width: 150px;
-}
-
-.context-menu button {
-    display: block;
-    width: 100%;
-    padding: 8px 12px;
-    border: none;
-    background: none;
-    text-align: left;
-    cursor: pointer;
-}
-
-.context-menu button:hover {
-    background: #f5f5f5;
-}
-
-.context-menu-divider {
-    height: 1px;
-    background: #eee;
-    margin: 4px 0;
-}
-
-.search-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.search-modal {
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    width: 400px;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-.search-modal input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 16px;
-}
-
-.search-result-item, .mention-item {
-    padding: 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-}
-
-.search-result-item:hover, .mention-item:hover {
-    background: #f5f5f5;
-}
-
-.mention-item.selected {
-    background: #e3f2fd;
-}
-
-.mention-suggestions {
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-.mention-description {
-    font-size: 0.9em;
-    color: #666;
-}
-
 .ProseMirror {
     outline: none;
 }
@@ -153,4 +40,16 @@
     color: #adb5bd;
     pointer-events: none;
     height: 0;
+}
+
+
+.single-line .ProseMirror {
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+
+.editor-link {
+    color: #1976d2;
+    text-decoration: underline;
 }

@@ -1,7 +1,7 @@
 import { Modal } from "@mantine/core"
 import { useEffect, useMemo, useState } from "preact/hooks"
 import pub_sub from "../pub_sub"
-import { TextInputV1 } from "./TextEditorV1"
+import { TextEditorV1 } from "./TextEditorV1"
 
 
 export function SearchModal()
@@ -48,7 +48,8 @@ export function SearchModal()
         title="Search"
     >
         {search_window_is_open && <div>
-            <TextInputV1
+            <TextEditorV1
+                editable={true}
                 label=""
                 value={search_term}
                 on_change={e => throttle_set_search_term(e.currentTarget.value)}

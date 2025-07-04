@@ -1,4 +1,3 @@
-import { MantineProvider } from "@mantine/core"
 import "@mantine/core/styles.css"
 import { JSX } from "preact"
 import { useMemo, useRef, useState } from "preact/hooks"
@@ -9,6 +8,7 @@ import pub_sub from "../pub_sub"
 
 interface SingleLineTextInputProps
 {
+    editable: boolean
     label: string
     value: string
     on_change?: (e: JSX.TargetedEvent<HTMLTextAreaElement | HTMLInputElement, Event>) => void
@@ -23,9 +23,9 @@ interface SingleLineTextInputProps
 }
 
 
-export function TextInputV1(all_props: SingleLineTextInputProps)
+export function TextEditorV1(all_props: SingleLineTextInputProps)
 {
-    const { label, allow_multiline, trigger_search_on_at_symbol=true, ...props } = all_props
+    const { editable=false, label, allow_multiline, trigger_search_on_at_symbol=true, ...props } = all_props
 
     // Handle bringing focus to the input on first render
     const first_render = useRef(Date.now())
@@ -150,6 +150,7 @@ export function TextInputV1(all_props: SingleLineTextInputProps)
             {allow_multiline ? (
                 <textarea
                     {...props}
+                    disabled={!editable}
                     value={value}
                     onKeyUp={handle_on_key_up}
                     onChange={handle_on_change}
@@ -177,6 +178,7 @@ export function TextInputV1(all_props: SingleLineTextInputProps)
             ) : (
                 <input
                     {...props}
+                    disabled={!editable}
                     value={value}
                     onKeyUp={handle_on_key_up}
                     onChange={handle_on_change}
@@ -217,36 +219,4 @@ export function TextInputV1(all_props: SingleLineTextInputProps)
             </label>
         </div>
     )
-}
-
-export function TextEditorV1 ()
-{
-    const [title, set_title] = useState("")
-    const [description, set_description] = useState("")
-
-    return <MantineProvider
-        theme={{
-            fontFamily: `"Exo 2", sans-serif`,
-            colors: {
-                // Define custom colors if needed
-            }
-        }}
-    >
-
-        {`${new Date().toLocaleTimeString()} ${new Date().getMilliseconds()}`}
-
-        <TextInputV1
-            label="Title"
-            value={title}
-            on_blur={(e: any) => set_title(e.target.value)}
-        />
-        {title}
-        <TextInputV1
-            label="Description"
-            value={description}
-            allow_multiline={true}
-            on_blur={(e: any) => set_description(e.target.value)}
-        />
-        {description}
-    </MantineProvider>
 }

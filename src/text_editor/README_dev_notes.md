@@ -81,3 +81,11 @@ We have several different text entry field use cases that we need to support.
 | Component description field | ✅               | ✅               | ✅              | ✅              | ~         |
 | Number value                | ✅? <sup>2</sup> | ✅? <sup>2</sup> | ❌              | ❌              | ~         |
 | Date entry                  | ❌?              | ❌?              | ❌              | ❌              | ~         |
+
+
+
+@ in toolbar -- show "shortcut: @"
+URL in toolbar -- show "shortcut: Ctrl + K"
+Image in toolbar
+Fix deleting reference replacing it with an @
+Allow for formatting chips
