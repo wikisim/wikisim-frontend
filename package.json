@@ -12,7 +12,17 @@
     "dependencies": {
         "@mantine/core": "8.1.2",
         "@mantine/hooks": "8.1.2",
-        "preact": "10.19.6"
+        "@tiptap/core": "2.24.1",
+        "@tiptap/extension-highlight": "2.24.1",
+        "@tiptap/extension-link": "2.24.1",
+        "@tiptap/extension-mention": "2.24.1",
+        "@tiptap/extension-typography": "2.24.1",
+        "@tiptap/extension-underline": "2.24.1",
+        "@tiptap/pm": "2.24.1",
+        "@tiptap/react": "2.24.1",
+        "@tiptap/starter-kit": "2.24.1",
+        "preact": "10.19.6",
+        "tippy.js": "6.3.7"
     },
     "devDependencies": {
         "@preact/preset-vite": "2.8.2",
