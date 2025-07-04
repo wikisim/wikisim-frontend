@@ -8,13 +8,42 @@ import "./CustomReferences.css"
 const CustomMention = Mention.extend({
     name: "customMention",
 
+    addAttributes() {
+        return {
+            id: {
+                default: null,
+                parseHTML: element => element.getAttribute('data-id'),
+                renderHTML: attributes => {
+                    if (!attributes.id) {
+                        return {}
+                    }
+                    return {
+                        'data-id': attributes.id,
+                    }
+                },
+            },
+            label: {
+                default: null,
+                parseHTML: element => element.getAttribute('data-label'),
+                renderHTML: attributes => {
+                    if (!attributes.label) {
+                        return {}
+                    }
+                    return {
+                        'data-label': attributes.label,
+                    }
+                },
+            },
+            // Override the default mention extension to NOT include mention suggestion char
+        }
+    },
+
     addNodeView() {
         return ({ node, getPos, editor }) => {
             const dom = document.createElement("span")
             dom.className = "mention-chip"
             dom.setAttribute("data-id", node.attrs.id)
             dom.setAttribute("data-label", node.attrs.label)
-            dom.setAttribute("data-mention-suggestion-char", "") // Disable the default "@" character
 
             const percentage = "+20%"
             dom.innerHTML = `<span style="color: #1976d2;">${node.attrs.label}</span> (${percentage})`
@@ -27,7 +56,13 @@ const CustomMention = Mention.extend({
                 console.log("Clicked mention:", node.attrs)
             })
 
-            return { dom }
+            return {
+                dom,
+                update: (updatedNode) => {
+                    debugger
+                    return true
+                }
+            }
         }
     }
 })
