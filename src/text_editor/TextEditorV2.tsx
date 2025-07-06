@@ -64,7 +64,7 @@ export function TextEditorV2({
         autofocus: autoFocus,
         editorProps: {
             attributes: {
-                class: `prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none ${singleLine ? "single-line" : ""}`,
+                class: `tiptap-content focus:outline-none ${singleLine ? "single-line" : ""}`,
             },
             handleKeyDown: (view, event) => {
                 // Prevent new lines in single line mode
@@ -176,6 +176,10 @@ export function TextEditorV2({
 
     return (
         <div className="tiptap-editor-container">
+            <div className="editor-content" onClick={() => editor?.chain().focus().run()}>
+                <EditorContent editor={editor} />
+            </div>
+
             <div className="editor-toolbar">
                 <button
                     disabled={!editable}
@@ -219,10 +223,6 @@ export function TextEditorV2({
                 <button onClick={() => console.log("Editor data:", getEditorData())}>
                     Get JSON
                 </button>
-            </div>
-
-            <div className="editor-content">
-                <EditorContent editor={editor} />
             </div>
         </div>
     )

@@ -11,9 +11,38 @@ function App() {
     return <MantineProvider
         theme={{
             fontFamily: `"Exo 2", sans-serif`,
+            // lineHeights: {
+            //     md: "0",
+            // },
             colors: {
                 // Define custom colors if needed
-            }
+            },
+            components: {
+                Tooltip: {
+                    styles: {
+                        tooltip: {
+                            // Light blue
+                            backgroundColor: "#e7f3ff",
+                            color: "#1c7ed6",
+                            // Light grey
+                            // backgroundColor: "#f8f9fa",
+                            // color: "#495057",
+                            // Warm grey
+                            // backgroundColor: "#f1f3f4",
+                            // color: "#5f6368",
+                            // backgroundColor: "#ffffff",
+                            // color: "#374151",
+
+                            border: "1px solid #dee2e6",
+                            // fontSize: "12px",
+                            // fontWeight: 500,
+                        },
+                        arrow: {
+                            borderColor: "#dee2e6",
+                        },
+                    },
+                },
+            },
         }}
     >
         <SearchModal />

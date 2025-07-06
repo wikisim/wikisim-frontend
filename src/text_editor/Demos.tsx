@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks"
-import EditIcon from "../icons/edit"
-import { TextEditorV1 } from "./TextEditorV1"
+
+import EditButton from "../buttons/EditButton"
 import { TextEditorV2 } from "./TextEditorV2"
 
 
@@ -9,41 +9,39 @@ export const TextEditorDemos = () =>
     const [editing, set_editing] = useState(true)
 
     return <div style={{ padding: "20px" }}>
-        <div onClick={() => set_editing(!editing)}>
-            {editing ? "X" : <EditIcon />}
-        </div>
-        <h2>Text Editor V1 Demo</h2>
-        <TextEditorV1Demo editing={editing} />
+        <EditButton editing={editing} set_editing={set_editing} />
+        {/* <h2>Text Editor V1 Demo</h2>
+        <TextEditorV1Demo editing={editing} /> */}
         <h2>Text Editor V2 Demo</h2>
         <TextEditorV2Demo editing={editing} />
     </div>
 }
 
 
-function TextEditorV1Demo (props: { editing: boolean })
-{
-    const [title, set_title] = useState("Some title")
-    const [description, set_description] = useState("## Some description\n\nThis is a multiline description with some markdown formatting that's not supported yet.\n\n- Item 1\n- Item 2\n- Item 3")
+// function TextEditorV1Demo (props: { editing: boolean })
+// {
+//     const [title, set_title] = useState("Some title")
+//     const [description, set_description] = useState("## Some description\n\nThis is a multiline description with some markdown formatting that's not supported yet.\n\n- Item 1\n- Item 2\n- Item 3")
 
-    return <>
+//     return <>
 
-        {`${new Date().toLocaleTimeString()} ${new Date().getMilliseconds()}`}
+//         {`${new Date().toLocaleTimeString()} ${new Date().getMilliseconds()}`}
 
-        <TextEditorV1
-            editable={props.editing}
-            label="Title"
-            value={title}
-            on_blur={(e: any) => set_title(e.target.value)}
-        />
-        <TextEditorV1
-            editable={props.editing}
-            label="Description"
-            value={description}
-            allow_multiline={true}
-            on_blur={(e: any) => set_description(e.target.value)}
-        />
-    </>
-}
+//         <TextEditorV1
+//             editable={props.editing}
+//             label="Title"
+//             value={title}
+//             on_blur={(e: any) => set_title(e.target.value)}
+//         />
+//         <TextEditorV1
+//             editable={props.editing}
+//             label="Description"
+//             value={description}
+//             allow_multiline={true}
+//             on_blur={(e: any) => set_description(e.target.value)}
+//         />
+//     </>
+// }
 
 
 const TextEditorV2Demo = (props: { editing: boolean }) =>
@@ -52,7 +50,7 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
     const [description, set_description] = useState(`
         <h2>Some description</h2>
         <p>This is a multiline description with some markdown triggered formatting saved as html.</p>
-        <p>This <span class="mention-chip" data-type="customMention" data-id="2" data-label="Some label" data-mention-suggestion-char="">@2</span><u style="color: rgb(27, 117, 208);">20 million homes</u> can become <u style="color: #FFA600"><span style="color: rgb(27, 117, 208);">25 million</span> (+25%) <span style="color: rgb(27, 117, 208);">homes</span></u>.</p>
+        <p>This <span class="mention-chip" data-type="customMention" data-id="2" data-label="Some label">@Some label</span><u>20 million homes</u> can become <u>25 million (+25%) homes</u>.</p>
         <ul><li><p>Item 1</p></li><li><p>Item 2</p></li><li><p>Item 3</p></li></ul>
     `)
 
@@ -77,7 +75,6 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
             autoFocus={false}
             label="Description"
             onUpdate={(json, html) => {
-                console.log("Multi line content:", { json, html })
                 set_description(html)
             }}
         />
