@@ -81,13 +81,12 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
         />
 
         <div style={{ marginTop: "20px", padding: "10px", background: "#f5f5f5", borderRadius: "4px" }}>
-            <h4>Features to try:</h4>
+            <h4>Text Editing Features:</h4>
             <ul style={{ fontSize: "14px" }}>
                 <li>Type <code>@</code> to search for other components to reference</li>
                 <li>Use <code>Ctrl+B</code> for bold, <code>Ctrl+I</code> for italic</li>
                 <li>Type <code>##</code> for headings, <code>*</code> for bullet points</li>
                 <li>Use <code>Ctrl+K</code> to insert links</li>
-                <li>Click "Get JSON" button to see serialized data</li>
             </ul>
         </div>
     </>

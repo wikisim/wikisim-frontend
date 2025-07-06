@@ -1,6 +1,7 @@
 import { Modal } from "@mantine/core"
 import { useEffect, useMemo, useState } from "preact/hooks"
 import pub_sub from "../pub_sub"
+import { is_mobile_device } from "../utils/is_mobile_device"
 import { TextEditorV1 } from "./TextEditorV1"
 
 
@@ -42,6 +43,9 @@ export function SearchModal()
     }, [])
 
 
+    const on_mobile = is_mobile_device()
+
+
     return <Modal
         opened={search_window_is_open}
         onClose={() => set_search_window_is_open(false)}
@@ -54,7 +58,9 @@ export function SearchModal()
                 value={search_term}
                 on_change={e => throttle_set_search_term(e.currentTarget.value)}
                 single_line={false}
-                start_focused="focused_and_text_selected"
+                // This is a hack to ensure the search modal is shown on the
+                // screen otherwise it is mostly hidden off the top of the screen
+                start_focused={on_mobile ? false : "focused_and_text_selected"}
                 trigger_search_on_at_symbol={false}
             />
 

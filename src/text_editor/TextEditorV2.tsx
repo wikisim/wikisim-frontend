@@ -3,7 +3,7 @@ import Link from "@tiptap/extension-link"
 import Typography from "@tiptap/extension-typography"
 import Underline from "@tiptap/extension-underline"
 import { Selection } from "@tiptap/pm/state"
-import { EditorContent, useEditor } from "@tiptap/react"
+import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks"
 
@@ -128,6 +128,7 @@ export function TextEditorV2({
         // console .log(`Subscribing "${search_requester_id}" to search_for_reference_completed`)
         const unsubscribe = pub_sub.sub("search_for_reference_completed", data =>
         {
+            // console .log(`Received search result for "${data.search_requester_id}", we are ${search_requester_id}`, data)
             if (data.search_requester_id !== search_requester_id) return
             const editor_chain = editor
                 .chain()
@@ -160,7 +161,7 @@ export function TextEditorV2({
             // console .log(`unsubscribing "${search_requester_id}"`)
             unsubscribe()
         }
-    }, [editor])
+    }, [editor, search_requester_id])
 
 
     const get_editor_data = useCallback(() => {
@@ -230,6 +231,8 @@ export function TextEditorV2({
                 }}
             />}
 
+            <ContextMenu editor={editor} set_edit_url_enabled={set_edit_url_enabled} />
+
             <div className="editor-toolbar">
                 <button
                     disabled={!editable}
@@ -275,5 +278,26 @@ export function TextEditorV2({
                 </button>
             </div>
         </div>
+    )
+}
+
+
+interface ContextMenuProps
+{
+    editor: Editor
+    set_edit_url_enabled: (selection: Selection | undefined) => void
+}
+function ContextMenu({ editor, set_edit_url_enabled }: ContextMenuProps)
+{
+    return (
+        <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+            <button
+                onClick={() => set_edit_url_enabled(editor.state.selection)}
+                style={{ marginRight: 8 }}
+            >
+                Add/Edit Link
+            </button>
+            {/* ...other buttons */}
+        </BubbleMenu>
     )
 }
