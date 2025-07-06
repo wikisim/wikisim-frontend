@@ -1,5 +1,8 @@
 import { ActionIcon, Tooltip } from "@mantine/core"
-import { IconFileUpload, IconPencil } from "@tabler/icons-react"
+// Have to import these icons using direct paths because otherwise vite loads
+// all 5,000+ icons into the dev environment.
+import IconFileUpload from "@tabler/icons-react/dist/esm/icons/IconFileUpload"
+import IconPencil from "@tabler/icons-react/dist/esm/icons/IconPencil"
 
 
 export default function EditButton(props: { editing: boolean, set_editing: (editing: boolean) => void })

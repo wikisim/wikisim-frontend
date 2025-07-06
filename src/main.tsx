@@ -1,4 +1,4 @@
-import { MantineProvider } from "@mantine/core"
+import { defaultVariantColorsResolver, MantineProvider, VariantColorsResolverInput } from "@mantine/core"
 import "@mantine/core/styles.css"
 import { render } from "preact"
 
@@ -43,6 +43,7 @@ function App() {
                     },
                 },
             },
+            variantColorResolver,
         }}
     >
         <SearchModal />
@@ -59,3 +60,21 @@ function App() {
 }
 
 render(<App />, document.getElementById("app")!)
+
+
+
+function variantColorResolver (input: VariantColorsResolverInput)
+{
+    const default_resolved_colours = defaultVariantColorsResolver(input)
+
+    if (input.variant === "danger") {
+        return {
+            background: "var(--mantine-color-red-9)",
+            hover: "var(--mantine-color-red-8)",
+            color: "var(--mantine-color-white)",
+            border: "none",
+        }
+    }
+
+    return default_resolved_colours
+}

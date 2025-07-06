@@ -53,7 +53,7 @@ export function SearchModal()
                 label=""
                 value={search_term}
                 on_change={e => throttle_set_search_term(e.currentTarget.value)}
-                allow_multiline={false}
+                single_line={false}
                 start_focused="focused_and_text_selected"
                 trigger_search_on_at_symbol={false}
             />

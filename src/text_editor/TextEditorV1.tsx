@@ -13,9 +13,10 @@ interface SingleLineTextInputProps
     value: string
     on_change?: (e: JSX.TargetedEvent<HTMLTextAreaElement | HTMLInputElement, Event>) => void
     on_blur?: (e: JSX.TargetedFocusEvent<HTMLTextAreaElement | HTMLInputElement>) => void
-    allow_multiline?: boolean
+    single_line?: boolean
     start_focused?: false | "focused" | "focused_and_text_selected"
     trigger_search_on_at_symbol?: boolean
+    on_key_down?: (e: JSX.TargetedKeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => void
     /**
      * @deprecated Use `label` instead.
      */
@@ -25,7 +26,15 @@ interface SingleLineTextInputProps
 
 export function TextEditorV1(all_props: SingleLineTextInputProps)
 {
-    const { editable=false, label, allow_multiline, trigger_search_on_at_symbol=true, ...props } = all_props
+    const {
+        editable=false,
+        label,
+        single_line=false,
+        trigger_search_on_at_symbol=false,
+        on_key_down,
+        ...props
+    } = all_props
+    const allow_multiline = !single_line
 
     // Handle bringing focus to the input on first render
     const first_render = useRef(Date.now())
@@ -152,6 +161,7 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
                     {...props}
                     disabled={!editable}
                     value={value}
+                    onKeyDown={on_key_down}
                     onKeyUp={handle_on_key_up}
                     onChange={handle_on_change}
                     onInput={handle_input}
@@ -180,6 +190,7 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
                     {...props}
                     disabled={!editable}
                     value={value}
+                    onKeyDown={on_key_down}
                     onKeyUp={handle_on_key_up}
                     onChange={handle_on_change}
                     onFocus={handle_on_focus}

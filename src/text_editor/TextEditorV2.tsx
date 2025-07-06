@@ -2,31 +2,33 @@ import Highlight from "@tiptap/extension-highlight"
 import Link from "@tiptap/extension-link"
 import Typography from "@tiptap/extension-typography"
 import Underline from "@tiptap/extension-underline"
+import { Selection } from "@tiptap/pm/state"
 import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
-import { useCallback, useEffect, useMemo, useRef } from "preact/hooks"
+import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks"
 
 import pub_sub from "../pub_sub"
 import { CustomReferences } from "./CustomReferences"
-import "./TextEditorV2.css"
 import { SingleLineExtension } from "./extension_enforce_single_line"
+import "./TextEditorV2.css"
+import { URLEditor } from "./URLEditor"
 
 
 interface TextEditorV2 {
     editable: boolean
-    initialContent?: string
-    singleLine?: boolean
-    autoFocus?: boolean
-    onUpdate?: (json: any, html: string) => void
+    initial_content?: string
+    single_line?: boolean
+    auto_focus?: boolean
+    on_update?: (json: any, html: string) => void
     label?: string
 }
 
 export function TextEditorV2({
     editable,
-    initialContent = "",
-    singleLine = false,
-    autoFocus = false,
-    onUpdate,
+    initial_content = "",
+    single_line = false,
+    auto_focus = false,
+    on_update: onUpdate,
     label = "Start typing..."
 }: TextEditorV2) {
     const search_requester_id = useMemo(() =>
@@ -35,20 +37,21 @@ export function TextEditorV2({
     }, [label])
 
     const cursor_position_on_blur_to_search = useRef<number | undefined>(undefined)
+    const [edit_url_enabled, set_edit_url_enabled] = useState<Selection | undefined>(undefined)
 
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
                 // For single line mode, keep paragraph but disable block elements
-                heading: singleLine ? false : undefined,
-                bulletList: singleLine ? false : undefined,
-                orderedList: singleLine ? false : undefined,
-                blockquote: singleLine ? false : undefined,
-                codeBlock: singleLine ? false : undefined,
-                horizontalRule: singleLine ? false : undefined,
+                heading: single_line ? false : undefined,
+                bulletList: single_line ? false : undefined,
+                orderedList: single_line ? false : undefined,
+                blockquote: single_line ? false : undefined,
+                codeBlock: single_line ? false : undefined,
+                horizontalRule: single_line ? false : undefined,
             }),
             // Add single line extension only when in single line mode
-            ...(singleLine ? [SingleLineExtension] : []),
+            ...(single_line ? [SingleLineExtension] : []),
             Highlight,
             Typography,
             Underline,
@@ -60,15 +63,15 @@ export function TextEditorV2({
                 },
             }),
         ],
-        content: initialContent,
-        autofocus: autoFocus,
+        content: initial_content,
+        autofocus: auto_focus,
         editorProps: {
             attributes: {
-                class: `tiptap-content focus:outline-none ${singleLine ? "single-line" : ""}`,
+                class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""}`,
             },
             handleKeyDown: (view, event) => {
                 // Prevent new lines in single line mode
-                if (singleLine && event.key === "Enter") {
+                if (single_line && event.key === "Enter") {
                     event.preventDefault()
                     return true
                 }
@@ -90,10 +93,7 @@ export function TextEditorV2({
                             return true
                         case "k":
                             event.preventDefault()
-                            const url = window.prompt("Enter URL:")
-                            if (url) {
-                                editor?.chain().focus().setLink({ href: url }).run()
-                            }
+                            set_edit_url_enabled(editor?.state.selection)
                             return true
                     }
                 }
@@ -116,16 +116,16 @@ export function TextEditorV2({
         },
     })
 
+    if (!editor) return null
 
-    editor?.setEditable(editable)
+
+    editor.setEditable(editable)
 
 
     useEffect(() =>
     {
-        if (!editor) return
-
         // Subscribe to search results
-        console.log(`Subscribing "${search_requester_id}" to search_for_reference_completed`)
+        // console .log(`Subscribing "${search_requester_id}" to search_for_reference_completed`)
         const unsubscribe = pub_sub.sub("search_for_reference_completed", data =>
         {
             if (data.search_requester_id !== search_requester_id) return
@@ -157,15 +157,13 @@ export function TextEditorV2({
         }, search_requester_id)
 
         return () => {
-            console.log(`unsubscribing "${search_requester_id}"`)
+            // console .log(`unsubscribing "${search_requester_id}"`)
             unsubscribe()
         }
     }, [editor])
 
 
-    const getEditorData = useCallback(() => {
-        if (!editor) return { json: null, html: "", text: "" }
-
+    const get_editor_data = useCallback(() => {
         return {
             json: editor.getJSON(),
             html: editor.getHTML(),
@@ -174,53 +172,105 @@ export function TextEditorV2({
     }, [editor])
 
 
+    const focused = editor.isFocused
+    const has_value = (editor.getText() || "").trim().length > 0
+
     return (
         <div className="tiptap-editor-container">
-            <div className="editor-content" onClick={() => editor?.chain().focus().run()}>
+            <div className="editor-content" onClick={() => editor.chain().focus().run()}>
                 <EditorContent editor={editor} />
             </div>
+
+            <label
+                style={{
+                    position: "absolute",
+                    left: 12,
+                    top: has_value || focused ? -10 : 8,
+                    fontSize: has_value || focused ? 12 : 16,
+                    color: focused ? "#a6aeb6" : "#868e96",
+                    background: "white",
+                    padding: has_value || focused ? "0 4px" : "0",
+                    pointerEvents: "none",
+                    transition: "all 0.2s"
+                }}
+            >
+                {label}
+            </label>
+
+            {editor && edit_url_enabled && <URLEditor
+                selection={edit_url_enabled}
+                on_close={(data, remove_link_at) => {
+                    set_edit_url_enabled(undefined)
+                    const chained = editor.chain().focus()
+
+                    if (data)
+                    {
+                        let { text, url } = data
+                        text = text.trim()
+                        url = url.trim()
+                        if (text && url)
+                        {
+                            // Insert the URL as a link in the editor
+                            chained.setLink({
+                                href: url,
+                                rel: "noopener",
+                            }).insertContent(text)
+                        }
+                    }
+                    else if (remove_link_at)
+                    {
+                        // Remove the link if no data was provided
+                        chained
+                            .setTextSelection(remove_link_at)
+                            .unsetLink()
+                    }
+
+                    chained.run()
+                    set_edit_url_enabled(undefined)
+                }}
+            />}
 
             <div className="editor-toolbar">
                 <button
                     disabled={!editable}
-                    onClick={() => editor?.chain().focus().toggleBold().run()}
-                    className={editor?.isActive("bold") ? "active" : ""}
+                    onClick={() => editor.chain().focus().toggleBold().run()}
+                    className={editor.isActive("bold") ? "active" : ""}
                 >
                     Bold
                 </button>
                 <button
                     disabled={!editable}
-                    onClick={() => editor?.chain().focus().toggleItalic().run()}
-                    className={editor?.isActive("italic") ? "active" : ""}
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
+                    className={editor.isActive("italic") ? "active" : ""}
                 >
                     Italic
                 </button>
                 <button
                     disabled={!editable}
-                    onClick={() => editor?.chain().focus().toggleHighlight().run()}
-                    className={editor?.isActive("highlight") ? "active" : ""}
+                    onClick={() => editor.chain().focus().toggleHighlight().run()}
+                    className={editor.isActive("highlight") ? "active" : ""}
                 >
                     Highlight
                 </button>
-                {!singleLine && (
+                {!single_line && (
                     <>
                         <button
                             disabled={!editable}
-                            onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                            className={editor?.isActive("heading", { level: 2 }) ? "active" : ""}
+                            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                            className={editor.isActive("heading", { level: 2 }) ? "active" : ""}
                         >
                             H2
                         </button>
                         <button
                             disabled={!editable}
-                            onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                            className={editor?.isActive("bulletList") ? "active" : ""}
+                            onClick={() => editor.chain().focus().toggleBulletList().run()}
+                            className={editor.isActive("bulletList") ? "active" : ""}
                         >
                             Bullet List
                         </button>
                     </>
                 )}
-                <button onClick={() => console.log("Editor data:", getEditorData())}>
+                <button onClick={() => console.log("Editor data:", get_editor_data())}>
                     Get JSON
                 </button>
             </div>

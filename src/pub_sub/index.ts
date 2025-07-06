@@ -39,10 +39,10 @@ const pub_sub = {
 
         const unsubscribe = () =>
         {
-            // console.log(`Unsubscribing "${subscriber_id}" from event "${event}"`, ALL_SUBSCRIBERS[event])
+            // console .log(`Unsubscribing "${subscriber_id}" from event "${event}"`, ALL_SUBSCRIBERS[event])
             const subscribers = ALL_SUBSCRIBERS[event]!
             ALL_SUBSCRIBERS[event] = subscribers.filter(subscriber => subscriber.callback !== callback) as typeof subscribers
-            // console.log(`Unsubscribed "${subscriber_id}" from event "${event}"`, ALL_SUBSCRIBERS[event])
+            // console .log(`Unsubscribed "${subscriber_id}" from event "${event}"`, ALL_SUBSCRIBERS[event])
         }
 
         return unsubscribe

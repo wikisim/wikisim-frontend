@@ -58,23 +58,24 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
         <h3>Single Line Editor</h3>
         <TextEditorV2
             editable={props.editing}
-            initialContent={title}
-            singleLine={true}
-            autoFocus={true}
+            initial_content={title}
+            single_line={true}
+            auto_focus={true}
             label="Title"
-            onUpdate={(json, html) => {
+            on_update={(json, html) => {
                 set_title(html)
             }}
         />
 
         <h3 style={{ marginTop: "30px" }}>Multi Line Rich Editor</h3>
+        {description}
         <TextEditorV2
             editable={props.editing}
-            initialContent={description}
-            singleLine={false}
-            autoFocus={false}
+            initial_content={description}
+            single_line={false}
+            auto_focus={false}
             label="Description"
-            onUpdate={(json, html) => {
+            on_update={(json, html) => {
                 set_description(html)
             }}
         />
@@ -82,10 +83,9 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
         <div style={{ marginTop: "20px", padding: "10px", background: "#f5f5f5", borderRadius: "4px" }}>
             <h4>Features to try:</h4>
             <ul style={{ fontSize: "14px" }}>
-                <li>Type <code>@</code> to trigger mention search</li>
+                <li>Type <code>@</code> to search for other components to reference</li>
                 <li>Use <code>Ctrl+B</code> for bold, <code>Ctrl+I</code> for italic</li>
                 <li>Type <code>##</code> for headings, <code>*</code> for bullet points</li>
-                <li>Right-click for context menu</li>
                 <li>Use <code>Ctrl+K</code> to insert links</li>
                 <li>Click "Get JSON" button to see serialized data</li>
             </ul>
