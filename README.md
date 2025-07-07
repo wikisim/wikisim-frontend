@@ -2,6 +2,7 @@
 # WikiSim
 
 [![Tests](https://github.com/wikisim/wikisim-frontend/actions/workflows/run_tests.yaml/badge.svg)](https://github.com/wikisim/wikisim-frontend/actions/workflows/run_tests.yaml)
+[![Build & Deploy](https://github.com/wikisim/wikisim-frontend/actions/workflows/test_build_deploy.yaml/badge.svg)](https://github.com/wikisim/wikisim-frontend/actions/workflows/test_build_deploy.yaml)
 
 
 Application frontend for WikiSim, an open source platform for data, back of the envelope calculations, and models of complex problems.
