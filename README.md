@@ -21,8 +21,3 @@ version of typescript:
 3. type "TypeScript: Select TypeScript Version"
 4. select "Use Workspace Version"
 5. restart the typescript server (Cmd+Shift+P, "TypeScript: Restart TS Server")
-
-# Licenses
-
-The software code in this repository is licensed under the [BSD 3-Clause license](LICENSE-BSD-3-CLAUSE.md).
-The non-software code in this repository like images etc. is licensed under the [CC BY 4.0 license](LICENSE-CC-BY-4.0.md).
