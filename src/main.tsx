@@ -2,9 +2,11 @@ import { defaultVariantColorsResolver, MantineProvider, VariantColorsResolverInp
 import "@mantine/core/styles.css"
 import { render } from "preact"
 
+import "./main.css"
 import "./monkey_patch"
 import { TextEditorDemos } from "./text_editor/Demos"
 import { SearchModal } from "./text_editor/SearchModal"
+import Header from "./ui_components/Header"
 
 function App() {
 
@@ -46,7 +48,8 @@ function App() {
             variantColorResolver,
         }}
     >
-        <div style={{ padding: "20px" }}>
+        <Header />
+        <div className="main-app-container">
 
             <SearchModal />
 

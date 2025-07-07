@@ -1,0 +1,11 @@
+
+:root {
+    --header-height: 40px;
+}
+
+
+.main-app-container
+{
+    padding: 20px;
+    margin-top: var(--header-height);
+}
