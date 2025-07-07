@@ -62,7 +62,7 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
             single_line={true}
             auto_focus={true}
             label="Title"
-            on_update={(json, html) => {
+            on_update={(_json, html) => {
                 set_title(html)
             }}
         />
@@ -75,7 +75,7 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
             single_line={false}
             auto_focus={false}
             label="Description"
-            on_update={(json, html) => {
+            on_update={(_json, html) => {
                 set_description(html)
             }}
         />

@@ -69,7 +69,7 @@ export function TextEditorV2({
             attributes: {
                 class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""}`,
             },
-            handleKeyDown: (view, event) => {
+            handleKeyDown: (_view, event) => {
                 // Prevent new lines in single line mode
                 if (single_line && event.key === "Enter") {
                     event.preventDefault()
