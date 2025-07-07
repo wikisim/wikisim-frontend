@@ -4,7 +4,7 @@
 [![Tests](https://github.com/wikisim/wikisim-frontend/actions/workflows/run_tests.yaml/badge.svg)](https://github.com/wikisim/wikisim-frontend/actions/workflows/run_tests.yaml)
 
 
-Application frontend for WikiSim, an open source platform for back of the envelope calculations, data, and models of complex problems.
+Application frontend for WikiSim, an open source platform for data, back of the envelope calculations, and models of complex problems.
 
 ## Dev
 

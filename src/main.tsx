@@ -50,7 +50,7 @@ function App() {
 
         <div>
             <h1>WikiSim</h1>
-            <p>An open source platform for back of the envelope calculations, data, and models of complex problems.</p>
+            <p>An open source platform for data, back of the envelope calculations, and models of complex problems.</p>
             <p>WikiSim is a work in progress. Please check back later.</p>
         </div>
 
