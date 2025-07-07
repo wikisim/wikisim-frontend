@@ -21,8 +21,10 @@ const pub_sub = {
     {
         const subscribers = ALL_SUBSCRIBERS[event]
         if (!subscribers) return
-        subscribers.forEach(subscriber => {
-            try {
+        subscribers.forEach(subscriber =>
+        {
+            try
+            {
                 subscriber.callback(data)
             } catch (e) {
                 console.error(`Error in subscriber "${subscriber.subscriber_id}" for event "${event}":`, e)

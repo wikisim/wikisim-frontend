@@ -7,5 +7,6 @@
     "files.trimFinalNewlines": true,
     "[plaintext]": {
         "editor.suggest.showWords": false
-    }
+    },
+    "typescript.tsdk": "node_modules/typescript/lib"
 }
