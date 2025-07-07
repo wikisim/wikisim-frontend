@@ -27,10 +27,10 @@ interface SingleLineTextInputProps
 export function TextEditorV1(all_props: SingleLineTextInputProps)
 {
     const {
-        editable=false,
+        editable = false,
         label,
-        single_line=false,
-        trigger_search_on_at_symbol=false,
+        single_line = false,
+        trigger_search_on_at_symbol = false,
         on_key_down,
         ...props
     } = all_props

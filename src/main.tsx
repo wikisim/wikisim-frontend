@@ -46,15 +46,19 @@ function App() {
             variantColorResolver,
         }}
     >
-        <SearchModal />
+        <div style={{ padding: "20px" }}>
 
-        <div>
-            <h1>WikiSim</h1>
-            <p>An open source platform for data, back of the envelope calculations, and models of complex problems.</p>
-            <p>WikiSim is a work in progress. Please check back later.</p>
+            <SearchModal />
+
+            <div>
+                <h1>WikiSim</h1>
+                <p>An open source platform for data, back of the envelope calculations, and models of complex problems.</p>
+                <p>WikiSim is a work in progress. Please check back later.</p>
+            </div>
+
+            <TextEditorDemos />
+
         </div>
-
-        <TextEditorDemos />
 
     </MantineProvider>
 }

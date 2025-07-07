@@ -57,7 +57,7 @@ export function SearchModal()
                 label=""
                 value={search_term}
                 on_change={e => throttle_set_search_term(e.currentTarget.value)}
-                single_line={false}
+                single_line={true}
                 // This is a hack to ensure the search modal is shown on the
                 // screen otherwise it is mostly hidden off the top of the screen
                 start_focused={on_mobile ? false : "focused_and_text_selected"}
@@ -79,26 +79,13 @@ function SearchResults(props: { search_term: string, search_requester_id: string
     const search_term = props.search_term.trim()
     const { search_requester_id } = props
 
-    const [results, set_results] = useState<SearchResultsResponse>({
-        search_term: "",
-        search_start_time: 0,
-        search_requester_id: "",
-        result_rows: []
-    })
+    const [results, set_results] = useState<SearchResultsResponse | undefined>(undefined)
 
 
     useEffect(() => {
         const search_start_time = Date.now() // Unique ID for this search
 
-        if (search_term.trim() === "") {
-            set_results({
-                search_term: "",
-                search_start_time,
-                search_requester_id,
-                result_rows: []
-            })
-            return
-        }
+        set_results(undefined)
 
         let cancel_search = false
 
@@ -106,7 +93,7 @@ function SearchResults(props: { search_term: string, search_requester_id: string
             if (cancel_search) return
             set_results(current_results => {
                 // Return which ever results are newer based on search_id
-                return current_results.search_start_time > new_results.search_start_time
+                return current_results && current_results.search_start_time > new_results.search_start_time
                     ? current_results
                     : new_results
             })
@@ -117,12 +104,12 @@ function SearchResults(props: { search_term: string, search_requester_id: string
 
 
     return <div>
-        {search_term && (search_term !== results.search_term
-            ? `Searching for "${search_term}"`
+        {search_term && (search_term !== results?.search_term
+            ? <SearchingFor search_term={search_term} />
             : `Search results for "${results.search_term}"`)
         }
 
-        {results.search_term &&
+        {results?.search_term &&
             (results.result_rows.length > 0 ? (
                 <table>
                     {results.result_rows.map((row, index) => (
@@ -149,6 +136,32 @@ function SearchResults(props: { search_term: string, search_requester_id: string
             ))
         }
     </div>
+}
+
+
+
+const dots_time_interval_ms = 300
+function get_dots ()
+{
+    // Create a string of 3 dots that cycles through 1, 2, 3, 4
+    const count = 1 + (Math.floor(Date.now() / dots_time_interval_ms) % 4)
+    return ".".repeat(count)
+}
+function SearchingFor({ search_term }: { search_term: string })
+{
+    const [dots, set_dots] = useState(get_dots())
+
+    useEffect(() => {
+        const interval = setInterval(() =>
+        {
+            set_dots(get_dots())
+        }, (dots_time_interval_ms / 3))
+        return () => clearInterval(interval)
+    }, [])
+
+    return <span>
+        Searching for "{search_term}" <span>{dots}</span>
+    </span>
 }
 
 

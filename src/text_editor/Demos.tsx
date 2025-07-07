@@ -8,7 +8,7 @@ export const TextEditorDemos = () =>
 {
     const [editing, set_editing] = useState(true)
 
-    return <div style={{ padding: "20px" }}>
+    return <div>
         <EditButton editing={editing} set_editing={set_editing} />
         {/* <h2>Text Editor V1 Demo</h2>
         <TextEditorV1Demo editing={editing} /> */}
@@ -31,13 +31,14 @@ export const TextEditorDemos = () =>
 //             editable={props.editing}
 //             label="Title"
 //             value={title}
+//             single_line={true}
 //             on_blur={(e: any) => set_title(e.target.value)}
 //         />
 //         <TextEditorV1
 //             editable={props.editing}
 //             label="Description"
 //             value={description}
-//             allow_multiline={true}
+//             single_line={false}
 //             on_blur={(e: any) => set_description(e.target.value)}
 //         />
 //     </>
