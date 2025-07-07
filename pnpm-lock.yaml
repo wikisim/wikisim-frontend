@@ -44,9 +44,18 @@ importers:
       '@tiptap/starter-kit':
         specifier: 2.24.1
         version: 2.24.1
+      immer:
+        specifier: 10.1.1
+        version: 10.1.1
       preact:
         specifier: 10.19.6
         version: 10.19.6
+      preact-iso:
+        specifier: 2.9.2
+        version: 2.9.2(preact-render-to-string@6.5.13(preact@10.19.6))(preact@10.19.6)
+      zustand:
+        specifier: 5.0.6
+        version: 5.0.6(immer@10.1.1)(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0))
     devDependencies:
       '@preact/preset-vite':
         specifier: 2.8.2
@@ -1557,6 +1566,9 @@ packages:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
 
+  immer@10.1.1:
+    resolution: {integrity: sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==}
+
   import-local@3.2.0:
     resolution: {integrity: sha512-2SPlun1JUPWoM6t3F0dw0FkCF/jWY8kttcY4f599GLTSjh2OCuuhdTkJQsEcZzBqbXZGKMK2OqW1oZsjtf/gQA==}
     engines: {node: '>=8'}
@@ -1971,6 +1983,17 @@ packages:
   postcss@8.4.38:
     resolution: {integrity: sha512-Wglpdk03BSfXkHoQa3b/oulrotAkwrlLDRSOb9D0bN86FdRyE9lppSp33aHNPgBa0JKCoB+drFLZkQoRRYae5A==}
     engines: {node: ^10 || ^12 || >=14}
+
+  preact-iso@2.9.2:
+    resolution: {integrity: sha512-0AiOid/B/L+cGQerFam2dSV8dkwmRXxqFyDcpdDj2faDuv83YF/g9HYX7MGKWjqSOaQGcl0HLMSFkUIzCq+z+g==}
+    peerDependencies:
+      preact: '>=10'
+      preact-render-to-string: '>=6.4.0'
+
+  preact-render-to-string@6.5.13:
+    resolution: {integrity: sha512-iGPd+hKPMFKsfpR2vL4kJ6ZPcFIoWZEcBf0Dpm3zOpdVvj77aY8RlLiQji5OMrngEyaxGogeakTb54uS2FvA6w==}
+    peerDependencies:
+      preact: '>=10'
 
   preact@10.19.6:
     resolution: {integrity: sha512-gympg+T2Z1fG1unB8NH29yHJwnEaCH37Z32diPDku316OTnRPeMbiRV9kTrfZpocXjdfnWuFUl/Mj4BHaf6gnw==}
@@ -2469,6 +2492,24 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  zustand@5.0.6:
+    resolution: {integrity: sha512-ihAqNeUVhe0MAD+X8M5UzqyZ9k3FFZLBTtqo6JLPwV53cbRB/mJwBI0PxcIgqhBBHlEs8G45OTDTMq3gNcLq3A==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
 
 snapshots:
 
@@ -4035,6 +4076,8 @@ snapshots:
 
   human-signals@2.1.0: {}
 
+  immer@10.1.1: {}
+
   import-local@3.2.0:
     dependencies:
       pkg-dir: 4.2.0
@@ -4603,6 +4646,15 @@ snapshots:
       picocolors: 1.0.1
       source-map-js: 1.2.0
 
+  preact-iso@2.9.2(preact-render-to-string@6.5.13(preact@10.19.6))(preact@10.19.6):
+    dependencies:
+      preact: 10.19.6
+      preact-render-to-string: 6.5.13(preact@10.19.6)
+
+  preact-render-to-string@6.5.13(preact@10.19.6):
+    dependencies:
+      preact: 10.19.6
+
   preact@10.19.6: {}
 
   pretty-format@30.0.2:
@@ -5087,3 +5139,9 @@ snapshots:
   yn@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  zustand@5.0.6(immer@10.1.1)(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0)):
+    optionalDependencies:
+      immer: 10.1.1
+      react: 19.1.0
+      use-sync-external-store: 1.5.0(react@19.1.0)
