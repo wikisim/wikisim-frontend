@@ -57,6 +57,7 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
 
     return <>
         <h3>Single Line Editor</h3>
+        {title}
         <TextEditorV2
             editable={props.editing}
             initial_content={title}

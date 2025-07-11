@@ -1,6 +1,7 @@
 import { Modal } from "@mantine/core"
 import { useEffect, useMemo, useState } from "preact/hooks"
 import pub_sub from "../pub_sub"
+import Loading from "../ui_components/Loading"
 import { is_mobile_device } from "../utils/is_mobile_device"
 import { TextEditorV1 } from "./TextEditorV1"
 
@@ -139,28 +140,10 @@ function SearchResults(props: { search_term: string, search_requester_id: string
 }
 
 
-
-const dots_time_interval_ms = 300
-function get_dots ()
-{
-    // Create a string of 3 dots that cycles through 1, 2, 3, 4
-    const count = 1 + (Math.floor(Date.now() / dots_time_interval_ms) % 4)
-    return ".".repeat(count)
-}
 function SearchingFor({ search_term }: { search_term: string })
 {
-    const [dots, set_dots] = useState(get_dots())
-
-    useEffect(() => {
-        const interval = setInterval(() =>
-        {
-            set_dots(get_dots())
-        }, (dots_time_interval_ms / 3))
-        return () => clearInterval(interval)
-    }, [])
-
     return <span>
-        Searching for "{search_term}" <span>{dots}</span>
+        Searching for "{search_term}" <Loading />
     </span>
 }
 
