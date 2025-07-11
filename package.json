@@ -7,11 +7,12 @@
         "dev": "vite",
         "build": "tsc && vite build",
         "preview": "vite preview",
-        "test": "jest"
+        "test": "mocha"
     },
     "dependencies": {
         "@mantine/core": "8.1.2",
         "@mantine/hooks": "8.1.2",
+        "@supabase/supabase-js": "^2.50.5",
         "@tabler/icons-react": "3.34.0",
         "@tiptap/core": "2.24.1",
         "@tiptap/extension-highlight": "2.24.1",
@@ -29,10 +30,11 @@
     },
     "devDependencies": {
         "@preact/preset-vite": "2.8.2",
-        "@types/jest": "30.0.0",
-        "jest": "30.0.3",
-        "ts-jest": "29.4.0",
-        "ts-node": "10.9.2",
+        "@types/chai": "5.2.2",
+        "@types/mocha": "10.0.10",
+        "chai": "5.2.1",
+        "mocha": "11.7.1",
+        "tsx": "4.20.3",
         "typescript": "5.8.3",
         "vite": "5.2.0"
     }
