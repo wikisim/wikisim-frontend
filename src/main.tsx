@@ -1,8 +1,10 @@
 import { defaultVariantColorsResolver, MantineProvider, VariantColorsResolverInput } from "@mantine/core"
 import "@mantine/core/styles.css"
 import { render } from "preact"
-
 import { ErrorBoundary, LocationProvider, Route, Router, useLocation } from "preact-iso"
+
+import { new_data_component } from "core/data/modify"
+
 import "./main.css"
 import "./monkey_patch"
 import { get_store } from "./state/store"
@@ -125,6 +127,10 @@ function DataComponentPage(props: { data_component_id: string, query: Record<str
             <h2>Data Component: {props.data_component_id} ?a={props.query.a}</h2>
             <p>{JSON.stringify(props)}</p>
             <p>This is a placeholder for the data component with ID: {props.data_component_id}</p>
+
+            <p>
+                A new (unsaved) data component: {JSON.stringify(new_data_component())}
+            </p>
 
             <p onClick={() =>
             {

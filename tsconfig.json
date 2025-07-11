@@ -7,7 +7,8 @@
     "skipLibCheck": true,
     "paths": {
       "react": ["./node_modules/preact/compat/"],
-      "react-dom": ["./node_modules/preact/compat/"]
+      "react-dom": ["./node_modules/preact/compat/"],
+      "core/*": ["./lib/core/src/*"]
     },
     "typeRoots": [
       "./node_modules/@types",
@@ -33,6 +34,6 @@
     "composite": true,
     "allowSyntheticDefaultImports": true,
   },
-  "include": ["src", "vite.config.ts"],
+  "include": ["src", "lib", "vite.config.ts"],
   "exclude": ["node_modules"]
 }
