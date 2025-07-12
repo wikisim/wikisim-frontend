@@ -10,4 +10,17 @@ export default defineConfig({
       "core": resolve(__dirname, "lib/core/src"),
     }
   },
+  build: {
+    sourcemap: true, // Keep source maps for your own code
+  },
+  optimizeDeps: {
+    // Disable source maps for pre-bundled dependencies
+    include: [],
+  },
+  server: {
+    // Suppress source map warnings in dev console
+    sourcemapIgnoreList: (sourcePath) => {
+      return sourcePath.includes("node_modules")
+    }
+  }
 })
