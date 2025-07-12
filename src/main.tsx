@@ -3,11 +3,10 @@ import "@mantine/core/styles.css"
 import { render } from "preact"
 import { ErrorBoundary, LocationProvider, Route, Router, useLocation } from "preact-iso"
 
-import { new_data_component } from "core/data/modify"
-
 import "./main.css"
 import "./monkey_patch"
-import { get_store } from "./state/store"
+import { DataComponentPage } from "./pages/DataComponentPage"
+import { app_store } from "./state/store"
 import { TextEditorDemos } from "./text_editor/Demos"
 import { SearchModal } from "./text_editor/SearchModal"
 import Header from "./ui_components/Header"
@@ -118,35 +117,10 @@ function HomePage()
     )
 }
 
-function DataComponentPage(props: { data_component_id: string, query: Record<string, string> })
-{
-    const location = useLocation()
-
-    return (
-        <div>
-            <h2>Data Component: {props.data_component_id} ?a={props.query.a}</h2>
-            <p>{JSON.stringify(props)}</p>
-            <p>This is a placeholder for the data component with ID: {props.data_component_id}</p>
-
-            <p>
-                A new (unsaved) data component: {JSON.stringify(new_data_component())}
-            </p>
-
-            <p onClick={() =>
-            {
-                const new_query = { ...location.query, a: "100" }
-                const new_path = location.path + "?" + new URLSearchParams(new_query).toString()
-                location.route(new_path)
-            }}>Set query a to 100</p>
-            <p onClick={() => location.route("/")}>Home page</p>
-        </div>
-    )
-}
-
 
 function StateManagementDemo()
 {
-    const { user_auth_session } = get_store()
+    const { user_auth_session } = app_store()
     const logged_in = user_auth_session.isLoggedIn
 
     return (

@@ -1,8 +1,8 @@
-import { SetType } from "../root_state"
-import { AppUser, UserAuthSessionState } from "./state"
+import { SetType } from "../interface"
+import { AppUser, UserAuthSessionState } from "./interface"
 
 
-export function initial_state(set: SetType): UserAuthSessionState
+export default function initial_state(set: SetType): UserAuthSessionState
 {
     return {
         user: null,

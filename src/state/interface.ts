@@ -1,13 +1,11 @@
-import { UserAuthSessionState } from "./user_auth_session/state"
+import { DataComponentsState } from "./data_components/interface"
+import { UserAuthSessionState } from "./user_auth_session/interface"
 
 
 export interface RootState
 {
+    data_components: DataComponentsState
     user_auth_session: UserAuthSessionState
-
-    // UI state
-    currentSection: string | null
-    setCurrentSection: (section: string) => void
 }
 
 export type SetType = {
@@ -20,3 +18,4 @@ export type SetType = {
         replace: true
     ): void
 }
+export type GetType = () => RootState
