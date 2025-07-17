@@ -1,21 +1,21 @@
+import { RootCoreState } from "core/state/interface"
+
 import { DataComponentsState } from "./data_components/interface"
-import { UserAuthSessionState } from "./user_auth_session/interface"
 
 
-export interface RootState
+export interface RootAppState extends RootCoreState
 {
     data_components: DataComponentsState
-    user_auth_session: UserAuthSessionState
 }
 
-export type SetType = {
+export type SetAppState = {
     (
-        partial: RootState | Partial<RootState> | ((state: RootState) => RootState | Partial<RootState>),
+        partial: RootAppState | Partial<RootAppState> | ((state: RootAppState) => RootAppState | Partial<RootAppState>),
         replace?: false
-    ): void;
+    ): void
     (
-        state: RootState | ((state: RootState) => RootState),
+        state: RootAppState | ((state: RootAppState) => RootAppState),
         replace: true
     ): void
 }
-export type GetType = () => RootState
+export type GetAppState = () => RootAppState

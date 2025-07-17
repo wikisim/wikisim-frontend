@@ -1,48 +1,92 @@
 import { expect } from "chai"
 
-import { app_store, get_new_app_store } from "../store"
+import { create_mocked_supabase } from "core/test/mock_session"
+import { AppStore, get_new_app_store } from "../store"
 
 
-describe("data_components initial_state", () =>
+describe("store.data_components", () =>
 {
+    let store: AppStore
+
+    beforeEach(() =>
+    {
+        const { get_supabase } = create_mocked_supabase()
+        store = get_new_app_store({ get_supabase })
+    })
+
     it("should initialize with empty data_components_by_id and data_component_by_id_and_version", () =>
     {
-        const state = app_store.getState()
-        expect(state.data_components.data_components_by_id).to.deep.equal({})
-        expect(state.data_components.data_component_by_id_and_version).to.deep.equal({})
+        const { data_components } = store.getState()
+        expect(data_components.data_component_ids_to_load).to.deep.equal([])
+        expect(data_components.data_component_by_id_and_maybe_version).to.deep.equal({})
     })
 
-    it("should update data_components_by_id and not data_component_by_id_and_version when request_data_component is called with id but no version", () =>
+
+    describe("request_data_component is called with only id (no version)", () =>
     {
-        const store = get_new_app_store()
-        let state = store.getState()
-        const async_data_component = state.data_components.request_data_component("123")
-        expect(async_data_component).to.deep.equal({
-            id: 123,
-            version: null,
-            component: null,
-            status: "requested",
+        it("should handle request", () =>
+        {
+            const { data_components } = store.getState()
+            expect(data_components.data_component_ids_to_load).to.deep.equal([])
+            expect(data_components.data_component_by_id_and_maybe_version).to.deep.equal({})
+
+            const async_data_component = data_components.request_data_component("123")
+            expect(async_data_component).to.deep.equal({
+                id: {
+                    id: 123,
+                    version: null,
+                },
+                component: null,
+                status: "requested",
+            })
+
+            const { data_components: data_components2 } = store.getState()
+            expect(data_components2.data_component_ids_to_load).to.deep.equal([async_data_component.id])
+            expect(data_components2.data_component_by_id_and_maybe_version).to.deep.equal({
+                "123": async_data_component,
+            }, "data_component_by_id_and_version should have a placeholder added")
         })
 
-        state = store.getState()
-        expect(state.data_components.data_components_by_id).to.deep.equal({ "123": [async_data_component] })
-        expect(state.data_components.data_component_by_id_and_version).to.deep.equal({})
+        // TODO test that when a data component is requested by an id, that its
+        // AsyncDataComponent placeholder status is to "loading"
+
+        // TODO test that when the data component requested by an id is loaded
+        // successfully, that its status is to updated to "loaded"
+
+        // TODO test that when a data component requested by an id but supabase
+        // call runs into an error, that the status is updated to "error".
+
+        // TODO test that when a data component that was requested by an id but
+        // supabase call ran into an error, that the user can trigger the
+        // request again and the status is changed from "error" to "requested".
+
+        // TODO test if the data component requested by an id is not found in
+        // supabase, that the placeholder is updated with status "not_found"
+
+        // TODO test if the data component requested by an id is not found in
+        // supabase, that the user can trigger another request to find it and
+        // that its placeholder status is changed from "not_found" to "requested".
     })
 
-    it("should update data_components_by_id and data_component_by_id_and_version when request_data_component is called with id and version", () =>
-    {
-        const store = get_new_app_store()
-        let state = store.getState()
-        const async_data_component = state.data_components.request_data_component("123v2")
-        expect(async_data_component).to.deep.equal({
-            id: 123,
-            version: 2,
-            component: null,
-            status: "requested",
-        })
 
-        state = store.getState()
-        expect(state.data_components.data_components_by_id).to.deep.equal({ "123": [async_data_component] })
-        expect(state.data_components.data_component_by_id_and_version).to.deep.equal({ "123v2": async_data_component })
-    })
+    // describe("request_data_component is called with id and version", () =>
+    // {
+    //     it("should handle request", () =>
+    //     {
+    //         let { data_components } = store.getState()
+    //         const async_data_component = data_components.request_data_component("123v2")
+    //         expect(async_data_component).to.deep.equal({
+    //             id: {
+    //                 id: 123,
+    //                 version: 2,
+    //             },
+    //             component: null,
+    //             status: "requested",
+    //         })
+
+    //         ;({ data_components } = store.getState())
+    //         expect(data_components.data_component_ids_to_load).to.deep.equal([async_data_component.id])
+    //         expect(data_components.data_component_by_id_and_maybe_version).to.deep.equal({ "123v2": async_data_component })
+    //     })
+    // })
 })

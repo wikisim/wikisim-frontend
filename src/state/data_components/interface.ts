@@ -1,21 +1,22 @@
+import { IdAndMaybeVersion, IdAndVersion, IdOnly } from "core/data/id"
 import { DataComponent } from "core/data/interface"
-import { DataComponentIdMaybeVersion } from "../../../lib/core/src/data/id"
 
 
-interface AsyncDataComponent
+export interface AsyncDataComponent
 {
-    id: number
-    version: number | null
+    id: IdOnly | IdAndVersion
     component: DataComponent | null
-    status: "requested" | "loading" | "error" | "success"
+    status: "requested" | "loading" | "error" | "loaded" | "not_found"
     error?: string
 }
 
 
 export interface DataComponentsState
 {
-    data_components_by_id: Record<string, AsyncDataComponent[]>
-    data_component_by_id_and_version: Record<string, AsyncDataComponent>
+    data_component_ids_to_load: (IdOnly | IdAndVersion)[]
+    data_component_by_id_and_maybe_version: Record<string, AsyncDataComponent>
 
-    request_data_component: (data_component_id: DataComponentIdMaybeVersion | string) => AsyncDataComponent
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    request_data_component_error: any | undefined
+    request_data_component: (data_component_id: IdAndMaybeVersion | string) => AsyncDataComponent
 }
