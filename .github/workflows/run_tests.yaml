@@ -28,5 +28,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run Jest
-        run: npx jest --ci
+      - name: Run Tests
+        run: npx mocha
+
+      - name: Compile TypeScript
+        run: npx tsc --noEmit

@@ -1,9 +1,10 @@
+import { expect } from "chai"
 
-// Add a simple test to ensure Jest is working
+// Add a simple test to ensure testing is working
 describe("Main Test Suite", () =>
 {
-    test("Jest is working", () =>
+    test("Testing is working", () =>
     {
-        expect(true).toBe(true)
+        expect(true).equals(true)
     })
 })

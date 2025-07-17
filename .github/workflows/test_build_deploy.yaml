@@ -41,8 +41,11 @@ jobs:
       - name: ___________________________ TEST ___________________________
         run: echo Test
 
-      - name: Run Jest
-        run: npx jest --ci
+      - name: Run Tests
+        run: npx mocha
+
+      - name: Compile TypeScript
+        run: npx tsc --noEmit
 
       - name: ___________________________ BUILD ___________________________
         run: echo Build
