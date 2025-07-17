@@ -12,25 +12,27 @@ const CustomMention = Mention.extend({
         return {
             id: {
                 default: null,
-                parseHTML: element => element.getAttribute('data-id'),
+                parseHTML: element => element.getAttribute("data-id"),
                 renderHTML: attributes => {
                     if (!attributes.id) {
                         return {}
                     }
                     return {
-                        'data-id': attributes.id,
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                        "data-id": attributes.id,
                     }
                 },
             },
             label: {
                 default: null,
-                parseHTML: element => element.getAttribute('data-label'),
+                parseHTML: element => element.getAttribute("data-label"),
                 renderHTML: attributes => {
                     if (!attributes.label) {
                         return {}
                     }
                     return {
-                        'data-label': attributes.label,
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                        "data-label": attributes.label,
                     }
                 },
             },
@@ -43,7 +45,7 @@ const CustomMention = Mention.extend({
             Backspace: ({ editor }) => {
                 const { selection, doc } = editor.state
 
-                // Check if we're at the position right after a mention node
+                // Check if we are at the position right after a mention node
                 if (selection.empty) {
                     const $pos = doc.resolve(selection.from)
                     const before = $pos.nodeBefore
@@ -60,7 +62,7 @@ const CustomMention = Mention.extend({
             Delete: ({ editor }) => {
                 const { selection, doc } = editor.state
 
-                // Check if we're at the position right before a mention node
+                // Check if we are at the position right before a mention node
                 if (selection.empty) {
                     const $pos = doc.resolve(selection.from)
                     const after = $pos.nodeAfter
@@ -81,7 +83,9 @@ const CustomMention = Mention.extend({
         return ({ node }) => {
             const dom = document.createElement("span")
             dom.className = "mention-chip"
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             dom.setAttribute("data-id", node.attrs.id)
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             dom.setAttribute("data-label", node.attrs.label)
 
             const percentage = "+20%"
