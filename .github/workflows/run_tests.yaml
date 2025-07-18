@@ -29,7 +29,7 @@ jobs:
         run: pnpm install
 
       - name: Run Tests
-        run: npx mocha
+        run: pnpm test
 
       - name: Compile TypeScript
         run: npx tsc --noEmit

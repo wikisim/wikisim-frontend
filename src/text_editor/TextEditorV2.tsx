@@ -1,16 +1,10 @@
-import Highlight from "@tiptap/extension-highlight"
-import Link from "@tiptap/extension-link"
-import Typography from "@tiptap/extension-typography"
-import Underline from "@tiptap/extension-underline"
 import { Selection } from "@tiptap/pm/state"
 import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react"
-import StarterKit from "@tiptap/starter-kit"
 import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks"
 
 import pub_sub from "../pub_sub"
-import { CustomReferences } from "./CustomReferences"
-import { SingleLineExtension } from "./extension_enforce_single_line"
 import "./TextEditorV2.css"
+import { get_tiptap_extensions } from "./tiptap_extensions"
 import { URLEditor } from "./URLEditor"
 
 
@@ -40,29 +34,7 @@ export function TextEditorV2({
     const [edit_url_enabled, set_edit_url_enabled] = useState<Selection | undefined>(undefined)
 
     const editor = useEditor({
-        extensions: [
-            StarterKit.configure({
-                // For single line mode, keep paragraph but disable block elements
-                heading: single_line ? false : undefined,
-                bulletList: single_line ? false : undefined,
-                orderedList: single_line ? false : undefined,
-                blockquote: single_line ? false : undefined,
-                codeBlock: single_line ? false : undefined,
-                horizontalRule: single_line ? false : undefined,
-            }),
-            // Add single line extension only when in single line mode
-            ...(single_line ? [SingleLineExtension] : []),
-            Highlight,
-            Typography,
-            Underline,
-            CustomReferences,
-            Link.configure({
-                openOnClick: false,
-                HTMLAttributes: {
-                    class: "editor-link",
-                },
-            }),
-        ],
+        extensions: get_tiptap_extensions(single_line),
         content: initial_content,
         autofocus: auto_focus,
         editorProps: {
@@ -198,7 +170,7 @@ export function TextEditorV2({
                 {label}
             </label>
 
-            {editor && edit_url_enabled && <URLEditor
+            {edit_url_enabled && <URLEditor
                 selection={edit_url_enabled}
                 on_close={(data, remove_link_at) => {
                     set_edit_url_enabled(undefined)

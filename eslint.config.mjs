@@ -39,6 +39,7 @@ export default tseslint.config(
             }],
             "@typescript-eslint/restrict-template-expressions": "off",
             "@typescript-eslint/switch-exhaustiveness-check": "warn",
+            "@typescript-eslint/unbound-method": "off",
             "no-constant-condition": "off",
             "no-debugger": "warn",
             "prefer-const": "off",

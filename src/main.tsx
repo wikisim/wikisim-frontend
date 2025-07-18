@@ -1,11 +1,12 @@
 import { defaultVariantColorsResolver, MantineProvider, VariantColorsResolverInput } from "@mantine/core"
 import "@mantine/core/styles.css"
 import { render } from "preact"
-import { ErrorBoundary, LocationProvider, Route, Router, useLocation } from "preact-iso"
+import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso"
 
 import "./main.css"
 import "./monkey_patch"
 import { DataComponentPage } from "./pages/DataComponentPage"
+import { HomePage } from "./pages/HomePage"
 import { app_store } from "./state/store"
 import { TextEditorDemos } from "./text_editor/Demos"
 import { SearchModal } from "./text_editor/SearchModal"
@@ -91,30 +92,6 @@ function variantColorResolver (input: VariantColorsResolverInput)
     }
 
     return default_resolved_colours
-}
-
-
-
-function HomePage()
-{
-    const location = useLocation()
-    return (
-        <div>
-            <h1>WikiSim</h1>
-            <p>An open source platform for data, back of the envelope calculations, and models of complex problems.</p>
-            <p>WikiSim is a work in progress. Please check back later.</p>
-
-            <p>
-                See Data component no 1: <a href="/data/1">Data Component 1</a>
-            </p>
-            <p onClick={() =>
-            {
-                location.route("/data/2")
-            }}>
-                See Data component no 2
-            </p>
-        </div>
-    )
 }
 
 

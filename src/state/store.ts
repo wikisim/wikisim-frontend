@@ -10,9 +10,7 @@ import { RootAppState } from "./interface"
 
 export type AppStore = UseBoundStore<StoreApi<RootAppState>>
 
-interface AppStoreDependencies extends CoreStoreDependencies
-{
-}
+type AppStoreDependencies = CoreStoreDependencies
 
 function default_dependencies(): AppStoreDependencies
 {
@@ -34,7 +32,7 @@ export const get_new_app_store = (dependencies?: AppStoreDependencies) =>
     const app_store = create<RootAppState>()(immer((set, get) =>
     {
         return {
-            data_components: data_components.initial_state(set, get),
+            data_components: data_components.initial_state(set, get, dependencies.get_supabase),
             user_auth_session: core_store.getState().user_auth_session,
         }
     }))

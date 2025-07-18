@@ -1,4 +1,4 @@
-import { IdAndMaybeVersion } from "core/data/id"
+import { parse_id } from "core/data/id"
 
 import { AsyncDataComponent } from "../state/data_components/interface"
 import { app_store } from "../state/store"
@@ -8,7 +8,7 @@ function get_data_component(data_component_id: string): AsyncDataComponent
 {
     const state = app_store()
     const { data_component_by_id_and_maybe_version } = state.data_components
-    const id = IdAndMaybeVersion.from_str(data_component_id)
+    const id = parse_id(data_component_id)
 
     let data_component = data_component_by_id_and_maybe_version[data_component_id]
 

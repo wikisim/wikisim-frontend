@@ -111,8 +111,6 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
      */
     const handle_on_key_up = useMemo(() => (e: JSX.TargetedKeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) =>
     {
-        // type guard
-        if (!e.currentTarget) return
         // Only continue if last character entered is an "@"
         if (e.key !== "@") return
         if (!trigger_search_on_at_symbol) return
@@ -132,7 +130,6 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
         const unsubscribe = pub_sub.sub("search_for_reference_completed", data =>
         {
             if (data.search_requester_id !== search_requester_id) return
-            if (data.data_component_id === undefined) return
             unsubscribe()
 
             cursor_position_on_blur_to_search.current = cursor_position + data.data_component_id.toString().length

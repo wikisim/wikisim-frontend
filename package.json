@@ -7,7 +7,7 @@
         "dev": "vite",
         "build": "tsc && vite build",
         "preview": "vite preview",
-        "test": "mocha"
+        "test": "mocha --require src/test/setup.js"
     },
     "dependencies": {
         "@mantine/core": "8.1.2",

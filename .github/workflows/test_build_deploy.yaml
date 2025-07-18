@@ -42,7 +42,7 @@ jobs:
         run: echo Test
 
       - name: Run Tests
-        run: npx mocha
+        run: pnpm test
 
       - name: Compile TypeScript
         run: npx tsc --noEmit
