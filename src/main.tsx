@@ -7,7 +7,6 @@ import "./main.css"
 import "./monkey_patch"
 import { DataComponentPage } from "./pages/DataComponentPage"
 import { HomePage } from "./pages/HomePage"
-import { app_store } from "./state/store"
 import { TextEditorDemos } from "./text_editor/Demos"
 import { SearchModal } from "./text_editor/SearchModal"
 import Header from "./ui_components/Header"
@@ -63,7 +62,6 @@ function App() {
                     <Router>
                         <Route path="/" component={HomePage} />
                         <Route path="/data/:data_component_id" component={DataComponentPage} />
-                        <Route path="/demo/state_management" component={StateManagementDemo} />
                         <Route path="/demo/text_editor_demos" component={TextEditorDemos} />
                         <Route default component={NotFound} />
                     </Router>
@@ -92,33 +90,6 @@ function variantColorResolver (input: VariantColorsResolverInput)
     }
 
     return default_resolved_colours
-}
-
-
-function StateManagementDemo()
-{
-    const { user_auth_session } = app_store()
-    const logged_in = user_auth_session.isLoggedIn
-
-    return (
-        <div>
-            <h2>State Management Demo</h2>
-            <p>This is a demo of state management using Zustand.</p>
-            <div onClick={() =>
-            {
-                if (logged_in)
-                {
-                    user_auth_session.logout()
-                }
-                else
-                {
-                    user_auth_session.login({ id: "1", name: "A Person", email: "abc@example.com" })
-                }
-            }}>
-                {logged_in ? "log out" : "log in"}
-            </div>
-        </div>
-    )
 }
 
 
