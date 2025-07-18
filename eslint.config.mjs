@@ -13,10 +13,15 @@ export default tseslint.config(
     {
         languageOptions: {
             parserOptions: {
-            projectService: true,
+                projectService: true,
                 tsconfigRootDir: import.meta.dirname,
             },
         },
+    },
+    // Ignore JavaScript config files from TypeScript linting
+    {
+        files: ["**/*.js", "**/*.mjs"],
+        ...tseslint.configs.disableTypeChecked,
     },
     {
         rules: {
@@ -25,6 +30,8 @@ export default tseslint.config(
             "@typescript-eslint/no-floating-promises": "off",
             "@typescript-eslint/no-misused-promises": "off",
             "@typescript-eslint/no-unnecessary-condition": "error",
+            "@typescript-eslint/no-unsafe-call": "off",
+            "@typescript-eslint/no-unsafe-member-access": "off",
             "@typescript-eslint/no-unused-vars": ["warn", {
                 "argsIgnorePattern": "^_",
                 "varsIgnorePattern": "^_",
