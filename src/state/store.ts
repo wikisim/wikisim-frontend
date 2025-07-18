@@ -40,6 +40,13 @@ export const get_new_app_store = (dependencies?: AppStoreDependencies) =>
     // Set up subscriptions after store creation
     data_components.subscriptions(app_store, dependencies.get_supabase)
 
+    core_store.subscribe((core_state, _previous_core_state) =>
+    {
+        app_store.setState({
+            user_auth_session: core_state.user_auth_session,
+        })
+    })
+
     return app_store
 }
 
