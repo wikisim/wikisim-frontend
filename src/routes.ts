@@ -4,8 +4,7 @@ import { IdAndVersion, IdOnly } from "../lib/core/src/data/id"
 export const ROUTES = {
     HOME: "/",
     DATA_COMPONENT: {
-        // TODO: think of a better URL for viewing all data components
-        VIEW_ALL: () => "/wiki",
+        VIEW_ALL: () => "/wiki/search",
         NEW: () => "/wiki/new",
         VIEW: (id: IdAndVersion | IdOnly | ":data_component_id") =>
         {
