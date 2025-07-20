@@ -28,7 +28,8 @@ function UserSession()
 {
     const { user_auth_session } = app_store()
     const { status } = user_auth_session
-    const [show_log_in_modal, setShowLogInModal] = useState(false)
+    const [show_user_options_dropdown, set_show_user_options_dropdown] = useState(false)
+    const [show_log_in_modal, set_show_log_in_modal] = useState(false)
 
     return (
         <div
@@ -36,8 +37,8 @@ function UserSession()
             disabled={status !== "logged_in" && status !== "logged_out"}
             onClick={_e =>
             {
-                if (status === "logged_in") user_auth_session.logout()
-                else if (status === "logged_out" || status === "logged_out__OTP_sign_in_request_errored") setShowLogInModal(true)
+                if (status === "logged_in") set_show_user_options_dropdown(!show_user_options_dropdown)
+                else if (status === "logged_out" || status === "logged_out__OTP_sign_in_request_errored") set_show_log_in_modal(true)
                 else console.warn("User session is not in a valid state for login/logout:", status)
             }}
         >
@@ -51,7 +52,7 @@ function UserSession()
             </div>
             <IconUser />
 
-            {show_log_in_modal && <LogInModal on_close={() => setShowLogInModal(false)} />}
+            {show_log_in_modal && <LogInModal on_close={() => set_show_log_in_modal(false)} />}
         </div>
     )
 }
