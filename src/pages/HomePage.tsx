@@ -1,8 +1,10 @@
-
+import { Button } from "@mantine/core"
+import IconNewSection from "@tabler/icons-react/dist/esm/icons/IconNewSection"
 import { useEffect } from "preact/hooks"
 
 import { is_data_component } from "core/data/interface"
 
+import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { DataComponentCard } from "../ui_components/DataComponentCard"
 import "./HomePage.css"
@@ -28,16 +30,16 @@ export function HomePage()
         store.data_components.request_data_components()
     }, [])
 
-
-    const data_components_for_home_page = data_component_ids_for_home_page?.ids?.map(id =>
+    const ids = data_component_ids_for_home_page?.ids
+    const data_components_for_home_page = !ids ? undefined : ids.map(id =>
         data_component_by_id_and_maybe_version[id.to_str()]
-    ).map(component => component?.component)
+    )
+    .map(component => component?.component)
     .filter(d => is_data_component(d))
 
 
     return (
         <div>
-            <h1>WikiSim</h1>
             <h3>
                 Community made open source simulations, and “back of the envelope”
                 calculations, to help us to make better sense of our complex world.
@@ -52,12 +54,37 @@ export function HomePage()
 
             <div class="section">
                 <h2>Data Components</h2>
-                {!data_components_for_home_page
-                    ? <p>Loading...</p>
-                    : data_components_for_home_page.map(data_component =>
-                        <DataComponentCard key={data_component.id.to_str()} data_component={data_component} />
-                    )
-                }
+                <div class="data-component-cards">
+                    {!data_components_for_home_page
+                        ? <p>Loading...</p>
+                        : data_components_for_home_page.map(data_component =>
+                            <DataComponentCard key={data_component.id.to_str()} data_component={data_component} />
+                        )
+                    }
+                </div>
+
+                <Button
+                    component="a"
+                    href={ROUTES.DATA_COMPONENT.VIEW_ALL()}
+                    className="browse-all-button"
+                    size="lg"
+                    variant="primary"
+                >
+                    Browse all Data Components
+                </Button>
+
+                or
+
+                <Button
+                    component="a"
+                    href={ROUTES.DATA_COMPONENT.NEW()}
+                    className="browse-all-button"
+                    size="lg"
+                    variant="primary"
+                >
+                    Add new data&nbsp;<IconNewSection />
+                </Button>
+
             </div>
         </div>
     )

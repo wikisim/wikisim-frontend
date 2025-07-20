@@ -8,11 +8,11 @@
     z-index: 1000;
     height: var(--header-height);
 
-    background-color: #d8d8d8;
+    background-color: white;
 
     display: flex;
     flex-direction: row;
-    border-bottom: 1px solid #91989f;
+    border-bottom: 1px solid #d8d8d8;
 }
 
 .header-bar .left

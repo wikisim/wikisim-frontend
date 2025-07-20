@@ -51,7 +51,7 @@ body:
     attributes:
       label: Suggested Solution or Improvement
       description: If you have ideas for how to address this, please share them here.
-      placeholder: e.g., "I suggest changing the model to... please see this wikisim page for more details: [link](https://wikisim.org/data/alternative-model)"
+      placeholder: e.g., "I suggest changing the model to... please see this wikisim page for more details: [link](https://wikisim.org/wiki/alternative-model)"
     validations:
       required: false
 

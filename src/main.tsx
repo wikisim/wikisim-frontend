@@ -6,8 +6,10 @@ import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso"
 import "./main.css"
 import "./monkey_patch"
 import { DataComponentPage } from "./pages/DataComponentPage"
+import { DataComponentPageNew } from "./pages/DataComponentPageNew"
 import { HomePage } from "./pages/HomePage"
 import "./remove_supabase_hash"
+import { ROUTES } from "./routes"
 import { TextEditorDemos } from "./text_editor/Demos"
 import { SearchModal } from "./text_editor/SearchModal"
 import Header from "./ui_components/Header"
@@ -62,7 +64,9 @@ function App() {
                 <ErrorBoundary>
                     <Router>
                         <Route path="/" component={HomePage} />
-                        <Route path="/data/:data_component_id" component={DataComponentPage} />
+                        <Route path={ROUTES.DATA_COMPONENT.NEW()} component={DataComponentPageNew} />
+                        <Route path={ROUTES.DATA_COMPONENT.EDIT(":data_component_id")} component={DataComponentPage} />
+                        <Route path={ROUTES.DATA_COMPONENT.VIEW(":data_component_id")} component={DataComponentPage} />
                         <Route path="/demo/text_editor_demos" component={TextEditorDemos} />
                         <Route default component={NotFound} />
                     </Router>

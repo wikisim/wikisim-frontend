@@ -8,6 +8,11 @@ import Loading from "./Loading"
 export default function Header() {
     return (
         <header className="header-bar">
+            <a href="/" style={{ textDecoration: "none", color: "inherit" }}>
+                <h1 style={{ lineHeight: 0, padding: "0 10px" }}>
+                    WikiSim
+                </h1>
+            </a>
             <nav className="right">
                 <UserSession />
             </nav>

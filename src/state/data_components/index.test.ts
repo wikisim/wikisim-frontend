@@ -1,14 +1,15 @@
 import { expect } from "chai"
 import sinon from "sinon"
 
+import { convert_from_db_row } from "core/data/convert_between_db"
+import { IdAndVersion, IdOnly } from "core/data/id"
+import { new_data_component } from "core/data/modify"
+import { DBDataComponentRow } from "core/supabase"
+import { create_mock_db_data_component_row } from "core/test/mock_db_data_component_row"
 import { create_mocked_supabase, MockedSupabase } from "core/test/mock_supabase_and_session"
+import { deep_equals } from "core/utils/deep_equals"
+
 import { update_store_with_loaded_data_components } from "."
-import { convert_from_db_row } from "../../../lib/core/src/data/convert_between_db"
-import { IdAndVersion, IdOnly } from "../../../lib/core/src/data/id"
-import { new_data_component } from "../../../lib/core/src/data/modify"
-import { DBDataComponentRow } from "../../../lib/core/src/supabase"
-import { create_mock_db_data_component_row } from "../../../lib/core/src/test/mock_db_data_component_row"
-import { deep_equals } from "../../../lib/core/src/utils/deep_equals"
 import { wait_for } from "../../utils/wait_for"
 import { AppStore, get_new_app_store } from "../store"
 

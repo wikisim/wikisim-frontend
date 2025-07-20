@@ -1,5 +1,7 @@
-import { DataComponent } from "../../lib/core/src/data/interface"
+import { DataComponent } from "core/data/interface"
+
 import { sanitize_with_TipTap } from "../text_editor/sanitise_html"
+import "./DataComponentCard.css"
 
 
 export function DataComponentCard({ data_component }: { data_component: DataComponent })
