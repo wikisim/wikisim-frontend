@@ -1,43 +1,55 @@
+import { Button, Menu, Modal, TextInput } from "@mantine/core"
+import IconLogout from "@tabler/icons-react/dist/esm/icons/IconLogout"
 import IconUser from "@tabler/icons-react/dist/esm/icons/IconUser"
-
-import { Button, Modal, TextInput } from "@mantine/core"
 import { h } from "preact"
 import { useEffect, useState } from "preact/hooks"
+
 import { app_store } from "../state/store"
 import "./Header.css"
 import Loading from "./Loading"
 
 
-export default function Header() {
+export default function Header()
+{
+    const [show_user_options_dropdown, set_show_user_options_dropdown] = useState(false)
+    // const set_show_user_options_dropdown = useMemo(() => debounce(_set_show_user_options_dropdown, 200), [])
+    const toggle_show_user_options_dropdown = () => set_show_user_options_dropdown(!show_user_options_dropdown)
+
     return (
         <header className="header-bar">
             <a href="/" style={{ textDecoration: "none", color: "inherit" }}>
                 <h1 style={{ lineHeight: 0, padding: "0 10px" }}>
-                    WikiSim
+                    WikiSim {show_user_options_dropdown ? "▼" : "▲"}
                 </h1>
             </a>
             <nav className="right">
-                <UserSession />
+                <UserSession
+                    toggle_show_user_options_dropdown={toggle_show_user_options_dropdown}
+                />
+                <DropDownMenu
+                    opened={show_user_options_dropdown}
+                    set_opened={set_show_user_options_dropdown}
+                />
             </nav>
+
         </header>
     )
 }
 
 
-function UserSession()
+function UserSession(props: { toggle_show_user_options_dropdown: () => void })
 {
     const { user_auth_session } = app_store()
     const { status } = user_auth_session
-    const [show_user_options_dropdown, set_show_user_options_dropdown] = useState(false)
     const [show_log_in_modal, set_show_log_in_modal] = useState(false)
 
     return (
         <div
             className="user-session"
             disabled={status !== "logged_in" && status !== "logged_out"}
-            onClick={_e =>
+            onPointerDown={_e =>
             {
-                if (status === "logged_in") set_show_user_options_dropdown(!show_user_options_dropdown)
+                if (status === "logged_in") props.toggle_show_user_options_dropdown()
                 else if (status === "logged_out" || status === "logged_out__OTP_sign_in_request_errored") set_show_log_in_modal(true)
                 else console.warn("User session is not in a valid state for login/logout:", status)
             }}
@@ -121,4 +133,35 @@ function LogInModal({ on_close }: { on_close: () => void })
             </div>
         </Modal>
     )
+}
+
+
+function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) => void })
+{
+    const { user_auth_session } = app_store()
+
+    return <Menu
+        shadow="md"
+        width={200}
+        opened={props.opened}
+        onChange={props.set_opened}
+    >
+        <Menu.Target>
+            {/* This ensures the menu is positioned correctly at the location of
+            this &nbsp; ... it is a bit of a hack */}
+            <div>&nbsp;</div>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+            <Menu.Item
+                leftSection={<IconLogout size={14} />}
+                onClick={() =>
+                {
+                    user_auth_session.logout()
+                }}
+            >
+                Log Out
+            </Menu.Item>
+        </Menu.Dropdown>
+    </Menu>
 }
