@@ -6,6 +6,7 @@ import { get_supabase } from "core/supabase"
 
 import * as data_components from "./data_components"
 import { RootAppState } from "./interface"
+import * as users from "./users"
 
 
 export type AppStore = UseBoundStore<StoreApi<RootAppState>>
@@ -34,6 +35,7 @@ export const get_new_app_store = (dependencies?: AppStoreDependencies) =>
         return {
             data_components: data_components.initial_state(set, get, dependencies.get_supabase),
             user_auth_session: core_store.getState().user_auth_session,
+            users: users.initial_state(set, get, dependencies.get_supabase),
         }
     }))
 

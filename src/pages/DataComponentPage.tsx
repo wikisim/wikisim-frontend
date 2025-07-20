@@ -1,44 +1,68 @@
-import { parse_id } from "core/data/id"
+import { useEffect, useState } from "preact/hooks"
 
-import { AsyncDataComponent } from "../state/data_components/interface"
+import { DataComponent } from "core/data/interface"
+
+import { ROUTES } from "../routes"
+import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
-
-
-function get_data_component(data_component_id: string): AsyncDataComponent
-{
-    const state = app_store()
-    const { data_component_by_id_and_maybe_version } = state.data_components
-    const id = parse_id(data_component_id)
-
-    let data_component = data_component_by_id_and_maybe_version[data_component_id]
-
-    if (!data_component)
-    {
-        console.debug(`Data component with ID ${data_component_id} not found.  Requesting to load it.`)
-        data_component = state.data_components.request_data_component(id)
-    }
-
-    return data_component
-}
+import { sanitize_with_TipTap } from "../text_editor/sanitise_html"
+import Loading from "../ui_components/Loading"
 
 
 export function DataComponentPage(props: { data_component_id: string, query: Record<string, string> })
 {
-    const data_component = get_data_component(props.data_component_id)
+    const state = app_store()
+    const data_component = get_async_data_component(state, props.data_component_id)
+    const { component, status } = data_component
 
-    // import { useLocation } from "preact-iso"
-    // const location = useLocation()
-    // location.route(new_path)
+    if (!component)
+    {
+        if (status === "loading" || status === "requested") return <div>Loading data component...</div>
+        if (status === "error") return <div>Error loading data component.</div>
+        return <div>Data component not found.</div>
+    }
 
     return (
         <div>
-            <h2>Data Component:</h2>
+            <h2 dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true) }} />
 
-            <pre>
-                {JSON.stringify(data_component)}
-            </pre>
+            <div dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.description, false) }} />
 
-            {/* <p onClick={() => location.route("/")}>Home page</p> */}
+            <LastEditedBy component={component} />
+        </div>
+    )
+}
+
+
+function LastEditedBy({ component }: { component: DataComponent })
+{
+    const store = app_store()
+
+    const { created_at, editor_id } = component
+    const user_link = `/user/${editor_id}`
+
+    const [user_name, set_user_name] = useState("")
+    const async_user = store.users.request_user(editor_id)
+
+    useEffect(() =>
+    {
+        if (async_user.status === "loaded")
+        {
+            set_user_name(async_user.user!.name)
+        }
+        else if (async_user.status === "error")
+        {
+            // console .error("Error fetching user name:", async_user.error)
+            set_user_name("Unknown User")
+        }
+    }, [async_user])
+
+    return (
+        <div className="last-edited-by">
+            Last edited by&nbsp;
+            <a href={user_link}>{user_name || <Loading />}</a>&nbsp;
+            at&nbsp;
+            <a href={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY(component.id)}>{created_at.toString()}</a>
         </div>
     )
 }

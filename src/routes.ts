@@ -13,6 +13,10 @@ export const ROUTES = {
         EDIT: (id: IdAndVersion | IdOnly | ":data_component_id") =>
         {
             return `/wiki/${typeof id === "string" ? id : id.to_str_without_version()}/edit`
-        }
+        },
+        VIEW_VERSION_HISTORY: (id: IdAndVersion | IdOnly | ":data_component_id") =>
+        {
+            return `/wiki/${typeof id === "string" ? id : id.to_str_without_version()}/history`
+        },
     }
 }

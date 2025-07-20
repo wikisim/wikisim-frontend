@@ -12,14 +12,13 @@ import Loading from "./Loading"
 export default function Header()
 {
     const [show_user_options_dropdown, set_show_user_options_dropdown] = useState(false)
-    // const set_show_user_options_dropdown = useMemo(() => debounce(_set_show_user_options_dropdown, 200), [])
     const toggle_show_user_options_dropdown = () => set_show_user_options_dropdown(!show_user_options_dropdown)
 
     return (
         <header className="header-bar">
             <a href="/" style={{ textDecoration: "none", color: "inherit" }}>
                 <h1 style={{ lineHeight: 0, padding: "0 10px" }}>
-                    WikiSim {show_user_options_dropdown ? "▼" : "▲"}
+                    WikiSim
                 </h1>
             </a>
             <nav className="right">
