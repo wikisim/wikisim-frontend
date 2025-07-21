@@ -12,7 +12,7 @@ export interface AsyncDataComponent
     error?: string
 }
 
-export interface DataComponentIdsForHomePage
+export interface AsyncDataComponentIdsForHomePage
 {
     fetched: Date
     status: BasicLoadingStatus
@@ -25,10 +25,10 @@ export interface DataComponentIdsForHomePage
 export interface DataComponentsState
 {
     data_component_ids_to_load: IdAndMaybeVersion[]
-    data_component_ids_for_home_page: DataComponentIdsForHomePage | undefined
+    data_component_ids_for_home_page: AsyncDataComponentIdsForHomePage | undefined
     data_component_by_id_and_maybe_version: Record<string, AsyncDataComponent>
 
     request_data_component_error: Error | undefined
     request_data_component: (data_component_id: IdAndMaybeVersion) => AsyncDataComponent
-    request_data_components: () => void
+    request_data_components_for_home_page: () => void
 }

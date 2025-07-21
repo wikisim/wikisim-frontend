@@ -27,7 +27,7 @@ export function HomePage()
             (now.getTime() - data_component_ids_for_home_page.fetched.getTime()) < 1000 * 60 * 10 // 10 minutes
         if (is_recently_fetched) return
         // If not, request them
-        store.data_components.request_data_components()
+        store.data_components.request_data_components_for_home_page()
     }, [])
 
     const ids = data_component_ids_for_home_page?.ids

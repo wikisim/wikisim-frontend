@@ -46,7 +46,7 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
             return async_data_component
         },
 
-        request_data_components: async () =>
+        request_data_components_for_home_page: async () =>
         {
             const { data_component_ids_for_home_page } = get().data_components
 

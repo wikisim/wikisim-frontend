@@ -1,4 +1,4 @@
-import { IdAndVersion, IdOnly } from "../lib/core/src/data/id"
+import { IdAndVersion, IdOnly } from "core/data/id"
 
 
 export const ROUTES = {

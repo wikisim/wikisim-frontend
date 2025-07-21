@@ -223,7 +223,7 @@ describe("store.data_components", () =>
             const { data_components } = store.getState()
             expect(data_components.data_component_ids_for_home_page).equals(undefined, "Initial data_component_ids_for_home_page should be undefined")
 
-            data_components.request_data_components()
+            data_components.request_data_components_for_home_page()
             const { data_components: data_components2 } = store.getState()
             expect(data_components2.data_component_ids_for_home_page?.status).equals("loading", "data_component_ids_for_home_page.status should be 'loading'")
             expect(data_components2.data_component_ids_for_home_page?.ids).equals(undefined, "data_component_ids_for_home_page.ids should be undefined")
