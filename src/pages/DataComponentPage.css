@@ -1,0 +1,8 @@
+
+.last-edited-by
+{
+    padding: calc(var(--page-padding) / 2) var(--page-padding);
+    font-size: 0.9em;
+    background-color: var(--secondary-fill-color);
+    margin-top: 10px;
+}

@@ -11,6 +11,7 @@ import { DataComponentPageNew } from "./pages/DataComponentPageNew"
 import { DataComponentPageVersionHistory } from "./pages/DataComponentPageVersionHistory"
 import { DataComponentsSearchPage } from "./pages/DataComponentsSearchPage"
 import { HomePage } from "./pages/HomePage"
+import { UserPage } from "./pages/UserPage"
 import "./remove_supabase_hash"
 import { ROUTES } from "./routes"
 import { TextEditorDemos } from "./text_editor/Demos"
@@ -67,6 +68,8 @@ function App() {
                 <ErrorBoundary>
                     <Router>
                         <Route path="/" component={HomePage} />
+                        <Route path={ROUTES.USER.VIEW(false)} component={UserPage} />
+
                         <Route path={ROUTES.DATA_COMPONENT.NEW()} component={DataComponentPageNew} />
                         <Route path={ROUTES.DATA_COMPONENT.VIEW_ALL()} component={DataComponentsSearchPage} />
                         <Route path={ROUTES.DATA_COMPONENT.EDIT(":data_component_id")} component={DataComponentPageEdit} />

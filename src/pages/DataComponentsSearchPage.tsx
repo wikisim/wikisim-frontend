@@ -3,7 +3,7 @@
 export function DataComponentsSearchPage()
 {
     return (
-        <div>
+        <div className="page-container">
             <h2>Data Components Search Page</h2>
 
             <p>

@@ -8,7 +8,7 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
     const data_component = get_async_data_component(state, props.data_component_id)
 
     return (
-        <div>
+        <div className="page-container">
             <h2>Data Component:</h2>
 
             <pre>

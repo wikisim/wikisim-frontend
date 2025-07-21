@@ -2,11 +2,14 @@ import { useEffect, useState } from "preact/hooks"
 
 import { DataComponent } from "core/data/interface"
 
+import { h } from "preact"
+import HistoryIcon from "../assets/history.svg"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
 import { sanitize_with_TipTap } from "../text_editor/sanitise_html"
 import Loading from "../ui_components/Loading"
+import "./DataComponentPage.css"
 
 
 export function DataComponentPage(props: { data_component_id: string, query: Record<string, string> })
@@ -22,15 +25,15 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
         return <div>Data component not found.</div>
     }
 
-    return (
-        <div>
+    return <>
+        <div className="page-container">
             <h2 dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true) }} />
 
             <div dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.description, false) }} />
 
-            <LastEditedBy component={component} />
         </div>
-    )
+        <LastEditedBy component={component} />
+    </>
 }
 
 
@@ -59,10 +62,38 @@ function LastEditedBy({ component }: { component: DataComponent })
 
     return (
         <div className="last-edited-by">
+            <img src={HistoryIcon} alt="History" width={20} height={20} style={{ verticalAlign: -5, margin: "0px 5px" }} />
+
             Last edited by&nbsp;
             <a href={user_link}>{user_name || <Loading />}</a>&nbsp;
-            at&nbsp;
-            <a href={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY(component.id)}>{created_at.toString()}</a>
+            {time_ago_or_date(created_at, true)}
+            <a href={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY(component.id)}>
+                {time_ago_or_date(created_at)}
+            </a>
         </div>
     )
+}
+
+
+function time_ago_or_date(date: Date, text_to_preprend: boolean = false): string | h.JSX.Element
+{
+    const now = new Date()
+
+    const diff = now.getTime() - date.getTime()
+    const seconds = Math.floor(diff / 1000)
+    const minutes = Math.floor(seconds / 60)
+    const hours = Math.floor(minutes / 60)
+    const days = Math.floor(hours / 24)
+
+    if (days > 3) return text_to_preprend ? <>on&nbsp;</> : date.toDateString()
+    if (text_to_preprend) return <>about&nbsp;</>
+    if (days > 0) return `${pluralise(days, "day")} ago`
+    if (hours > 0) return `${pluralise(hours, "hour")} ago`
+    if (minutes > 0) return `${pluralise(minutes, "minute")} ago`
+    return `${pluralise(seconds, "second")} ago`
+}
+
+function pluralise(count: number, singular: string): string
+{
+    return `${count} ${singular}${count !== 1 ? "s" : ""}`
 }

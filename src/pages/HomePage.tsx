@@ -31,7 +31,7 @@ export function HomePage()
     }, [])
 
     const ids = data_component_ids_for_home_page?.ids
-    const data_components_for_home_page = !ids ? undefined : ids.map(id =>
+    const data_components_for_home_page = !ids ? undefined : [...ids, ...ids, ...ids, ...ids, ...ids, ...ids, ...ids, ...ids, ...ids, ...ids, ...ids].map(id =>
         data_component_by_id_and_maybe_version[id.to_str()]
     )
     .map(component => component?.component)
@@ -39,7 +39,7 @@ export function HomePage()
 
 
     return (
-        <div>
+        <div className="page-container">
             <h3>
                 Community made open source simulations, and “back of the envelope”
                 calculations, to help us to make better sense of our complex world.
