@@ -3,6 +3,7 @@ import type { IdAndMaybeVersion } from "core/data/id"
 import type { DataComponent } from "core/data/interface"
 import type { GetSupabase } from "core/supabase"
 
+import { update_data_component } from "../../../lib/core/src/data/write_to_db"
 import { GetAppState, RootAppState, SetAppState } from "../interface"
 import { AsyncDataComponent, DataComponentsState } from "./interface"
 
@@ -53,6 +54,8 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
                 return state
             })
 
+            attempt_to_update_data_component(data_component, set, get_supabase)
+
             return async_data_component!
         },
     }
@@ -88,8 +91,8 @@ function get_or_create_async_data_components(
                 }
                 actual_data_component_ids_to_load.push(id)
             }
-            // Allow it to retry if its status is load_error
-            else if (async_data_component.status === "load_error")
+            // Allow it to retry if its status is error
+            else if (async_data_component.status === "error")
             {
                 // If the data component was previously in an error state, reset it to loading
                 async_data_component.status = "loading"
@@ -133,7 +136,7 @@ async function load_data_components(
                 const entry = data_component_by_id_and_maybe_version[id.to_str()]
                 // type guard, should not happen
                 if (!entry) throw new Error(`Exception: No placeholder found for data component with ID ${id.to_str()}`)
-                entry.status = "load_error"
+                entry.status = "error"
                 entry.error = `${response.error}`
                 // Leave component as it was in case we were refreshing an existing component
                 // entry.component = null
@@ -262,7 +265,7 @@ async function request_data_components_for_home_page(
 
         if (response.error)
         {
-            data_component_ids_for_home_page.status = "load_error"
+            data_component_ids_for_home_page.status = "error"
             data_component_ids_for_home_page.error = `${response.error}`
         }
         else
@@ -278,6 +281,50 @@ async function request_data_components_for_home_page(
         }
 
         state.data_components.data_component_ids_for_home_page = data_component_ids_for_home_page
+        return state
+    })
+}
+
+
+async function attempt_to_update_data_component(
+    data_component: DataComponent,
+    set_state: SetAppState,
+    get_supabase: GetSupabase,
+)
+{
+    // Update the data component in the database
+    const response = await update_data_component(get_supabase, data_component)
+
+    set_state(state =>
+    {
+        const { data_component_by_id_and_maybe_version } = state.data_components
+        const id_str = data_component.id.to_str()
+        let async_data_component = data_component_by_id_and_maybe_version[id_str]
+
+        if (!async_data_component)
+        {
+            console.error(`No placeholder found for data component with ID ${id_str}`)
+
+            async_data_component = {
+                id: data_component.id,
+                component: data_component,
+                status: "saving",
+            }
+        }
+
+        if (response.error)
+        {
+            console.error("Error updating data component:", response.error)
+            async_data_component.status = "error"
+            async_data_component.error = `${response.error}`
+            return state
+        }
+
+        // If the update was successful, update the component in the store
+        async_data_component.status = "loaded"
+        async_data_component.component = response.data
+        async_data_component.error = undefined
+
         return state
     })
 }

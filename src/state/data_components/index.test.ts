@@ -170,7 +170,7 @@ describe("store.data_components", () =>
 
         // Test that when a data component requested by an id but supabase
         // call runs into an error, that the status is updated to "error".
-        it("should set status to 'load_error' when a data component is requested but error occured when calling supabase", async () =>
+        it("should set status to 'error' when a data component is requested but error occured when calling supabase", async () =>
         {
             set_up_store([{ error: new Error("Some kind of error") }])
 
@@ -179,7 +179,7 @@ describe("store.data_components", () =>
             await wait_for(0)
             const { data_components: data_components2 } = store.getState()
             expect(data_components2.request_data_component_error).to.be.instanceOf(Error, "request_data_component_error should be set to the error from the Supabase request")
-            expect(data_components2.data_component_by_id_and_maybe_version["-123"]!.status).equals("load_error", "Async data component status after the Supabase request resolves with an error")
+            expect(data_components2.data_component_by_id_and_maybe_version["-123"]!.status).equals("error", "Async data component status after the Supabase request resolves with an error")
             expect(Object.keys(data_components2.data_component_by_id_and_maybe_version)).to.deep.equals(["-123"], "Only the original id and not the full id of the data component should be in the store (we don't know the version yet because the request to load the latest component failed!)")
         })
 
@@ -194,7 +194,7 @@ describe("store.data_components", () =>
             data_components.request_data_component(new IdOnly(-123))
             await wait_for(0)
             const { data_components: data_components2 } = store.getState()
-            expect(data_components2.data_component_by_id_and_maybe_version["-123"]!.status).equals("load_error", "Async data component status after the Supabase request resolves with an error")
+            expect(data_components2.data_component_by_id_and_maybe_version["-123"]!.status).equals("error", "Async data component status after the Supabase request resolves with an error")
 
             // Retry the request
             data_components.request_data_component(new IdOnly(-123))

@@ -22,3 +22,18 @@
 {
     cursor: not-allowed;
 }
+
+
+.saving-modal
+{
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.saving-modal .buttons
+{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}

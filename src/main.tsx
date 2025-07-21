@@ -31,6 +31,11 @@ function App() {
                 // Define custom colors if needed
             },
             components: {
+                Modal: {
+                    defaultProps: {
+                        yOffset: 100, // Moves modal 100px from the top
+                    },
+                },
                 Tooltip: {
                     styles: {
                         tooltip: {

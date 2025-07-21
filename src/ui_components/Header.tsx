@@ -114,7 +114,7 @@ function LogInModal({ on_close }: { on_close: () => void })
                         set_link_requested(true)
                     }}
                 >
-                    Request log in magic link
+                    Request log in link
                 </Button>
                 : (
                     status === "logged_out__requesting_OTP_sign_in" ? <>Requesting login<Loading /></>

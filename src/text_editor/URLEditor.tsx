@@ -1,9 +1,9 @@
 import { Button, Modal } from "@mantine/core"
+import { Range } from "@tiptap/core"
 import { Selection } from "@tiptap/pm/state"
 import { useState } from "preact/hooks"
 import { JSX } from "preact/jsx-runtime"
 
-import { Range } from "@tiptap/core"
 import { TextEditorV1 } from "./TextEditorV1"
 import { is_valid_URL } from "./is_valid_URL"
 
@@ -45,7 +45,7 @@ export function URLEditor (props: URLEditorProps)
     return <InnerURLEditor
         initial_text={initial_text}
         initial_url={initial_url}
-        link_location={(!!initial_url) ? result.range : undefined}
+        link_location={initial_url ? result.range : undefined}
         on_close={on_close}
     />
 }
@@ -77,6 +77,7 @@ function find_first_link_from_selection(selection: Selection)
         found_a_link = true
 
         text = node.text || ""
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         url = node_is_a_link.attrs.href || ""
         from = pos
         to = pos + node.nodeSize

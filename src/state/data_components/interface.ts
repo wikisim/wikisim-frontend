@@ -2,9 +2,9 @@ import { IdAndMaybeVersion, IdAndVersion } from "core/data/id"
 import { DataComponent } from "core/data/interface"
 
 
-type BasicLoadingStatus = "loading" | "load_error" | "loaded"
+type BasicLoadingStatus = "loading" | "error" | "loaded"
 type LoadingStatus = BasicLoadingStatus | "not_found"
-type SavingStatus = "saving" | "saved" | "save_error"
+type SavingStatus = "saving" | "error" | "loaded"
 
 export interface AsyncDataComponent
 {
