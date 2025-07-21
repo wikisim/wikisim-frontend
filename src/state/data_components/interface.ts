@@ -2,8 +2,8 @@ import { IdAndMaybeVersion, IdAndVersion } from "core/data/id"
 import { DataComponent } from "core/data/interface"
 
 
-type BasicLoadingStatus = "loading" | "error" | "loaded"
-type LoadingStatus = "requested" | BasicLoadingStatus | "not_found"
+type BasicLoadingStatus = "loading" | "load_error" | "loaded"
+type LoadingStatus = BasicLoadingStatus | "not_found"
 export interface AsyncDataComponent
 {
     id: IdAndMaybeVersion
@@ -24,7 +24,7 @@ export interface AsyncDataComponentIdsForHomePage
 
 export interface DataComponentsState
 {
-    data_component_ids_to_load: IdAndMaybeVersion[]
+    // data_component_ids_to_load: IdAndMaybeVersion[]
     data_component_ids_for_home_page: AsyncDataComponentIdsForHomePage | undefined
     data_component_by_id_and_maybe_version: Record<string, AsyncDataComponent>
 

@@ -3,44 +3,24 @@ import type { IdAndMaybeVersion } from "core/data/id"
 import type { DataComponent } from "core/data/interface"
 import type { GetSupabase } from "core/supabase"
 
-import { wait_for } from "../../utils/wait_for"
 import { GetAppState, RootAppState, SetAppState } from "../interface"
-import { AppStore } from "../store"
-import { DataComponentsState } from "./interface"
+import { AsyncDataComponent, DataComponentsState } from "./interface"
 
 
 export function initial_state(set: SetAppState, get: GetAppState, get_supabase: GetSupabase): DataComponentsState
 {
     return {
-        data_component_ids_to_load: [],
         data_component_ids_for_home_page: undefined,
         data_component_by_id_and_maybe_version: {},
 
         request_data_component_error: undefined,
         request_data_component: (data_component_id: IdAndMaybeVersion) =>
         {
-            const { data_component_by_id_and_maybe_version } = get().data_components
-            const id_str = data_component_id.to_str()
-
-            let async_data_component = data_component_by_id_and_maybe_version[id_str]
-
+            const async_data_components = get_or_create_async_data_components([data_component_id], set, get_supabase)
+            const async_data_component = async_data_components[0]
             if (!async_data_component)
             {
-                // console .debug(`Data component with ID ${data_component_id} not found.  Requesting to load it.`)
-
-                async_data_component = {
-                    id: data_component_id,
-                    component: null,
-                    status: "requested",
-                }
-
-                set(state =>
-                {
-                    state.data_components.data_component_ids_to_load.push(data_component_id)
-                    state.data_components.data_component_by_id_and_maybe_version[id_str] = async_data_component!
-
-                    return state
-                })
+                throw new Error(`Exception, no async data component made for ID ${data_component_id.to_str()}`)
             }
 
             return async_data_component
@@ -95,7 +75,7 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
 
                 if (response.error)
                 {
-                    data_component_ids_for_home_page.status = "error"
+                    data_component_ids_for_home_page.status = "load_error"
                     data_component_ids_for_home_page.error = `${response.error}`
                 }
                 else
@@ -118,54 +98,71 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
 }
 
 
-export function subscriptions(core_store: AppStore, get_supabase: GetSupabase)
-{
-    core_store.subscribe((state: RootAppState) =>
-    {
-        load_requested_data_components(state, core_store.setState, get_supabase)
-    })
-}
 
-
-
-async function load_requested_data_components(
-    state: RootAppState,
+function get_or_create_async_data_components(
+    data_component_ids_to_load: IdAndMaybeVersion[],
     set_state: SetAppState,
     get_supabase: GetSupabase,
-)
+): AsyncDataComponent[]
 {
-    const { data_component_ids_to_load } = state.data_components
-    // If there are no components to request, return early, otherwise trigger a load
-    if (data_component_ids_to_load.length === 0) return
-    const id_numbers = data_component_ids_to_load.map(id => id.id)
+    let async_data_components: AsyncDataComponent[]
 
-    // Test pollution.  This wait allows us to check that the state is updated correctly.
-    await wait_for(0)
+    const actual_data_component_ids_to_load: IdAndMaybeVersion[] = []
 
     set_state(state =>
     {
         // Set the status of all requested data components to "loading"
-        data_component_ids_to_load.forEach(id =>
+        async_data_components = data_component_ids_to_load.map(id =>
         {
             const { data_component_by_id_and_maybe_version } = state.data_components
-            const entry = data_component_by_id_and_maybe_version[id.to_str()]
-            // type guard, should not happen
-            if (!entry) throw new Error(`Exception: No placeholder found for data component with ID ${id.to_str()}`)
-            entry.status = "loading"
-            // Leave component as it is.  Perhaps we might be refreshing an existing component?
-            // entry.component = null
+            const id_str = id.to_str()
+            let async_data_component = data_component_by_id_and_maybe_version[id_str]
+
+            if (!async_data_component)
+            {
+                async_data_component = {
+                    id,
+                    component: null,
+                    status: "loading",
+                }
+                actual_data_component_ids_to_load.push(id)
+            }
+            // Allow it to retry if its status is load_error
+            else if (async_data_component.status === "load_error")
+            {
+                // If the data component was previously in an error state, reset it to loading
+                async_data_component.status = "loading"
+                actual_data_component_ids_to_load.push(id)
+            }
+
+            data_component_by_id_and_maybe_version[id_str] = async_data_component
+
+            return async_data_component
         })
 
-        state.data_components.data_component_ids_to_load = []
         return state
     })
 
+    load_data_components(actual_data_component_ids_to_load, set_state, get_supabase)
+
+    return async_data_components!
+}
+
+
+async function load_data_components(
+    data_component_ids_to_load: IdAndMaybeVersion[],
+    set_state: SetAppState,
+    get_supabase: GetSupabase,
+)
+{
+    const id_numbers = data_component_ids_to_load.map(id => id.id)
+    if (id_numbers.length === 0) return
     // Request from supabase
     const response = await request_data_components(get_supabase, id_numbers)
 
-    if (response.error)
+    set_state(state =>
     {
-        set_state(state =>
+        if (response.error)
         {
             state.data_components.request_data_component_error = response.error
 
@@ -175,19 +172,18 @@ async function load_requested_data_components(
                 const entry = data_component_by_id_and_maybe_version[id.to_str()]
                 // type guard, should not happen
                 if (!entry) throw new Error(`Exception: No placeholder found for data component with ID ${id.to_str()}`)
-                entry.status = "error"
+                entry.status = "load_error"
                 entry.error = `${response.error}`
-                // entry.component = null // Leave component as it was in case we were refreshing an existing component
+                // Leave component as it was in case we were refreshing an existing component
+                // entry.component = null
             })
+        }
+        else
+        {
+            state = update_store_with_loaded_data_components(response.data, state, data_component_ids_to_load)
+        }
 
-            return state
-        })
-        return
-    }
-
-    set_state(state =>
-    {
-        return update_store_with_loaded_data_components(response.data, state, data_component_ids_to_load)
+        return state
     })
 }
 
@@ -212,6 +208,7 @@ export function update_store_with_loaded_data_components(
             id: instance.id,
             component: instance,
             status: "loaded",
+            // Clear any previous error
             error: undefined,
         }
 
@@ -224,6 +221,7 @@ export function update_store_with_loaded_data_components(
                 id: instance.id,
                 component: instance,
                 status: "loaded",
+                // Clear any previous error
                 error: undefined,
             }
         }

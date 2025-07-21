@@ -19,8 +19,8 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
 
     if (!component)
     {
-        if (status === "loading" || status === "requested") return <div>Loading data component...</div>
-        if (status === "error") return <div>Error loading data component.</div>
+        if (status === "loading") return <div>Loading data component...</div>
+        if (status === "load_error") return <div>Error loading data component.</div>
         return <div>Data component not found.</div>
     }
 
