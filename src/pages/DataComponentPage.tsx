@@ -2,7 +2,6 @@ import { useEffect, useState } from "preact/hooks"
 
 import { DataComponent } from "core/data/interface"
 
-import { h } from "preact"
 import HistoryIcon from "../assets/history.svg"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
@@ -53,9 +52,8 @@ function LastEditedBy({ component }: { component: DataComponent })
         {
             set_user_name(async_user.user!.name)
         }
-        else if (async_user.status === "error")
+        else if (async_user.status === "error" || async_user.status === "not_found")
         {
-            // console .error("Error fetching user name:", async_user.error)
             set_user_name("Unknown User")
         }
     }, [async_user])
@@ -64,18 +62,18 @@ function LastEditedBy({ component }: { component: DataComponent })
         <div className="last-edited-by">
             <img src={HistoryIcon} alt="History" width={20} height={20} style={{ verticalAlign: -5, margin: "0px 5px" }} />
 
-            Last edited by&nbsp;
-            <a href={user_link}>{user_name || <Loading />}</a>&nbsp;
-            {time_ago_or_date(created_at, true)}
             <a href={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY(component.id)}>
+                Last edited{" "}
+                {time_ago_or_date(created_at, true)}{" "}
                 {time_ago_or_date(created_at)}
-            </a>
+            </a>{" "}
+            by <a href={user_link}>{user_name || <Loading />}</a>
         </div>
     )
 }
 
 
-function time_ago_or_date(date: Date, text_to_preprend: boolean = false): string | h.JSX.Element
+function time_ago_or_date(date: Date, text_to_preprend: boolean = false): string
 {
     const now = new Date()
 
@@ -85,8 +83,8 @@ function time_ago_or_date(date: Date, text_to_preprend: boolean = false): string
     const hours = Math.floor(minutes / 60)
     const days = Math.floor(hours / 24)
 
-    if (days > 3) return text_to_preprend ? <>on&nbsp;</> : date.toDateString()
-    if (text_to_preprend) return <>about&nbsp;</>
+    if (days > 3) return text_to_preprend ? "on" : date.toDateString()
+    if (text_to_preprend) return "about"
     if (days > 0) return `${pluralise(days, "day")} ago`
     if (hours > 0) return `${pluralise(hours, "hour")} ago`
     if (minutes > 0) return `${pluralise(minutes, "minute")} ago`
