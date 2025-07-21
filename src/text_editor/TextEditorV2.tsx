@@ -1,6 +1,6 @@
 import { Selection } from "@tiptap/pm/state"
 import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react"
-import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks"
+import { useEffect, useMemo, useRef, useState } from "preact/hooks"
 
 import pub_sub from "../pub_sub"
 import "./TextEditorV2.css"
@@ -137,13 +137,13 @@ export function TextEditorV2({
     }, [editor, search_requester_id])
 
 
-    const get_editor_data = useCallback(() => {
-        return {
-            json: editor.getJSON(),
-            html: editor.getHTML(),
-            text: editor.getText(),
-        }
-    }, [editor])
+    // const get_editor_data = useCallback(() => {
+    //     return {
+    //         json: editor.getJSON(),
+    //         html: editor.getHTML(),
+    //         text: editor.getText(),
+    //     }
+    // }, [editor])
 
 
     const focused = editor.isFocused
