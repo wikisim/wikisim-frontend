@@ -13,6 +13,7 @@ export function DataComponentCard({ data_component }: { data_component: DataComp
 
     return (
         <div
+            // className="data-component-card tiptap-content"
             className="data-component-card"
             onClick={() => {
                 location.route(ROUTES.DATA_COMPONENT.VIEW(data_component.id))

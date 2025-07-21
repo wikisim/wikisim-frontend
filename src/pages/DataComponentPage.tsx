@@ -36,9 +36,11 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
                 />
             </div>
 
-            <h2 dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true) }} />
+            <div className="tiptap-content">
+                <h2 dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true) }} />
 
-            <div dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.description, false) }} />
+                <div dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.description, false) }} />
+            </div>
 
         </div>
         <LastEditedBy component={component} />
