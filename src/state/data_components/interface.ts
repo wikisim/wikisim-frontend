@@ -4,11 +4,13 @@ import { DataComponent } from "core/data/interface"
 
 type BasicLoadingStatus = "loading" | "load_error" | "loaded"
 type LoadingStatus = BasicLoadingStatus | "not_found"
+type SavingStatus = "saving" | "saved" | "save_error"
+
 export interface AsyncDataComponent
 {
     id: IdAndMaybeVersion
     component: DataComponent | null
-    status: LoadingStatus
+    status: LoadingStatus | SavingStatus
     error?: string
 }
 
@@ -31,4 +33,5 @@ export interface DataComponentsState
     request_data_component_error: Error | undefined
     request_data_component: (data_component_id: IdAndMaybeVersion) => AsyncDataComponent
     request_data_components_for_home_page: () => void
+    update_data_component: (data_component: DataComponent) => AsyncDataComponent
 }

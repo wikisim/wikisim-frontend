@@ -26,73 +26,34 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
             return async_data_component
         },
 
-        request_data_components_for_home_page: async () =>
+        request_data_components_for_home_page: () =>
         {
-            const { data_component_ids_for_home_page } = get().data_components
+            request_data_components_for_home_page(set, get, get_supabase)
+        },
 
-            if (data_component_ids_for_home_page?.status === "loading")
-            {
-                console. warn("Data components already loading, do not call request_data_components whilst loading")
-                return
-            }
-
-            set(state =>
-            {
-                if (!state.data_components.data_component_ids_for_home_page)
-                {
-                    // If we don't already have a data_component_ids_for_home_page, set one to loading
-                    state.data_components.data_component_ids_for_home_page = {
-                        status: "loading",
-                        fetched: new Date(),
-                        ids: undefined,
-                    }
-                }
-                else
-                {
-                    // Otherwise, reset it to loading but leave the ids as they were
-                    state.data_components.data_component_ids_for_home_page.status = "loading"
-                    state.data_components.data_component_ids_for_home_page.fetched = new Date()
-                    state.data_components.data_component_ids_for_home_page.error = undefined
-                }
-                return state
-            })
-
-            const response = await request_data_components(get_supabase, [], { page: 0, size: 10 })
+        update_data_component: (data_component: DataComponent) =>
+        {
+            const id_only = data_component.id.to_str_without_version()
+            let async_data_component: AsyncDataComponent
 
             set(state =>
             {
-                let { data_component_ids_for_home_page } = state.data_components
-                if (!data_component_ids_for_home_page)
-                {
-                    console.error("Data component IDs for home page not set before response received")
-                    data_component_ids_for_home_page = {
-                        status: "loading",
-                        error: undefined,
-                        fetched: new Date(),
-                        ids: undefined,
-                    }
+                const { data_component_by_id_and_maybe_version } = state.data_components
+
+                async_data_component = {
+                    id: data_component.id,
+                    component: data_component,
+                    status: "saving",
+                    // Clear any previous error
+                    error: undefined,
                 }
 
-                if (response.error)
-                {
-                    data_component_ids_for_home_page.status = "load_error"
-                    data_component_ids_for_home_page.error = `${response.error}`
-                }
-                else
-                {
-                    // Set the data components for the home page
-                    data_component_ids_for_home_page = {
-                        fetched: data_component_ids_for_home_page.fetched,
-                        status: "loaded",
-                        error: undefined,
-                        ids: response.data.map(component => component.id),
-                    }
-                    state = update_store_with_loaded_data_components(response.data, state)
-                }
+                data_component_by_id_and_maybe_version[id_only] = async_data_component
 
-                state.data_components.data_component_ids_for_home_page = data_component_ids_for_home_page
                 return state
             })
+
+            return async_data_component!
         },
     }
 }
@@ -244,4 +205,79 @@ export function update_store_with_loaded_data_components(
     })
 
     return state
+}
+
+
+
+async function request_data_components_for_home_page(
+    set_state: SetAppState,
+    get: GetAppState,
+    get_supabase: GetSupabase,
+)
+{
+    const { data_component_ids_for_home_page } = get().data_components
+
+    if (data_component_ids_for_home_page?.status === "loading")
+    {
+        console. warn("Data components already loading, do not call request_data_components whilst loading")
+        return
+    }
+
+    set_state(state =>
+    {
+        if (!state.data_components.data_component_ids_for_home_page)
+        {
+            // If we don't already have a data_component_ids_for_home_page, set one to loading
+            state.data_components.data_component_ids_for_home_page = {
+                status: "loading",
+                fetched: new Date(),
+                ids: undefined,
+            }
+        }
+        else
+        {
+            // Otherwise, reset it to loading but leave the ids as they were
+            state.data_components.data_component_ids_for_home_page.status = "loading"
+            state.data_components.data_component_ids_for_home_page.fetched = new Date()
+            state.data_components.data_component_ids_for_home_page.error = undefined
+        }
+        return state
+    })
+
+    const response = await request_data_components(get_supabase, [], { page: 0, size: 10 })
+
+    set_state(state =>
+    {
+        let { data_component_ids_for_home_page } = state.data_components
+        if (!data_component_ids_for_home_page)
+        {
+            console.error("Data component IDs for home page not set before response received")
+            data_component_ids_for_home_page = {
+                status: "loading",
+                error: undefined,
+                fetched: new Date(),
+                ids: undefined,
+            }
+        }
+
+        if (response.error)
+        {
+            data_component_ids_for_home_page.status = "load_error"
+            data_component_ids_for_home_page.error = `${response.error}`
+        }
+        else
+        {
+            // Set the data components for the home page
+            data_component_ids_for_home_page = {
+                fetched: data_component_ids_for_home_page.fetched,
+                status: "loaded",
+                error: undefined,
+                ids: response.data.map(component => component.id),
+            }
+            state = update_store_with_loaded_data_components(response.data, state)
+        }
+
+        state.data_components.data_component_ids_for_home_page = data_component_ids_for_home_page
+        return state
+    })
 }

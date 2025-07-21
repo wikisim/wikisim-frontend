@@ -2,7 +2,9 @@ import { useEffect, useState } from "preact/hooks"
 
 import { DataComponent } from "core/data/interface"
 
+import { useLocation } from "preact-iso"
 import HistoryIcon from "../assets/history.svg"
+import EditButton from "../buttons/EditButton"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
@@ -13,6 +15,7 @@ import "./DataComponentPage.css"
 
 export function DataComponentPage(props: { data_component_id: string, query: Record<string, string> })
 {
+    const location = useLocation()
     const state = app_store()
     const data_component = get_async_data_component(state, props.data_component_id)
     const { component, status } = data_component
@@ -26,6 +29,13 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
 
     return <>
         <div className="page-container">
+            <div style={{ float: "right", margin: "10px" }}>
+                <EditButton
+                    editing={false}
+                    set_editing={() => location.route(ROUTES.DATA_COMPONENT.EDIT(component.id))}
+                />
+            </div>
+
             <h2 dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true) }} />
 
             <div dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.description, false) }} />

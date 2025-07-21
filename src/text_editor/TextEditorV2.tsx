@@ -13,7 +13,7 @@ interface TextEditorV2 {
     initial_content?: string
     single_line?: boolean
     auto_focus?: boolean
-    on_update?: (json: any, html: string) => void
+    on_update?: (html: string, json: any) => void
     label?: string
 }
 
@@ -22,7 +22,7 @@ export function TextEditorV2({
     initial_content = "",
     single_line = false,
     auto_focus = false,
-    on_update: onUpdate,
+    on_update,
     label = "Start typing..."
 }: TextEditorV2) {
     const search_requester_id = useMemo(() =>
@@ -35,6 +35,7 @@ export function TextEditorV2({
 
     const editor = useEditor({
         extensions: get_tiptap_extensions(single_line),
+        enableContentCheck: true,
         content: initial_content,
         autofocus: auto_focus,
         editorProps: {
@@ -84,7 +85,7 @@ export function TextEditorV2({
         onUpdate: ({ editor }) => {
             const json = editor.getJSON()
             const html = editor.getHTML()
-            onUpdate?.(json, html)
+            on_update?.(html, json)
         },
     })
 
@@ -205,7 +206,7 @@ export function TextEditorV2({
 
             <ContextMenu editor={editor} set_edit_url_enabled={set_edit_url_enabled} />
 
-            <div className="editor-toolbar">
+            {/* <div className="editor-toolbar">
                 <button
                     disabled={!editable}
                     onClick={() => editor.chain().focus().toggleBold().run()}
@@ -248,7 +249,7 @@ export function TextEditorV2({
                 <button onClick={() => console.log("Editor data:", get_editor_data())}>
                     Get JSON
                 </button>
-            </div>
+            </div> */}
         </div>
     )
 }

@@ -5,17 +5,28 @@ import IconFileUpload from "@tabler/icons-react/dist/esm/icons/IconFileUpload"
 import IconPencil from "@tabler/icons-react/dist/esm/icons/IconPencil"
 
 
-export default function EditButton(props: { editing: boolean, set_editing: (editing: boolean) => void })
+interface Props
+{
+    disabled?: boolean | string
+    editing: boolean
+    set_editing: (editing: boolean) => void
+}
+
+export default function EditButton(props: Props)
 {
     const { editing, set_editing } = props
+    const label = (
+        typeof props.disabled === "string" ? props.disabled
+        : editing ? "Save Version" : "Edit"
+    )
 
     return (
-        <Tooltip label={editing ? "Save Version" : "Edit"}>
+        <Tooltip label={label} position="bottom">
             <ActionIcon
+                disabled={!!props.disabled}
                 onClick={() => set_editing(!editing)}
                 variant="subtle"
                 size="lg"
-                color="blue"
             >
                 {editing ? <IconFileUpload /> : <IconPencil />}
             </ActionIcon>
