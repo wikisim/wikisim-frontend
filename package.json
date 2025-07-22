@@ -9,7 +9,7 @@
         "preview": "vite preview",
         "test": "mocha --require src/test/setup.js",
         "check_compile": "npx tsc --noEmit",
-        "lint": "eslint . --ext .ts,.tsx",
+        "lint": "eslint",
         "check": "pnpm run test && pnpm run check_compile && pnpm run lint"
     },
     "dependencies": {
