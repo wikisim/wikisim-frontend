@@ -14,7 +14,7 @@ export const ROUTES = {
                 : id.to_str()
             return `/wiki/${path}`
         },
-        EDIT: (id: IdAndVersion | IdOnly | number | ":data_component_id") =>
+        EDIT: (id: IdOnly | number | ":data_component_id") =>
         {
             const path = typeof id === "string" ? id
                 : typeof id === "number" ? id

@@ -38,7 +38,7 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
     {
         return <div className="page-container">
             <p>Can only edit latest version of component.  Can not edit component with version in ID.</p>
-            <p>Use the <a href={ROUTES.DATA_COMPONENT.EDIT(parsed_id)}>edit page</a> to edit the latest version of this component.</p>
+            <p>Use the <a href={ROUTES.DATA_COMPONENT.EDIT(parsed_id.as_IdOnly())}>edit page</a> to edit the latest version of this component.</p>
         </div>
     }
     else if (!component || status === "loading")

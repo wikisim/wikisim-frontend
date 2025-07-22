@@ -32,7 +32,7 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
             <div style={{ float: "right", margin: "10px" }}>
                 <EditButton
                     editing={false}
-                    set_editing={() => location.route(ROUTES.DATA_COMPONENT.EDIT(component.id))}
+                    set_editing={() => location.route(ROUTES.DATA_COMPONENT.EDIT(component.id.as_IdOnly()))}
                 />
             </div>
 
