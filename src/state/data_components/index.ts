@@ -15,9 +15,9 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
         data_component_by_id_and_maybe_version: {},
 
         request_data_component_error: undefined,
-        request_data_component: (data_component_id: IdAndMaybeVersion, force_reload?: boolean) =>
+        request_data_component: (data_component_id: IdAndMaybeVersion, force_refresh?: boolean) =>
         {
-            const async_data_components = get_or_create_async_data_components([data_component_id], set, get_supabase, force_reload)
+            const async_data_components = get_or_create_async_data_components([data_component_id], set, get_supabase, force_refresh)
             const async_data_component = async_data_components[0]
             if (!async_data_component)
             {
@@ -67,7 +67,7 @@ function get_or_create_async_data_components(
     data_component_ids_to_load: IdAndMaybeVersion[],
     set_state: SetAppState,
     get_supabase: GetSupabase,
-    force_reload?: boolean,
+    force_refresh?: boolean,
 ): AsyncDataComponent[]
 {
     let async_data_components: AsyncDataComponent[]
@@ -115,9 +115,16 @@ function get_or_create_async_data_components(
                 async_data_component.status = "loading"
                 add_id(id)
             }
-            else if (async_data_component.status === "not_found" && force_reload)
+            else if (async_data_component.status === "not_found" && force_refresh)
             {
-                // If the data component was not found, and force_reload was true then try to load it again
+                // If the data component was not found, and force_refresh was true then try to load it again
+                async_data_component.status = "loading"
+                add_id(id)
+            }
+            // This allows us to refresh a data component to check if there is a
+            // newer version of it available.
+            else if (async_data_component.status === "loaded" && force_refresh && id instanceof IdOnly)
+            {
                 async_data_component.status = "loading"
                 add_id(id)
             }
@@ -171,7 +178,7 @@ async function load_data_components(
         }
         else
         {
-            state = update_store_with_loaded_data_components(response.data, state, data_component_ids_to_load)
+            update_store_with_loaded_data_components(response.data, state, data_component_ids_to_load)
         }
 
         return state
@@ -183,7 +190,7 @@ export function update_store_with_loaded_data_components(
     data: DataComponent[],
     state: RootAppState,
     expected_ids: IdAndMaybeVersion[] = [],
-): RootAppState
+): void
 {
     const expected_ids_to_load: Set<string> = new Set(expected_ids.map(id => id.to_str()))
 
@@ -233,8 +240,6 @@ export function update_store_with_loaded_data_components(
         entry.status = "not_found"
         entry.component = null
     })
-
-    return state
 }
 
 
@@ -304,7 +309,7 @@ async function request_data_components_for_home_page(
                 error: undefined,
                 ids: response.data.map(component => component.id),
             }
-            state = update_store_with_loaded_data_components(response.data, state)
+            update_store_with_loaded_data_components(response.data, state)
         }
 
         state.data_components.data_component_ids_for_home_page = data_component_ids_for_home_page

@@ -31,7 +31,7 @@ export interface DataComponentsState
     data_component_by_id_and_maybe_version: Record<string, AsyncDataComponent>
 
     request_data_component_error: Error | undefined
-    request_data_component: (data_component_id: IdAndMaybeVersion, force_reload?: boolean) => AsyncDataComponent
+    request_data_component: (data_component_id: IdAndMaybeVersion, force_refresh?: boolean) => AsyncDataComponent
     request_data_components_for_home_page: () => void
     update_data_component: (data_component: DataComponent) => AsyncDataComponent
 }

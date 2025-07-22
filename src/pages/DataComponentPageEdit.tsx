@@ -1,10 +1,12 @@
-import { useEffect, useState } from "preact/hooks"
+import { Button, Checkbox, Modal } from "@mantine/core"
+import { useEffect, useMemo, useState } from "preact/hooks"
 
+import { IdAndVersion, parse_id } from "core/data/id"
 import { DataComponent } from "core/data/interface"
 import { changes_made } from "core/data/modify"
 
-import { Button, Checkbox, Modal } from "@mantine/core"
 import EditButton from "../buttons/EditButton"
+import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
 import { TextEditorV2 } from "../text_editor/TextEditorV2"
@@ -14,11 +16,38 @@ import "./DataComponentPageEdit.css"
 
 export function DataComponentPageEdit(props: { data_component_id: string, query: Record<string, string> })
 {
-    const state = app_store()
-    const async_data_component = get_async_data_component(state, props.data_component_id)
+    const state1 = app_store()
+    useMemo(() =>
+    {
+        // In case the user has an older version of the data component when they
+        // open the edit page, we want to ensure that the latest version is loaded.
+        // This is done by calling `get_async_data_component` with the `force_refresh`
+        // flag set to true.
+        // We only want to call this with the force_refresh flag set to true once.
+        // We call it from a useMemo instead of useEffect to ensure it runs
+        // immediately when the component mounts.
+        // This is because we want to ensure that the async data component is
+        // available for the rest of the component to use.
+        //
+        // Note that you can not move the call to `const state1 = app_store()`
+        // into the useMemo, as it makes the other hooks not work properly.
+        get_async_data_component(state1, props.data_component_id, true)
+    }, [props.data_component_id])
+
+    const state2 = app_store()
+    const async_data_component = state2.data_components.data_component_by_id_and_maybe_version[props.data_component_id]!
     const { component, status } = async_data_component
 
-    if (!component)
+
+    const parsed_id = parse_id(props.data_component_id)
+    if (parsed_id instanceof IdAndVersion)
+    {
+        return <div className="page-container">
+            <p>Can only edit latest version of component.  Can not edit component with version in ID.</p>
+            <p>Use the <a href={ROUTES.DATA_COMPONENT.EDIT(parsed_id)}>edit page</a> to edit the latest version of this component.</p>
+        </div>
+    }
+    else if (!component || status === "loading")
     {
         return <div className="page-container">
             {status === "loading" ? <div>Loading data component<Loading/></div>
@@ -81,7 +110,7 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
                 opened={show_saving_modal}
                 draft_data_component={draft_component}
                 update_draft_data_component={set_draft_component}
-                set_show_saving_modal={set_show_saving_modal}
+                hide_saving_modal={() => set_show_saving_modal(false)}
             />
         </div>
     )
@@ -92,7 +121,7 @@ function SavingModal(props: {
     opened: boolean,
     draft_data_component: DataComponent,
     update_draft_data_component: (a: Partial<DataComponent>, compare_meta_fields?: boolean) => void,
-    set_show_saving_modal: (show: boolean) => void
+    hide_saving_modal: () => void
 }) {
     const state = app_store()
     const current_async_component = get_async_data_component(state, props.draft_data_component.id.id.toString())
@@ -118,7 +147,7 @@ function SavingModal(props: {
 
         if (current_async_component.status === "loaded" && current_version > props.draft_data_component.id.version)
         {
-            props.set_show_saving_modal(false)
+            props.hide_saving_modal()
             set_is_saving(false)
         }
         else if (current_async_component.status === "error")
@@ -140,7 +169,7 @@ function SavingModal(props: {
     return (
         <Modal
             opened={props.opened}
-            onClose={() => props.set_show_saving_modal(false)}
+            onClose={() => props.hide_saving_modal()}
             size="lg"
             title={<h2>Save Changes</h2>}
         >
@@ -179,7 +208,7 @@ function SavingModal(props: {
 
                     <Button
                         disabled={is_saving}
-                        onClick={() => props.set_show_saving_modal(false)}
+                        onClick={() => props.hide_saving_modal()}
                         variant="outline"
                     >
                         Cancel
