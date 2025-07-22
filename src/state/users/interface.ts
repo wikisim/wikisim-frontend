@@ -14,7 +14,7 @@ export interface AsyncUser
     id: string
     user: User | null
     status: LoadingStatus
-    error?: string
+    error?: Error
 }
 
 export interface UsersState

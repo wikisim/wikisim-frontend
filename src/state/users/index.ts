@@ -91,7 +91,7 @@ async function load_requested_users(
                 // type guard, should not happen
                 if (!entry) throw new Error(`Exception: No placeholder found for user with ID ${id}`)
                 entry.status = "error"
-                entry.error = `${response.error}`
+                entry.error = response.error
                 // entry.user = null // Leave user as it was in case we were refreshing an existing user
             })
 

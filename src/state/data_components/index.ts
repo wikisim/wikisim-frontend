@@ -164,7 +164,7 @@ async function load_data_components(
                 // type guard, should not happen
                 if (!entry) throw new Error(`Exception: No placeholder found for data component with ID ${id.to_str()}`)
                 entry.status = "error"
-                entry.error = `${response.error}`
+                entry.error = response.error
                 // Leave component as it was in case we were refreshing an existing component
                 // entry.component = null
             })
@@ -293,7 +293,7 @@ async function request_data_components_for_home_page(
         if (response.error)
         {
             data_component_ids_for_home_page.status = "error"
-            data_component_ids_for_home_page.error = `${response.error}`
+            data_component_ids_for_home_page.error = response.error
         }
         else
         {
@@ -325,7 +325,7 @@ async function attempt_to_update_data_component(
     set_state(state =>
     {
         const { data_component_by_id_and_maybe_version } = state.data_components
-        const id_str = data_component.id.to_str()
+        const id_str = data_component.id.to_str_without_version()
         let async_data_component = data_component_by_id_and_maybe_version[id_str]
 
         if (!async_data_component)
@@ -343,7 +343,7 @@ async function attempt_to_update_data_component(
         {
             console.error("Error updating data component:", response.error)
             async_data_component.status = "error"
-            async_data_component.error = `${response.error}`
+            async_data_component.error = response.error
             return state
         }
 

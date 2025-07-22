@@ -11,14 +11,14 @@ export interface AsyncDataComponent
     id: IdAndMaybeVersion
     component: DataComponent | null
     status: LoadingStatus | SavingStatus
-    error?: string
+    error?: Error
 }
 
 export interface AsyncDataComponentIdsForHomePage
 {
     fetched: Date
     status: BasicLoadingStatus
-    error?: string
+    error?: Error
     ids?: IdAndVersion[]
     // newer_ids?: IdAndVersion[]
 }
