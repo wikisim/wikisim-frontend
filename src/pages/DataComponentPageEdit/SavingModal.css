@@ -1,0 +1,20 @@
+
+.saving-modal
+{
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.saving-modal .buttons
+{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.saving-modal .error-message
+{
+    color: red;
+    font-weight: bold;
+}
