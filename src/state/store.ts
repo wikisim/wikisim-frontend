@@ -4,6 +4,8 @@ import { immer } from "zustand/middleware/immer"
 import { CoreStoreDependencies, get_new_core_store } from "core/state/store"
 import { get_supabase } from "core/supabase"
 
+import { deep_copy } from "../utils/deep_copy"
+import { deep_freeze } from "../utils/deep_freeze"
 import * as data_components from "./data_components"
 import { RootAppState } from "./interface"
 import * as users from "./users"
@@ -44,6 +46,14 @@ export const get_new_app_store = (dependencies?: AppStoreDependencies) =>
         app_store.setState({
             user_auth_session: core_state.user_auth_session,
         })
+    })
+
+    // Expose the store state for easier debugging
+    app_store.subscribe((state, _previous_state) =>
+    {
+        // Don't run this in a non-browser environment
+        if (typeof window === "undefined") return
+        (window as any).debug_state = deep_freeze(deep_copy(state))
     })
 
     return app_store
