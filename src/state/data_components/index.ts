@@ -178,7 +178,7 @@ async function load_data_components(
         }
         else
         {
-            update_store_with_loaded_data_components(response.data, state, data_component_ids_to_load)
+            mutate_store_state_with_loaded_data_components(response.data, state, data_component_ids_to_load)
         }
 
         return state
@@ -186,7 +186,7 @@ async function load_data_components(
 }
 
 
-export function update_store_with_loaded_data_components(
+export function mutate_store_state_with_loaded_data_components(
     data: DataComponent[],
     state: RootAppState,
     expected_ids: IdAndMaybeVersion[] = [],
@@ -309,7 +309,7 @@ async function request_data_components_for_home_page(
                 error: undefined,
                 ids: response.data.map(component => component.id),
             }
-            update_store_with_loaded_data_components(response.data, state)
+            mutate_store_state_with_loaded_data_components(response.data, state)
         }
 
         state.data_components.data_component_ids_for_home_page = data_component_ids_for_home_page

@@ -3,7 +3,7 @@ import sinon from "sinon"
 
 import { create_mocked_supabase } from "core/test/mock_supabase_and_session"
 
-import { update_store_with_loaded_data_components } from "."
+import { mutate_store_state_with_loaded_data_components } from "."
 import { IdAndVersion, IdOnly } from "../../../lib/core/src/data/id"
 import { new_data_component } from "../../../lib/core/src/data/modify"
 import { RootAppState } from "../interface"
@@ -45,7 +45,11 @@ describe("get_async_data_component", () =>
     it("should return the data component if it is already loaded", () =>
     {
         const data_component_1 = new_data_component({ id: new IdAndVersion(-123, 1) })
-        store.setState(state => update_store_with_loaded_data_components([data_component_1], state))
+        store.setState(state =>
+        {
+            mutate_store_state_with_loaded_data_components([data_component_1], state)
+            return state
+        })
 
         const result = get_async_data_component(store.getState(), "-123")
         expect(result.status).equals("loaded")
@@ -57,7 +61,11 @@ describe("get_async_data_component", () =>
     it("should request the data component again if it is already loaded but force_refresh is true", () =>
     {
         const data_component_1 = new_data_component({ id: new IdAndVersion(-123, 1) })
-        store.setState(state => update_store_with_loaded_data_components([data_component_1], state))
+        store.setState(state =>
+        {
+            mutate_store_state_with_loaded_data_components([data_component_1], state)
+            return state
+        })
 
         const force_refresh = true
         get_async_data_component(store.getState(), "-123", force_refresh)

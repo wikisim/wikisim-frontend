@@ -9,7 +9,7 @@ import { create_mock_db_data_component_row } from "core/test/mock_db_data_compon
 import { create_mocked_supabase, MockedSupabase } from "core/test/mock_supabase_and_session"
 import { deep_equals } from "core/utils/deep_equals"
 
-import { update_store_with_loaded_data_components } from "."
+import { mutate_store_state_with_loaded_data_components } from "."
 import "../../monkey_patch"
 import { wait_for } from "../../utils/wait_for"
 import { AppStore, get_new_app_store } from "../store"
@@ -28,7 +28,7 @@ describe("update_store_with_loaded_data_components", () =>
 
         expect(data_components.data_component_by_id_and_maybe_version).to.deep.equal({}, "Initial state should have no data components loaded")
 
-        store.setState(state => update_store_with_loaded_data_components([data_component_1, data_component_2], state))
+        store.setState(state => mutate_store_state_with_loaded_data_components([data_component_1, data_component_2], state))
 
         return { store, data_component_1, data_component_2 }
     }
@@ -49,7 +49,7 @@ describe("update_store_with_loaded_data_components", () =>
         const { store, data_component_2: data_component_2v1 } = setup_test_1()
         const data_component_2v2 = new_data_component({ id: new IdAndVersion(-2, 2) })
 
-        store.setState(state => update_store_with_loaded_data_components([data_component_2v2], state))
+        store.setState(state => mutate_store_state_with_loaded_data_components([data_component_2v2], state))
 
         const { data_components: updated_data_components } = store.getState()
         expect(updated_data_components.data_component_by_id_and_maybe_version["-2"]!.component).to.deep.equal(data_component_2v2)
@@ -72,7 +72,7 @@ describe("update_store_with_loaded_data_components", () =>
             return state
         })
 
-        store.setState(state => update_store_with_loaded_data_components([data_component_2v1], state))
+        store.setState(state => mutate_store_state_with_loaded_data_components([data_component_2v1], state))
 
         const { data_components: updated_data_components } = store.getState()
         expect(updated_data_components.data_component_by_id_and_maybe_version["-2"]!.component).to.deep.equal(data_component_2v1)
