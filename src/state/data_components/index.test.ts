@@ -111,7 +111,7 @@ describe("store.data_components", () =>
 
             const async_data_component = data_components.request_data_component(new IdOnly(123))
             expect(async_data_component).to.deep.equal({
-                id: { id: 123 },
+                id: new IdOnly(123),
                 component: null,
                 status: "loading",
             })
