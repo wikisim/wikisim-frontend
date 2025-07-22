@@ -7,13 +7,19 @@ export const ROUTES = {
     {
         VIEW_ALL: () => "/wiki/search",
         NEW: () => "/wiki/new",
-        VIEW: (id: IdAndVersion | IdOnly | ":data_component_id") =>
+        VIEW: (id: IdAndVersion | IdOnly | number | ":data_component_id") =>
         {
-            return `/wiki/${typeof id === "string" ? id : id.to_str()}`
+            const path = typeof id === "string" ? id
+                : typeof id === "number" ? id
+                : id.to_str()
+            return `/wiki/${path}`
         },
-        EDIT: (id: IdAndVersion | IdOnly | ":data_component_id") =>
+        EDIT: (id: IdAndVersion | IdOnly | number | ":data_component_id") =>
         {
-            return `/wiki/${typeof id === "string" ? id : id.to_str_without_version()}/edit`
+            const path = typeof id === "string" ? id
+                : typeof id === "number" ? id
+                : id.to_str_without_version()
+            return `/wiki/${path}/edit`
         },
         VIEW_VERSION_HISTORY: (id: IdAndVersion | IdOnly | ":data_component_id") =>
         {
