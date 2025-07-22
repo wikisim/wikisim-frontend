@@ -21,3 +21,11 @@ version of typescript:
 3. type "TypeScript: Select TypeScript Version"
 4. select "Use Workspace Version"
 5. restart the typescript server (Cmd+Shift+P, "TypeScript: Restart TS Server")
+
+### Pre-push Hook
+
+If you want to ensure your tests, typescript compilation, and linting pass before pushing, you can set up a pre-push hook:
+```bash
+ln -s $(pwd)/scripts/pre-push.sh .git/hooks/pre-push
+chmod +x .git/hooks/pre-push
+```

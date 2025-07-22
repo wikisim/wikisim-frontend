@@ -44,10 +44,7 @@ jobs:
         run: echo Test
 
       - name: Run Tests
-        run: pnpm test
-
-      - name: Compile TypeScript
-        run: npx tsc --noEmit
+        run: pnpm run test
 
       - name: ___________________________ BUILD ___________________________
         run: echo Build
