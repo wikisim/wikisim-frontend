@@ -1,6 +1,6 @@
 
 // https://stackoverflow.com/a/64522938/539490
-export {}
+export { }
 
 declare global {
     interface Array<T> {
@@ -12,6 +12,7 @@ declare global {
 
 
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (!Array.prototype.first) {
     Object.defineProperty(Array.prototype, "first", {
         enumerable: false,
@@ -25,6 +26,7 @@ if (!Array.prototype.first) {
 
 
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (!Array.prototype.last) {
     Object.defineProperty(Array.prototype, "last", {
         enumerable: false,
@@ -38,6 +40,7 @@ if (!Array.prototype.last) {
 
 
 
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 if (!Array.prototype.find_last) {
     Object.defineProperty(Array.prototype, "find_last", {
         enumerable: false,

@@ -1,5 +1,5 @@
-import { request_data_components } from "core/data/fetch_from_db"
-import type { IdAndMaybeVersion } from "core/data/id"
+import { request_archived_data_components, request_data_components } from "core/data/fetch_from_db"
+import { all_are_id_and_version, all_are_id_only, IdAndMaybeVersion, IdAndVersion, IdOnly } from "core/data/id"
 import type { DataComponent } from "core/data/interface"
 import type { GetSupabase } from "core/supabase"
 
@@ -15,9 +15,9 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
         data_component_by_id_and_maybe_version: {},
 
         request_data_component_error: undefined,
-        request_data_component: (data_component_id: IdAndMaybeVersion) =>
+        request_data_component: (data_component_id: IdAndMaybeVersion, force_reload?: boolean) =>
         {
-            const async_data_components = get_or_create_async_data_components([data_component_id], set, get_supabase)
+            const async_data_components = get_or_create_async_data_components([data_component_id], set, get_supabase, force_reload)
             const async_data_component = async_data_components[0]
             if (!async_data_component)
             {
@@ -67,11 +67,28 @@ function get_or_create_async_data_components(
     data_component_ids_to_load: IdAndMaybeVersion[],
     set_state: SetAppState,
     get_supabase: GetSupabase,
+    force_reload?: boolean,
 ): AsyncDataComponent[]
 {
     let async_data_components: AsyncDataComponent[]
 
-    const actual_data_component_ids_to_load: IdAndMaybeVersion[] = []
+    const actual_data_component_only_ids_to_load: IdOnly[] = []
+    const actual_data_component_id_and_versions_to_load: IdAndVersion[] = []
+    function add_id(id: IdAndMaybeVersion)
+    {
+        if (id instanceof IdOnly)
+        {
+            actual_data_component_only_ids_to_load.push(id)
+        }
+        else if (id instanceof IdAndVersion)
+        {
+            actual_data_component_id_and_versions_to_load.push(id)
+        }
+        else
+        {
+            throw new Error(`Unknown ID type: ${id}`)
+        }
+    }
 
     set_state(state =>
     {
@@ -89,14 +106,20 @@ function get_or_create_async_data_components(
                     component: null,
                     status: "loading",
                 }
-                actual_data_component_ids_to_load.push(id)
+                add_id(id)
             }
             // Allow it to retry if its status is error
             else if (async_data_component.status === "error")
             {
                 // If the data component was previously in an error state, reset it to loading
                 async_data_component.status = "loading"
-                actual_data_component_ids_to_load.push(id)
+                add_id(id)
+            }
+            else if (async_data_component.status === "not_found" && force_reload)
+            {
+                // If the data component was not found, and force_reload was true then try to load it again
+                async_data_component.status = "loading"
+                add_id(id)
             }
 
             data_component_by_id_and_maybe_version[id_str] = async_data_component
@@ -107,22 +130,26 @@ function get_or_create_async_data_components(
         return state
     })
 
-    load_data_components(actual_data_component_ids_to_load, set_state, get_supabase)
+    load_data_components(actual_data_component_only_ids_to_load, set_state, get_supabase)
+    load_data_components(actual_data_component_id_and_versions_to_load, set_state, get_supabase)
 
     return async_data_components!
 }
 
 
 async function load_data_components(
-    data_component_ids_to_load: IdAndMaybeVersion[],
+    data_component_ids_to_load: (IdOnly[]) | (IdAndVersion[]),
     set_state: SetAppState,
     get_supabase: GetSupabase,
 )
 {
-    const id_numbers = data_component_ids_to_load.map(id => id.id)
-    if (id_numbers.length === 0) return
+    if (data_component_ids_to_load.length === 0) return
     // Request from supabase
-    const response = await request_data_components(get_supabase, id_numbers)
+    const response = all_are_id_only(data_component_ids_to_load)
+        ? await request_data_components(get_supabase, {}, data_component_ids_to_load)
+        : all_are_id_and_version(data_component_ids_to_load)
+            ? await request_archived_data_components(get_supabase, data_component_ids_to_load)
+            : (() => { throw new Error(`Invalid type, must be all IdOnly or all IdAndVersion: ${data_component_ids_to_load}`) })()
 
     set_state(state =>
     {
@@ -247,7 +274,7 @@ async function request_data_components_for_home_page(
         return state
     })
 
-    const response = await request_data_components(get_supabase, [], { page: 0, size: 10 })
+    const response = await request_data_components(get_supabase, { page: 0, size: 10 })
 
     set_state(state =>
     {
