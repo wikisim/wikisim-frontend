@@ -4,6 +4,7 @@ import { DataComponent } from "core/data/interface"
 import { changes_made } from "core/data/modify"
 
 import EditButton from "../../buttons/EditButton"
+import { AsyncDataComponentStatus } from "../../state/data_components/interface"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import "./DataComponentEditForm.css"
 import { SavingModal } from "./SavingModal"
@@ -11,11 +12,12 @@ import { SavingModal } from "./SavingModal"
 
 interface DataComponentEditFormProps
 {
+    async_status: AsyncDataComponentStatus
     data_component: DataComponent
 }
 export function DataComponentEditForm(props: DataComponentEditFormProps)
 {
-    const { data_component: component } = props
+    const { async_status: status, data_component: component } = props
 
     const [show_saving_modal, set_show_saving_modal] = useState(false)
     const [draft_component, _set_draft_component] = useState<DataComponent>({

@@ -211,7 +211,7 @@ export function update_store_with_loaded_data_components(
         }
 
         const id_only_instance = data_component_by_id_and_maybe_version[id_only]?.component
-        if (!id_only_instance || id_only_instance.id.version < instance.id.version)
+        if (!id_only_instance || id_only_instance.id.version <= instance.id.version)
         {
             // If the ID without version is not present, or the version is earlier
             // than the one we just loaded, the upsert it to our local store

@@ -6,11 +6,12 @@ type BasicLoadingStatus = "loading" | "error" | "loaded"
 type LoadingStatus = BasicLoadingStatus | "not_found"
 type SavingStatus = "saving" | "error" | "loaded"
 
+export type AsyncDataComponentStatus = LoadingStatus | SavingStatus
 export interface AsyncDataComponent
 {
     id: IdAndMaybeVersion
     component: DataComponent | null
-    status: LoadingStatus | SavingStatus
+    status: AsyncDataComponentStatus
     error?: Error
 }
 

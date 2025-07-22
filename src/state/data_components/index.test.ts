@@ -44,7 +44,7 @@ describe("update_store_with_loaded_data_components", () =>
         expect(updated_data_components.data_component_by_id_and_maybe_version["-2v1"]!.component).to.deep.equal(data_component_2)
     })
 
-    it("should modify id with newer version", () =>
+    it("should modify IdOnly with newer version", () =>
     {
         const { store, data_component_2: data_component_2v1 } = setup_test_1()
         const data_component_2v2 = new_data_component({ id: new IdAndVersion(-2, 2) })
@@ -55,6 +55,30 @@ describe("update_store_with_loaded_data_components", () =>
         expect(updated_data_components.data_component_by_id_and_maybe_version["-2"]!.component).to.deep.equal(data_component_2v2)
         expect(updated_data_components.data_component_by_id_and_maybe_version["-2v1"]!.component).to.deep.equal(data_component_2v1)
         expect(updated_data_components.data_component_by_id_and_maybe_version["-2v2"]!.component).to.deep.equal(data_component_2v2)
+    })
+
+    // This test ensures that when a force_refresh is used and the latest
+    // version has not increased i.e. it is the same as the current version
+    // the app has locally, then this test checks that the store is updated to
+    // correctly reflect the "loaded" status of the data component.
+    it("should update IdOnly with same version", () =>
+    {
+        const { store, data_component_2: data_component_2v1 } = setup_test_1()
+
+        store.setState(state =>
+        {
+            state.data_components.data_component_by_id_and_maybe_version["-2"]!.status = "loading"
+            state.data_components.data_component_by_id_and_maybe_version["-2v1"]!.status = "loading"
+            return state
+        })
+
+        store.setState(state => update_store_with_loaded_data_components([data_component_2v1], state))
+
+        const { data_components: updated_data_components } = store.getState()
+        expect(updated_data_components.data_component_by_id_and_maybe_version["-2"]!.component).to.deep.equal(data_component_2v1)
+        expect(updated_data_components.data_component_by_id_and_maybe_version["-2v1"]!.component).to.deep.equal(data_component_2v1)
+        expect(updated_data_components.data_component_by_id_and_maybe_version["-2"]!.status).equal("loaded", "Status of IdOnly should be updated to 'loaded' when the same version is loaded again")
+        expect(updated_data_components.data_component_by_id_and_maybe_version["-2v1"]!.status).equal("loaded", "Status of IdAndVersion should be updated to 'loaded' when the same version is loaded again")
     })
 })
 

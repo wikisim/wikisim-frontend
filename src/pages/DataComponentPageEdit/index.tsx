@@ -33,7 +33,6 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
     const async_data_component = state2.data_components.data_component_by_id_and_maybe_version[props.data_component_id]!
     const { component, status } = async_data_component
 
-
     const parsed_id = parse_id(props.data_component_id)
     if (parsed_id instanceof IdAndVersion)
     {
@@ -51,5 +50,5 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
         </div>
     }
 
-    return <DataComponentEditForm data_component={component} />
+    return <DataComponentEditForm  async_status={status} data_component={component} />
 }
