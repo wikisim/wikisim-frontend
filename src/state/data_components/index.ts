@@ -32,6 +32,11 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
             request_data_components_for_home_page(set, get, get_supabase)
         },
 
+        request_data_component_history: (data_component_id: IdOnly, page: number, page_size: number, force_refresh?: boolean) =>
+        {
+            request_data_component_history(set, get_supabase, data_component_id, page, page_size, force_refresh)
+        },
+
         update_data_component: (data_component: DataComponent) =>
         {
             attempt_to_update_data_component(data_component, set, get_supabase)
@@ -180,13 +185,13 @@ export function mutate_store_state_with_loaded_data_components(
 
     data.forEach(instance =>
     {
-        const id_str = instance.id.to_str()
-        const id_only = instance.id.to_str_without_version()
+        const id_and_version_str = instance.id.to_str()
+        const id_only_str = instance.id.to_str_without_version()
 
         // For each entry, find it's placeholder in `data_components_by_id_only`
         // and update it with the loaded data component
         const { data_component_by_id_and_maybe_version } = state.data_components
-        data_component_by_id_and_maybe_version[id_str] = {
+        data_component_by_id_and_maybe_version[id_and_version_str] = {
             id: instance.id,
             component: instance,
             status: "loaded",
@@ -194,12 +199,12 @@ export function mutate_store_state_with_loaded_data_components(
             error: undefined,
         }
 
-        const id_only_instance = data_component_by_id_and_maybe_version[id_only]?.component
+        const id_only_instance = data_component_by_id_and_maybe_version[id_only_str]?.component
         if (!id_only_instance || id_only_instance.id.version <= instance.id.version)
         {
             // If the ID without version is not present, or the version is earlier
             // than the one we just loaded, the upsert it to our local store
-            data_component_by_id_and_maybe_version[id_only] = {
+            data_component_by_id_and_maybe_version[id_only_str] = {
                 id: instance.id,
                 component: instance,
                 status: "loaded",
@@ -208,8 +213,8 @@ export function mutate_store_state_with_loaded_data_components(
             }
         }
 
-        expected_ids_to_load.delete(id_str)
-        expected_ids_to_load.delete(id_only)
+        expected_ids_to_load.delete(id_and_version_str)
+        expected_ids_to_load.delete(id_only_str)
     })
 
     expected_ids_to_load.forEach(id =>
@@ -297,6 +302,110 @@ async function request_data_components_for_home_page(
         }
 
         state.data_components.data_component_ids_for_home_page = data_component_ids_for_home_page
+        return state
+    })
+}
+
+
+function request_data_component_history(
+    set_state: SetAppState,
+    get_supabase: GetSupabase,
+    data_component_id: IdOnly,
+    page: number,
+    page_size: number,
+    force_refresh?: boolean,
+): void
+{
+    set_state(state =>
+    {
+        const { data_component_by_id_and_maybe_version } = state.data_components
+        const id_str = data_component_id.to_str()
+        let async_data_component = data_component_by_id_and_maybe_version[id_str]
+
+        if (async_data_component)
+        {
+            // If the async data component already exists, we can just update its status
+            if (async_data_component.status === "error" || force_refresh)
+            {
+                async_data_component.status = "loading"
+                async_data_component.error = undefined
+            }
+        }
+        else
+        {
+            // Otherwise, create a new one
+            async_data_component = {
+                id: data_component_id,
+                component: null,
+                status: "loading",
+            }
+        }
+        data_component_by_id_and_maybe_version[id_str] = async_data_component
+
+        return state
+    })
+
+    process_request_data_component_history(
+        set_state,
+        get_supabase,
+        data_component_id,
+        page,
+        page_size,
+    )
+}
+
+
+async function process_request_data_component_history(
+    set_state: SetAppState,
+    get_supabase: GetSupabase,
+    data_component_id: IdOnly,
+    page: number,
+    page_size: number,
+)
+{
+    // Request the data component history from the database
+    const size = page_size * 2  // get two pages worth of data
+    const response = await request_archived_data_components(get_supabase, [data_component_id], { page, size })
+
+    set_state(state =>
+    {
+        if (response.error)
+        {
+            const id_str = data_component_id.to_str()
+            const { data_component_by_id_and_maybe_version } = state.data_components
+            const async_data_component = (
+                data_component_by_id_and_maybe_version[id_str]
+                // Provide default if not found, but should always be present
+                || { id: data_component_id, component: null, status: "loading" }
+            )
+            async_data_component.status = "error"
+            async_data_component.error = response.error
+
+            data_component_by_id_and_maybe_version[id_str] = async_data_component
+
+            return state
+        }
+        // This handles the edge case where someone manually chooses a page
+        // that has no data as the first request to the history page they are
+        // viewing, i.e. they go straight to /wiki/1/history?page=2000 instead
+        // of going via /wiki/1/history?page=1 etc.
+        else if (response.data.length === 0)
+        {
+            const id_str = data_component_id.to_str()
+            const { data_component_by_id_and_maybe_version } = state.data_components
+            const async_data_component = (
+                data_component_by_id_and_maybe_version[id_str]
+                // Provide default if not found, but should always be present
+                || { id: data_component_id, component: null, status: "loading" }
+            )
+            async_data_component.status = "not_found"
+            async_data_component.error = undefined
+
+            data_component_by_id_and_maybe_version[id_str] = async_data_component
+            return state
+        }
+        mutate_store_state_with_loaded_data_components(response.data, state)
+
         return state
     })
 }

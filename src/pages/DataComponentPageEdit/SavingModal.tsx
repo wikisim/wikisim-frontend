@@ -7,7 +7,7 @@ import { DataComponent, is_data_component, NewDataComponent } from "core/data/in
 import type { AsyncDataComponent, AsyncNewDataComponent } from "../../state/data_components/interface"
 import type { RootAppState } from "../../state/interface"
 import { app_store } from "../../state/store"
-import { TextEditorV2 } from "../../text_editor/TextEditorV2"
+import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import Loading from "../../ui_components/Loading"
 import "./SavingModal.css"
 
@@ -129,11 +129,16 @@ export function SavingModal<V extends (DataComponent | NewDataComponent)>(props:
             title={<h2>Save Changes</h2>}
         >
             <div className="saving-modal">
-                <TextEditorV2
+                <TextEditorV1
                     editable={!is_saving && !error_is_unrecoverable}
-                    auto_focus={true}
-                    initial_content={props.draft_data_component.comment || ""}
-                    on_update={comment => props.update_draft_data_component({ comment }, true)}
+                    single_line={true}
+                    trigger_search_on_at_symbol={true}
+                    value={props.draft_data_component.comment || ""}
+                    on_change={e =>
+                    {
+                        const comment = e.currentTarget.value
+                        props.update_draft_data_component({ comment }, true)
+                    }}
                     label="Comment (optional)"
                 />
 

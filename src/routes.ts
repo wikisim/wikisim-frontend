@@ -21,7 +21,7 @@ export const ROUTES = {
                 : id.to_str_without_version()
             return `/wiki/${path}/edit`
         },
-        VIEW_VERSION_HISTORY: (id: IdAndVersion | IdOnly | ":data_component_id") =>
+        VIEW_VERSION_HISTORY: (id: IdOnly | ":data_component_id") =>
         {
             return `/wiki/${typeof id === "string" ? id : id.to_str_without_version()}/history`
         },
