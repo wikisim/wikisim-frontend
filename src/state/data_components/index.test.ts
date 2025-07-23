@@ -3,7 +3,7 @@ import sinon from "sinon"
 
 import { convert_from_db_row } from "core/data/convert_between_db"
 import { IdAndVersion, IdOnly } from "core/data/id"
-import { new_data_component } from "core/data/modify"
+import { init_data_component } from "core/data/modify"
 import { DBDataComponentRow } from "core/supabase"
 import { create_mock_db_data_component_row } from "core/test/mock_db_data_component_row"
 import { create_mocked_supabase, MockedSupabase } from "core/test/mock_supabase_and_session"
@@ -23,8 +23,8 @@ describe("update_store_with_loaded_data_components", () =>
         const store = get_new_app_store({ get_supabase })
         const { data_components } = store.getState()
 
-        const data_component_1 = new_data_component({ id: new IdAndVersion(-1, 1) })
-        const data_component_2 = new_data_component({ id: new IdAndVersion(-2, 1) })
+        const data_component_1 = init_data_component({ id: new IdAndVersion(-1, 1) })
+        const data_component_2 = init_data_component({ id: new IdAndVersion(-2, 1) })
 
         expect(data_components.data_component_by_id_and_maybe_version).to.deep.equal({}, "Initial state should have no data components loaded")
 
@@ -47,7 +47,7 @@ describe("update_store_with_loaded_data_components", () =>
     it("should modify IdOnly with newer version", () =>
     {
         const { store, data_component_2: data_component_2v1 } = setup_test_1()
-        const data_component_2v2 = new_data_component({ id: new IdAndVersion(-2, 2) })
+        const data_component_2v2 = init_data_component({ id: new IdAndVersion(-2, 2) })
 
         store.setState(state => mutate_store_state_with_loaded_data_components([data_component_2v2], state))
 

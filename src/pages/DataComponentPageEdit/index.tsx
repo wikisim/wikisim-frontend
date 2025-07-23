@@ -1,3 +1,4 @@
+import { useLocation } from "preact-iso"
 import { useMemo } from "preact/hooks"
 
 import { IdAndVersion, parse_id } from "core/data/id"
@@ -11,6 +12,8 @@ import { DataComponentEditForm } from "./DataComponentEditForm"
 
 export function DataComponentPageEdit(props: { data_component_id: string, query: Record<string, string> })
 {
+    const location = useLocation()
+
     const state1 = app_store()
     useMemo(() =>
     {
@@ -50,5 +53,18 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
         </div>
     }
 
-    return <DataComponentEditForm  async_status={status} data_component={component} />
+    return <div className="page-container">
+        <DataComponentEditForm
+            async_status={status}
+            data_component={component}
+            handle_save={(state, draft_data_component) =>
+            {
+                state.data_components.update_data_component(draft_data_component)
+            }}
+            on_save_success={(id) =>
+            {
+                location.route(ROUTES.DATA_COMPONENT.VIEW(id.as_IdOnly()))
+            }}
+        />
+    </div>
 }

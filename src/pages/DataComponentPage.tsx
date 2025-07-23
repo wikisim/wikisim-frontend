@@ -1,8 +1,8 @@
+import { useLocation } from "preact-iso"
 import { useEffect, useState } from "preact/hooks"
 
 import { DataComponent } from "core/data/interface"
 
-import { useLocation } from "preact-iso"
 import HistoryIcon from "../assets/history.svg"
 import EditButton from "../buttons/EditButton"
 import { ROUTES } from "../routes"

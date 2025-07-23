@@ -1,5 +1,5 @@
-import { IdAndMaybeVersion, IdAndVersion } from "core/data/id"
-import { DataComponent } from "core/data/interface"
+import { IdAndMaybeVersion, IdAndVersion, TempId } from "core/data/id"
+import { DataComponent, NewDataComponent } from "core/data/interface"
 
 
 type BasicLoadingStatus = "loading" | "error" | "loaded"
@@ -25,6 +25,15 @@ export interface AsyncDataComponentIdsForHomePage
 }
 
 
+export interface AsyncNewDataComponent
+{
+    temporary_id: TempId
+    new_id?: IdAndVersion
+    status: SavingStatus
+    error?: Error
+}
+
+
 export interface DataComponentsState
 {
     // data_component_ids_to_load: IdAndMaybeVersion[]
@@ -34,5 +43,8 @@ export interface DataComponentsState
     request_data_component_error: Error | undefined
     request_data_component: (data_component_id: IdAndMaybeVersion, force_refresh?: boolean) => AsyncDataComponent
     request_data_components_for_home_page: () => void
-    update_data_component: (data_component: DataComponent) => AsyncDataComponent
+    update_data_component: (data_component: DataComponent) => void
+
+    new_data_component_by_temp_id: Record<string, AsyncNewDataComponent>
+    insert_data_component: (data_component: NewDataComponent) => void
 }

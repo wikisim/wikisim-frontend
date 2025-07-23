@@ -1,11 +1,11 @@
 import { request_archived_data_components, request_data_components } from "core/data/fetch_from_db"
 import { all_are_id_and_version, all_are_id_only, IdAndMaybeVersion, IdAndVersion, IdOnly } from "core/data/id"
-import type { DataComponent } from "core/data/interface"
+import type { DataComponent, NewDataComponent } from "core/data/interface"
+import { insert_data_component, update_data_component } from "core/data/write_to_db"
 import type { GetSupabase } from "core/supabase"
 
-import { update_data_component } from "../../../lib/core/src/data/write_to_db"
 import { GetAppState, RootAppState, SetAppState } from "../interface"
-import { AsyncDataComponent, DataComponentsState } from "./interface"
+import { AsyncDataComponent, AsyncNewDataComponent, DataComponentsState } from "./interface"
 
 
 export function initial_state(set: SetAppState, get: GetAppState, get_supabase: GetSupabase): DataComponentsState
@@ -34,29 +34,13 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
 
         update_data_component: (data_component: DataComponent) =>
         {
-            const id_only = data_component.id.to_str_without_version()
-            let async_data_component: AsyncDataComponent
-
-            set(state =>
-            {
-                const { data_component_by_id_and_maybe_version } = state.data_components
-
-                async_data_component = {
-                    id: data_component.id,
-                    component: data_component,
-                    status: "saving",
-                    // Clear any previous error
-                    error: undefined,
-                }
-
-                data_component_by_id_and_maybe_version[id_only] = async_data_component
-
-                return state
-            })
-
             attempt_to_update_data_component(data_component, set, get_supabase)
+        },
 
-            return async_data_component!
+        new_data_component_by_temp_id: {},
+        insert_data_component: (data_component: NewDataComponent) =>
+        {
+            attempt_to_insert_data_component(data_component, set, get_supabase)
         },
     }
 }
@@ -324,25 +308,82 @@ async function attempt_to_update_data_component(
     get_supabase: GetSupabase,
 )
 {
+    set_state(state =>
+    {
+        const { data_component_by_id_and_maybe_version } = state.data_components
+
+        const async_data_component: AsyncDataComponent = {
+            id: data_component.id,
+            component: data_component,
+            status: "saving",
+            // Clear any previous error
+            error: undefined,
+        }
+
+        const id_only = data_component.id.to_str_without_version()
+        data_component_by_id_and_maybe_version[id_only] = async_data_component
+
+        return state
+    })
+
     // Update the data component in the database
     const response = await update_data_component(get_supabase, data_component)
 
     set_state(state =>
     {
         const { data_component_by_id_and_maybe_version } = state.data_components
-        const id_str = data_component.id.to_str_without_version()
-        let async_data_component = data_component_by_id_and_maybe_version[id_str]
 
-        if (!async_data_component)
+        if (response.error)
         {
-            console.error(`No placeholder found for data component with ID ${id_str}`)
+            console.error("Error updating data component:", response.error)
+            const id_str = data_component.id.to_str_without_version()
 
-            async_data_component = {
+            const async_data_component: AsyncDataComponent = {
                 id: data_component.id,
                 component: data_component,
-                status: "saving",
+                status: "error",
+                error: response.error,
             }
+
+            data_component_by_id_and_maybe_version[id_str] = async_data_component
+            return state
         }
+
+        mutate_store_state_with_loaded_data_components([response.data], state)
+
+        return state
+    })
+}
+
+
+async function attempt_to_insert_data_component(
+    data_component: NewDataComponent,
+    set_state: SetAppState,
+    get_supabase: GetSupabase,
+)
+{
+    set_state(state =>
+    {
+        const async_data_component: AsyncNewDataComponent = {
+            temporary_id: data_component.temporary_id,
+            new_id: undefined,
+            status: "saving",
+            error: undefined,
+        }
+        const id_str = data_component.temporary_id.to_str()
+
+        state.data_components.new_data_component_by_temp_id[id_str] = async_data_component
+
+        return state
+    })
+
+    // Insert the data component in the database
+    const response = await insert_data_component(get_supabase, data_component)
+
+    set_state(state =>
+    {
+        const id_str = data_component.temporary_id.to_str()
+        const async_data_component = state.data_components.new_data_component_by_temp_id[id_str]!
 
         if (response.error)
         {
@@ -352,9 +393,12 @@ async function attempt_to_update_data_component(
             return state
         }
 
-        // If the update was successful, update the component in the store
+        // If the insert was successful, insert the component in the store
+        mutate_store_state_with_loaded_data_components([response.data], state)
+
+        // And update the async new data component placeholder with status and ID
         async_data_component.status = "loaded"
-        async_data_component.component = response.data
+        async_data_component.new_id = response.data.id
         async_data_component.error = undefined
 
         return state
