@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks"
 
-import EditButton from "../buttons/EditButton"
+import EditOrSaveButton from "../buttons/EditOrSaveButton"
 import { TextEditorV2 } from "./TextEditorV2"
 
 
@@ -9,7 +9,7 @@ export const TextEditorDemos = () =>
     const [editing, set_editing] = useState(true)
 
     return <div>
-        <EditButton editing={editing} set_editing={set_editing} />
+        <EditOrSaveButton editing={editing} set_editing={set_editing} />
         {/* <h2>Text Editor V1 Demo</h2>
         <TextEditorV1Demo editing={editing} /> */}
         <h2>Text Editor V2 Demo</h2>

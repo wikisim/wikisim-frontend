@@ -4,7 +4,7 @@ import { useEffect, useState } from "preact/hooks"
 import { DataComponent } from "core/data/interface"
 
 import HistoryIcon from "../assets/history.svg"
-import EditButton from "../buttons/EditButton"
+import EditOrSaveButton from "../buttons/EditOrSaveButton"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
@@ -31,7 +31,7 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
     return <>
         <div className="page-container">
             <div style={{ float: "right", margin: "10px" }}>
-                <EditButton
+                <EditOrSaveButton
                     editing={false}
                     set_editing={() => location.route(ROUTES.DATA_COMPONENT.EDIT(component.id.as_IdOnly()))}
                 />

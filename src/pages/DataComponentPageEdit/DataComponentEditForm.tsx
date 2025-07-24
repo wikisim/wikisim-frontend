@@ -6,7 +6,7 @@ import { IdAndVersion, TempId } from "core/data/id"
 import { is_data_component, type DataComponent, type NewDataComponent } from "core/data/interface"
 import { changes_made } from "core/data/modify"
 
-import EditButton from "../../buttons/EditButton"
+import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import type { AsyncDataComponentStatus } from "../../state/data_components/interface"
 import type { RootAppState } from "../../state/interface"
 import { app_store } from "../../state/store"
@@ -68,9 +68,10 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     const editable = !saving_in_progress
 
     return <>
+        {/* This element provides space to show the edit / save button */}
         <div style={{ float: "right", width: "50px", height: "50px" }} />
         <div style={{ position: "fixed", top: "50px", right: "30px" }}>
-            <EditButton
+            <EditOrSaveButton
                 disabled={disabled}
                 editing={true}
                 set_editing={() => set_show_saving_modal(true)}

@@ -12,7 +12,7 @@ interface Props
     set_editing: (editing: boolean) => void
 }
 
-export default function EditButton(props: Props)
+export default function EditOrSaveButton(props: Props)
 {
     const { editing, set_editing } = props
     const label = (
