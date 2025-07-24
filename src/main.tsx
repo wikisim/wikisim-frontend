@@ -17,8 +17,8 @@ import { UserPage } from "./pages/UserPage"
 import "./remove_supabase_hash"
 import { ROUTES } from "./routes"
 import { TextEditorDemos } from "./text_editor/Demos"
-import { SearchModal } from "./text_editor/SearchModal"
 import Header from "./ui_components/Header"
+import { SearchModal } from "./ui_components/search/SearchModal"
 
 
 function App() {
