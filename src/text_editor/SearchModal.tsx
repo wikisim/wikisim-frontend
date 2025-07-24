@@ -1,6 +1,10 @@
 import { Modal } from "@mantine/core"
 import { useEffect, useMemo, useState } from "preact/hooks"
 
+import { search_data_components } from "core/data/fetch_from_db"
+import { get_supabase } from "core/supabase"
+
+import { convert_tiptap_text_to_plain_text } from "../../lib/core/src/rich_text/editor"
 import pub_sub from "../pub_sub"
 import Loading from "../ui_components/Loading"
 import { is_mobile_device } from "../utils/is_mobile_device"
@@ -61,7 +65,7 @@ export function SearchModal()
             <SearchResults
                 search_term={trimmed_search_term}
                 search_requester_id={search_requester_id}
-                on_search_completed={data =>
+                on_chosen_search_result={data =>
                 {
                     pub_sub.pub("search_for_reference_completed", data)
                     set_search_window_is_open(false)
@@ -78,30 +82,39 @@ interface SearchResultsProps
 {
     search_term: string
     search_requester_id: string
-    on_search_completed: (data: { search_requester_id: string, data_component_id: number }) => void
+    on_chosen_search_result: (data: { search_requester_id: string, data_component_id: number }) => void
 }
 function SearchResults(props: SearchResultsProps)
 {
     const search_term = props.search_term.trim()
 
-    const [results, set_results] = useState<SearchResultsResponse | undefined>(undefined)
+    const [error, set_error] = useState<string | undefined>(undefined)
+    const [results, set_results] = useState<SearchResults | undefined>(undefined)
 
 
     useEffect(() => {
         const search_start_time = Date.now() // Unique ID for this search
 
         set_results(undefined)
+        if (!search_term) return
 
         let cancel_search = false
 
-        mock_search_async_api({
+        search_async_api({
             search_term,
             search_requester_id: props.search_requester_id,
             search_start_time,
         })
-        .then(new_results => {
+        .then(({ error, new_results }) => {
+            if (error)
+            {
+                console.error("Error searching for data components:", error)
+                set_error("An error occurred while searching.  Please try again.")
+                return
+            }
             if (cancel_search) return
-            set_results(current_results => {
+            set_results(current_results =>
+            {
                 // Return which ever results are newer based on search_id
                 return current_results && current_results.search_start_time > new_results.search_start_time
                     ? current_results
@@ -119,6 +132,8 @@ function SearchResults(props: SearchResultsProps)
             : `Search results for "${results.search_term}"`)
         }
 
+        {error && <p style={{ color: "red" }}>Error: {error}</p>}
+
         {results?.search_term &&
             (results.result_rows.length > 0 ? (
                 <table>
@@ -128,13 +143,16 @@ function SearchResults(props: SearchResultsProps)
                             style={{ cursor: "pointer" }}
                             onClick={() =>
                             {
-                                props.on_search_completed({
+                                props.on_chosen_search_result({
                                     search_requester_id: results.search_requester_id,
                                     data_component_id: row.data_component_id,
                                 })
                             }}
                         >
-                            <td>{row.title}</td>
+                            <td>{convert_tiptap_text_to_plain_text(row.title)}</td>
+                            <td style={{ color: "#ccc", fontSize: 13, paddingTop: 4.5 }}>
+                                id {row.data_component_id}
+                            </td>
                         </tr>
                     )}
                 </table>
@@ -163,30 +181,47 @@ interface SearchResultObj
 {
     data_component_id: number
     title: string
+    description: string
 }
-interface SearchResultsResponse extends SearchResultsRequest
+interface SearchResults extends SearchResultsRequest
 {
     search_start_time: number
     result_rows: SearchResultObj[]
 }
-function mock_search_async_api (request: SearchResultsRequest & { search_start_time: number }): Promise<SearchResultsResponse>
+type SearchResultsResponse =
+{
+    error: null
+    new_results: SearchResults
+} | {
+    error: Error
+    new_results: null
+}
+function search_async_api (request: SearchResultsRequest & { search_start_time: number }): Promise<SearchResultsResponse>
 {
     const { search_term, search_requester_id, search_start_time } = request
 
-    return new Promise(resolve => {
-        setTimeout(() => {
-            // Mock search results
-            const mock_results: SearchResultObj[] = [
-                {title: `Result for "${search_term}" 1`, data_component_id: 1},
-                {title: `Result for "${search_term}" 2`, data_component_id: 2},
-                {title: `Result for "${search_term}" 3`, data_component_id: 3},
-            ]
-            resolve({
+    return search_data_components(get_supabase, search_term, { page: 0, size: 20 })
+    .then(({ data, error }) => {
+        if (error) return { error, new_results: null }
+
+        const result_rows = data.map(dc =>
+        {
+            const row: SearchResultObj = {
+                data_component_id: dc.id.id,
+                title: dc.title,
+                description: dc.description,
+            }
+            return row
+        })
+
+        return {
+            error: null,
+            new_results: {
+                search_start_time,
                 search_term,
                 search_requester_id,
-                search_start_time,
-                result_rows: mock_results
-            })
-        }, search_term.length < 2 ? 5000 : 1000) // Simulate network delay
+                result_rows,
+            },
+        }
     })
 }
