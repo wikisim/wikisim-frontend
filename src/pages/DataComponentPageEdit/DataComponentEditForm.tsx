@@ -150,7 +150,7 @@ function store_draft_component_to_local(draft_component: DataComponent | NewData
         return
     }
 
-    const id_str = get_id_str_of_data_component(draft_component)
+    const id_str = get_id_str_of_data_component(draft_component, true)
     const draft_key = `draft_component_${id_str}`
     const flattened = flatten_data_component_for_local_storage(draft_component)
 
@@ -163,7 +163,7 @@ function store_draft_component_to_local(draft_component: DataComponent | NewData
 
 function load_previously_saved_draft(data_component: DataComponent | NewDataComponent): DataComponent | NewDataComponent | undefined
 {
-    const id_str = get_id_str_of_data_component(data_component)
+    const id_str = get_id_str_of_data_component(data_component, true)
     const draft_key = `draft_component_${id_str}`
     const draft_json = localStorage.getItem(draft_key)
     if (!draft_json) return undefined
@@ -188,7 +188,7 @@ function load_previously_saved_draft(data_component: DataComponent | NewDataComp
 
 function clear_previously_saved_draft(data_component: DataComponent | NewDataComponent)
 {
-    const id_str = get_id_str_of_data_component(data_component)
+    const id_str = get_id_str_of_data_component(data_component, true)
     const draft_key = `draft_component_${id_str}`
     localStorage.removeItem(draft_key)
 }
