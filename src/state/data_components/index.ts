@@ -5,7 +5,7 @@ import { insert_data_component, update_data_component } from "core/data/write_to
 import type { GetSupabase } from "core/supabase"
 
 import { GetAppState, RootAppState, SetAppState } from "../interface"
-import { AsyncDataComponent, AsyncNewDataComponent, DataComponentsState } from "./interface"
+import { AsyncDataComponent, AsyncNewDataComponent, DataComponentsState, UpsertDataComponentResult } from "./interface"
 
 
 export function initial_state(set: SetAppState, get: GetAppState, get_supabase: GetSupabase): DataComponentsState
@@ -39,13 +39,13 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
 
         update_data_component: (data_component: DataComponent) =>
         {
-            attempt_to_update_data_component(data_component, set, get_supabase)
+            return attempt_to_update_data_component(data_component, set, get_supabase)
         },
 
         new_data_component_by_temp_id: {},
         insert_data_component: (data_component: NewDataComponent) =>
         {
-            attempt_to_insert_data_component(data_component, set, get_supabase)
+            return attempt_to_insert_data_component(data_component, set, get_supabase)
         },
     }
 }
@@ -415,7 +415,7 @@ async function attempt_to_update_data_component(
     data_component: DataComponent,
     set_state: SetAppState,
     get_supabase: GetSupabase,
-)
+): Promise<UpsertDataComponentResult>
 {
     set_state(state =>
     {
@@ -438,12 +438,15 @@ async function attempt_to_update_data_component(
     // Update the data component in the database
     const response = await update_data_component(get_supabase, data_component)
 
+    let result: UpsertDataComponentResult
+
     set_state(state =>
     {
         const { data_component_by_id_and_maybe_version } = state.data_components
 
         if (response.error)
         {
+            result = { error: response.error, id: undefined }
             console.error("Error updating data component:", response.error)
             const id_str = data_component.id.to_str_without_version()
 
@@ -458,18 +461,22 @@ async function attempt_to_update_data_component(
             return state
         }
 
+        result = { error: undefined, id: response.data.id }
         mutate_store_state_with_loaded_data_components([response.data], state)
 
         return state
     })
+
+    return result!
 }
+
 
 
 async function attempt_to_insert_data_component(
     data_component: NewDataComponent,
     set_state: SetAppState,
     get_supabase: GetSupabase,
-)
+): Promise<UpsertDataComponentResult>
 {
     set_state(state =>
     {
@@ -489,6 +496,8 @@ async function attempt_to_insert_data_component(
     // Insert the data component in the database
     const response = await insert_data_component(get_supabase, data_component)
 
+    let result: UpsertDataComponentResult
+
     set_state(state =>
     {
         const id_str = data_component.temporary_id.to_str()
@@ -496,12 +505,14 @@ async function attempt_to_insert_data_component(
 
         if (response.error)
         {
+            result = { error: response.error, id: undefined }
             console.error("Error updating data component:", response.error)
             async_data_component.status = "error"
             async_data_component.error = response.error
             return state
         }
 
+        result = { error: undefined, id: response.data.id }
         // If the insert was successful, insert the component in the store
         mutate_store_state_with_loaded_data_components([response.data], state)
 
@@ -512,4 +523,6 @@ async function attempt_to_insert_data_component(
 
         return state
     })
+
+    return result!
 }
