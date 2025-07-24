@@ -1,5 +1,7 @@
 import { defaultVariantColorsResolver, MantineProvider, VariantColorsResolverInput } from "@mantine/core"
 import "@mantine/core/styles.css"
+import { Notifications } from "@mantine/notifications"
+import "@mantine/notifications/styles.css"
 import { render } from "preact"
 import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso"
 
@@ -41,7 +43,7 @@ function App() {
                         tooltip: {
                             // Light blue
                             backgroundColor: "#e7f3ff",
-                            color: "#1c7ed6",
+                            color: "var(--primary-blue)",
                             // Light grey
                             // backgroundColor: "#f8f9fa",
                             // color: "#495057",
@@ -64,7 +66,7 @@ function App() {
             variantColorResolver,
         }}
     >
-
+        <Notifications />
         <Header />
         <div className="main-app-container">
             <SearchModal />
@@ -113,9 +115,9 @@ function variantColorResolver (input: VariantColorsResolverInput)
 
 interface NotFoundProps
 {
-	path: string;
-	query: Record<string, string>;
-	params: Record<string, string>;
+	path: string
+	query: Record<string, string>
+	params: Record<string, string>
 }
 function NotFound(_props: NotFoundProps)
 {

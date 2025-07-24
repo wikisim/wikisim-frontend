@@ -13,8 +13,9 @@
         "check": "pnpm run test && pnpm run check_compile && pnpm run lint"
     },
     "dependencies": {
-        "@mantine/core": "8.1.2",
-        "@mantine/hooks": "8.1.2",
+        "@mantine/core": "8.2.1",
+        "@mantine/hooks": "8.2.1",
+        "@mantine/notifications": "8.2.1",
         "@supabase/supabase-js": "2.52.0",
         "@tabler/icons-react": "3.34.0",
         "@tiptap/core": "2.24.1",
