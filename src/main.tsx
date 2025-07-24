@@ -82,7 +82,7 @@ function App() {
                         <Route path={ROUTES.USER.VIEW(false)} component={UserPage} />
 
                         <Route path={ROUTES.DATA_COMPONENT.NEW()} component={DataComponentPageNew} />
-                        <Route path={ROUTES.DATA_COMPONENT.VIEW_ALL()} component={DataComponentsSearchPage} />
+                        <Route path={ROUTES.DATA_COMPONENT.SEARCH()} component={DataComponentsSearchPage} />
                         <Route path={ROUTES.DATA_COMPONENT.EDIT(":data_component_id")} component={DataComponentPageEdit} />
                         <Route path={ROUTES.DATA_COMPONENT.VIEW(":data_component_id")} component={DataComponentPage} />
                         <Route path={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY(":data_component_id")} component={DataComponentPageVersionHistory} />

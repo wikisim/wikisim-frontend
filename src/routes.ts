@@ -5,7 +5,7 @@ export const ROUTES = {
     HOME: "/",
     DATA_COMPONENT:
     {
-        VIEW_ALL: () => "/wiki/search",
+        SEARCH: (search_term?: string) => "/wiki/search" + (search_term ? "?q=" + encodeURIComponent(search_term) : ""),
         NEW: () => "/wiki/new",
         VIEW: (id: IdAndVersion | IdOnly | number | ":data_component_id") =>
         {

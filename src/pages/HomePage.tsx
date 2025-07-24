@@ -65,7 +65,7 @@ export function HomePage()
 
                 <Button
                     component="a"
-                    href={ROUTES.DATA_COMPONENT.VIEW_ALL()}
+                    href={ROUTES.DATA_COMPONENT.SEARCH()}
                     className="browse-all-button"
                     size="lg"
                     variant="primary"
