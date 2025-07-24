@@ -3,5 +3,6 @@
   "ignore": "**/*.browser.test.ts",
   "import": "tsx",
   "extensions": ["ts", "tsx"],
+  "require": "src/test/setup.js",
   "timeout": 0
 }
