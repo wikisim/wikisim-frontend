@@ -31,13 +31,15 @@ export function DataComponentPageNew(_props: { query: Record<string, string> })
             <DataComponentEditForm
                 async_status="loaded"
                 data_component={data_component}
-                handle_save={(state, draft_data_component) =>
+                handle_save={draft_data_component =>
                 {
-                    state.data_components.insert_data_component(draft_data_component)
-                }}
-                on_save_success={(id) =>
-                {
-                    location.route(ROUTES.DATA_COMPONENT.VIEW(id.as_IdOnly()))
+                    return state.data_components.insert_data_component(draft_data_component)
+                        .then(({ error, id }) =>
+                        {
+                            if (id) location.route(ROUTES.DATA_COMPONENT.VIEW(id.as_IdOnly()))
+
+                            return { error }
+                        })
                 }}
             />
         </div>

@@ -65,13 +65,18 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
         <DataComponentEditForm
             async_status={status}
             data_component={component}
-            handle_save={(state, draft_data_component) =>
+            handle_save={draft_data_component =>
             {
-                state.data_components.update_data_component(draft_data_component)
-            }}
-            on_save_success={(id) =>
-            {
-                location.route(ROUTES.DATA_COMPONENT.VIEW(id.as_IdOnly()))
+                return state2.data_components.update_data_component(draft_data_component)
+                    .then(({ error, id }) =>
+                    {
+                        if (id)
+                        {
+                            console.debug("DataComponentPageEdit on_save_success navigating to: ", id.as_IdOnly())
+                            location.route(ROUTES.DATA_COMPONENT.VIEW(id.as_IdOnly()))
+                        }
+                        return { error }
+                    })
             }}
         />
     </div>

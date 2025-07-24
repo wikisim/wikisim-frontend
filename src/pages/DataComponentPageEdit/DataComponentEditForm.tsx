@@ -13,7 +13,6 @@ import { changes_made } from "core/data/modify"
 import BinChangesButton from "../../buttons/BinChangesButton"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import type { AsyncDataComponentStatus } from "../../state/data_components/interface"
-import type { RootAppState } from "../../state/interface"
 import { app_store } from "../../state/store"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import Countdown, { CountdownTimer } from "../../ui_components/Countdown"
@@ -26,8 +25,7 @@ interface DataComponentEditFormProps<V>
 {
     async_status: AsyncDataComponentStatus
     data_component: V
-    handle_save: (state: RootAppState, draft_data_component: V) => void
-    on_save_success: (id: IdAndVersion) => void
+    handle_save: (draft_data_component: V) => Promise<{ error?: Error }>
 }
 export function DataComponentEditForm<V extends (DataComponent | NewDataComponent)>(props: DataComponentEditFormProps<V>)
 {
@@ -66,12 +64,13 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
         _set_draft_component(new_draft)
     }
 
-    const no_changes_made = !changes_made(draft_component, props.data_component)
 
     const version_mismatch = get_version_of_data_component(props.data_component) !== get_version_of_data_component(draft_component)
     const saving_in_progress = status === "saving"
-    const disabled_save = (
-        version_mismatch ? "Version mismatch, please reload" :
+    const no_changes_made = !changes_made(draft_component, props.data_component)
+
+    const saving_disabled = (
+        version_mismatch ? "Version out of date, please reload" :
         saving_in_progress ? "Saving..." :
         no_changes_made ? "No changes made" : false
     )
@@ -95,7 +94,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
         <div style={{ float: "right", width: "50px", height: "50px" }} />
         <div className="buttons-container">
             <EditOrSaveButton
-                disabled={disabled_save}
+                disabled={saving_disabled}
                 editing={true}
                 set_editing={() => set_show_saving_modal(true)}
             />
@@ -124,22 +123,21 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
             />
         </div>
 
-        {/* Hide the SaveModal when there is a version mismatch because currently
-        it will incorrectly call the `on_save_success` and redirect the user to
-        the view page without giving them a chance to discard their changes to
-        the older version of this data component. */}
-        {!version_mismatch && <SaveModal
+        <SaveModal
             opened={show_saving_modal}
             draft_data_component={draft_component}
             update_draft_data_component={set_draft_component}
-            handle_save={props.handle_save}
-            hide_saving_modal={() => set_show_saving_modal(false)}
-            on_save_success={data_component_id =>
+            handle_save={draft_data_component =>
             {
-                clear_previously_saved_draft(draft_component)
-                props.on_save_success(data_component_id)
+                return props.handle_save(draft_data_component)
+                    .then(({ error }) =>
+                    {
+                        if (!error) clear_previously_saved_draft(draft_component)
+                        return { error }
+                    })
             }}
-        />}
+            hide_saving_modal={() => set_show_saving_modal(false)}
+        />
     </>
 }
 

@@ -9,8 +9,7 @@ import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
 import Loading from "../ui_components/Loading"
 import { time_ago_or_date } from "../utils/time_ago_or_date"
-
-// import { app_store } from "../state/store"
+import "./DataComponentPageVersionHistory.css"
 
 
 export function DataComponentPageVersionHistory(props: { data_component_id: string, query: Record<string, string> })
@@ -115,6 +114,7 @@ function DataComponentPageVersionHistoryRedirect(props: { id: IdAndVersion })
 function HistoryRow(props: { id: IdAndVersion })
 {
     const state = app_store()
+    const location = useLocation()
     const async_data_component = get_async_data_component(state, props.id.to_str(), false)
     const { component } = async_data_component
 
@@ -135,7 +135,10 @@ function HistoryRow(props: { id: IdAndVersion })
     const { user: editor } = async_editor
 
     return (
-        <div className="history-row">
+        <div
+            className="history-row loaded"
+            onClick={() => location.route(ROUTES.DATA_COMPONENT.VIEW(props.id))}
+        >
             Version {props.id.version}: &nbsp; &nbsp;
             {component.comment || " -- "} &nbsp; &nbsp;
             {time_ago_or_date(component.created_at, true)}{" "}

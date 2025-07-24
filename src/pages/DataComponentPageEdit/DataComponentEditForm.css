@@ -20,7 +20,7 @@
 .data-component-form.view-only .editor-content,
 .data-component-form.view-only .tiptap-content
 {
-    cursor: not-allowed;
+    cursor: default;
 }
 
 
