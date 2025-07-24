@@ -5,6 +5,11 @@
     --secondary-fill-color: #f0f0f0;
     --secondary-text-color: #333;
     --primary-blue: #1c7ed6;
+
+    --z-index-header: 200;
+    --z-index-modal-save: 301;
+    --z-index-modal-search: 302;
+    --z-index-notifications: 401;
 }
 
 

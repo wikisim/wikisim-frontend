@@ -66,7 +66,11 @@ function App() {
             variantColorResolver,
         }}
     >
-        <Notifications />
+        <Notifications
+            style={{
+                zIndex: "var(--z-index-notifications)",
+            }}
+        />
         <Header />
         <div className="main-app-container">
             <SearchModal />

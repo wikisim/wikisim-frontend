@@ -10,7 +10,7 @@ import type { RootAppState } from "../../state/interface"
 import { app_store } from "../../state/store"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import Loading from "../../ui_components/Loading"
-import "./SavingModal.css"
+import "./SaveModal.css"
 
 
 function get_async_data_component_from_state(state: RootAppState, data_component: DataComponent | NewDataComponent): AsyncDataComponent | AsyncNewDataComponent | undefined
@@ -31,7 +31,7 @@ function get_id_and_version_of_async_data_component(async_data_component: AsyncD
     if ("component" in async_data_component)
     {
         // If this is an AsyncDataComponent, then the component should always be
-        // defined in the context of the SavingModal as it will come from the Edit page.
+        // defined in the context of the SaveModal as it will come from the Edit page.
         return async_data_component.component!.id
     }
     return async_data_component.new_id
@@ -43,7 +43,7 @@ function get_version_of_async_data_component(async_data_component: AsyncDataComp
 }
 
 
-interface SavingModalProps<V>
+interface SaveModalProps<V>
 {
     opened: boolean
     draft_data_component: V
@@ -52,7 +52,7 @@ interface SavingModalProps<V>
     hide_saving_modal: () => void
     on_save_success: (id: IdAndVersion) => void
 }
-export function SavingModal<V extends (DataComponent | NewDataComponent)>(props: SavingModalProps<V>)
+export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: SaveModalProps<V>)
 {
     const state = app_store()
     // Get the latest async data component for the draft data component so that
@@ -121,8 +121,9 @@ export function SavingModal<V extends (DataComponent | NewDataComponent)>(props:
             onClose={() => props.hide_saving_modal()}
             size="lg"
             title={<h2>Save Changes</h2>}
+            style={{ zIndex: "var(--z-index-modal-save)" }}
         >
-            <div className="saving-modal">
+            <div className="save-modal">
                 <TextEditorV1
                     editable={!is_saving && !error_is_unrecoverable}
                     single_line={true}

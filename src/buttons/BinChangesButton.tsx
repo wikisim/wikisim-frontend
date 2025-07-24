@@ -9,6 +9,7 @@ import { useState } from "preact/hooks"
 interface Props
 {
     disabled?: boolean | string
+    highlighted?: boolean
     on_click: () => void
 }
 
@@ -25,7 +26,7 @@ export default function BinChangesButton(props: Props)
             <ActionIcon
                 disabled={!!props.disabled}
                 onClick={props.on_click}
-                variant={hovered ? "danger" : "subtle"}
+                variant={(hovered || props.highlighted) ? "danger" : "subtle"}
                 size="lg"
             >
                 {hovered ? <IconTrashX /> : <IconTrashXFilled />}

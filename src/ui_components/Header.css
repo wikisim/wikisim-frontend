@@ -5,7 +5,8 @@
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
+    /* Set z-index for header to be behind the manitine notifications */
+    z-index: var(--z-index-header);
     height: var(--header-height);
 
     background-color: white;

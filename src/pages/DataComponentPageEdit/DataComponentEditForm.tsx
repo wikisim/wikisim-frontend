@@ -1,5 +1,6 @@
 import { ActionIcon } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
+import IconDeviceFloppy from "@tabler/icons-react/dist/esm/icons/IconDeviceFloppy"
 import IconTrashX from "@tabler/icons-react/dist/esm/icons/IconTrashX"
 import { useEffect, useState } from "preact/hooks"
 
@@ -17,7 +18,7 @@ import { app_store } from "../../state/store"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import Countdown, { CountdownTimer } from "../../ui_components/Countdown"
 import "./DataComponentEditForm.css"
-import { SavingModal } from "./SavingModal"
+import { SaveModal } from "./SaveModal"
 
 
 
@@ -56,18 +57,11 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     }
     const [draft_component, _set_draft_component] = useState<V>(initial_component)
 
-    function discard_previously_saved_draft()
-    {
-        clear_previously_saved_draft(draft_component)
-        window.location.reload() // Reload to reset the form
-    }
-    useEffect(() => notify_if_loaded_previously_saved_draft(previously_saved_draft, discard_previously_saved_draft), [])
-
-
     const set_draft_component = (updates: Partial<DataComponent | NewDataComponent>, compare_meta_fields?: boolean) =>
     {
         const new_draft: V = { ...draft_component, ...updates }
-        store_draft_component_to_local(new_draft)
+        const any_changes_made = changes_made(new_draft, potential_initial_component, true)
+        store_draft_component_to_local(new_draft, any_changes_made)
         if (!changes_made(new_draft, draft_component, compare_meta_fields)) return
         _set_draft_component(new_draft)
     }
@@ -76,24 +70,38 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 
     const version_mismatch = get_version_of_data_component(props.data_component) !== get_version_of_data_component(draft_component)
     const saving_in_progress = status === "saving"
-    const disabled = (
+    const disabled_save = (
         version_mismatch ? "Version mismatch, please reload" :
         saving_in_progress ? "Saving..." :
         no_changes_made ? "No changes made" : false
     )
+    const disabled_bin_changes = (
+        saving_in_progress ? "Saving..." :
+        no_changes_made ? "No changes made" : false
+    )
     const editable = !version_mismatch && !saving_in_progress
+
+
+    function discard_previously_saved_draft()
+    {
+        clear_previously_saved_draft(draft_component)
+        window.location.reload() // Reload to reset the form
+    }
+    useEffect(() => notify_if_loaded_previously_saved_draft(previously_saved_draft, version_mismatch, discard_previously_saved_draft), [])
+
 
     return <>
         {/* This element provides space to show the edit / save button */}
         <div style={{ float: "right", width: "50px", height: "50px" }} />
         <div className="buttons-container">
             <EditOrSaveButton
-                disabled={disabled}
+                disabled={disabled_save}
                 editing={true}
                 set_editing={() => set_show_saving_modal(true)}
             />
             <BinChangesButton
-                disabled={disabled}
+                disabled={disabled_bin_changes}
+                highlighted={version_mismatch}
                 on_click={discard_previously_saved_draft}
             />
         </div>
@@ -116,7 +124,11 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
             />
         </div>
 
-        <SavingModal
+        {/* Hide the SaveModal when there is a version mismatch because currently
+        it will incorrectly call the `on_save_success` and redirect the user to
+        the view page without giving them a chance to discard their changes to
+        the older version of this data component. */}
+        {!version_mismatch && <SaveModal
             opened={show_saving_modal}
             draft_data_component={draft_component}
             update_draft_data_component={set_draft_component}
@@ -127,13 +139,19 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
                 clear_previously_saved_draft(draft_component)
                 props.on_save_success(data_component_id)
             }}
-        />
+        />}
     </>
 }
 
 
-function store_draft_component_to_local(draft_component: DataComponent | NewDataComponent)
+function store_draft_component_to_local(draft_component: DataComponent | NewDataComponent, any_changes_made: boolean)
 {
+    if (!any_changes_made)
+    {
+        clear_previously_saved_draft(draft_component)
+        return
+    }
+
     const id_str = get_id_str_of_data_component(draft_component)
     const draft_key = `draft_component_${id_str}`
     const flattened = flatten_data_component_for_local_storage(draft_component)
@@ -229,6 +247,7 @@ function hydrate_data_component_from_local_storage(row: FlattenedDataComponentOr
 
 function notify_if_loaded_previously_saved_draft(
     previously_saved_draft: DataComponent | NewDataComponent | undefined,
+    version_mismatch: boolean,
     discard_previously_saved_draft: () => void,
 )
 {
@@ -237,6 +256,13 @@ function notify_if_loaded_previously_saved_draft(
         const close_in = 15 // seconds
         const timer = new CountdownTimer(close_in)
 
+        const on_click = () =>
+        {
+            discard_previously_saved_draft()
+            timer.destroy()
+            notifications.hide(notification_element_id)
+        }
+
         const notification_element_id = notifications.show({
             title: "Previously saved draft loaded",
             message: (<div
@@ -244,46 +270,81 @@ function notify_if_loaded_previously_saved_draft(
                 onPointerEnter={() => timer.stop()}
                 onPointerLeave={() => timer.start()}
             >
-                A previously saved draft has been loaded. You can either
-                <ul>
-                    <li>continue editing and save it as a new version</li>
-                    <li>
-                        or <span
-                            className="action-discard-changes"
-                            onClick={() =>
-                            {
-                                discard_previously_saved_draft()
-                                timer.destroy()
-                                notifications.hide(notification_element_id)
-                            }}
-                        >
-                            discard these changes
-                            <span style={{ marginLeft: 5, verticalAlign: "top" }}>
-                                <ActionIcon
-                                    size="xs"
-                                    variant="danger"
-                                >
-                                    <IconTrashX />
-                                </ActionIcon>
-                            </span>
-                        </span>
-                    </li>
-                </ul>
-                <span style={{ color: "darkgrey" }}>Closes in <Countdown timer={timer} /></span>
+                {version_mismatch
+                ? <VersionMismatchNotificationMessage on_click={on_click} />
+                : <SavedDraftLoadedNotificationMessage on_click={on_click} timer={timer} />}
             </div>),
-            color: "var(--primary-blue)",
+            color: version_mismatch ? "var(--mantine-color-red-9)" : "var(--primary-blue)",
+            position: "top-right",
             // autoClose: close_in * 1000,
             autoClose: false,
             withCloseButton: true,
             withBorder: true,
-            icon: "💾", // Use an emoji or an icon from your icon library
+            icon: <IconDeviceFloppy />,
             onClose: () => timer.destroy()
         })
 
         timer.subscribe(seconds_left =>
         {
-            if (seconds_left > 0) return
+            if (seconds_left > 0 || version_mismatch) return
             notifications.hide(notification_element_id)
         })
     }
+}
+
+
+/**
+ * Can these this functionality using this script replacing `draft_component_1`
+ * with the ID of the data component you are testing:
+ * id_str = "1"; go_earlier = () => { const d = JSON.parse(localStorage["draft_component_" + id_str]); d.draft_component.version_number --; localStorage.setItem("draft_component_" + id_str,JSON.stringify(d))}; go_earlier()
+ */
+function VersionMismatchNotificationMessage(props: { on_click: () => void })
+{
+    return <>
+        A previously saved draft has been loaded but it was made against
+        an older version of this data component.  You will need to
+        discard your changes and start again.  Please copy your changes
+        to somewhere else and then <span
+            className="action-discard-changes"
+            onClick={props.on_click}
+        >
+            discard these changes
+            <span style={{ marginLeft: 5, verticalAlign: "top" }}>
+                <ActionIcon
+                    size="xs"
+                    variant="danger"
+                >
+                    <IconTrashX />
+                </ActionIcon>
+            </span>
+        </span>
+    </>
+}
+
+
+function SavedDraftLoadedNotificationMessage(props: { on_click: () => void, timer: CountdownTimer })
+{
+    return <>
+        A previously saved draft has been loaded. You can either
+        <ul>
+            <li>continue editing and save it as a new version</li>
+            <li>
+                or <span
+                    className="action-discard-changes"
+                    onClick={props.on_click}
+                >
+                    discard these changes
+                    <span style={{ marginLeft: 5, verticalAlign: "top" }}>
+                        <ActionIcon
+                            size="xs"
+                            variant="danger"
+                        >
+                            <IconTrashX />
+                        </ActionIcon>
+                    </span>
+                </span>
+            </li>
+        </ul>
+        <span style={{ color: "darkgrey" }}>Closes in <Countdown timer={props.timer} /></span>
+    </>
 }

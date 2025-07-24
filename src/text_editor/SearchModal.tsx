@@ -47,7 +47,7 @@ export function SearchModal()
         opened={search_window_is_open}
         onClose={() => set_search_window_is_open(false)}
         title="Search"
-        zIndex={1000}
+        zIndex="var(--z-index-modal-search)"
     >
         {search_window_is_open && <div>
             <TextEditorV1
