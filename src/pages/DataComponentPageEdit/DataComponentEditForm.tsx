@@ -1,18 +1,24 @@
-import { useState } from "preact/hooks"
+import { ActionIcon } from "@mantine/core"
+import { notifications } from "@mantine/notifications"
+import IconTrashX from "@tabler/icons-react/dist/esm/icons/IconTrashX"
+import { useEffect, useState } from "preact/hooks"
 
-import { get_id_str_of_data_component } from "core/data/accessor"
+import { get_id_str_of_data_component, get_version_of_data_component } from "core/data/accessor"
 import { flatten_data_component_for_db, hydrate_data_component_from_db } from "core/data/convert_between_db"
 import { IdAndVersion, TempId } from "core/data/id"
 import { is_data_component, type DataComponent, type NewDataComponent } from "core/data/interface"
 import { changes_made } from "core/data/modify"
 
+import BinChangesButton from "../../buttons/BinChangesButton"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import type { AsyncDataComponentStatus } from "../../state/data_components/interface"
 import type { RootAppState } from "../../state/interface"
 import { app_store } from "../../state/store"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
+import Countdown, { CountdownTimer } from "../../ui_components/Countdown"
 import "./DataComponentEditForm.css"
 import { SavingModal } from "./SavingModal"
+
 
 
 interface DataComponentEditFormProps<V>
@@ -26,8 +32,8 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 {
     const state = app_store()
 
-    const { id } = state.user_auth_session.session?.user || {}
-    if (!id)
+    const { id: user_id } = state.user_auth_session.session?.user || {}
+    if (!user_id)
     {
         return <div className="page-container">
             <p>Please log in to edit this data component.</p>
@@ -38,14 +44,24 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 
     const [show_saving_modal, set_show_saving_modal] = useState(false)
 
-    const previously_saved_draft = load_previously_saved_draft(props.data_component) as V | undefined
-    const initial_component: V = {
+    const potential_initial_component = {
         ...props.data_component,
         comment: "", // Reset comment for new edits
         version_type: undefined, // Default to a normal change
+    }
+    const previously_saved_draft = load_previously_saved_draft(props.data_component) as V | undefined
+    const initial_component: V = {
+        ...potential_initial_component,
         ...previously_saved_draft,
     }
     const [draft_component, _set_draft_component] = useState<V>(initial_component)
+
+    function discard_previously_saved_draft()
+    {
+        clear_previously_saved_draft(draft_component)
+        window.location.reload() // Reload to reset the form
+    }
+    useEffect(() => notify_if_loaded_previously_saved_draft(previously_saved_draft, discard_previously_saved_draft), [])
 
 
     const set_draft_component = (updates: Partial<DataComponent | NewDataComponent>, compare_meta_fields?: boolean) =>
@@ -57,24 +73,28 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     }
 
     const no_changes_made = !changes_made(draft_component, props.data_component)
-    // Warn user if they try to navigate away with unsaved changes
-    // useEffect(() => warn_user_if_unsaved_changes(no_changes_made), [no_changes_made])
 
+    const version_mismatch = get_version_of_data_component(props.data_component) !== get_version_of_data_component(draft_component)
     const saving_in_progress = status === "saving"
     const disabled = (
+        version_mismatch ? "Version mismatch, please reload" :
         saving_in_progress ? "Saving..." :
         no_changes_made ? "No changes made" : false
     )
-    const editable = !saving_in_progress
+    const editable = !version_mismatch && !saving_in_progress
 
     return <>
         {/* This element provides space to show the edit / save button */}
         <div style={{ float: "right", width: "50px", height: "50px" }} />
-        <div style={{ position: "fixed", top: "50px", right: "30px" }}>
+        <div className="buttons-container">
             <EditOrSaveButton
                 disabled={disabled}
                 editing={true}
                 set_editing={() => set_show_saving_modal(true)}
+            />
+            <BinChangesButton
+                disabled={disabled}
+                on_click={discard_previously_saved_draft}
             />
         </div>
 
@@ -110,56 +130,6 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
         />
     </>
 }
-
-
-// function warn_user_if_unsaved_changes(no_changes_made: boolean)
-// {
-//     const handle_beforeunload = (event: BeforeUnloadEvent) =>
-//     {
-//         if (no_changes_made) return
-//         event.preventDefault()
-//     }
-
-//     const handle_popstate = () =>
-//     {
-//         if (no_changes_made) return
-//         window.alert("You have unsaved changes, they will be stored locally but may be lost.")
-//     }
-
-//     // Store original methods to intercept programmatic navigation
-//     const original_pushState = window.history.pushState
-//     const original_replaceState = window.history.replaceState
-
-//     const handle_pushState = function(this: History, state: any, title: string, url?: string | URL | null)
-//     {
-//         if (!no_changes_made)
-//         {
-//             window.alert("You have unsaved changes, they will be stored locally but may be lost.")
-//         }
-//         return original_pushState.call(this, state, title, url)
-//     }
-
-//     const handle_replaceState = function(this: History, state: any, title: string, url?: string | URL | null)
-//     {
-//         if (!no_changes_made)
-//         {
-//             window.alert("You have unsaved changes, they will be stored locally but may be lost.")
-//         }
-//         return original_replaceState.call(this, state, title, url)
-//     }
-
-//     window.addEventListener("beforeunload", handle_beforeunload)
-//     window.addEventListener("popstate", handle_popstate)
-//     window.history.pushState = handle_pushState
-//     window.history.replaceState = handle_replaceState
-
-//     return () => {
-//         window.removeEventListener("beforeunload", handle_beforeunload)
-//         window.removeEventListener("popstate", handle_popstate)
-//         window.history.pushState = original_pushState
-//         window.history.replaceState = original_replaceState
-//     }
-// }
 
 
 function store_draft_component_to_local(draft_component: DataComponent | NewDataComponent)
@@ -253,5 +223,67 @@ function hydrate_data_component_from_local_storage(row: FlattenedDataComponentOr
             temporary_id,
             ...hydrate_data_component_from_db(row),
         } as NewDataComponent
+    }
+}
+
+
+function notify_if_loaded_previously_saved_draft(
+    previously_saved_draft: DataComponent | NewDataComponent | undefined,
+    discard_previously_saved_draft: () => void,
+)
+{
+    if (previously_saved_draft)
+    {
+        const close_in = 15 // seconds
+        const timer = new CountdownTimer(close_in)
+
+        const notification_element_id = notifications.show({
+            title: "Previously saved draft loaded",
+            message: (<div
+                className="notifcation-draft-loaded"
+                onPointerEnter={() => timer.stop()}
+                onPointerLeave={() => timer.start()}
+            >
+                A previously saved draft has been loaded. You can either
+                <ul>
+                    <li>continue editing and save it as a new version</li>
+                    <li>
+                        or <span
+                            className="action-discard-changes"
+                            onClick={() =>
+                            {
+                                discard_previously_saved_draft()
+                                timer.destroy()
+                                notifications.hide(notification_element_id)
+                            }}
+                        >
+                            discard these changes
+                            <span style={{ marginLeft: 5, verticalAlign: "top" }}>
+                                <ActionIcon
+                                    size="xs"
+                                    variant="danger"
+                                >
+                                    <IconTrashX />
+                                </ActionIcon>
+                            </span>
+                        </span>
+                    </li>
+                </ul>
+                <span style={{ color: "darkgrey" }}>Closes in <Countdown timer={timer} /></span>
+            </div>),
+            color: "var(--primary-blue)",
+            // autoClose: close_in * 1000,
+            autoClose: false,
+            withCloseButton: true,
+            withBorder: true,
+            icon: "💾", // Use an emoji or an icon from your icon library
+            onClose: () => timer.destroy()
+        })
+
+        timer.subscribe(seconds_left =>
+        {
+            if (seconds_left > 0) return
+            notifications.hide(notification_element_id)
+        })
     }
 }

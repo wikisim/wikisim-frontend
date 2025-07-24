@@ -24,22 +24,27 @@
 }
 
 
-.saving-modal
+.buttons-container
 {
-    padding: 20px;
+    position: fixed;
+    top: 50px;
+    right: 30px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-}
-.saving-modal .buttons
-{
-    display: flex;
-    flex-direction: row;
     gap: 10px;
 }
 
-.saving-modal .error-message
+
+.notifcation-draft-loaded
 {
-    color: red;
-    font-weight: bold;
+    cursor: pointer;
+}
+
+.notifcation-draft-loaded .action-discard-changes
+{
+    color: var(--mantine-color-red-9);
+}
+.notifcation-draft-loaded .action-discard-changes:hover
+{
+    color: var(--mantine-color-red-8);
 }

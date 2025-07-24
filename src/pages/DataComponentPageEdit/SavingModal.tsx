@@ -1,7 +1,7 @@
 import { Button, Checkbox, Modal } from "@mantine/core"
 import { useEffect, useState } from "preact/hooks"
 
-import { get_id_str_of_data_component } from "core/data/accessor"
+import { get_id_str_of_data_component, get_version_of_data_component } from "core/data/accessor"
 import type { IdAndVersion } from "core/data/id"
 import { DataComponent, is_data_component, NewDataComponent } from "core/data/interface"
 
@@ -40,12 +40,6 @@ function get_id_and_version_of_async_data_component(async_data_component: AsyncD
 function get_version_of_async_data_component(async_data_component: AsyncDataComponent | AsyncNewDataComponent): number
 {
     return get_id_and_version_of_async_data_component(async_data_component)?.version || 0
-}
-
-function get_version_of_data_component(data_component: DataComponent | NewDataComponent): number
-{
-    if ("id" in data_component && "version" in data_component.id) return data_component.id.version
-    return 0
 }
 
 
