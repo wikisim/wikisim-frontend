@@ -1,6 +1,7 @@
 import { Button, Checkbox, Modal } from "@mantine/core"
 import { useEffect, useState } from "preact/hooks"
 
+import { get_id_str_of_data_component } from "core/data/accessor"
 import type { IdAndVersion } from "core/data/id"
 import { DataComponent, is_data_component, NewDataComponent } from "core/data/interface"
 
@@ -14,14 +15,13 @@ import "./SavingModal.css"
 
 function get_async_data_component_from_state(state: RootAppState, data_component: DataComponent | NewDataComponent): AsyncDataComponent | AsyncNewDataComponent | undefined
 {
+    const id_str = get_id_str_of_data_component(data_component)
     if (is_data_component(data_component))
     {
-        const id_str = data_component.id.to_str_without_version()
         return state.data_components.data_component_by_id_and_maybe_version[id_str]
     }
     else
     {
-        const id_str = data_component.temporary_id.to_str()
         return state.data_components.new_data_component_by_temp_id[id_str]
     }
 }

@@ -33,15 +33,23 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
     }, [props.data_component_id])
 
     const state2 = app_store()
-    const async_data_component = state2.data_components.data_component_by_id_and_maybe_version[props.data_component_id]!
+    const { data_component_by_id_and_maybe_version } = state2.data_components
+    // Assertion that the data component exists possible due to useMemo code above.
+    const async_data_component = data_component_by_id_and_maybe_version[props.data_component_id]!
     const { component, status } = async_data_component
 
     const parsed_id = parse_id(props.data_component_id)
     if (parsed_id instanceof IdAndVersion)
     {
         return <div className="page-container">
-            <p>Can only edit latest version of component.  Can not edit component with version in ID.</p>
-            <p>Use the <a href={ROUTES.DATA_COMPONENT.EDIT(parsed_id.as_IdOnly())}>edit page</a> to edit the latest version of this component.</p>
+            <p>
+                Can only edit latest version of component.  Can not edit
+                component with version in ID.
+            </p>
+            <p>
+                Use the <a href={ROUTES.DATA_COMPONENT.EDIT(parsed_id.as_IdOnly())}>edit page</a> to
+                edit the latest version of this component.
+            </p>
         </div>
     }
     else if (!component || status === "loading")
