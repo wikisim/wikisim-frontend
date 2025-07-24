@@ -301,14 +301,13 @@ function notify_if_loaded_previously_saved_draft(
 function VersionMismatchNotificationMessage(props: { on_click: () => void })
 {
     return <>
-        A previously saved draft has been loaded but it was made against
-        an older version of this data component.  You will need to
-        discard your changes and start again.  Please copy your changes
-        to somewhere else and then <span
+        A previously saved draft was loaded, but it is now out of date because
+        it was created for an older version of this data component. Please copy
+        any changes you wish to keep, <span
             className="action-discard-changes"
             onClick={props.on_click}
         >
-            discard these changes
+            discard this draft
             <span style={{ marginLeft: 5, verticalAlign: "top" }}>
                 <ActionIcon
                     size="xs"
@@ -317,7 +316,7 @@ function VersionMismatchNotificationMessage(props: { on_click: () => void })
                     <IconTrashX />
                 </ActionIcon>
             </span>
-        </span>
+        </span>, and then reapply your changes to the latest version if needed.
     </>
 }
 
