@@ -16,6 +16,7 @@ interface TextEditorV2 {
     auto_focus?: boolean
     on_update?: (html: string, json: any) => void
     label?: string
+    allow_cmd_enter_request_save?: boolean
 }
 
 export function TextEditorV2({
@@ -44,6 +45,14 @@ export function TextEditorV2({
                 class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""}`,
             },
             handleKeyDown: (_view, event) => {
+                // if cmd + enter is pressed, request save
+                if (event.key === "Enter" && (event.metaKey || event.ctrlKey))
+                {
+                    event.preventDefault()
+                    pub_sub.pub("request_to_save_component", true)
+                    return true
+                }
+
                 // Prevent new lines in single line mode
                 if (single_line && event.key === "Enter") {
                     event.preventDefault()

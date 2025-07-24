@@ -69,6 +69,7 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                         props.update_draft_data_component({ comment }, true)
                     }}
                     label="Comment (optional)"
+                    start_focused="focused"
                 />
 
                 <Checkbox

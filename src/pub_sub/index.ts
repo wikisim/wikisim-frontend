@@ -10,6 +10,7 @@ interface PublishableEvents
         search_requester_id: string
         data_component_id: number
     }
+    request_to_save_component: true
 }
 type PublishableEventTypes = keyof PublishableEvents
 type AllSubscribers = { [K in keyof PublishableEvents]?: {
