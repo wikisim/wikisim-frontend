@@ -3,6 +3,7 @@ import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react"
 import { useEffect, useMemo, useRef, useState } from "preact/hooks"
 
 import pub_sub from "../pub_sub"
+import { remove_p_tags } from "./sanitise_html"
 import "./TextEditorV2.css"
 import { get_tiptap_extensions } from "./tiptap_extensions"
 import { URLEditor } from "./URLEditor"
@@ -87,6 +88,7 @@ export function TextEditorV2({
             let html = editor.getHTML()
             // Replace every double space with space+&nbsp; to preserve multiple spaces visually
             html = html.replace(/ {2}/g, " &nbsp;")
+            if (single_line) html = remove_p_tags(html)
             on_update?.(html, json)
         },
     })
@@ -132,21 +134,8 @@ export function TextEditorV2({
                 .run()
         }, search_requester_id)
 
-        return () => {
-            // console .log(`unsubscribing "${search_requester_id}"`)
-            unsubscribe()
-        }
+        return () => unsubscribe()
     }, [editor, search_requester_id])
-
-
-    // const get_editor_data = useCallback(() => {
-    //     return {
-    //         json: editor.getJSON(),
-    //         html: editor.getHTML(),
-    //         text: editor.getText(),
-    //     }
-    // }, [editor])
-
 
     const focused = editor.isFocused
     const has_value = (editor.getText() || "").trim().length > 0

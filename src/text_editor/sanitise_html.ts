@@ -28,5 +28,23 @@ export function sanitize_with_TipTap(html: string, single_line: boolean): string
 
     const editor = single_line ? singleton_single_line_editor : singleton_editor
     editor.commands.setContent(html)
-    return editor.getHTML()
+    let html_string = editor.getHTML()
+
+    if (single_line)
+    {
+        html_string = remove_p_tags(html_string)
+    }
+
+    return html_string
+}
+
+
+export function remove_p_tags(html_string: string): string
+{
+    // For single line, we want to ensure it is not wrapped in a paragraph tag
+    if (html_string.startsWith("<p>") && html_string.endsWith("</p>"))
+    {
+        html_string = html_string.slice(3, -4)
+    }
+    return html_string
 }

@@ -7,6 +7,7 @@ import { clamp } from "core/utils/clamp"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
+import { sanitize_with_TipTap } from "../text_editor/sanitise_html"
 import Loading from "../ui_components/Loading"
 import { time_ago_or_date } from "../utils/time_ago_or_date"
 import "./DataComponentPageVersionHistory.css"
@@ -71,7 +72,7 @@ export function DataComponentPageVersionHistory(props: { data_component_id: stri
 
     return (
         <div className="page-container">
-            <h2>Version History for Data Component</h2>
+            <h2>Version History for <span dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true)}}/></h2>
 
             Page {page + 1} showing {number_to_show} of {max_version} from version {to_version} to {from_version}.
             {row_versions.map(v => <HistoryRow key={v} id={id.add_version(v)} />)}
