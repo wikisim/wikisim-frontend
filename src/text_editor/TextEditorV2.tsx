@@ -84,7 +84,9 @@ export function TextEditorV2({
         },
         onUpdate: ({ editor }) => {
             const json = editor.getJSON()
-            const html = editor.getHTML()
+            let html = editor.getHTML()
+            // Replace every double space with space+&nbsp; to preserve multiple spaces visually
+            html = html.replace(/ {2}/g, " &nbsp;")
             on_update?.(html, json)
         },
     })
