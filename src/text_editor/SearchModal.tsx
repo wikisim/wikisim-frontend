@@ -1,5 +1,6 @@
 import { Modal } from "@mantine/core"
 import { useEffect, useMemo, useState } from "preact/hooks"
+
 import pub_sub from "../pub_sub"
 import Loading from "../ui_components/Loading"
 import { is_mobile_device } from "../utils/is_mobile_device"
@@ -18,15 +19,6 @@ export function SearchModal()
             console.debug("search_for_reference event received", { search_requester_id })
             set_search_window_is_open(true)
             set_search_requester_id(search_requester_id)
-        })
-        // Cleanup function to unsubscribe when the component unmounts
-        return unsubscribe
-    }, [])
-
-    useEffect(() => {
-        const unsubscribe = pub_sub.sub("search_for_reference_completed", () => {
-            set_search_window_is_open(false)
-            set_search_requester_id("")
         })
         // Cleanup function to unsubscribe when the component unmounts
         return unsubscribe
@@ -69,6 +61,12 @@ export function SearchModal()
             <SearchResults
                 search_term={trimmed_search_term}
                 search_requester_id={search_requester_id}
+                on_search_completed={data =>
+                {
+                    pub_sub.pub("search_for_reference_completed", data)
+                    set_search_window_is_open(false)
+                    set_search_requester_id("")
+                }}
             />
         </div>}
 
@@ -76,10 +74,15 @@ export function SearchModal()
 }
 
 
-function SearchResults(props: { search_term: string, search_requester_id: string })
+interface SearchResultsProps
+{
+    search_term: string
+    search_requester_id: string
+    on_search_completed: (data: { search_requester_id: string, data_component_id: number }) => void
+}
+function SearchResults(props: SearchResultsProps)
 {
     const search_term = props.search_term.trim()
-    const { search_requester_id } = props
 
     const [results, set_results] = useState<SearchResultsResponse | undefined>(undefined)
 
@@ -91,7 +94,12 @@ function SearchResults(props: { search_term: string, search_requester_id: string
 
         let cancel_search = false
 
-        mock_search_async_api({search_term, search_requester_id, search_start_time}).then(new_results => {
+        mock_search_async_api({
+            search_term,
+            search_requester_id: props.search_requester_id,
+            search_start_time,
+        })
+        .then(new_results => {
             if (cancel_search) return
             set_results(current_results => {
                 // Return which ever results are newer based on search_id
@@ -102,7 +110,7 @@ function SearchResults(props: { search_term: string, search_requester_id: string
         })
 
         return () => cancel_search = true
-    }, [search_term])
+    }, [search_term, props.search_requester_id])
 
 
     return <div>
@@ -114,24 +122,21 @@ function SearchResults(props: { search_term: string, search_requester_id: string
         {results?.search_term &&
             (results.result_rows.length > 0 ? (
                 <table>
-                    {results.result_rows.map((row, index) => (
+                    {results.result_rows.map((row, index) =>
                         <tr
                             key={index}
                             style={{ cursor: "pointer" }}
-                            onClick={() => {
-                                console.debug("publishing search_for_reference_completed", {
-                                    search_requester_id,
-                                    data_component_id: row.data_component_id,
-                                })
-                                pub_sub.pub("search_for_reference_completed", {
-                                    search_requester_id,
+                            onClick={() =>
+                            {
+                                props.on_search_completed({
+                                    search_requester_id: results.search_requester_id,
                                     data_component_id: row.data_component_id,
                                 })
                             }}
                         >
                             <td>{row.title}</td>
                         </tr>
-                    ))}
+                    )}
                 </table>
             ) : (
                 <p>No results found.</p>
@@ -166,7 +171,7 @@ interface SearchResultsResponse extends SearchResultsRequest
 }
 function mock_search_async_api (request: SearchResultsRequest & { search_start_time: number }): Promise<SearchResultsResponse>
 {
-    const { search_term, search_start_time, search_requester_id } = request
+    const { search_term, search_requester_id, search_start_time } = request
 
     return new Promise(resolve => {
         setTimeout(() => {
@@ -178,8 +183,8 @@ function mock_search_async_api (request: SearchResultsRequest & { search_start_t
             ]
             resolve({
                 search_term,
-                search_start_time,
                 search_requester_id,
+                search_start_time,
                 result_rows: mock_results
             })
         }, search_term.length < 2 ? 5000 : 1000) // Simulate network delay

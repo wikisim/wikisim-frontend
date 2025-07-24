@@ -1,11 +1,11 @@
 import { expect } from "chai"
 import sinon from "sinon"
 
+import { IdAndVersion, IdOnly } from "core/data/id"
+import { init_data_component } from "core/data/modify"
 import { create_mocked_supabase } from "core/test/mock_supabase_and_session"
 
 import { mutate_store_state_with_loaded_data_components } from "."
-import { IdAndVersion, IdOnly } from "../../../lib/core/src/data/id"
-import { init_data_component } from "../../../lib/core/src/data/modify"
 import { RootAppState } from "../interface"
 import { AppStore, get_new_app_store } from "../store"
 import { get_async_data_component } from "./accessor"
