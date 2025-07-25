@@ -23,11 +23,20 @@ export function SearchResults(props: SearchResultsProps)
 
     const [search_response, set_search_response] = useState<SearchResultsResponse | undefined>(undefined)
     const [selected_result_index, set_selected_result_index] = useState<number | null>(null)
-    const number_of_results = search_response?.results?.data_components.length ?? 0
+
+    const error = search_response?.error
+    const results = search_response?.results
+    const data_components = results?.data_components || []
 
     useEffect(() => search_async_api({ search_term, search_requester_id }, set_search_response), [search_term, props.search_requester_id])
 
+    useEffect(() => {
+        // When props.search_term changes, reset the selected result index
+        set_selected_result_index(null)
+    }, [props.search_term])
+
     // Allow arrow keys to navigate results
+    const number_of_results = data_components.length
     useEffect(() => pub_sub.sub("key_down", data =>
     {
         if (number_of_results === 0) return
@@ -41,11 +50,26 @@ export function SearchResults(props: SearchResultsProps)
         if (next_index < 0) next_index = number_of_results - 1
         else if (next_index >= number_of_results) next_index = 0
 
+
         set_selected_result_index(next_index)
     }), [number_of_results, selected_result_index])
 
-    const results = search_response?.results
-    const error = search_response?.error
+
+    // Allow Enter key to act like clicking on result
+    useEffect(() => pub_sub.sub("key_down", data =>
+    {
+        if (data_components.length === 0) return
+
+        if (data.key !== "Enter" || selected_result_index === null) return
+        // If Enter is pressed, choose the currently selected result
+        const result = data_components[selected_result_index]
+        if (!result) return
+        props.on_chosen_search_result({
+            search_requester_id: search_response!.results!.search_requester_id,
+            data_component_id: result.id.id,
+        })
+    }), [data_components, selected_result_index])
+
 
     return <div>
         {search_term && (search_term !== results?.search_term
