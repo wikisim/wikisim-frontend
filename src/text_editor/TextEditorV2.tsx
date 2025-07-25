@@ -44,7 +44,8 @@ export function TextEditorV2({
             attributes: {
                 class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""}`,
             },
-            transformPastedHTML: (html) => {
+            transformPastedHTML: (html) =>
+            {
                 if (single_line)
                 {
                     // Strip newlines and convert block elements to spaces for single-line fields
@@ -56,7 +57,8 @@ export function TextEditorV2({
                 }
                 return html
             },
-            transformPastedText: (text) => {
+            transformPastedText: (text) =>
+            {
                 if (single_line)
                 {
                     // Strip newlines from plain text for single-line fields
@@ -64,7 +66,8 @@ export function TextEditorV2({
                 }
                 return text
             },
-            handleKeyDown: (_view, event) => {
+            handleKeyDown: (_view, event) =>
+            {
                 // if cmd + enter is pressed, request save
                 if (event.key === "Enter" && (event.metaKey || event.ctrlKey))
                 {
@@ -83,7 +86,8 @@ export function TextEditorV2({
                 }
 
                 // Handle keyboard shortcuts
-                if (event.ctrlKey || event.metaKey) {
+                if (event.ctrlKey || event.metaKey)
+                {
                     switch (event.key) {
                         case "b":
                             event.preventDefault()
@@ -103,7 +107,8 @@ export function TextEditorV2({
                             return true
                     }
                 }
-                switch (event.key) {
+                switch (event.key)
+                {
                     case "@":
                         event.preventDefault()
                         event.stopImmediatePropagation()
@@ -115,7 +120,8 @@ export function TextEditorV2({
                 return false
             },
         },
-        onUpdate: ({ editor }) => {
+        onUpdate: ({ editor }) =>
+        {
             const json = editor.getJSON()
             let html = editor.getHTML()
             // Replace every double space with space+&nbsp; to preserve multiple spaces visually
