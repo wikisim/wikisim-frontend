@@ -233,7 +233,16 @@ export function TextEditorV2({
                 }}
             />}
 
-            <ContextMenu editor={editor} set_edit_url_enabled={set_edit_url_enabled} />
+            <ContextMenu
+                editor={editor}
+                set_edit_url_enabled={set_edit_url_enabled}
+                set_superscript_enabled={(selection) =>
+                {
+                    if (!selection) return
+                    const { from, to } = selection
+                    editor.chain().focus().setTextSelection({ from, to }).toggleSuperscript().run()
+                }}
+            />
 
             {/* <div className="editor-toolbar">
                 <button
@@ -288,16 +297,23 @@ interface ContextMenuProps
 {
     editor: Editor
     set_edit_url_enabled: (selection: Selection | undefined) => void
+    set_superscript_enabled: (selection: Selection | undefined) => void
 }
-function ContextMenu({ editor, set_edit_url_enabled }: ContextMenuProps)
+function ContextMenu({ editor, ...props }: ContextMenuProps)
 {
     return (
         <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
             <button
-                onClick={() => set_edit_url_enabled(editor.state.selection)}
+                onClick={() => props.set_edit_url_enabled(editor.state.selection)}
                 style={{ marginRight: 8 }}
             >
                 Add/Edit Link
+            </button>
+            <button
+                onClick={() => props.set_superscript_enabled(editor.state.selection)}
+                style={{ marginRight: 8 }}
+            >
+                <sup>2</sup>
             </button>
             {/* ...other buttons */}
         </BubbleMenu>

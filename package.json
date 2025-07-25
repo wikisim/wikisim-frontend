@@ -22,6 +22,7 @@
         "@tiptap/extension-highlight": "2.24.1",
         "@tiptap/extension-link": "2.24.1",
         "@tiptap/extension-mention": "2.24.1",
+        "@tiptap/extension-superscript": "3.0.7",
         "@tiptap/extension-typography": "2.24.1",
         "@tiptap/extension-underline": "2.24.1",
         "@tiptap/pm": "2.24.1",

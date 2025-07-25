@@ -1,5 +1,6 @@
 import Highlight from "@tiptap/extension-highlight"
 import Link from "@tiptap/extension-link"
+import Superscript from "@tiptap/extension-superscript"
 import Typography from "@tiptap/extension-typography"
 import Underline from "@tiptap/extension-underline"
 import StarterKit from "@tiptap/starter-kit"
@@ -26,6 +27,7 @@ export function get_tiptap_extensions(single_line: boolean)
         Typography,
         Underline,
         CustomReferences,
+        Superscript,
         Link.configure({
             openOnClick: false,
             HTMLAttributes: {
