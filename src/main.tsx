@@ -14,6 +14,7 @@ import { DataComponentPageVersionHistory } from "./pages/DataComponentPageVersio
 import { DataComponentsSearchPage } from "./pages/DataComponentsSearchPage"
 import { HomePage } from "./pages/HomePage"
 import { UserPage } from "./pages/UserPage"
+import "./pub_sub/publish_key_down_events"
 import "./remove_supabase_hash"
 import { ROUTES } from "./routes"
 import { TextEditorDemos } from "./text_editor/Demos"
