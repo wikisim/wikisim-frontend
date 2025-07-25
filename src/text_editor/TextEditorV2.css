@@ -120,6 +120,6 @@
 
 
 .editor-link {
-    color: #1976d2;
+    color: var(--link-color);
     text-decoration: underline;
 }

@@ -1,5 +1,6 @@
 import Mention from "@tiptap/extension-mention"
 
+import pub_sub from "../pub_sub"
 import "./CustomReferences.css"
 
 
@@ -92,16 +93,28 @@ const CustomMention = Mention.extend({
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             dom.setAttribute("data-label", node.attrs.label)
 
-            const percentage = "+20%"
-            dom.innerHTML = `<span style="color: #1976d2;">${node.attrs.label}</span> (${percentage})`
-            dom.className += " alternative-value"
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const dangerous_str = node.attrs.label || node.attrs.id || ""
+            const label = String(dangerous_str)
+            const label_span = document.createElement("span")
+            label_span.style.color = "var(--link-color)"
+
+            // Use textContent instead of innerHTML to prevent XSS
+            label_span.textContent = label
+            dom.appendChild(label_span)
+
+            // const percentage = "+20%"
+            // dom.className += " alternative-value"
 
             // Make chip clickable and editable
             dom.addEventListener("click", (e) =>
             {
                 e.preventDefault()
-                // You could open an edit modal here
-                console.log("Clicked mention:", node.attrs)
+                // When editing, we will want to add some different functionality
+                // here that allows the user to customise / edit the reference.
+                // For now, we just publish an mention_clicked event and that
+                // will redirect to the corresponding data component view.
+                pub_sub.pub("mention_clicked", { data_component_id: node.attrs.id as string })
             })
 
             return { dom }

@@ -171,17 +171,14 @@ export function TextEditorV2({
                 cursor_position_on_blur_to_search.current = undefined
             }
 
-            // If no data_component_id was selected then do nothing
-            if (!data.data_component_id) return
-
             // Insert the selected search result into the editor
             editor_chain
                 // .deleteRange({ from: editor.state.selection.from - 1, to: editor.state.selection.from })
                 .insertContent({
                     type: "customMention",
                     attrs: {
-                        id: data.data_component_id,
-                        label: data.data_component_id,
+                        id: data.data_component.id.id,
+                        label: data.data_component.plain_title,
                     },
                 })
                 .run()

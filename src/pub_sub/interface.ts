@@ -1,3 +1,4 @@
+import { DataComponent } from "../../lib/core/src/data/interface"
 
 export interface PublishableEvents
 {
@@ -9,7 +10,7 @@ export interface PublishableEvents
     search_for_reference_completed: {
         // Identifier of which DOM component is requesting the search
         search_requester_id: string
-        data_component_id: number
+        data_component: DataComponent
     }
     request_to_save_component: true
     key_down: {
@@ -22,5 +23,8 @@ export interface PublishableEvents
         shiftKey: boolean
         altKey: boolean
         timestamp: number
+    }
+    mention_clicked: {
+        data_component_id: string
     }
 }

@@ -133,13 +133,13 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
             if (data.search_requester_id !== search_requester_id) return
             unsubscribe()
 
-            cursor_position_on_blur_to_search.current = cursor_position + data.data_component_id.toString().length
+            cursor_position_on_blur_to_search.current = cursor_position + data.data_component.id.toString().length
 
             // Insert the selected search result into the input
             set_value(current_value => {
                 const new_value = (
                     current_value.slice(0, cursor_position)
-                    + data.data_component_id
+                    + data.data_component.id.to_str_without_version()
                     + current_value.slice(cursor_position)
                 )
                 return new_value

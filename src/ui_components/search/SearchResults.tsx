@@ -14,7 +14,7 @@ interface SearchResultsProps
 {
     search_term: string
     search_requester_id: string
-    on_chosen_search_result: (data: { search_requester_id: string, data_component_id: number }) => void
+    on_chosen_search_result: (data: { search_requester_id: string, data_component: DataComponent }) => void
 }
 export function SearchResults(props: SearchResultsProps)
 {
@@ -66,7 +66,7 @@ export function SearchResults(props: SearchResultsProps)
         if (!result) return
         props.on_chosen_search_result({
             search_requester_id: search_response!.results!.search_requester_id,
-            data_component_id: result.id.id,
+            data_component: result,
         })
     }), [data_components, selected_result_index])
 
@@ -90,7 +90,7 @@ export function SearchResults(props: SearchResultsProps)
                             {
                                 props.on_chosen_search_result({
                                     search_requester_id: results.search_requester_id,
-                                    data_component_id: row.id.id,
+                                    data_component: row,
                                 })
                             }}
                             onPointerMove={() => set_selected_result_index(index)}
