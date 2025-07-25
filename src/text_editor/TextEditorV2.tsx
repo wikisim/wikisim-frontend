@@ -44,6 +44,26 @@ export function TextEditorV2({
             attributes: {
                 class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""}`,
             },
+            transformPastedHTML: (html) => {
+                if (single_line)
+                {
+                    // Strip newlines and convert block elements to spaces for single-line fields
+                    return html
+                        .replace(/\n/g, " ")
+                        .replace(/<\/?(div|p|br|h[1-6]|ul|ol|li)[^>]*>/gi, " ")
+                        .replace(/\s+/g, " ")
+                        .trim()
+                }
+                return html
+            },
+            transformPastedText: (text) => {
+                if (single_line)
+                {
+                    // Strip newlines from plain text for single-line fields
+                    return text.replace(/\n/g, " ").replace(/\s+/g, " ").trim()
+                }
+                return text
+            },
             handleKeyDown: (_view, event) => {
                 // if cmd + enter is pressed, request save
                 if (event.key === "Enter" && (event.metaKey || event.ctrlKey))
@@ -53,8 +73,11 @@ export function TextEditorV2({
                     return true
                 }
 
-                // Prevent new lines in single line mode
-                if (single_line && event.key === "Enter") {
+                // Prevent new lines in single line mode, does not prevent
+                // content containing new lines from being pasted in.  See
+                // transformPastedHTML and transformPastedText for that behavior.
+                if (single_line && event.key === "Enter")
+                {
                     event.preventDefault()
                     return true
                 }
