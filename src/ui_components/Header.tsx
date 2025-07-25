@@ -2,8 +2,11 @@ import { Button, Menu, Modal, TextInput } from "@mantine/core"
 import IconLogout from "@tabler/icons-react/dist/esm/icons/IconLogout"
 import IconUser from "@tabler/icons-react/dist/esm/icons/IconUser"
 import { h } from "preact"
-import { useEffect, useState } from "preact/hooks"
+import { useLocation } from "preact-iso"
+import { useEffect, useRef, useState } from "preact/hooks"
 
+import pub_sub from "../pub_sub"
+import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import "./Header.css"
 import Loading from "./Loading"
@@ -11,6 +14,7 @@ import Loading from "./Loading"
 
 export default function Header()
 {
+    const location = useLocation()
     const [show_user_options_dropdown, set_show_user_options_dropdown] = useState(false)
     const toggle_show_user_options_dropdown = () => set_show_user_options_dropdown(!show_user_options_dropdown)
 
@@ -21,6 +25,9 @@ export default function Header()
                     WikiSim
                 </h1>
             </a>
+
+            {!location.path.startsWith("/wiki/search") && <SearchBar />}
+
             <nav className="right">
                 <UserSession
                     toggle_show_user_options_dropdown={toggle_show_user_options_dropdown}
@@ -32,6 +39,55 @@ export default function Header()
             </nav>
 
         </header>
+    )
+}
+
+
+function SearchBar()
+{
+    const location = useLocation()
+    const [search_query, set_search_query] = useState("")
+    const text_input_ref = useRef<HTMLInputElement | null>(null)
+
+    useEffect(() =>
+    {
+        return pub_sub.sub("key_down", event =>
+        {
+            if (event.key === "k" && event.ctrlKey)
+            {
+                // Focus the search input when Ctrl+K is pressed
+                text_input_ref.current?.focus()
+                text_input_ref.current?.select() // Select the text in the input
+            }
+        })
+    }, [])
+
+    const navigate_to_search = () => location.route(ROUTES.DATA_COMPONENT.SEARCH(search_query))
+
+    return (
+        <div className="search-bar">
+            <TextInput
+                ref={text_input_ref}
+                className="search-input"
+                value={search_query}
+                onChange={(e: h.JSX.TargetedEvent<HTMLInputElement, Event>) =>
+                {
+                    set_search_query(e.currentTarget.value)
+                }}
+                onKeyDown={(e: h.JSX.TargetedKeyboardEvent<HTMLInputElement>) =>
+                {
+                    if (e.key === "Enter") navigate_to_search()
+                    if (e.key === "Escape") text_input_ref.current?.blur() // Remove focus from the input
+                }}
+                placeholder={"Search WikiSim... (Ctrl+K)"}
+            />
+            <Button
+                variant={"outline"}
+                onClick={navigate_to_search}
+            >
+                Search
+            </Button>
+        </div>
     )
 }
 

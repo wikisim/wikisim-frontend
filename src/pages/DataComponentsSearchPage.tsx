@@ -5,6 +5,7 @@ import { ROUTES } from "../routes"
 import { TextEditorV1 } from "../text_editor/TextEditorV1"
 import { SearchResults } from "../ui_components/search/SearchResults"
 import { debounce } from "../utils/debounce"
+import "./DataComponentsSearchPage.css"
 
 
 export function DataComponentsSearchPage()
@@ -31,6 +32,7 @@ export function DataComponentsSearchPage()
                 label="Search for..."
                 single_line={true}
                 start_focused="focused_and_text_selected"
+                trigger_search_on_at_symbol={false}
             />
 
             <SearchResults

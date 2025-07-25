@@ -72,11 +72,12 @@ function App() {
                 zIndex: "var(--z-index-notifications)",
             }}
         />
-        <Header />
-        <div className="main-app-container">
-            <SearchModal />
 
-            <LocationProvider>
+        <SearchModal />
+
+        <LocationProvider>
+            <Header />
+            <div className="main-app-container">
                 <ErrorBoundary>
                     <Router>
                         <Route path="/" component={HomePage} />
@@ -91,9 +92,10 @@ function App() {
                         <Route default component={NotFound} />
                     </Router>
                 </ErrorBoundary>
-            </LocationProvider>
+            </div>
+        </LocationProvider>
 
-        </div>
+
     </MantineProvider>
 }
 

@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "preact/hooks"
 
 import "../monkey_patch"
 import pub_sub from "../pub_sub"
+import "./TextEditorV1.css"
 
 
 interface SingleLineTextInputProps
@@ -147,12 +148,7 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
     }, [])
 
     return (
-        <div style={{
-            position: "relative",
-            marginTop: 5,
-            marginBottom: 24,
-            width: "fit-content" // Adjust width to fit content
-        }}>
+        <div className="text-editor-v1">
             {allow_multiline ? (
                 <textarea
                     {...props}
