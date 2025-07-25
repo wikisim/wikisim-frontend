@@ -54,7 +54,7 @@ function App() {
                             // backgroundColor: "#ffffff",
                             // color: "#374151",
 
-                            border: "1px solid #dee2e6",
+                            border: "1px solid var(--border-color)",
                             // fontSize: "12px",
                             // fontWeight: 500,
                         },

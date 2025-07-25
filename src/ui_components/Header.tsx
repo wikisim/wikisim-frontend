@@ -51,9 +51,9 @@ function SearchBar()
 
     useEffect(() =>
     {
-        return pub_sub.sub("key_down", event =>
+        return pub_sub.sub("key_down", data =>
         {
-            if (event.key === "k" && event.ctrlKey)
+            if (data.key === "k" && data.ctrlKey)
             {
                 // Focus the search input when Ctrl+K is pressed
                 text_input_ref.current?.focus()

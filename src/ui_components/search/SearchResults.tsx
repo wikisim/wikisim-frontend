@@ -5,7 +5,9 @@ import { DataComponent } from "core/data/interface"
 import { convert_tiptap_text_to_plain_text } from "core/rich_text/editor"
 import { get_supabase } from "core/supabase"
 
+import pub_sub from "../../pub_sub"
 import Loading from "../../ui_components/Loading"
+import "./SearchResults.css"
 
 
 interface SearchResultsProps
@@ -20,8 +22,27 @@ export function SearchResults(props: SearchResultsProps)
     const search_term = props.search_term.trim()
 
     const [search_response, set_search_response] = useState<SearchResultsResponse | undefined>(undefined)
+    const [selected_result_index, set_selected_result_index] = useState<number | null>(null)
+    const number_of_results = search_response?.results?.data_components.length ?? 0
 
     useEffect(() => search_async_api({ search_term, search_requester_id }, set_search_response), [search_term, props.search_requester_id])
+
+    // Allow arrow keys to navigate results
+    useEffect(() => pub_sub.sub("key_down", data =>
+    {
+        if (number_of_results === 0) return
+
+        let direction = 0
+        if (data.key === "ArrowDown") direction = 1
+        else if (data.key === "ArrowUp") direction = -1
+        else return
+
+        let next_index = (selected_result_index ?? -1) + direction
+        if (next_index < 0) next_index = number_of_results - 1
+        else if (next_index >= number_of_results) next_index = 0
+
+        set_selected_result_index(next_index)
+    }), [number_of_results, selected_result_index])
 
     const results = search_response?.results
     const error = search_response?.error
@@ -36,11 +57,11 @@ export function SearchResults(props: SearchResultsProps)
 
         {results?.search_term &&
             (results.data_components.length > 0 ? (
-                <table>
+                <div className="search-results-table">
                     {results.data_components.map((row, index) =>
-                        <tr
+                        <div
                             key={index}
-                            style={{ cursor: "pointer" }}
+                            className={"result-row " + (selected_result_index === index ? "selected" : "")}
                             onClick={() =>
                             {
                                 props.on_chosen_search_result({
@@ -48,14 +69,15 @@ export function SearchResults(props: SearchResultsProps)
                                     data_component_id: row.id.id,
                                 })
                             }}
+                            onPointerMove={() => set_selected_result_index(index)}
                         >
-                            <td>{convert_tiptap_text_to_plain_text(row.title)}</td>
-                            <td style={{ color: "#ccc", fontSize: 13, paddingTop: 4.5 }}>
+                            {convert_tiptap_text_to_plain_text(row.title)}
+                            <span style={{ color: "#ccc", fontSize: 13, padding: "4.5px 0 0 5px" }}>
                                 id {row.id.id}
-                            </td>
-                        </tr>
+                            </span>
+                        </div>
                     )}
-                </table>
+                </div>
             ) : (
                 <p>No results found.</p>
             ))
