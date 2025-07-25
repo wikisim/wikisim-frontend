@@ -4,6 +4,7 @@ export interface PublishableEvents
     search_for_reference: {
         // Identifier of which DOM component is requesting the search
         search_requester_id: string
+        search_term?: string
     }
     search_for_reference_completed: {
         // Identifier of which DOM component is requesting the search

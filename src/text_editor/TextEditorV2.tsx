@@ -68,6 +68,9 @@ export function TextEditorV2({
             },
             handleKeyDown: (_view, event) =>
             {
+                // type guard
+                if (!editor) return false
+
                 // if cmd + enter is pressed, request save
                 if (event.key === "Enter" && (event.metaKey || event.ctrlKey))
                 {
@@ -91,31 +94,43 @@ export function TextEditorV2({
                     switch (event.key) {
                         case "b":
                             event.preventDefault()
-                            editor?.chain().focus().toggleBold().run()
+                            editor.chain().focus().toggleBold().run()
                             return true
                         case "i":
                             event.preventDefault()
-                            editor?.chain().focus().toggleItalic().run()
+                            editor.chain().focus().toggleItalic().run()
                             return true
                         case "u":
                             event.preventDefault()
-                            editor?.chain().focus().toggleUnderline().run()
+                            editor.chain().focus().toggleUnderline().run()
                             return true
                         case "k":
                             event.preventDefault()
-                            set_edit_url_enabled(editor?.state.selection)
+                            set_edit_url_enabled(editor.state.selection)
                             return true
                     }
                 }
-                switch (event.key)
+
+                if (event.key === "@")
                 {
-                    case "@":
-                        event.preventDefault()
-                        event.stopImmediatePropagation()
-                        cursor_position_on_blur_to_search.current = editor?.state.selection.from
-                        // Trigger reference search modal to show
-                        pub_sub.pub("search_for_reference", { search_requester_id })
-                        return true
+                    event.preventDefault()
+                    event.stopImmediatePropagation()
+                    cursor_position_on_blur_to_search.current = editor.state.selection.from;
+                    // Select the text after the @ symbol
+                    const max_length = editor.state.doc.textContent.length
+                    const proceeding_text = editor.state.doc.textBetween(
+                        editor.state.selection.from,
+                        Math.min((max_length - editor.state.selection.from), 100),
+                        " "
+                    )
+                    const next_word = proceeding_text.split(" ")[0]
+
+                    // Trigger reference search modal to show
+                    pub_sub.pub("search_for_reference", {
+                        search_requester_id,
+                        search_term: next_word,
+                    })
+                    return true
                 }
                 return false
             },

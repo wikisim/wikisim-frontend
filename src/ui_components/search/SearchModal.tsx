@@ -16,10 +16,12 @@ export function SearchModal()
     const trimmed_search_term = search_term.trim()
 
     useEffect(() => {
-        const unsubscribe = pub_sub.sub("search_for_reference", ({ search_requester_id }) => {
-            console.debug("search_for_reference event received", { search_requester_id })
+        const unsubscribe = pub_sub.sub("search_for_reference", data =>
+        {
+            console.debug("search_for_reference event received", data)
             set_search_window_is_open(true)
-            set_search_requester_id(search_requester_id)
+            set_search_requester_id(data.search_requester_id)
+            set_search_term(data.search_term || "")
         })
         // Cleanup function to unsubscribe when the component unmounts
         return unsubscribe
