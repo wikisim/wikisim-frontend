@@ -131,10 +131,10 @@ export function TextEditorV2({
                     event.stopImmediatePropagation()
                     cursor_position_on_blur_to_search.current = editor.state.selection.from
                     // Select the text after the @ symbol
-                    const max_length = editor.state.doc.textContent.length
+                    const max_length = editor.state.doc.content.size
                     const proceeding_text = editor.state.doc.textBetween(
                         editor.state.selection.from,
-                        Math.min((max_length - editor.state.selection.from), 100),
+                        Math.min(max_length, editor.state.selection.from + 100),
                         " "
                     )
                     const next_word = proceeding_text.split(" ")[0]
