@@ -30,13 +30,13 @@ export function URLEditor (props: URLEditorProps)
     //      * Choose the first link to edit.
 
     const result = find_first_link_from_selection(selection)
-    let initial_text = result.text
+    let initial_text = result.text.trim()
     let initial_url = result.url
 
     // Case 3: Text selected, no existing link, text is valid URL
     if (initial_text && !initial_url && is_valid_URL(initial_text))
     {
-        initial_url = (initial_text.startsWith("http://") || initial_text.startsWith("https://"))
+        initial_url = (initial_text.startsWith("http://") || initial_text.startsWith("https://") || initial_text.startsWith("/wiki/"))
             ? initial_text
             : `https://${initial_text}` // Default to https if no protocol is specified
         initial_text = ""
@@ -125,10 +125,12 @@ function InnerURLEditor(props: InnerURLEditorProps)
         handle_apply() // Apply changes on Enter
     }
 
-    const handle_apply = () => {
+    const handle_apply = () =>
+    {
         // Ensure URL has protocol if it doesn't already
         let final_url = url.trim()
-        if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
+        if (url && !url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("/wiki/"))
+        {
             final_url = `https://${url}`
         }
 

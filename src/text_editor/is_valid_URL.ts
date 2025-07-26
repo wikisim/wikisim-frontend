@@ -15,6 +15,13 @@ export function is_valid_URL(string: string): boolean
         {
             return true
         }
+
+        // Check for internal wiki URLs matching "/wiki/123"
+        if (/^\/wiki\/[0-9]+$/.test(string.trim()))
+        {
+            return true
+        }
+
         return false
     }
 }

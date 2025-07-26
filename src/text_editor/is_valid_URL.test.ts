@@ -18,6 +18,14 @@ describe("is_valid_URL", () => {
         expect(is_valid_URL("http:/invalid.com")).equals(true)
     })
 
+    it("should handle internal /wiki/ links", () => {
+        expect(is_valid_URL("/wiki/1")).equals(true)
+        expect(is_valid_URL("  /wiki/1  ")).equals(true)
+
+        expect(is_valid_URL("/wiki/")).equals(false)
+        expect(is_valid_URL("/wiki/invalid")).equals(false)
+    })
+
     it("should return false for invalid URLs", () => {
         expect(is_valid_URL("invalid-url")).equals(false)
         // rejects prepended whitespace
