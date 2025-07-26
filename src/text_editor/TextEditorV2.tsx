@@ -56,12 +56,15 @@ export function TextEditorV2({
                 // This is not a good UX for inserting images but it is a work
                 // around for now.
                 const text = clipboard_data.getData("text/plain").trim()
-                const image_URL_pattern = /^(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|svg|webp|bmp|tiff?))(\?.*)?$/i
-                if (!image_URL_pattern.test(text)) return false
+                let success = convert_image_url_into_img_tag(text, editor, event)
+                if (success) return true
 
-                editor.chain().focus().setImage({ src: text, width: 400 }).run()
-                event.preventDefault()
-                return true
+                // Allow Wikicommons-style <a><img/></a> pastes. This seems to
+                // specific and brittle but we'll experiment with it for now.
+                success = handle_wikicommons_image_paste(text, editor, event)
+                if (success) return true
+
+                return false
             },
             transformPastedHTML: (html) =>
             {
@@ -126,7 +129,7 @@ export function TextEditorV2({
                 {
                     event.preventDefault()
                     event.stopImmediatePropagation()
-                    cursor_position_on_blur_to_search.current = editor.state.selection.from;
+                    cursor_position_on_blur_to_search.current = editor.state.selection.from
                     // Select the text after the @ symbol
                     const max_length = editor.state.doc.textContent.length
                     const proceeding_text = editor.state.doc.textBetween(
@@ -340,4 +343,71 @@ function ContextMenu({ editor, ...props }: ContextMenuProps)
             {/* ...other buttons */}
         </BubbleMenu>
     )
+}
+
+
+function convert_image_url_into_img_tag(text: string, editor: Editor, event: ClipboardEvent): true | undefined
+{
+    const image_URL_pattern = /^(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|svg|webp|bmp|tiff?))(\?.*)?$/i
+    if (image_URL_pattern.test(text))
+    {
+        editor.chain().focus().setImage({ src: text, width: 400 }).run()
+        event.preventDefault()
+        return true
+    }
+    return undefined
+}
+
+
+function handle_wikicommons_image_paste(text: string, editor: Editor, event: ClipboardEvent): true | undefined
+{
+    // Allow Wikicommons-style <a><img/></a> pastes, i.e. a user:
+    //  1. is reading an article on Wikipedia e.g.: https://en.wikipedia.org/wiki/Collaboration
+    //  2. they click on an image in Wikipedia, e.g.: https://en.wikipedia.org/wiki/Collaboration#/media/File:3d10_fm_de_vilafranca.jpg
+    //  3. they click on the "More Details" link in the bottom right corner and go to the Wikicommons page e.g.: https://commons.wikimedia.org/wiki/File:3d10_fm_de_vilafranca.jpg
+    //  4. they click on the "Use this file (on the web)" link and copy the HTML from that page which will be in the format: <a><img/></a>
+    //  5. they paste that content into the editor
+    try {
+        const doc = new DOMParser().parseFromString(text, "text/html")
+        const a = doc.body.firstElementChild
+        if (
+            a &&
+            a.tagName === "A" &&
+            a.children.length === 1 &&
+            a.children[0]!.tagName === "IMG"
+        ) {
+            const href = a.getAttribute("href") || ""
+            const title = a.getAttribute("title") || "Wikipedia"
+
+            const img_src = a.children[0]!.getAttribute("src") || ""
+            const img_width = 400
+
+            // Insert an image, then a caption with a link beneath it
+            editor.chain()
+                .focus()
+                .insertContent([
+                    {
+                        type: "image",
+                        attrs: { src: img_src, title, width: img_width },
+                    },
+                    {
+                        type: "text",
+                        text: href,
+                        marks: [
+                            {
+                                type: "link",
+                                attrs: { href, target: "_blank", rel: "noopener" },
+                            },
+                        ],
+                    },
+                ])
+                .run()
+
+            event.preventDefault()
+            return true
+        }
+    } catch (_error) {
+        // Fallback to default
+    }
+    return undefined
 }
