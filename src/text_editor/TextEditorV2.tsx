@@ -351,6 +351,9 @@ function convert_image_url_into_img_tag(text: string, editor: Editor, event: Cli
     const image_URL_pattern = /^(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|svg|webp|bmp|tiff?))(\?.*)?$/i
     if (image_URL_pattern.test(text))
     {
+        // @ts-ignore -- width is present and respected but no in TipTap 2.x
+        // types yet.  It is in 3.x types but this version seems bleeding edge
+        // and has some other issues with using CustomReferences.
         editor.chain().focus().setImage({ src: text, width: 400 }).run()
         event.preventDefault()
         return true
