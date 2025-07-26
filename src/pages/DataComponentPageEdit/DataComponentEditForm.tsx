@@ -90,11 +90,15 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     useEffect(() => notify_if_loaded_previously_saved_draft(previously_saved_draft, version_mismatch, discard_previously_saved_draft), [])
 
 
-    // Subscribe to cmd + enter key combo from TextEditor's to save the component
+    // Subscribe to cmd + enter key combo to open the save modal for the component
     useEffect(() =>
     {
         if (saving_disabled) return
-        return pub_sub.sub("request_to_save_component", () => set_show_saving_modal(true))
+        return pub_sub.sub("key_down", data =>
+        {
+            if (data.key !== "Enter" || !data.metaKey) return
+            set_show_saving_modal(true)
+        })
     }, [saving_disabled])
 
 
@@ -121,7 +125,6 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
                 single_line={true}
                 on_update={title => set_draft_component({ title })}
                 label={"Title" + (saving_in_progress ? " saving..." : "")}
-                allow_cmd_enter_request_save={true}
             />
 
             <TextEditorV2
@@ -130,7 +133,6 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
                 single_line={false}
                 on_update={description => set_draft_component({ description })}
                 label={"Description" + (saving_in_progress ? " saving..." : "")}
-                allow_cmd_enter_request_save={true}
             />
         </div>
 

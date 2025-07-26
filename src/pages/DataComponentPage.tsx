@@ -5,6 +5,7 @@ import { DataComponent } from "core/data/interface"
 
 import HistoryIcon from "../assets/history.svg"
 import EditOrSaveButton from "../buttons/EditOrSaveButton"
+import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
@@ -27,6 +28,15 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
         if (status === "error") return <div>Error loading data component.</div>
         return <div>Data component not found.</div>
     }
+
+
+    // Subscribe to cmd + enter key combo to open the save modal for the component
+    useEffect(() => pub_sub.sub("key_down", data =>
+    {
+        if (data.key !== "Enter" || !data.metaKey) return
+        location.route(ROUTES.DATA_COMPONENT.EDIT(component.id.as_IdOnly()))
+    }), [component.id.id])
+
 
     return <>
         <div className="page-container">

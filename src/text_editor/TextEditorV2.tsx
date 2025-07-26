@@ -9,14 +9,14 @@ import { get_tiptap_extensions } from "./tiptap_extensions"
 import { URLEditor } from "./URLEditor"
 
 
-interface TextEditorV2 {
+interface TextEditorV2
+{
     editable: boolean
     initial_content?: string
     single_line?: boolean
     auto_focus?: boolean
     on_update?: (html: string, json: any) => void
     label?: string
-    allow_cmd_enter_request_save?: boolean
 }
 
 export function TextEditorV2({
@@ -70,14 +70,6 @@ export function TextEditorV2({
             {
                 // type guard
                 if (!editor) return false
-
-                // if cmd + enter is pressed, request save
-                if (event.key === "Enter" && (event.metaKey || event.ctrlKey))
-                {
-                    event.preventDefault()
-                    pub_sub.pub("request_to_save_component", true)
-                    return true
-                }
 
                 // Prevent new lines in single line mode, does not prevent
                 // content containing new lines from being pasted in.  See

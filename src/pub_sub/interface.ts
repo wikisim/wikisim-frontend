@@ -12,7 +12,6 @@ export interface PublishableEvents
         search_requester_id: string
         data_component: DataComponent
     }
-    request_to_save_component: true
     key_down: {
         key: string
         code: string
