@@ -1,4 +1,5 @@
 import Highlight from "@tiptap/extension-highlight"
+import Image from "@tiptap/extension-image"
 import Link from "@tiptap/extension-link"
 import Superscript from "@tiptap/extension-superscript"
 import Typography from "@tiptap/extension-typography"
@@ -28,6 +29,7 @@ export function get_tiptap_extensions(single_line: boolean)
         Underline,
         CustomReferences,
         Superscript,
+        Image,
         Link.configure({
             openOnClick: false,
             HTMLAttributes: {

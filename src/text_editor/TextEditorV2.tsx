@@ -44,6 +44,25 @@ export function TextEditorV2({
             attributes: {
                 class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""}`,
             },
+            handlePaste(_view, event)
+            {
+                // type guard
+                if (!editor) return false
+
+                // Only handle plain text pastes
+                const clipboard_data = event.clipboardData
+                if (!clipboard_data) return false
+
+                // This is not a good UX for inserting images but it is a work
+                // around for now.
+                const text = clipboard_data.getData("text/plain").trim()
+                const image_URL_pattern = /^(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|svg|webp|bmp|tiff?))(\?.*)?$/i
+                if (!image_URL_pattern.test(text)) return false
+
+                editor.chain().focus().setImage({ src: text, width: 400 }).run()
+                event.preventDefault()
+                return true
+            },
             transformPastedHTML: (html) =>
             {
                 if (single_line)
@@ -138,9 +157,8 @@ export function TextEditorV2({
         },
     })
 
+
     if (!editor) return null
-
-
     editor.setEditable(editable)
 
 
