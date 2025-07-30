@@ -208,113 +208,113 @@ export function TextEditorV2({
     const is_focused = editor.isFocused
     const has_value = (editor.getText() || "").trim().length > 0
 
-    return (
-        <div className={`tiptap-editor-container ${has_value ? "has_value" : ""} ${is_focused ? "is_focused" : ""} ${invalid_value ? "invalid_value" : ""}`}>
-            <div className="editor-content" onClick={() => editor.chain().focus().run()}>
-                <EditorContent editor={editor} />
+    return <>
+        <Tooltip
+            disabled={!invalid_value}
+            label={invalid_value}
+            position="bottom"
+        >
+            <div className={`tiptap-editor-container ${has_value ? "has_value" : ""} ${is_focused ? "is_focused" : ""} ${invalid_value ? "invalid_value" : ""}`}>
+                <div className="editor-content" onClick={() => editor.chain().focus().run()}>
+                    <EditorContent editor={editor} />
+                </div>
+
+                <label>{label}</label>
+
+                {invalid_value && <IconExclamationCircle className="error-icon" />}
             </div>
 
-            <label>{label}</label>
+        </Tooltip>
 
-            {invalid_value && <div className="error-message">
-                <Tooltip
-                    label={invalid_value}
-                    position="bottom"
-                >
-                    <IconExclamationCircle />
-                </Tooltip>
-            </div>}
+        {edit_url_enabled && <URLEditor
+            selection={edit_url_enabled}
+            on_close={(data, remove_link_at) => {
+                set_edit_url_enabled(undefined)
+                const chained = editor.chain().focus()
 
-            {edit_url_enabled && <URLEditor
-                selection={edit_url_enabled}
-                on_close={(data, remove_link_at) => {
-                    set_edit_url_enabled(undefined)
-                    const chained = editor.chain().focus()
-
-                    if (data)
-                    {
-                        let { text, url } = data
-                        text = text.trim()
-                        url = url.trim()
-                        if (text && url)
-                        {
-                            // Insert the URL as a link in the editor
-                            chained.setLink({
-                                href: url,
-                                rel: "noopener",
-                            }).insertContent(text)
-                        }
-                    }
-                    else if (remove_link_at)
-                    {
-                        // Remove the link if no data was provided
-                        chained
-                            .setTextSelection(remove_link_at)
-                            .unsetLink()
-                    }
-
-                    chained.run()
-                    set_edit_url_enabled(undefined)
-                }}
-            />}
-
-            <ContextMenu
-                editor={editor}
-                set_edit_url_enabled={set_edit_url_enabled}
-                set_superscript_enabled={(selection) =>
+                if (data)
                 {
-                    if (!selection) return
-                    const { from, to } = selection
-                    editor.chain().focus().setTextSelection({ from, to }).toggleSuperscript().run()
-                }}
-            />
+                    let { text, url } = data
+                    text = text.trim()
+                    url = url.trim()
+                    if (text && url)
+                    {
+                        // Insert the URL as a link in the editor
+                        chained.setLink({
+                            href: url,
+                            rel: "noopener",
+                        }).insertContent(text)
+                    }
+                }
+                else if (remove_link_at)
+                {
+                    // Remove the link if no data was provided
+                    chained
+                        .setTextSelection(remove_link_at)
+                        .unsetLink()
+                }
 
-            {/* <div className="editor-toolbar">
-                <button
-                    disabled={!editable}
-                    onClick={() => editor.chain().focus().toggleBold().run()}
-                    className={editor.isActive("bold") ? "active" : ""}
-                >
-                    Bold
-                </button>
-                <button
-                    disabled={!editable}
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
-                    className={editor.isActive("italic") ? "active" : ""}
-                >
-                    Italic
-                </button>
-                <button
-                    disabled={!editable}
-                    onClick={() => editor.chain().focus().toggleHighlight().run()}
-                    className={editor.isActive("highlight") ? "active" : ""}
-                >
-                    Highlight
-                </button>
-                {!single_line && (
-                    <>
-                        <button
-                            disabled={!editable}
-                            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                            className={editor.isActive("heading", { level: 2 }) ? "active" : ""}
-                        >
-                            H2
-                        </button>
-                        <button
-                            disabled={!editable}
-                            onClick={() => editor.chain().focus().toggleBulletList().run()}
-                            className={editor.isActive("bulletList") ? "active" : ""}
-                        >
-                            Bullet List
-                        </button>
-                    </>
-                )}
-                <button onClick={() => console.log("Editor data:", get_editor_data())}>
-                    Get JSON
-                </button>
-            </div> */}
-        </div>
-    )
+                chained.run()
+                set_edit_url_enabled(undefined)
+            }}
+        />}
+
+        <ContextMenu
+            editor={editor}
+            set_edit_url_enabled={set_edit_url_enabled}
+            set_superscript_enabled={(selection) =>
+            {
+                if (!selection) return
+                const { from, to } = selection
+                editor.chain().focus().setTextSelection({ from, to }).toggleSuperscript().run()
+            }}
+        />
+
+        {/* <div className="editor-toolbar">
+            <button
+                disabled={!editable}
+                onClick={() => editor.chain().focus().toggleBold().run()}
+                className={editor.isActive("bold") ? "active" : ""}
+            >
+                Bold
+            </button>
+            <button
+                disabled={!editable}
+                onClick={() => editor.chain().focus().toggleItalic().run()}
+                className={editor.isActive("italic") ? "active" : ""}
+            >
+                Italic
+            </button>
+            <button
+                disabled={!editable}
+                onClick={() => editor.chain().focus().toggleHighlight().run()}
+                className={editor.isActive("highlight") ? "active" : ""}
+            >
+                Highlight
+            </button>
+            {!single_line && (
+                <>
+                    <button
+                        disabled={!editable}
+                        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                        className={editor.isActive("heading", { level: 2 }) ? "active" : ""}
+                    >
+                        H2
+                    </button>
+                    <button
+                        disabled={!editable}
+                        onClick={() => editor.chain().focus().toggleBulletList().run()}
+                        className={editor.isActive("bulletList") ? "active" : ""}
+                    >
+                        Bullet List
+                    </button>
+                </>
+            )}
+            <button onClick={() => console.log("Editor data:", get_editor_data())}>
+                Get JSON
+            </button>
+        </div> */}
+    </>
 }
 
 

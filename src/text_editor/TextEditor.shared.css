@@ -53,12 +53,19 @@
 }
 
 
-.error-message
+.error-icon
 {
     position: absolute;
     right: 10px;
     top: 10px;
     color: var(--mantine-color-red-6);
+}
+
+.text-editor-v1.invalid_value label,
+.tiptap-editor-container.invalid_value label
+{
+    color: var(--mantine-color-red-6);
+    font-weight: 500;
 }
 
 .text-editor-v1.invalid_value textarea,

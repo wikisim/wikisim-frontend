@@ -152,7 +152,11 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
         })
     }, [])
 
-    return (
+    return <Tooltip
+        disabled={!invalid_value}
+        label={invalid_value}
+        position="bottom"
+    >
         <div className={`text-editor-v1 ${has_value ? "has_value" : ""} ${is_focused ? "is_focused" : ""} ${invalid_value ? "invalid_value" : ""}`}>
             {allow_multiline ? (
                 <textarea
@@ -194,14 +198,7 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
             )}
             <label>{label}</label>
 
-            {invalid_value && <div className="error-message">
-                <Tooltip
-                    label={invalid_value}
-                    position="bottom"
-                >
-                    <IconExclamationCircle />
-                </Tooltip>
-            </div>}
+            {invalid_value && <IconExclamationCircle className="error-icon" />}
         </div>
-    )
+    </Tooltip>
 }
