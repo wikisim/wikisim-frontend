@@ -79,6 +79,7 @@ function SearchBar()
                     if (e.key === "Enter") navigate_to_search()
                     if (e.key === "Escape") text_input_ref.current?.blur() // Remove focus from the input
                 }}
+                onFocus={() => text_input_ref.current?.select() }
                 placeholder={"Search WikiSim... (Ctrl+K)"}
             />
             <Button

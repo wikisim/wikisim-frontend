@@ -19,6 +19,7 @@ import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import Countdown, { CountdownTimer } from "../../ui_components/Countdown"
 import "./DataComponentEditForm.css"
 import { SaveModal } from "./SaveModal"
+import { ValueEditor } from "./ValueEditForm"
 
 
 
@@ -103,37 +104,43 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 
 
     return <>
-        {/* This element provides space to show the edit / save button */}
-        <div style={{ float: "right", width: "50px", height: "50px" }} />
-        <div className="buttons-container">
-            <EditOrSaveButton
-                disabled={saving_disabled}
-                editing={true}
-                set_editing={() => set_show_saving_modal(true)}
-            />
-            <BinChangesButton
-                disabled={disabled_bin_changes}
-                highlighted={version_mismatch}
-                on_click={discard_previously_saved_draft}
-            />
-        </div>
+        <div className="data-component-edit-form-container">
+            <div className={"data-component-form " + (editable ? "editable" : "view-only")}>
+                <TextEditorV2
+                    editable={editable}
+                    initial_content={initial_component.title}
+                    single_line={true}
+                    on_update={title => set_draft_component({ title })}
+                    label={"Title" + (saving_in_progress ? " saving..." : "")}
+                />
 
-        <div className={"data-component-form " + (editable ? "editable" : "view-only")}>
-            <TextEditorV2
-                editable={editable}
-                initial_content={initial_component.title}
-                single_line={true}
-                on_update={title => set_draft_component({ title })}
-                label={"Title" + (saving_in_progress ? " saving..." : "")}
-            />
+                <TextEditorV2
+                    editable={editable}
+                    initial_content={initial_component.description}
+                    single_line={false}
+                    on_update={description => set_draft_component({ description })}
+                    label={"Description" + (saving_in_progress ? " saving..." : "")}
+                />
 
-            <TextEditorV2
-                editable={editable}
-                initial_content={initial_component.description}
-                single_line={false}
-                on_update={description => set_draft_component({ description })}
-                label={"Description" + (saving_in_progress ? " saving..." : "")}
-            />
+                <ValueEditor
+                    draft_component={draft_component}
+                    on_change={set_draft_component}
+                />
+            </div>
+
+            <div className="buttons-container-spacer" />
+            <div className="buttons-container">
+                <EditOrSaveButton
+                    disabled={saving_disabled}
+                    editing={true}
+                    set_editing={() => set_show_saving_modal(true)}
+                />
+                <BinChangesButton
+                    disabled={disabled_bin_changes}
+                    highlighted={version_mismatch}
+                    on_click={discard_previously_saved_draft}
+                />
+            </div>
         </div>
 
         <SaveModal
@@ -286,7 +293,7 @@ function notify_if_loaded_previously_saved_draft(
                 : <SavedDraftLoadedNotificationMessage on_click={on_click} timer={timer} />}
             </div>),
             color: version_mismatch ? "var(--mantine-color-red-9)" : "var(--primary-blue)",
-            position: "top-right",
+            position: "bottom-right",
             // autoClose: close_in * 1000,
             autoClose: false,
             withCloseButton: true,

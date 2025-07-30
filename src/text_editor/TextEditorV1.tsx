@@ -10,7 +10,7 @@ import "./TextEditor.shared.css"
 import "./TextEditorV1.css"
 
 
-interface SingleLineTextInputProps
+interface TextEditorV1Props
 {
     editable: boolean
     label: string
@@ -26,10 +26,11 @@ interface SingleLineTextInputProps
      */
     placeholder?: undefined
     invalid_value?: false | string
+    className?: string
 }
 
 
-export function TextEditorV1(all_props: SingleLineTextInputProps)
+export function TextEditorV1(all_props: TextEditorV1Props)
 {
     const {
         editable = false,
@@ -156,12 +157,18 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
         })
     }, [])
 
+    let class_name = "text-editor-v1 "
+    if (has_value) class_name += "has_value "
+    if (is_focused) class_name += "is_focused "
+    if (invalid_value) class_name += "invalid_value "
+    if (props.className) class_name += props.className + " "
+
     return <Tooltip
         disabled={!invalid_value}
         label={invalid_value}
         position="bottom"
     >
-        <div className={`text-editor-v1 ${has_value ? "has_value" : ""} ${is_focused ? "is_focused" : ""} ${invalid_value ? "invalid_value" : ""}`}>
+        <div className={class_name}>
             {allow_multiline ? (
                 <textarea
                     {...props}

@@ -1,7 +1,18 @@
 
+.data-component-edit-form-container
+{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: space-between;
+}
+
 .data-component-form
 {
     margin-top: 30px;
+    flex: 1 1 370px; /* Allow the form to grow and fill available space */
+    max-width: 700px;
+
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -24,6 +35,11 @@
 }
 
 
+.buttons-container-spacer
+{
+    width: 50px;
+    flex: 0 0 50px;
+}
 .buttons-container
 {
     position: fixed;

@@ -29,3 +29,15 @@
 {
     padding: var(--page-padding);
 }
+
+
+.page-container .text-editor-v1,
+.value-editor-container .row
+{
+    display: flex;
+}
+
+.page-container .text-editor-v1 input
+{
+    flex-grow: 1;
+}

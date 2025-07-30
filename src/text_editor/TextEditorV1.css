@@ -3,7 +3,6 @@
 {
     margin-top: 5px;
     margin-bottom: 24px;
-    width: fit-content;  /* Adjust width to fit content */
 }
 
 .text-editor-v1 textarea,
@@ -12,7 +11,6 @@
     font-size: 16px;
     transition: outline 0.2s;
     resize: none; /* Hide resize handle */
-    min-width: 220px; /* Minimum width to match single line input */
 }
 .text-editor-v1 textarea
 {
