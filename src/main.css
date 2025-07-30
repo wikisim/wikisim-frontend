@@ -10,6 +10,7 @@
     /* Half way between mantine-color-red-1 and -2 of ffe3e3 and ffc9c9 */
     --mantine-color-red-1-2: #ffd6d6;
     --border-color: #dee2e6;
+    --border-color-fainter: #e6e6e6;
 
     --link-color: #1976d2;
 

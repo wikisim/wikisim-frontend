@@ -1,11 +1,11 @@
 
 
-.coming-soon
+#home-page .coming-soon
 {
     font-size: 60%;
 }
 
-.section
+#home-page .section
 {
     margin: 0 auto;
     display: flex;
@@ -15,7 +15,7 @@
     text-align: center;
 }
 
-.data-component-cards
+#home-page .data-component-cards
 {
     display: flex;
     flex-wrap: wrap;
@@ -23,7 +23,7 @@
     justify-content: center;
 }
 
-.browse-all-button
+#home-page .browse-all-button
 {
     width: fit-content;
     margin: 0 auto;

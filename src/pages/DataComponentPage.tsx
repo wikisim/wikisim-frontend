@@ -3,6 +3,7 @@ import { useEffect, useState } from "preact/hooks"
 
 import { DataComponent } from "core/data/interface"
 
+import { format_data_component_value_to_string } from "../../lib/core/src/data/format/format_data_component_value_to_string"
 import HistoryIcon from "../assets/history.svg"
 import EditOrSaveButton from "../buttons/EditOrSaveButton"
 import pub_sub from "../pub_sub"
@@ -38,7 +39,7 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
     }), [component.id.id])
 
 
-    return <>
+    return <div id="data-component">
         <div className="page-container">
             <div style={{ float: "right", margin: "10px" }}>
                 <EditOrSaveButton
@@ -47,15 +48,30 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
                 />
             </div>
 
-            <div className="tiptap-content">
-                <h2 dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true) }} />
+            <h2
+                className="section tiptap-content"
+                dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true) }}
+            />
 
-                <div dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.description, false) }} />
+            <div
+                className="section tiptap-content"
+                dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.description, false) }}
+            />
+
+            <div className="section">
+                <div className="row">
+                    <b>Value: </b>
+                    {format_data_component_value_to_string(component)}
+                </div>
+                {component.units && <div className="row">
+                    <b>Units: </b>
+                    {component.units}
+                </div>}
             </div>
 
         </div>
         <LastEditedBy component={component} />
-    </>
+    </div>
 }
 
 

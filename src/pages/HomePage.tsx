@@ -39,7 +39,7 @@ export function HomePage()
 
 
     return (
-        <div className="page-container">
+        <div className="page-container" id="home-page">
             <h3>
                 Community made open source simulations, and “back of the envelope”
                 calculations, to help us to make better sense of our complex world.
