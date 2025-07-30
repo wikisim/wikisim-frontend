@@ -5,6 +5,10 @@
     --secondary-fill-color: #f0f0f0;
     --secondary-text-color: #333;
     --primary-blue: #1c7ed6;
+    --secondary-blue: #228be6;
+    --tertiary-blue: #5fafff;
+    /* Half way between mantine-color-red-1 and -2 of ffe3e3 and ffc9c9 */
+    --mantine-color-red-1-2: #ffd6d6;
     --border-color: #dee2e6;
 
     --link-color: #1976d2;

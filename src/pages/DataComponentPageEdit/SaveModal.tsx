@@ -62,7 +62,7 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                     editable={!is_saving && !error_is_unrecoverable}
                     single_line={true}
                     trigger_search_on_at_symbol={true}
-                    value={props.draft_data_component.comment || ""}
+                    initial_value={props.draft_data_component.comment || ""}
                     on_change={e =>
                     {
                         const comment = e.currentTarget.value

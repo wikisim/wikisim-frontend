@@ -1,9 +1,12 @@
+import { Tooltip } from "@mantine/core"
 import "@mantine/core/styles.css"
+import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle"
 import { JSX } from "preact"
 import { useMemo, useRef, useState } from "preact/hooks"
 
 import "../monkey_patch"
 import pub_sub from "../pub_sub"
+import "./TextEditor.shared.css"
 import "./TextEditorV1.css"
 
 
@@ -11,7 +14,7 @@ interface SingleLineTextInputProps
 {
     editable: boolean
     label: string
-    value: string
+    initial_value: string
     on_change?: (e: JSX.TargetedEvent<HTMLTextAreaElement | HTMLInputElement, Event>) => void
     on_blur?: (e: JSX.TargetedFocusEvent<HTMLTextAreaElement | HTMLInputElement>) => void
     single_line?: boolean
@@ -22,6 +25,7 @@ interface SingleLineTextInputProps
      * @deprecated Use `label` instead.
      */
     placeholder?: undefined
+    invalid_value?: false | string
 }
 
 
@@ -33,6 +37,7 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
         single_line = false,
         trigger_search_on_at_symbol = false,
         on_key_down,
+        invalid_value = false,
         ...props
     } = all_props
     const allow_multiline = !single_line
@@ -66,8 +71,8 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
     }, [props.start_focused, first_render])
 
 
-    const [focused, set_focused] = useState(false)
-    const [value, set_value] = useState(props.value)
+    const [is_focused, set_focused] = useState(false)
+    const [value, set_value] = useState(props.initial_value)
 
     const handle_on_change = useMemo(() => (e: JSX.TargetedEvent<HTMLTextAreaElement | HTMLInputElement, Event>) =>
     {
@@ -148,7 +153,7 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
     }, [])
 
     return (
-        <div className="text-editor-v1">
+        <div className={`text-editor-v1 ${has_value ? "has_value" : ""} ${is_focused ? "is_focused" : ""} ${invalid_value ? "invalid_value" : ""}`}>
             {allow_multiline ? (
                 <textarea
                     {...props}
@@ -167,16 +172,6 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
                     // The alternative is to use setTimeout to wrap the contents
                     // of the `handle_ref` function.
                     ref={el => handle_ref(el)}
-                    style={{
-                        padding: "12px 12px 10px 12px",
-                        fontSize: 16,
-                        border: "1px solid #ced4da",
-                        borderRadius: 4,
-                        outline: focused ? "2px solid #228be6" : "none",
-                        transition: "outline 0.2s",
-                        resize: "none", // Hide resize handle
-                        minWidth: "220px", // Minimum width to match single line input
-                    }}
                 />
             ) : (
                 <input
@@ -195,32 +190,18 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
                     // The alternative is to use setTimeout to wrap the contents
                     // of the `handle_ref` function.
                     ref={el => handle_ref(el)}
-                    style={{
-                        padding: "12px 12px 8px 12px",
-                        fontSize: 16,
-                        border: "1px solid #ced4da",
-                        borderRadius: 4,
-                        outline: focused ? "2px solid #228be6" : "none",
-                        transition: "outline 0.2s",
-                        minWidth: "220px", // Minimum width to match single line input
-                    }}
                 />
             )}
-            <label
-                style={{
-                    position: "absolute",
-                    left: 12,
-                    top: has_value || focused ? -10 : 12,
-                    fontSize: has_value || focused ? 12 : 16,
-                    color: focused ? "#228be6" : "#868e96",
-                    background: "white",
-                    padding: has_value || focused ? "0 4px" : "0",
-                    pointerEvents: "none",
-                    transition: "all 0.2s"
-                }}
-            >
-                {label}
-            </label>
+            <label>{label}</label>
+
+            {invalid_value && <div className="error-message">
+                <Tooltip
+                    label={invalid_value}
+                    position="bottom"
+                >
+                    <IconExclamationCircle />
+                </Tooltip>
+            </div>}
         </div>
     )
 }

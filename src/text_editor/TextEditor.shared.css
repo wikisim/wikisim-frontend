@@ -1,0 +1,80 @@
+.text-editor-v1,
+.tiptap-editor-container
+{
+    position: relative;  /* Ensure label can be positioned correctly */
+}
+
+
+.text-editor-v1 textarea,
+.text-editor-v1 input,
+.tiptap-editor-container
+{
+    border-radius: 5px;
+    border: none;
+    outline: 1px solid #ced4da;
+}
+
+.text-editor-v1.is_focused textarea,
+.text-editor-v1.is_focused input,
+.tiptap-editor-container.is_focused
+{
+    outline: 1px solid var(--tertiary-blue);
+}
+
+
+.text-editor-v1 label,
+.tiptap-editor-container label
+{
+    position: absolute;
+    left: 12px;
+    font-size: 16px;
+    color: #868e96;
+    background: white;
+    padding: 0px;
+    pointer-events: none;
+    transition: all 0.2s;
+    border-radius: 3px;
+}
+
+.text-editor-v1.is_focused label,
+.tiptap-editor-container.is_focused label
+{
+    color: var(--secondary-blue);
+}
+
+.text-editor-v1.has_value label,
+.text-editor-v1.is_focused label,
+.tiptap-editor-container.has_value label,
+.tiptap-editor-container.is_focused label
+{
+    top: -10px;
+    font-size: 12px;
+    padding: 0 4px;
+}
+
+
+.error-message
+{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: var(--mantine-color-red-6);
+}
+
+.text-editor-v1.invalid_value textarea,
+.text-editor-v1.invalid_value input,
+.tiptap-editor-container.invalid_value
+{
+    outline: 1px solid var(--mantine-color-red-3);
+    /* !important is needed for styling the tiptap entry element */
+    background-color: var(--mantine-color-red-1-2) !important;
+}
+
+.text-editor-v1.invalid_value.is_focused textarea,
+.text-editor-v1.invalid_value.is_focused input,
+.tiptap-editor-container.invalid_value.is_focused
+{
+    outline: 1px solid var(--mantine-color-red-6);
+    /* !important is needed for styling the tiptap entry element */
+    background-color: var(--mantine-color-red-1) !important;
+}

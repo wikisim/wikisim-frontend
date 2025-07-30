@@ -1,9 +1,12 @@
+import { Tooltip } from "@mantine/core"
+import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle"
 import { Selection } from "@tiptap/pm/state"
 import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react"
 import { useEffect, useMemo, useRef, useState } from "preact/hooks"
 
 import pub_sub from "../pub_sub"
 import { remove_p_tags } from "./sanitise_html"
+import "./TextEditor.shared.css"
 import "./TextEditorV2.css"
 import { get_tiptap_extensions } from "./tiptap_extensions"
 import { URLEditor } from "./URLEditor"
@@ -17,6 +20,7 @@ interface TextEditorV2
     auto_focus?: boolean
     on_update?: (html: string, json: any) => void
     label?: string
+    invalid_value?: false | string
 }
 
 export function TextEditorV2({
@@ -25,7 +29,8 @@ export function TextEditorV2({
     single_line = false,
     auto_focus = false,
     on_update,
-    label = "Start typing..."
+    label = "Start typing...",
+    invalid_value = false,
 }: TextEditorV2) {
     const search_requester_id = useMemo(() =>
     {
@@ -200,30 +205,25 @@ export function TextEditorV2({
         return () => unsubscribe()
     }, [editor, search_requester_id])
 
-    const focused = editor.isFocused
+    const is_focused = editor.isFocused
     const has_value = (editor.getText() || "").trim().length > 0
 
     return (
-        <div className="tiptap-editor-container">
+        <div className={`tiptap-editor-container ${has_value ? "has_value" : ""} ${is_focused ? "is_focused" : ""} ${invalid_value ? "invalid_value" : ""}`}>
             <div className="editor-content" onClick={() => editor.chain().focus().run()}>
                 <EditorContent editor={editor} />
             </div>
 
-            <label
-                style={{
-                    position: "absolute",
-                    left: 12,
-                    top: has_value || focused ? -10 : 8,
-                    fontSize: has_value || focused ? 12 : 16,
-                    color: focused ? "#a6aeb6" : "#868e96",
-                    background: "white",
-                    padding: has_value || focused ? "0 4px" : "0",
-                    pointerEvents: "none",
-                    transition: "all 0.2s"
-                }}
-            >
-                {label}
-            </label>
+            <label>{label}</label>
+
+            {invalid_value && <div className="error-message">
+                <Tooltip
+                    label={invalid_value}
+                    position="bottom"
+                >
+                    <IconExclamationCircle />
+                </Tooltip>
+            </div>}
 
             {edit_url_enabled && <URLEditor
                 selection={edit_url_enabled}

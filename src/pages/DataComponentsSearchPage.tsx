@@ -27,7 +27,7 @@ export function DataComponentsSearchPage()
 
             <TextEditorV1
                 editable={true}
-                value={search_term}
+                initial_value={search_term}
                 on_change={e => set_search_term(e.currentTarget.value)}
                 label="Search for..."
                 single_line={true}

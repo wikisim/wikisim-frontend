@@ -1,20 +1,20 @@
-.tiptap-editor-container {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-
+.tiptap-editor-container
+{
     max-width: 400px;
-
-    position: relative;  /* Ensure label can be positioned correctly */
-    /* marginTop: 5,
-    marginBottom: 24,
-    width: "fit-content" // Adjust width to fit content */
 }
 
-.editor-toolbar {
+
+.tiptap-editor-container label
+{
+    top: 8px;
+}
+
+
+/* .editor-toolbar {
     background: #f5f5f5;
     border-bottom: 1px solid #ccc;
     padding: 8px;
-    /* display: flex; */
+    /* display: flex; * /
     gap: 8px;
 }
 
@@ -29,7 +29,7 @@
 .editor-toolbar button.active {
     background: #007bff;
     color: white;
-}
+} */
 
 .editor-content {
     padding: 4px 10px;

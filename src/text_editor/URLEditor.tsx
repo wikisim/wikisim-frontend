@@ -149,7 +149,7 @@ function InnerURLEditor(props: InnerURLEditorProps)
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                 <TextEditorV1
                     editable={true}
-                    value={text}
+                    initial_value={text}
                     single_line={true}
                     label="Link Text"
                     on_change={handle_text_on_change}
@@ -158,7 +158,7 @@ function InnerURLEditor(props: InnerURLEditorProps)
                 />
                 <TextEditorV1
                     editable={true}
-                    value={url}
+                    initial_value={url}
                     single_line={true}
                     label="URL"
                     on_change={handle_url_on_change}
