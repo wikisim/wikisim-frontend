@@ -62,11 +62,15 @@ export function TextEditorV1(all_props: SingleLineTextInputProps)
         // Handle props.start_focused
         if (props.start_focused && (first_render.current >= (Date.now() - 100)))
         {
-            el.focus()
-            if (props.start_focused === "focused_and_text_selected")
-            {
-                el.select() // Select all the text in the input
-            }
+            // Sometimes when rendering the input it was not focused, but with
+            // this Timeout it seemed to work.
+            setTimeout(() => {
+                el.focus()
+                if (props.start_focused === "focused_and_text_selected")
+                {
+                    el.select() // Select all the text in the input
+                }
+            }, 0)
         }
     }, [props.start_focused, first_render])
 
