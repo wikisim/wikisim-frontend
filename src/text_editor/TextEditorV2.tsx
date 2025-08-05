@@ -262,7 +262,7 @@ export function TextEditorV2({
         <ContextMenu
             editor={editor}
             set_edit_url_enabled={set_edit_url_enabled}
-            set_superscript_enabled={(selection) =>
+            set_superscript_enabled={selection =>
             {
                 if (!selection) return
                 const { from, to } = selection
@@ -338,7 +338,7 @@ function ContextMenu({ editor, ...props }: ContextMenuProps)
                 onClick={() => props.set_superscript_enabled(editor.state.selection)}
                 style={{ marginRight: 8 }}
             >
-                <sup>2</sup>
+                sup<sup>2</sup>
             </button>
             {/* ...other buttons */}
         </BubbleMenu>

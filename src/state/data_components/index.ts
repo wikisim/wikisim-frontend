@@ -52,6 +52,12 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
 
 
 
+/**
+ * This does not create a new data component in the DB, it just creates a new
+ * async data component _placeholder_ in the store and then tries to load it
+ * from the DB though this will fail if the data component does not exist (or
+ * some kind of error is encountered).
+ */
 function get_or_create_async_data_components(
     data_component_ids_to_load: IdAndMaybeVersion[],
     set_state: SetAppState,
@@ -142,7 +148,7 @@ async function load_data_components(
     if (data_component_ids_to_load.length === 0) return
     // Request from supabase
     const response = all_are_id_only(data_component_ids_to_load)
-        ? await request_data_components(get_supabase, {}, data_component_ids_to_load)
+        ? await request_data_components(get_supabase, { ids: data_component_ids_to_load })
         : all_are_id_and_version(data_component_ids_to_load)
             ? await request_archived_data_components(get_supabase, data_component_ids_to_load)
             : (() => { throw new Error(`Invalid type, must be all IdOnly or all IdAndVersion: ${data_component_ids_to_load}`) })()

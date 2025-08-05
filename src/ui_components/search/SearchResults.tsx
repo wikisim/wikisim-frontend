@@ -2,7 +2,7 @@ import { useEffect, useState } from "preact/hooks"
 
 import { search_data_components } from "core/data/fetch_from_db"
 import { DataComponent } from "core/data/interface"
-import { convert_tiptap_text_to_plain_text } from "core/rich_text/editor"
+import { browser_convert_tiptap_to_plain } from "core/rich_text/convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase"
 
 import pub_sub from "../../pub_sub"
@@ -95,7 +95,7 @@ export function SearchResults(props: SearchResultsProps)
                             }}
                             onPointerMove={() => set_selected_result_index(index)}
                         >
-                            {convert_tiptap_text_to_plain_text(row.title)}
+                            {browser_convert_tiptap_to_plain(row.title)}
                             <span style={{ color: "#ccc", fontSize: 13, padding: "4.5px 0 0 5px" }}>
                                 id {row.id.id}
                             </span>

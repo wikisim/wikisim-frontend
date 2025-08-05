@@ -18,6 +18,8 @@ export default defineConfig({
     include: [],
   },
   server: {
+    // Allow access to local network
+    host: true,
     // Suppress source map warnings in dev console
     sourcemapIgnoreList: (sourcePath) => {
       return sourcePath.includes("node_modules")
