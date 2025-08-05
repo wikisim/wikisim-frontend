@@ -34,5 +34,12 @@
     "allowSyntheticDefaultImports": true,
   },
   "include": ["src", "lib", "vite.config.ts"],
-  "exclude": ["node_modules", "scripts", "**/*.js", "**/*.mjs"]
+  "exclude": [
+    "node_modules",
+    "scripts",
+    "**/*.js",
+    "**/*.mjs",
+    "lib/core/src/supabase/functions/*/index.ts",
+    "lib/core/src/supabase/functions/*/*.deno.ts"
+  ]
 }
