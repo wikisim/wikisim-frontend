@@ -2,7 +2,7 @@ import { useEffect, useState } from "preact/hooks"
 
 import { search_data_components } from "core/data/fetch_from_db"
 import { DataComponent } from "core/data/interface"
-import { browser_convert_tiptap_to_plain } from "core/rich_text/convert_tiptap_to_plain"
+import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase"
 
 import pub_sub from "../../pub_sub"
