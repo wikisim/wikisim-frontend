@@ -1,5 +1,6 @@
 .text-editor-v1,
-.tiptap-editor-container
+.tiptap-editor-container,
+.wikisim-select
 {
     position: relative;  /* Ensure label can be positioned correctly */
 }
@@ -11,19 +12,22 @@
 {
     border-radius: 5px;
     border: none;
-    outline: 1px solid #ced4da;
+    border: 1px solid #ced4da;
 }
 
 .text-editor-v1.is_focused textarea,
 .text-editor-v1.is_focused input,
 .tiptap-editor-container.is_focused
 {
-    outline: 1px solid var(--tertiary-blue);
+    border: 1px solid var(--tertiary-blue);
+    /* Prevent browser's default outline as we're using border */
+    outline: none;
 }
 
 
 .text-editor-v1 label,
-.tiptap-editor-container label
+.tiptap-editor-container label,
+.wikisim-select label
 {
     position: absolute;
     left: 12px;
@@ -45,7 +49,8 @@
 .text-editor-v1.has_value label,
 .text-editor-v1.is_focused label,
 .tiptap-editor-container.has_value label,
-.tiptap-editor-container.is_focused label
+.tiptap-editor-container.is_focused label,
+.wikisim-select.has_value label
 {
     top: -10px;
     font-size: 12px;
@@ -72,7 +77,7 @@
 .text-editor-v1.invalid_value input,
 .tiptap-editor-container.invalid_value
 {
-    outline: 1px solid var(--mantine-color-red-3);
+    border: 1px solid var(--mantine-color-red-3);
     /* !important is needed for styling the tiptap entry element */
     background-color: var(--mantine-color-red-1-2) !important;
 }
@@ -81,7 +86,7 @@
 .text-editor-v1.invalid_value.is_focused input,
 .tiptap-editor-container.invalid_value.is_focused
 {
-    outline: 1px solid var(--mantine-color-red-6);
+    border: 1px solid var(--mantine-color-red-6);
     /* !important is needed for styling the tiptap entry element */
     background-color: var(--mantine-color-red-1) !important;
 }

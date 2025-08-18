@@ -1,0 +1,33 @@
+.wikisim-select
+{
+    margin-top: var(--input-component-margin-top);
+}
+
+.wikisim-select .mantine-Select-root
+{
+    /* Forcible override of Mantine's hard set margin value.  This smells like
+        it will break other styles when size is not "md" but have not tested
+        these yet. */
+    margin-top: 0px !important;
+}
+
+.wikisim-select input
+{
+    /* Match the height of TextEditorV1 */
+    height: 46.8px;
+
+    /* `user-select: none` does not seem to prevent the input text from being
+    selected / highlighted by the user so instead we use the ::selection
+    pseudo-element to hide the highlight color. */
+    /* user-select: none; */
+}
+.wikisim-select input::selection,
+.wikisim-select input::-moz-selection
+{
+  background: none;
+}
+
+.wikisim-select label
+{
+    z-index: var(--z-index-wikisim-select-label);
+}

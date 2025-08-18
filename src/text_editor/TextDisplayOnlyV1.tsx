@@ -3,7 +3,7 @@ import "@mantine/core/styles.css"
 import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle"
 
 import "../monkey_patch"
-import "./TextEditor.shared.css"
+import "../ui_components/input_elements.shared.css"
 import "./TextEditorV1.css"
 
 

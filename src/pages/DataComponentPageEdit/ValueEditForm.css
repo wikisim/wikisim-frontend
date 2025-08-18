@@ -20,12 +20,6 @@
     padding-bottom: 10px;
 }
 
-.value-editor-container,
-.value-editor-container input
-{
-    cursor: text;
-}
-
 .value-editor-container .row
 {
     display: flex;

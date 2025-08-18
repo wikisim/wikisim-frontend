@@ -6,7 +6,7 @@ import { useMemo, useRef, useState } from "preact/hooks"
 
 import "../monkey_patch"
 import pub_sub from "../pub_sub"
-import "./TextEditor.shared.css"
+import "../ui_components/input_elements.shared.css"
 import "./TextEditorV1.css"
 
 
@@ -157,11 +157,11 @@ export function TextEditorV1(all_props: TextEditorV1Props)
         })
     }, [])
 
-    let class_name = "text-editor-v1 "
-    if (has_value) class_name += "has_value "
-    if (is_focused) class_name += "is_focused "
-    if (invalid_value) class_name += "invalid_value "
-    if (props.className) class_name += props.className + " "
+    let class_name = "text-editor-v1"
+    if (has_value) class_name += " has_value"
+    if (is_focused) class_name += " is_focused"
+    if (invalid_value) class_name += " invalid_value"
+    if (props.className) class_name += " " + props.className
 
     return <Tooltip
         disabled={!invalid_value}

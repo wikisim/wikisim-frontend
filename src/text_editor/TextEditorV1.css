@@ -1,7 +1,7 @@
 
 .text-editor-v1
 {
-    margin-top: 5px;
+    margin-top: var(--input-component-margin-top);
     margin-bottom: 24px;
 }
 
@@ -9,7 +9,7 @@
 .text-editor-v1 input
 {
     font-size: 16px;
-    transition: outline 0.2s;
+    transition: border 0.2s;
     resize: none; /* Hide resize handle */
 }
 .text-editor-v1 textarea

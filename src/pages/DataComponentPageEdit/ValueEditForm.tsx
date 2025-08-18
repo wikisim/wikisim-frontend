@@ -1,4 +1,4 @@
-import { ActionIcon, Select } from "@mantine/core"
+import { ActionIcon } from "@mantine/core"
 import IconCaretDownFilled from "@tabler/icons-react/dist/esm/icons/IconCaretDownFilled"
 import IconCaretUpFilled from "@tabler/icons-react/dist/esm/icons/IconCaretUpFilled"
 import { useState } from "preact/hooks"
@@ -9,6 +9,7 @@ import { DataComponent, NewDataComponent, NUMBER_DISPLAY_TYPES, NUMBER_DISPLAY_T
 
 import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
+import { Select } from "../../ui_components/Select"
 import "./ValueEditForm.css"
 
 
@@ -88,8 +89,9 @@ export function ValueEditor(props: ValueEditorProps)
                     />
 
                     <Select
+                        label="Format"
                         data={format_options(draft_component)}
-                        size="lg"
+                        size="md"
                         style={{ marginTop: 2 }}
                         value={valid_value_number_display_type(draft_component.value_number_display_type)}
                         onChange={value =>
