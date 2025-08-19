@@ -345,7 +345,7 @@ describe("store.data_components", () =>
             data_components2.request_data_component(new IdAndVersion(-123, 1))
             const { data_components: data_components3 } = store.getState()
             expect(data_components3.data_component_by_id_and_maybe_version["-123v1"]!.status).equals("loading", "Should be trying to load older version of data component")
-            expect(mocked_supabase.from.args.last()).deep.equals(["data_components_archive"], "supabase.from() should select from data_components_archive when IdAndVersion is requested")
+            expect(mocked_supabase.from.args.last()).deep.equals(["data_components_history"], "supabase.from() should select from data_components_history when IdAndVersion is requested")
             expect(mocked_supabase.from().select().or.args.last()).deep.equals(["and(id.eq.-123,version_number.eq.1)"], "supabase.from().select().or() should be called with an 'and' condition including the older version")
 
             await wait_for(0)

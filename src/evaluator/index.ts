@@ -1,13 +1,99 @@
 import { useEffect } from "preact/hooks"
-import pub_sub from "../pub_sub"
+
 import { EvaluationRequest, EvaluationResponse } from "./interface"
+
+
+let next_evaluation_id = 0
+
+let iframe: HTMLIFrameElement
+let resolve_iframe_loaded: (value: void | PromiseLike<void>) => void
+const iframe_loaded = new Promise<void>(resolve => {
+    resolve_iframe_loaded = resolve
+})
+
+interface ExtendedEvaluationRequest extends EvaluationRequest
+{
+    evaluation_id: number
+    requested_at: number
+    start_time: number
+    timeout_id?: ReturnType<typeof setTimeout>
+    promise_result: Promise<EvaluationResponse>
+    result: EvaluationResponse | undefined
+    resolve: (response: EvaluationResponse) => void
+}
+
+export async function evaluate_code_in_sandbox(basic_request: EvaluationRequest): Promise<EvaluationResponse>
+{
+    const requested_at = performance.now()
+
+    let resolve: (response: EvaluationResponse) => void
+    const promise_result = new Promise<EvaluationResponse>(resolv => resolve = resolv)
+    const request: ExtendedEvaluationRequest = {
+        ...basic_request,
+        evaluation_id: ++next_evaluation_id,
+        requested_at,
+        start_time: -1,
+        promise_result,
+        result: undefined,
+        resolve: resolve!,
+    }
+
+    await iframe_loaded
+    await request_next_evaluation(request)
+
+    const start_time = performance.now()
+    request.start_time = start_time
+    // type guard, should never be null unless during dev when the
+    // iframe can be removed
+    if (iframe.contentWindow === null) return {
+        evaluation_id: request.evaluation_id,
+        error: "sandboxed iframe has gone missing",
+        result: null,
+        requested_at,
+        start_time,
+        time_taken_ms: performance.now() - requested_at,
+    }
+
+    // Send stringified call request object into iframe
+    // console .log(`Sending evaluation request to sandboxed iframe: ${call.evaluation_id} with code: ${call.value} at ${existing_call_in_progress.start_time}ms`)
+    iframe.contentWindow.postMessage(JSON.stringify(request), "*")
+
+    // Timeout if no response
+    request.timeout_id = setTimeout(() => {
+        const failure: EvaluationResponse = {
+            evaluation_id: request.evaluation_id,
+            error: `Timeout waiting for response from sandboxed iframe.`,
+            result: null,
+            requested_at,
+            start_time,
+            time_taken_ms: performance.now() - start_time,
+        }
+        if (request.result) return
+        request.resolve(failure)
+    }, request.timeout || 100)
+
+    return promise_result
+}
+
+
+const requests: Record<number, ExtendedEvaluationRequest> = {}
+let previous_request: ExtendedEvaluationRequest | undefined
+async function request_next_evaluation(request: ExtendedEvaluationRequest)
+{
+    requests[request.evaluation_id] = request
+
+    const previous_promise_result = previous_request?.promise_result
+    previous_request = request
+
+    await previous_promise_result
+}
 
 
 export function Evaluator()
 {
     useEffect(() => {
         // --- Create hidden sandboxed iframe ---
-        const iframe = document.createElement("iframe")
+        iframe = document.createElement("iframe")
 
         // The sandbox attribute is key:
         // - allow-scripts: lets code inside run
@@ -46,69 +132,10 @@ export function Evaluator()
         `
         iframe.srcdoc = raw_src_doc
 
-        // Add debugging for iframe load events
-        const iframe_ready = new Promise(resolve =>
-        {
-            iframe.onload = () => resolve(true)
-        })
-
+        iframe.onload = () => resolve_iframe_loaded()
         iframe.onerror = e => console .error('Iframe error:', e)
 
         document.body.appendChild(iframe)
-
-
-        const pending_calls: EvaluationRequest[] = []
-        let existing_call_in_progress: EvaluationRequest & { timeout_id: NodeJS.Timeout | null, start_time: number } | null = null
-        function process_pending_calls()
-        {
-            if (existing_call_in_progress)
-            {
-                // console .warn("Existing call in progress, deferring execution")
-                return
-            }
-
-            // type guard, should never be null unless during dev when the
-            // iframe can be removed
-            if (iframe.contentWindow === null) return
-
-            const call = pending_calls.shift()
-            if (!call) return
-
-            existing_call_in_progress = {
-                ...call,
-                timeout_id: null,
-                start_time: performance.now(),
-            }
-
-            // Send stringified call request object into iframe
-            // console .log(`Sending evaluation request to sandboxed iframe: ${call.evaluation_id} with code: ${call.value} at ${existing_call_in_progress.start_time}ms`)
-            iframe.contentWindow.postMessage(JSON.stringify(existing_call_in_progress), "*")
-
-            // Timeout if no response
-            existing_call_in_progress.timeout_id = setTimeout(() => {
-                pub_sub.pub("evaluated_code_in_sandbox_response", {
-                    evaluation_id: call.evaluation_id,
-                    result: null,
-                    error: `Timeout waiting for response from sandboxed iframe.`,
-                    start_time: existing_call_in_progress!.start_time,
-                    time_taken_ms: performance.now() - existing_call_in_progress!.start_time,
-                })
-            }, call.timeout || 100)
-        }
-
-        pub_sub.sub("evaluate_code_in_sandbox", async (code) => {
-            await iframe_ready
-            pending_calls.push(code)
-            process_pending_calls()
-        })
-
-        pub_sub.sub("evaluated_code_in_sandbox_response", () => {
-            clearTimeout(existing_call_in_progress?.timeout_id || 0)
-            existing_call_in_progress = null
-            // Allow other subscribers to process the evaluated_code response
-            // first before we trigger the other pending calls
-            setTimeout(() => process_pending_calls(), 0)
-        })
 
 
         // --- Communication setup ---
@@ -117,47 +144,28 @@ export function Evaluator()
             // console .log("Received message from sandboxed iframe:", event.data)
             if (event.source === iframe.contentWindow)
             {
-                const response: EvaluationResponse = {
-                    evaluation_id: event.data.evaluation_id,
-                    result: event.data.result,
-                    error: event.data.error,
-                    time_taken_ms: performance.now() - event.data.start_time,
-                } as EvaluationResponse
+                const existing_call_in_progress = requests[event.data.evaluation_id]
+                if (!existing_call_in_progress) return
 
-                pub_sub.pub("evaluated_code_in_sandbox_response", response)
+                clearTimeout(existing_call_in_progress.timeout_id)
+                delete requests[event.data.evaluation_id]
+
+                const response: EvaluationResponse = {
+                    evaluation_id: existing_call_in_progress.evaluation_id,
+                    // Code will return either result or error but force types
+                    // here to avoid TypeScript errors
+                    result: event.data.result as string,
+                    error: event.data.error as null,
+                    requested_at: existing_call_in_progress.requested_at,
+                    start_time: existing_call_in_progress.start_time,
+                    time_taken_ms: performance.now() - event.data.start_time,
+                }
+
+                existing_call_in_progress.resolve(response)
             }
         }
         window.addEventListener("message", handle_message_from_iframe)
 
-
-        // --- Demo ---
-        const run1 = () => {
-            pub_sub.pub("evaluate_code_in_sandbox", {evaluation_id: "123", value: "1 + 1" })
-        }
-
-        const run2 = () => {
-            pub_sub.pub("evaluate_code_in_sandbox", {evaluation_id: "456", value: `condition = (10-5)>0
-
-change = -1
-
-if (condition) change = 10
-else change = 0
-
-Math.max(0,Math.min(10,change))` })
-        }
-
-        const run3 = () => {
-            pub_sub.pub("evaluate_code_in_sandbox", {evaluation_id: "456", value: `console.log(document.cookie); document.cookie || "no cookie"` })
-        }
-
-        run2()
-        run1()
-        run1()
-        run3()
-
-        pub_sub.sub("evaluated_code_in_sandbox_response", (response: EvaluationResponse) => {
-            console.log(`Result for ${response.evaluation_id}: ${response.result || response.error} (${response.time_taken_ms} ms)\n`)
-        })
 
         return () =>
         {

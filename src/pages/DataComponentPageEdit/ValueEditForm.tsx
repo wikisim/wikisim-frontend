@@ -8,6 +8,7 @@ import { format_data_component_value_to_string } from "core/data/format/format_d
 import { format_number_to_string } from "core/data/format/format_number_to_string"
 import { DataComponent, NewDataComponent, NUMBER_DISPLAY_TYPES, NUMBER_DISPLAY_TYPES_OBJ, NumberDisplayType } from "core/data/interface"
 
+import { evaluate_code_in_sandbox } from "../../evaluator"
 import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { Select } from "../../ui_components/Select"
@@ -46,12 +47,22 @@ export function ValueEditor(props: ValueEditorProps)
 
             {opened && <>
                 <TextEditorV1
-                    label="Numerical Value"
-                    initial_value={draft_component.value ?? ""}
-                    on_change={e =>
+                    label="Input Value"
+                    initial_value={draft_component.input_value ?? ""}
+                    on_change={async (e) =>
                     {
-                        const value = e.currentTarget.value.trim() || undefined
-                        on_change({ ...draft_component, value })
+                        const input_value = e.currentTarget.value.trim() || undefined
+                        on_change({ ...draft_component, input_value, result_value: undefined })
+                        if (!input_value) return
+
+                        const response = await evaluate_code_in_sandbox({ value: input_value })
+                        if (response.error)
+                        {
+                            console.error("Error calculating result value:", response.error)
+                            return
+                        }
+                        const result_value = response.result || undefined
+                        on_change({ ...draft_component, input_value, result_value })
                     }}
                     single_line={true}
                     editable={true}
