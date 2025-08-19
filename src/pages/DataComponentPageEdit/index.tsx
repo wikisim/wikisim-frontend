@@ -38,6 +38,14 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
     const async_data_component = data_component_by_id_and_maybe_version[props.data_component_id]!
     const { component, status } = async_data_component
 
+    const { id: user_id } = state2.user_auth_session.session?.user || {}
+    if (!user_id)
+    {
+        return <div className="page-container">
+            <p>Please log in to edit this data component.</p>
+        </div>
+    }
+
     const parsed_id = parse_id(props.data_component_id)
     if (parsed_id instanceof IdAndVersion)
     {

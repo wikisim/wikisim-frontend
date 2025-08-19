@@ -34,6 +34,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     const state = app_store()
 
     const { id: user_id } = state.user_auth_session.session?.user || {}
+    // A second check to ensure the user is logged in, this should be redundant
     if (!user_id)
     {
         return <div className="page-container">
