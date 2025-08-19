@@ -2,7 +2,7 @@ import { ActionIcon } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import IconDeviceFloppy from "@tabler/icons-react/dist/esm/icons/IconDeviceFloppy"
 import IconTrashX from "@tabler/icons-react/dist/esm/icons/IconTrashX"
-import { useEffect, useState } from "preact/hooks"
+import { useEffect, useMemo, useState } from "preact/hooks"
 
 import { get_id_str_of_data_component, get_version_of_data_component } from "core/data/accessor"
 import { flatten_data_component_for_db, hydrate_data_component_from_db } from "core/data/convert_between_db"
@@ -103,6 +103,19 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     }, [saving_disabled])
 
 
+    const data_component_by_id_and_version: Record<string, DataComponent> = useMemo(() =>
+    {
+        const map: Record<string, DataComponent> = {}
+        Object.values(state.data_components.data_component_by_id_and_maybe_version).forEach(async_data_component =>
+        {
+            const { component } = async_data_component
+            if (!component) return
+            map[component.id.to_str()] = component
+        })
+        return map
+    }, [state.data_components.data_component_by_id_and_maybe_version])
+
+
     return <>
         <div className="data-component-edit-form-container">
             <div className={"data-component-form " + (editable ? "editable" : "view-only")}>
@@ -123,6 +136,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
                 />
 
                 <ValueEditor
+                    data_component_by_id_and_version={data_component_by_id_and_version}
                     draft_component={draft_component}
                     on_change={set_draft_component}
                 />

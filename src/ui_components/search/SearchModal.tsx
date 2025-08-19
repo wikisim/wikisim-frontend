@@ -52,7 +52,7 @@ export function SearchModal()
             <TextEditorV1
                 editable={true}
                 label=""
-                initial_value={search_term}
+                initial_content={search_term}
                 on_change={e => throttle_set_search_term(e.currentTarget.value)}
                 single_line={true}
                 // This is a hack to ensure the search modal is shown on the

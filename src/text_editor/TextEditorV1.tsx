@@ -14,7 +14,7 @@ interface TextEditorV1Props
 {
     editable: boolean
     label: string
-    initial_value: string
+    initial_content: string
     on_change?: (e: JSX.TargetedEvent<HTMLTextAreaElement | HTMLInputElement, Event>) => void
     on_blur?: (e: JSX.TargetedFocusEvent<HTMLTextAreaElement | HTMLInputElement>) => void
     single_line?: boolean
@@ -77,7 +77,7 @@ export function TextEditorV1(all_props: TextEditorV1Props)
 
 
     const [is_focused, set_focused] = useState(false)
-    const [value, set_value] = useState(props.initial_value)
+    const [value, set_value] = useState(props.initial_content)
 
     const handle_on_change = useMemo(() => (e: JSX.TargetedEvent<HTMLTextAreaElement | HTMLInputElement, Event>) =>
     {

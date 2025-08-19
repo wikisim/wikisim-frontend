@@ -12,7 +12,7 @@ import { get_tiptap_extensions } from "./tiptap_extensions"
 import { URLEditor } from "./URLEditor"
 
 
-interface TextEditorV2
+interface TextEditorV2Props
 {
     editable: boolean
     initial_content?: string
@@ -21,6 +21,7 @@ interface TextEditorV2
     on_update?: (html: string, json: any) => void
     label?: string
     invalid_value?: false | string
+    include_version_in_at_mention?: boolean
 }
 
 export function TextEditorV2({
@@ -31,7 +32,8 @@ export function TextEditorV2({
     on_update,
     label = "Start typing...",
     invalid_value = false,
-}: TextEditorV2) {
+    include_version_in_at_mention = false,
+}: TextEditorV2Props) {
     const search_requester_id = useMemo(() =>
     {
         return label + "_" + Math.random().toString(10).slice(2, 10) // Generate a random source ID
@@ -189,13 +191,17 @@ export function TextEditorV2({
                 cursor_position_on_blur_to_search.current = undefined
             }
 
+            const id = include_version_in_at_mention
+                ? data.data_component.id.to_str()
+                : data.data_component.id.to_str_without_version()
+
             // Insert the selected search result into the editor
             editor_chain
                 // .deleteRange({ from: editor.state.selection.from - 1, to: editor.state.selection.from })
                 .insertContent({
                     type: "customMention",
                     attrs: {
-                        id: data.data_component.id.id,
+                        id,
                         label: data.data_component.plain_title,
                     },
                 })

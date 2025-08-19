@@ -1,24 +1,27 @@
 import { ActionIcon } from "@mantine/core"
 import IconCaretDownFilled from "@tabler/icons-react/dist/esm/icons/IconCaretDownFilled"
 import IconCaretUpFilled from "@tabler/icons-react/dist/esm/icons/IconCaretUpFilled"
-import { useState } from "preact/hooks"
+import { useEffect, useState } from "preact/hooks"
 
 import { DEFAULTS } from "core/data/defaults"
 import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
 import { format_number_to_string } from "core/data/format/format_number_to_string"
 import { DataComponent, NewDataComponent, NUMBER_DISPLAY_TYPES, NUMBER_DISPLAY_TYPES_OBJ, NumberDisplayType } from "core/data/interface"
+import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 
 import { evaluate_code_in_sandbox } from "../../evaluator"
 import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
+import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import { Select } from "../../ui_components/Select"
 import "./ValueEditForm.css"
 
 
 interface ValueEditorProps
 {
+    data_component_by_id_and_version: Record<string, DataComponent>
     draft_component: DataComponent | NewDataComponent
-    on_change: (updated_component: DataComponent | NewDataComponent) => void
+    on_change: (updated_component: Partial<DataComponent | NewDataComponent>) => void
 }
 export function ValueEditor(props: ValueEditorProps)
 {
@@ -27,6 +30,26 @@ export function ValueEditor(props: ValueEditorProps)
     const { draft_component, on_change } = props
 
     const formatted_value = format_data_component_value_to_string(draft_component)
+
+    useEffect(() =>
+    {
+        const { input_value } = draft_component
+        if (!input_value) return
+        const input_value_string = browser_convert_tiptap_to_javascript(input_value, props.data_component_by_id_and_version)
+        console.log("Calculating result value for input:", input_value_string)
+
+        evaluate_code_in_sandbox({ value: input_value_string })
+        .then(response =>
+        {
+            if (response.error)
+            {
+                console.error("Error calculating result value:", response.error)
+                return
+            }
+            const result_value = response.result || undefined
+            on_change({ result_value })
+        })
+    }, [draft_component.input_value])
 
     return <>
         <div className={`value-editor-container ${opened ? "opened" : ""}`}>
@@ -46,35 +69,26 @@ export function ValueEditor(props: ValueEditorProps)
             </div>
 
             {opened && <>
-                <TextEditorV1
+                <TextEditorV2
                     label="Input Value"
-                    initial_value={draft_component.input_value ?? ""}
-                    on_change={async (e) =>
+                    initial_content={draft_component.input_value ?? ""}
+                    on_update={value =>
                     {
-                        const input_value = e.currentTarget.value.trim() || undefined
-                        on_change({ ...draft_component, input_value, result_value: undefined })
-                        if (!input_value) return
-
-                        const response = await evaluate_code_in_sandbox({ value: input_value })
-                        if (response.error)
-                        {
-                            console.error("Error calculating result value:", response.error)
-                            return
-                        }
-                        const result_value = response.result || undefined
-                        on_change({ ...draft_component, input_value, result_value })
+                        const input_value = value.trim() || undefined
+                        on_change({ input_value })
                     }}
-                    single_line={true}
+                    single_line={false}
                     editable={true}
-                    start_focused="focused_and_text_selected"
+                    auto_focus={true}
+                    include_version_in_at_mention={true}
                 />
                 <TextEditorV1
                     label="Units"
-                    initial_value={draft_component.units ?? ""}
+                    initial_content={draft_component.units ?? ""}
                     on_change={e =>
                     {
                         const units = e.currentTarget.value.trim() || undefined
-                        on_change({ ...draft_component, units })
+                        on_change({ units })
                     }}
                     single_line={true}
                     editable={true}
@@ -83,18 +97,18 @@ export function ValueEditor(props: ValueEditorProps)
                     <TextEditorV1
                         className="sig-figs"
                         label="Sig. figs."
-                        initial_value={`${draft_component.value_number_sig_figs ?? DEFAULTS.value_number_sig_figs}`}
+                        initial_content={`${draft_component.value_number_sig_figs ?? DEFAULTS.value_number_sig_figs}`}
                         on_change={e =>
                         {
                             const value_number_sig_figs = e.currentTarget.value.trim()
                             let num = parseInt(value_number_sig_figs, 10)
                             if (isNaN(num))
                             {
-                                on_change({ ...draft_component, value_number_sig_figs: undefined })
+                                on_change({ value_number_sig_figs: undefined })
                                 return
                             }
                             num = Math.max(0, num)
-                            on_change({ ...draft_component, value_number_sig_figs: num })
+                            on_change({ value_number_sig_figs: num })
                         }}
                         single_line={true}
                         editable={true}
@@ -109,7 +123,7 @@ export function ValueEditor(props: ValueEditorProps)
                         onChange={value =>
                         {
                             const value_number_display_type = valid_value_number_display_type(value as NumberDisplayType)
-                            on_change({ ...draft_component, value_number_display_type })
+                            on_change({ value_number_display_type })
                         }}
                     />
                 </div>
