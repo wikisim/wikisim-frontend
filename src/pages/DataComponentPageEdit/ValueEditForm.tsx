@@ -3,6 +3,7 @@ import IconCaretDownFilled from "@tabler/icons-react/dist/esm/icons/IconCaretDow
 import IconCaretUpFilled from "@tabler/icons-react/dist/esm/icons/IconCaretUpFilled"
 import { useState } from "preact/hooks"
 
+import { DEFAULTS } from "core/data/defaults"
 import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
 import { format_number_to_string } from "core/data/format/format_number_to_string"
 import { DataComponent, NewDataComponent, NUMBER_DISPLAY_TYPES, NUMBER_DISPLAY_TYPES_OBJ, NumberDisplayType } from "core/data/interface"
@@ -71,7 +72,7 @@ export function ValueEditor(props: ValueEditorProps)
                     <TextEditorV1
                         className="sig-figs"
                         label="Sig. figs."
-                        initial_value={`${draft_component.value_number_sig_figs ?? ""}`}
+                        initial_value={`${draft_component.value_number_sig_figs ?? DEFAULTS.value_number_sig_figs}`}
                         on_change={e =>
                         {
                             const value_number_sig_figs = e.currentTarget.value.trim()
@@ -110,7 +111,7 @@ export function ValueEditor(props: ValueEditorProps)
 
 function valid_value_number_display_type(value_number_display_type: NumberDisplayType | undefined): NumberDisplayType
 {
-    if (!value_number_display_type || !(value_number_display_type in NUMBER_DISPLAY_TYPES_OBJ)) return "bare"
+    if (!value_number_display_type || !(value_number_display_type in NUMBER_DISPLAY_TYPES_OBJ)) return DEFAULTS.value_number_display_type
     return value_number_display_type
 }
 
