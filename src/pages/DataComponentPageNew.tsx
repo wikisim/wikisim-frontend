@@ -4,6 +4,7 @@ import { init_new_data_component } from "core/data/modify"
 
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
+import { LogInInlineText } from "../ui_components/LogInInlineText"
 import { DataComponentEditForm } from "./DataComponentPageEdit/DataComponentEditForm"
 
 
@@ -16,7 +17,7 @@ export function DataComponentPageNew(_props: { query: Record<string, string> })
     if (!id)
     {
         return <div className="page-container">
-            <p>Please log in to create a new data component.</p>
+            <p>Please <LogInInlineText /> to create a new data component.</p>
         </div>
     }
 

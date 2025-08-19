@@ -33,15 +33,6 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 {
     const state = app_store()
 
-    const { id: user_id } = state.user_auth_session.session?.user || {}
-    // A second check to ensure the user is logged in, this should be redundant
-    if (!user_id)
-    {
-        return <div className="page-container">
-            <p>Please log in to edit this data component.</p>
-        </div>
-    }
-
     const { async_status: status } = props
 
     const [show_saving_modal, set_show_saving_modal] = useState(false)

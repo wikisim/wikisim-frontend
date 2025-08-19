@@ -95,9 +95,9 @@ function SearchBar()
 
 function UserSession(props: { toggle_show_user_options_dropdown: () => void })
 {
-    const { user_auth_session } = app_store()
+    const { user_auth_session, ui } = app_store()
     const { status } = user_auth_session
-    const [show_log_in_modal, set_show_log_in_modal] = useState(false)
+    const { show_log_in_modal, set_show_log_in_modal } = ui
 
     return (
         <div

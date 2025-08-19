@@ -7,6 +7,7 @@ import { ROUTES } from "../../routes"
 import { get_async_data_component } from "../../state/data_components/accessor"
 import { app_store } from "../../state/store"
 import Loading from "../../ui_components/Loading"
+import { LogInInlineText } from "../../ui_components/LogInInlineText"
 import { DataComponentEditForm } from "./DataComponentEditForm"
 
 
@@ -42,7 +43,7 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
     if (!user_id)
     {
         return <div className="page-container">
-            <p>Please log in to edit this data component.</p>
+            <p>Please <LogInInlineText /> to edit this data component.</p>
         </div>
     }
 
