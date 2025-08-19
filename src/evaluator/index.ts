@@ -18,7 +18,6 @@ interface ExtendedEvaluationRequest extends EvaluationRequest
     start_time: number
     timeout_id?: ReturnType<typeof setTimeout>
     promise_result: Promise<EvaluationResponse>
-    result: EvaluationResponse | undefined
     resolve: (response: EvaluationResponse) => void
 }
 
@@ -34,7 +33,6 @@ export async function evaluate_code_in_sandbox(basic_request: EvaluationRequest)
         requested_at,
         start_time: -1,
         promise_result,
-        result: undefined,
         resolve: resolve!,
     }
 
@@ -60,6 +58,10 @@ export async function evaluate_code_in_sandbox(basic_request: EvaluationRequest)
 
     // Timeout if no response
     request.timeout_id = setTimeout(() => {
+        const existing_call_in_progress = requests[request.evaluation_id]
+        if (!existing_call_in_progress) return
+        delete requests[existing_call_in_progress.evaluation_id]
+
         const failure: EvaluationResponse = {
             evaluation_id: request.evaluation_id,
             error: `Timeout waiting for response from sandboxed iframe.`,
@@ -68,7 +70,7 @@ export async function evaluate_code_in_sandbox(basic_request: EvaluationRequest)
             start_time,
             time_taken_ms: performance.now() - start_time,
         }
-        if (request.result) return
+
         request.resolve(failure)
     }, request.timeout || 100)
 
@@ -116,7 +118,6 @@ export function Evaluator()
                         evaluation_id: payload.evaluation_id,
                         result,
                         error: null,
-                        start_time: payload.start_time,
                     }, '*');
                 } catch (err) {
                     // console .log(' [iFrame] ==========> Error:', err);
@@ -124,7 +125,6 @@ export function Evaluator()
                         evaluation_id: payload.evaluation_id,
                         result: null,
                         error: err.toString(),
-                        start_time: payload.start_time,
                     }, '*');
                 }
             });
@@ -146,9 +146,9 @@ export function Evaluator()
             {
                 const existing_call_in_progress = requests[event.data.evaluation_id]
                 if (!existing_call_in_progress) return
+                delete requests[existing_call_in_progress.evaluation_id]
 
                 clearTimeout(existing_call_in_progress.timeout_id)
-                delete requests[event.data.evaluation_id]
 
                 const response: EvaluationResponse = {
                     evaluation_id: existing_call_in_progress.evaluation_id,
@@ -158,7 +158,7 @@ export function Evaluator()
                     error: event.data.error as null,
                     requested_at: existing_call_in_progress.requested_at,
                     start_time: existing_call_in_progress.start_time,
-                    time_taken_ms: performance.now() - event.data.start_time,
+                    time_taken_ms: performance.now() - existing_call_in_progress.start_time,
                 }
 
                 existing_call_in_progress.resolve(response)
