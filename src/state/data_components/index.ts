@@ -249,7 +249,7 @@ async function request_data_components_for_home_page(
 
     if (data_component_ids_for_home_page?.status === "loading")
     {
-        console. warn("Data components already loading, do not call request_data_components whilst loading")
+        console .warn("Data components already loading, do not call request_data_components whilst loading")
         return
     }
 

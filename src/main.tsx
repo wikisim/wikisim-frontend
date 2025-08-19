@@ -5,6 +5,7 @@ import "@mantine/notifications/styles.css"
 import { render } from "preact"
 import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso"
 
+import { Evaluator } from "./evaluator"
 import "./main.css"
 import "./monkey_patch"
 import { DataComponentPage } from "./pages/DataComponentPage"
@@ -68,6 +69,8 @@ function App() {
             variantColorResolver,
         }}
     >
+        <Evaluator />
+
         <Notifications
             style={{
                 zIndex: "var(--z-index-notifications)",
@@ -96,7 +99,6 @@ function App() {
             </div>
             <MentionsClickHandler />
         </LocationProvider>
-
 
     </MantineProvider>
 }

@@ -1,4 +1,5 @@
 import { DataComponent } from "../../lib/core/src/data/interface"
+import { EvaluationRequest, EvaluationResponse } from "../evaluator/interface"
 
 export interface PublishableEvents
 {
@@ -26,4 +27,6 @@ export interface PublishableEvents
     mention_clicked: {
         data_component_id: string
     }
+    evaluate_code_in_sandbox: EvaluationRequest
+    evaluated_code_in_sandbox_response: EvaluationResponse
 }
