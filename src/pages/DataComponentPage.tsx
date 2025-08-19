@@ -38,6 +38,8 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
         location.route(ROUTES.DATA_COMPONENT.EDIT(component.id.as_IdOnly()))
     }), [component.id.id])
 
+    const value_as_string = format_data_component_value_to_string(component)
+
 
     return <div id="data-component">
         <div className="page-container">
@@ -58,16 +60,16 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
                 dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.description, false) }}
             />
 
-            <div className="section">
-                <div className="row">
+            {(value_as_string || component.units) && <div className="section">
+                {value_as_string && <div className="row">
                     <b>Value: </b>
-                    {format_data_component_value_to_string(component)}
-                </div>
+                    {value_as_string}
+                </div>}
                 {component.units && <div className="row">
                     <b>Units: </b>
                     {component.units}
                 </div>}
-            </div>
+            </div>}
 
         </div>
         <LastEditedBy component={component} />
