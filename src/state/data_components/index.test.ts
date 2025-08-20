@@ -15,9 +15,9 @@ import { wait_for } from "../../utils/wait_for"
 import { AppStore, get_new_app_store } from "../store"
 
 
-describe("update_store_with_loaded_data_components", () =>
+describe("mutate_store_state_with_loaded_data_components", () =>
 {
-    function setup_test_1()
+    function setup_test()
     {
         const { get_supabase } = create_mocked_supabase()
         const store = get_new_app_store({ get_supabase })
@@ -28,14 +28,17 @@ describe("update_store_with_loaded_data_components", () =>
 
         expect(data_components.data_component_by_id_and_maybe_version).to.deep.equal({}, "Initial state should have no data components loaded")
 
-        store.setState(state => mutate_store_state_with_loaded_data_components([data_component_1, data_component_2], state))
+        store.setState(state =>
+        {
+            mutate_store_state_with_loaded_data_components([data_component_1, data_component_2], state)
+        })
 
         return { store, data_component_1, data_component_2 }
     }
 
     it("should update the store with the loaded data components", () =>
     {
-        const { store, data_component_1, data_component_2 } = setup_test_1()
+        const { store, data_component_1, data_component_2 } = setup_test()
 
         const { data_components: updated_data_components } = store.getState()
         expect(updated_data_components.data_component_by_id_and_maybe_version["-1"]!.component).to.deep.equal(data_component_1)
@@ -46,7 +49,7 @@ describe("update_store_with_loaded_data_components", () =>
 
     it("should modify IdOnly with newer version", () =>
     {
-        const { store, data_component_2: data_component_2v1 } = setup_test_1()
+        const { store, data_component_2: data_component_2v1 } = setup_test()
         const data_component_2v2 = init_data_component({ id: new IdAndVersion(-2, 2) })
 
         store.setState(state => mutate_store_state_with_loaded_data_components([data_component_2v2], state))
@@ -63,13 +66,12 @@ describe("update_store_with_loaded_data_components", () =>
     // correctly reflect the "loaded" status of the data component.
     it("should update IdOnly with same version", () =>
     {
-        const { store, data_component_2: data_component_2v1 } = setup_test_1()
+        const { store, data_component_2: data_component_2v1 } = setup_test()
 
         store.setState(state =>
         {
             state.data_components.data_component_by_id_and_maybe_version["-2"]!.status = "loading"
             state.data_components.data_component_by_id_and_maybe_version["-2v1"]!.status = "loading"
-            return state
         })
 
         store.setState(state => mutate_store_state_with_loaded_data_components([data_component_2v1], state))
@@ -253,7 +255,13 @@ describe("store.data_components", () =>
         // in a different tab and then wants to try to view it in the first tab.
         it("should be able to retry loading a data component after it was not found", async () =>
         {
-            set_up_store([{ data: [] }])//, { data: [mock_db_data_component_row]}])
+            set_up_store([
+                // First request returns no data
+                { data: [] },
+                // Second request returns the data, e.g. the component was
+                // created in another tab.
+                { data: [mock_db_data_component_row]},
+            ])
 
             const { data_components } = store.getState()
             data_components.request_data_component(new IdOnly(-123))
@@ -267,7 +275,7 @@ describe("store.data_components", () =>
             data_components.request_data_component(new IdOnly(-123), force_refresh)
             const { data_components: data_components3 } = store.getState()
             expect(data_components3.data_component_by_id_and_maybe_version["-123"]!.status).equals("not_found", "Async data component status should remain as 'not_found' after retrying the request with force_refresh=false")
-            expect(mocked_supabase.from.args).deep.equals([["data_components"]], "supabase.from() should not be called a second time")
+            expect(mocked_supabase.from.args).deep.equals([["data_components"]], `supabase.from() should not have been called a second time, i.e. its args will remain ["data_components"] not ["data_components", "data_components"]`)
             await wait_for(0)
             const { data_components: data_components4 } = store.getState()
             expect(data_components4.data_component_by_id_and_maybe_version["-123"]!.status).equals("not_found", "Async data component status should remain as 'not_found'")
