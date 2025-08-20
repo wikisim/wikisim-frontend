@@ -55,10 +55,10 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
                 dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true) }}
             />
 
-            <div
+            {component.plain_description && <div
                 className="section tiptap-content"
                 dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.description, false) }}
-            />
+            />}
 
             {(value_as_string || component.units) && <div className="section">
                 {value_as_string && <div className="row">
