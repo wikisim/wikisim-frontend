@@ -169,30 +169,91 @@ describe("store.data_components", () =>
 
 
         // Test that when a data component is requested by an id, that its
-        // AsyncDataComponent placeholder status is set to "loading"
-        it("should set status to 'loading' when a data component is requested, supabase was called and data was loaded", async () =>
+        // AsyncDataComponent placeholder status is set to "loading" if it is
+        // not already loaded.
+        describe("when a data component is requested but not already present locally", () =>
         {
-            const { data_components } = store.getState()
-            data_components.request_data_component(new IdOnly(-123))
+            it(`called with IdOnly should set status to 'loading', then call supabase and add the data to the store`, async () =>
+            {
+                const { data_components } = store.getState()
+                expect(data_components.data_component_by_id_and_maybe_version["-123"]).equals(undefined, "data component and its AsyncDataComponent placeholder should not be loaded already")
 
-            const { data_components: data_components2 } = store.getState()
-            expect(data_components2.data_component_by_id_and_maybe_version["-123"]!.status).equals("loading", "Async data component status after the Supabase request is made but before it resolves")
+                data_components.request_data_component(new IdOnly(-123))
 
-            // check supabase was called
-            expect(mocked_supabase.from.args).deep.equals([["data_components"]], "supabase.from() should be called")
-            expect(mocked_supabase.from().select.args).deep.equals([["*"]], "supabase.from().select() should be called")
-            expect(mocked_supabase.from().select().in.args).deep.equals([["id", [-123]]], "supabase.from().select().in() should be called")
-            expect(mocked_supabase.from().select().in().order.args).deep.equals([["id", { ascending: true }]], "supabase.from().select().in().order()")
-            expect(mocked_supabase.from().select().in().order().range.args).deep.equals([[0, 19]], "supabase.range should be called")
+                const { data_components: data_components2 } = store.getState()
+                expect(data_components2.data_component_by_id_and_maybe_version["-123"]!.status).equals("loading", "Async data component status after the Supabase request is made but before it resolves")
 
-            await wait_for(0)
-            const { data_components: data_components3 } = store.getState()
-            // check that the data component was added to the store
-            const expected_data_component = convert_from_db_row(mock_db_data_component_row)
-            deep_equals(data_components3.data_component_by_id_and_maybe_version["-123"]!.component, expected_data_component, "Data component should be added to the store after loading")
-            deep_equals(data_components3.data_component_by_id_and_maybe_version["-123"]!.status, "loaded", "Async data component status after the Supabase request resolves successfully")
-            deep_equals(data_components3.data_component_by_id_and_maybe_version["-123v2"]!.component, expected_data_component, "Data component of id and version should be added to the store after loading")
+                // check supabase was called
+                expect(mocked_supabase.from.args).deep.equals([["data_components"]], "supabase.from() should be called")
+                expect(mocked_supabase.from().select.args).deep.equals([["*"]], "supabase.from().select() should be called")
+                expect(mocked_supabase.from().select().in.args).deep.equals([["id", [-123]]], "supabase.from().select().in() should be called")
+                expect(mocked_supabase.from().select().in().order.args).deep.equals([["id", { ascending: true }]], "supabase.from().select().in().order()")
+                expect(mocked_supabase.from().select().in().order().range.args).deep.equals([[0, 19]], "supabase.range should be called")
+
+                await wait_for(0)
+                const { data_components: data_components3 } = store.getState()
+                // check that the data component was added to the store
+                const expected_data_component = convert_from_db_row(mock_db_data_component_row)
+                deep_equals(data_components3.data_component_by_id_and_maybe_version["-123"]!.component, expected_data_component, "Data component with id only should be added to the store after loading")
+                deep_equals(data_components3.data_component_by_id_and_maybe_version["-123"]!.status, "loaded", "Async data component status after the Supabase request resolves successfully")
+                deep_equals(data_components3.data_component_by_id_and_maybe_version["-123v2"]!.component, expected_data_component, "Data component of id and version should be added to the store after loading")
+            })
+
+
+            it(`called with IdAndVersion should set status to 'loading', then call supabase and add the data to the store`, async () =>
+            {
+                const { data_components } = store.getState()
+                expect(data_components.data_component_by_id_and_maybe_version["-123"]).equals(undefined, "data component and its AsyncDataComponent placeholder should not be loaded already")
+                expect(data_components.data_component_by_id_and_maybe_version["-123v2"]).equals(undefined, "data component and its AsyncDataComponent placeholder should not be loaded already")
+
+                data_components.request_data_component(new IdAndVersion(-123, 2))
+
+                const { data_components: data_components2 } = store.getState()
+                expect(data_components2.data_component_by_id_and_maybe_version["-123v2"]!.status).equals("loading", "Async data component status after the Supabase request is made but before it resolves")
+
+                // check supabase was called
+                expect(mocked_supabase.from.args).deep.equals([["data_components_history"]], "supabase.from() should be called")
+                expect(mocked_supabase.from().select.args).deep.equals([["*"]], "supabase.from().select() should be called")
+                expect(mocked_supabase.from().select().or.args).deep.equals([["and(id.eq.-123,version_number.eq.2)"]], "supabase.from().select().or() should be called")
+                expect(mocked_supabase.from().select().or().order.args).deep.equals([["version_number", { ascending: false }], ["id", { ascending: true }]], "supabase.from().select().or().order() called with version_number and id")
+                expect(mocked_supabase.from().select().or().order().range.args).deep.equals([[0, 19]], "supabase.range should be called")
+
+                await wait_for(0)
+                const { data_components: data_components3 } = store.getState()
+                // check that the data component was added to the store
+                const expected_data_component = convert_from_db_row(mock_db_data_component_row)
+                deep_equals(data_components3.data_component_by_id_and_maybe_version["-123"]!.component, expected_data_component, "Data component should be added to the store after loading")
+                deep_equals(data_components3.data_component_by_id_and_maybe_version["-123"]!.status, "loaded", "Async data component status after the Supabase request resolves successfully")
+                deep_equals(data_components3.data_component_by_id_and_maybe_version["-123v2"]!.component, expected_data_component, "Data component of id and version should be added to the store after loading")
+            })
         })
+
+
+        // Test that when a data component is requested by an id, that its
+        // AsyncDataComponent placeholder status is set to "loaded" if it is
+        // already loaded.
+        describe("when a data component is requested and already present locally", () =>
+        {
+            [new IdOnly(-123), new IdAndVersion(-123, 1)].forEach(id =>
+            {
+                it(`called with ${id.constructor.name}`, () =>
+                {
+                    const data_component_1 = init_data_component({ id: new IdAndVersion(-123, 1) })
+                    store.setState(state => mutate_store_state_with_loaded_data_components([data_component_1], state))
+                    const { data_components } = store.getState()
+                    expect(data_components.data_component_by_id_and_maybe_version["-123"]!.status).equals("loaded", "Async data component should be loaded")
+
+                    const async_data_component = data_components.request_data_component(new IdOnly(-123))
+                    const { data_components: data_components2 } = store.getState()
+                    expect(async_data_component.status).equals("loaded", "Async data component should be loaded")
+                    expect(data_components2.data_component_by_id_and_maybe_version["-123"]!.status).equals("loaded", `Async data component status after request to load should remain "loaded"`)
+
+                    // check supabase was not called
+                    expect(mocked_supabase.from.args).deep.equals([], "supabase.from() should not have be called")
+                })
+            })
+        })
+
 
         // Test that when a data component requested by an id but supabase
         // call runs into an error, that the status is updated to "error".
