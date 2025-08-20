@@ -10,7 +10,7 @@
             "args": [
                 "--runInBand",
                 "--config",
-                ".mocharc.json",
+                ".mocharc.cjs",
                 "--no-timeouts",
                 "${file}" // Runs the currently open test file
             ],

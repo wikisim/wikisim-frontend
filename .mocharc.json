@@ -1,8 +1,0 @@
-{
-  "spec": ["src/**/*.test.ts", "lib/core/src/**/*.test.ts"],
-  "ignore": "**/*.browser.test.ts",
-  "import": "tsx",
-  "extensions": ["ts", "tsx"],
-  "require": ["src/test/setup-register-css.cjs", "src/test/setup.js"],
-  "timeout": 0
-}
