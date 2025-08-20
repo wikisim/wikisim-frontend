@@ -43,6 +43,7 @@ export interface DataComponentsState
 
     request_data_component_error: Error | undefined
     request_data_component: (data_component_id: IdAndMaybeVersion, force_refresh?: boolean) => AsyncDataComponent
+    request_data_components: (data_component_ids: IdAndMaybeVersion[]) => AsyncDataComponent[]
     request_data_components_for_home_page: () => void
     request_data_component_history: (data_component_id: IdOnly, page: number, page_size: number, force_refresh?: boolean) => void
     update_data_component: (data_component: DataComponent) => Promise<UpsertDataComponentResult>

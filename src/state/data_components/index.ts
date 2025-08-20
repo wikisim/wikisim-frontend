@@ -19,12 +19,19 @@ export function initial_state(set_state: SetAppState, get_state: GetAppState, ge
         {
             const async_data_components = get_or_create_async_data_components([data_component_id], set_state, get_state, get_supabase, force_refresh)
             const async_data_component = async_data_components[0]
+            // Type guard. Should not happen
             if (!async_data_component)
             {
                 throw new Error(`Exception, no async data component made for ID ${data_component_id.to_str()}`)
             }
 
             return async_data_component
+        },
+
+        request_data_components: (data_component_ids: IdAndMaybeVersion[]) =>
+        {
+            const async_data_components = get_or_create_async_data_components(data_component_ids, set_state, get_state, get_supabase)
+            return async_data_components
         },
 
         request_data_components_for_home_page: () =>
