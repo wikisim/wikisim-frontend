@@ -1,4 +1,4 @@
-import { request_archived_data_components, request_data_components } from "core/data/fetch_from_db"
+import { request_data_components, request_historical_data_components } from "core/data/fetch_from_db"
 import { all_are_id_and_version, all_are_id_only, IdAndMaybeVersion, IdAndVersion, IdOnly } from "core/data/id"
 import type { DataComponent, NewDataComponent } from "core/data/interface"
 import { insert_data_component, update_data_component } from "core/data/write_to_db"
@@ -17,7 +17,7 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
         request_data_component_error: undefined,
         request_data_component: (data_component_id: IdAndMaybeVersion, force_refresh?: boolean) =>
         {
-            const async_data_components = get_or_create_async_data_components([data_component_id], set, get_supabase, force_refresh)
+            const async_data_components = get_or_create_async_data_components([data_component_id], set, get, get_supabase, force_refresh)
             const async_data_component = async_data_components[0]
             if (!async_data_component)
             {
@@ -61,12 +61,11 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
 function get_or_create_async_data_components(
     data_component_ids_to_load: IdAndMaybeVersion[],
     set_state: SetAppState,
+    get_state: GetAppState,
     get_supabase: GetSupabase,
     force_refresh?: boolean,
 ): AsyncDataComponent[]
 {
-    let async_data_components: AsyncDataComponent[]
-
     const actual_data_component_only_ids_to_load: IdOnly[] = []
     const actual_data_component_id_and_versions_to_load: IdAndVersion[] = []
     function add_id(id: IdAndMaybeVersion)
@@ -88,7 +87,7 @@ function get_or_create_async_data_components(
     set_state(state =>
     {
         // Set the status of all requested data components to "loading"
-        async_data_components = data_component_ids_to_load.map(id =>
+        data_component_ids_to_load.map(id =>
         {
             const { data_component_by_id_and_maybe_version } = state.data_components
             const id_str = id.to_str()
@@ -125,8 +124,6 @@ function get_or_create_async_data_components(
             }
 
             data_component_by_id_and_maybe_version[id_str] = async_data_component
-
-            return async_data_component
         })
 
         return state
@@ -135,7 +132,19 @@ function get_or_create_async_data_components(
     load_data_components(actual_data_component_only_ids_to_load, set_state, get_supabase)
     load_data_components(actual_data_component_id_and_versions_to_load, set_state, get_supabase)
 
-    return async_data_components!
+    const { data_component_by_id_and_maybe_version } = get_state().data_components
+    const async_data_components: AsyncDataComponent[] = data_component_ids_to_load.map(id =>
+    {
+        const id_str = id.to_str()
+        const async_data_component = data_component_by_id_and_maybe_version[id_str]
+        if (!async_data_component)
+        {
+            throw new Error(`Exception, no async data component made for ID ${id_str}`)
+        }
+        return async_data_component
+    })
+
+    return async_data_components
 }
 
 
@@ -150,7 +159,7 @@ async function load_data_components(
     const response = all_are_id_only(data_component_ids_to_load)
         ? await request_data_components(get_supabase, { ids: data_component_ids_to_load })
         : all_are_id_and_version(data_component_ids_to_load)
-            ? await request_archived_data_components(get_supabase, data_component_ids_to_load)
+            ? await request_historical_data_components(get_supabase, data_component_ids_to_load)
             : (() => { throw new Error(`Invalid type, must be all IdOnly or all IdAndVersion: ${data_component_ids_to_load}`) })()
 
     set_state(state =>
@@ -371,7 +380,7 @@ async function process_request_data_component_history(
 {
     // Request the data component history from the database
     const size = page_size * 2  // get two pages worth of data
-    const response = await request_archived_data_components(get_supabase, [data_component_id], { page, size })
+    const response = await request_historical_data_components(get_supabase, [data_component_id], { page, size })
 
     set_state(state =>
     {
