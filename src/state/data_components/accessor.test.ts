@@ -2,10 +2,8 @@ import { expect } from "chai"
 import sinon from "sinon"
 
 import { IdAndVersion, IdOnly } from "core/data/id"
-import { init_data_component } from "core/data/modify"
 import { create_mocked_supabase } from "core/test/mock_supabase_and_session"
 
-import { mutate_store_state_with_loaded_data_components } from "."
 import { RootAppState } from "../interface"
 import { AppStore, get_new_app_store } from "../store"
 import { get_async_data_component } from "./accessor"
@@ -33,44 +31,30 @@ describe("get_async_data_component", () =>
         })
     })
 
-    it("should call request_data_component if the data component is not found", () =>
+    it("should call request_data_component", () =>
     {
         const result = get_async_data_component(state, "-123")
         expect(result.status).to.equal("loading")
         expect(stubbed_request_data_component.args).deep.equals([
             [new IdOnly(-123), undefined],
-        ], "request_data_component should be called with the correct ID and force_refresh set to false")
+        ], "request_data_component should be called with the correct ID and force_refresh set to undefined")
     })
 
-    it("should return the data component if it is already loaded", () =>
+    it("should call request_data_component with IdAndVersion", () =>
     {
-        const data_component_1 = init_data_component({ id: new IdAndVersion(-123, 1) })
-        store.setState(state =>
-        {
-            mutate_store_state_with_loaded_data_components([data_component_1], state)
-            return state
-        })
-
-        const result = get_async_data_component(store.getState(), "-123")
-        expect(result.status).equals("loaded")
-        expect(result.component).deep.equals(data_component_1, "Should return the loaded data component")
-
-        expect(stubbed_request_data_component.args).deep.equals([], "request_data_component should not be called when the data component is already loaded and not force refreshing")
+        const result = get_async_data_component(state, "-123v2")
+        expect(result.status).to.equal("loading")
+        expect(stubbed_request_data_component.args).deep.equals([
+            [new IdAndVersion(-123, 2), undefined],
+        ], "request_data_component should be called with the correct IdAndVersion and force_refresh set to undefined")
     })
 
-    it("should request the data component again if it is already loaded but force_refresh is true", () =>
+    it("should call request_data_component and provide force_refresh", () =>
     {
-        const data_component_1 = init_data_component({ id: new IdAndVersion(-123, 1) })
-        store.setState(state =>
-        {
-            mutate_store_state_with_loaded_data_components([data_component_1], state)
-            return state
-        })
-
         const force_refresh = true
-        get_async_data_component(store.getState(), "-123", force_refresh)
+        get_async_data_component(state, "-123", force_refresh)
         expect(stubbed_request_data_component.args).deep.equals([
             [new IdOnly(-123), true],
-        ], "request_data_component should be called when the data component is already loaded and force_refresh is true")
+        ], "request_data_component should be called and force_refresh is true")
     })
 })
