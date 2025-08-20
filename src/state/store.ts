@@ -1,4 +1,4 @@
-import { create, StoreApi, UseBoundStore } from "zustand"
+import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 
 import { CoreStoreDependencies, get_new_core_store } from "core/state/store"
@@ -12,7 +12,7 @@ import * as ui_state from "./ui_state"
 import * as users from "./users"
 
 
-export type AppStore = UseBoundStore<StoreApi<RootAppState>>
+export type AppStore = ReturnType<typeof get_new_app_store>
 
 type AppStoreDependencies = CoreStoreDependencies
 
