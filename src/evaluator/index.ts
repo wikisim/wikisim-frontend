@@ -150,15 +150,31 @@ export function Evaluator()
 
                 clearTimeout(existing_call_in_progress.timeout_id)
 
-                const response: EvaluationResponse = {
+                let response: EvaluationResponse = {
                     evaluation_id: existing_call_in_progress.evaluation_id,
-                    // Code will return either result or error but force types
-                    // here to avoid TypeScript errors
-                    result: event.data.result as string,
-                    error: event.data.error as null,
+                    result: "",
+                    error: null,
                     requested_at: existing_call_in_progress.requested_at,
                     start_time: existing_call_in_progress.start_time,
                     time_taken_ms: performance.now() - existing_call_in_progress.start_time,
+                }
+
+                if (event.data.error)
+                {
+                    response = {
+                        ...response,
+                        result: null,
+                        error: event.data.error,
+                    }
+                }
+                else if (event.data.result !== null)
+                {
+                    response = {
+                        ...response,
+                        // Ensure result is a string if it's not null
+                        result: `${event.data.result}`,
+                        error: null,
+                    }
                 }
 
                 existing_call_in_progress.resolve(response)
