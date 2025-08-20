@@ -153,6 +153,8 @@ function LogInModal({ on_close }: { on_close: () => void })
             <TextInput
                 label="Email address"
                 type="email"
+                name="email"
+                autocomplete="email"
                 value={email_address}
                 onChange={(e: h.JSX.TargetedEvent<HTMLInputElement, Event>) =>
                 {
