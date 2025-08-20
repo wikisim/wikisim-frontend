@@ -33,13 +33,13 @@ export const get_new_app_store = (dependencies?: AppStoreDependencies) =>
 
     const core_store = get_new_core_store(dependencies)
 
-    const app_store = create<RootAppState>()(immer((set, get) =>
+    const app_store = create<RootAppState>()(immer((set_state, get_state) =>
     {
         return {
-            data_components: data_components.initial_state(set, get, dependencies.get_supabase),
+            data_components: data_components.initial_state(set_state, get_state, dependencies.get_supabase),
             user_auth_session: core_store.getState().user_auth_session,
-            users: users.initial_state(set, get, dependencies.get_supabase),
-            ui: ui_state.initial_state(set),
+            users: users.initial_state(set_state, get_state, dependencies.get_supabase),
+            ui: ui_state.initial_state(set_state),
         }
     }))
 

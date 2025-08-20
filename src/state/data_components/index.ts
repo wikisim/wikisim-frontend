@@ -8,7 +8,7 @@ import { GetAppState, RootAppState, SetAppState } from "../interface"
 import { AsyncDataComponent, AsyncNewDataComponent, DataComponentsState, UpsertDataComponentResult } from "./interface"
 
 
-export function initial_state(set: SetAppState, get: GetAppState, get_supabase: GetSupabase): DataComponentsState
+export function initial_state(set_state: SetAppState, get_state: GetAppState, get_supabase: GetSupabase): DataComponentsState
 {
     return {
         data_component_ids_for_home_page: undefined,
@@ -17,7 +17,7 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
         request_data_component_error: undefined,
         request_data_component: (data_component_id: IdAndMaybeVersion, force_refresh?: boolean) =>
         {
-            const async_data_components = get_or_create_async_data_components([data_component_id], set, get, get_supabase, force_refresh)
+            const async_data_components = get_or_create_async_data_components([data_component_id], set_state, get_state, get_supabase, force_refresh)
             const async_data_component = async_data_components[0]
             if (!async_data_component)
             {
@@ -29,23 +29,23 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
 
         request_data_components_for_home_page: () =>
         {
-            request_data_components_for_home_page(set, get, get_supabase)
+            request_data_components_for_home_page(set_state, get_state, get_supabase)
         },
 
         request_data_component_history: (data_component_id: IdOnly, page: number, page_size: number, force_refresh?: boolean) =>
         {
-            request_data_component_history(set, get_supabase, data_component_id, page, page_size, force_refresh)
+            request_data_component_history(set_state, get_supabase, data_component_id, page, page_size, force_refresh)
         },
 
         update_data_component: (data_component: DataComponent) =>
         {
-            return attempt_to_update_data_component(data_component, set, get_supabase)
+            return attempt_to_update_data_component(data_component, set_state, get_supabase)
         },
 
         new_data_component_by_temp_id: {},
         insert_data_component: (data_component: NewDataComponent) =>
         {
-            return attempt_to_insert_data_component(data_component, set, get_supabase)
+            return attempt_to_insert_data_component(data_component, set_state, get_supabase)
         },
     }
 }
@@ -125,8 +125,6 @@ function get_or_create_async_data_components(
 
             data_component_by_id_and_maybe_version[id_str] = async_data_component
         })
-
-        return state
     })
 
     load_data_components(actual_data_component_only_ids_to_load, set_state, get_supabase)
@@ -179,13 +177,11 @@ async function load_data_components(
                 // Leave component as it was in case we were refreshing an existing component
                 // entry.component = null
             })
-        }
-        else
-        {
-            mutate_store_state_with_loaded_data_components(response.data, state, data_component_ids_to_load)
+
+            return
         }
 
-        return state
+        mutate_store_state_with_loaded_data_components(response.data, state, data_component_ids_to_load)
     })
 }
 
@@ -250,11 +246,11 @@ export function mutate_store_state_with_loaded_data_components(
 
 async function request_data_components_for_home_page(
     set_state: SetAppState,
-    get: GetAppState,
+    get_state: GetAppState,
     get_supabase: GetSupabase,
 )
 {
-    const { data_component_ids_for_home_page } = get().data_components
+    const { data_component_ids_for_home_page } = get_state().data_components
 
     if (data_component_ids_for_home_page?.status === "loading")
     {
@@ -280,7 +276,6 @@ async function request_data_components_for_home_page(
             state.data_components.data_component_ids_for_home_page.fetched = new Date()
             state.data_components.data_component_ids_for_home_page.error = undefined
         }
-        return state
     })
 
     const response = await request_data_components(get_supabase, { page: 0, size: 10 })
@@ -317,7 +312,6 @@ async function request_data_components_for_home_page(
         }
 
         state.data_components.data_component_ids_for_home_page = data_component_ids_for_home_page
-        return state
     })
 }
 
@@ -356,8 +350,6 @@ function request_data_component_history(
             }
         }
         data_component_by_id_and_maybe_version[id_str] = async_data_component
-
-        return state
     })
 
     process_request_data_component_history(
@@ -398,7 +390,7 @@ async function process_request_data_component_history(
 
             data_component_by_id_and_maybe_version[id_str] = async_data_component
 
-            return state
+            return
         }
         // This handles the edge case where someone manually chooses a page
         // that has no data as the first request to the history page they are
@@ -417,11 +409,9 @@ async function process_request_data_component_history(
             async_data_component.error = undefined
 
             data_component_by_id_and_maybe_version[id_str] = async_data_component
-            return state
+            return
         }
         mutate_store_state_with_loaded_data_components(response.data, state)
-
-        return state
     })
 }
 
@@ -446,8 +436,6 @@ async function attempt_to_update_data_component(
 
         const id_only = data_component.id.to_str_without_version()
         data_component_by_id_and_maybe_version[id_only] = async_data_component
-
-        return state
     })
 
     // Update the data component in the database
@@ -473,13 +461,11 @@ async function attempt_to_update_data_component(
             }
 
             data_component_by_id_and_maybe_version[id_str] = async_data_component
-            return state
+            return
         }
 
         result = { error: undefined, id: response.data.id }
         mutate_store_state_with_loaded_data_components([response.data], state)
-
-        return state
     })
 
     return result!
@@ -504,8 +490,6 @@ async function attempt_to_insert_data_component(
         const id_str = data_component.temporary_id.to_str()
 
         state.data_components.new_data_component_by_temp_id[id_str] = async_data_component
-
-        return state
     })
 
     // Insert the data component in the database
@@ -524,7 +508,7 @@ async function attempt_to_insert_data_component(
             console.error("Error updating data component:", response.error)
             async_data_component.status = "error"
             async_data_component.error = response.error
-            return state
+            return
         }
 
         result = { error: undefined, id: response.data.id }
@@ -535,8 +519,6 @@ async function attempt_to_insert_data_component(
         async_data_component.status = "loaded"
         async_data_component.new_id = response.data.id
         async_data_component.error = undefined
-
-        return state
     })
 
     return result!

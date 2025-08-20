@@ -14,11 +14,11 @@ export interface RootAppState extends RootCoreState
 
 export type SetAppState = {
     (
-        partial: RootAppState | Partial<RootAppState> | ((state: RootAppState) => RootAppState | Partial<RootAppState>),
+        partial: RootAppState | Partial<RootAppState> | ((state: RootAppState) => void),
         replace?: false
     ): void
     (
-        state: RootAppState | ((state: RootAppState) => RootAppState),
+        state: RootAppState | ((state: RootAppState) => void),
         replace: true
     ): void
 }

@@ -5,7 +5,7 @@ import { request_users } from "./fetch_from_db"
 import { User, UsersState } from "./interface"
 
 
-export function initial_state(set: SetAppState, get: GetAppState, get_supabase: GetSupabase): UsersState
+export function initial_state(set_state: SetAppState, get_state: GetAppState, get_supabase: GetSupabase): UsersState
 {
     return {
         user_ids_to_load: [],
@@ -14,7 +14,7 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
         request_user_error: undefined,
         request_user: (user_id: string) =>
         {
-            const { user_by_id } = get().users
+            const { user_by_id } = get_state().users
 
             let async_user = user_by_id[user_id]
 
@@ -28,15 +28,13 @@ export function initial_state(set: SetAppState, get: GetAppState, get_supabase: 
                     status: "requested",
                 }
 
-                set(state =>
+                set_state(state =>
                 {
                     state.users.user_ids_to_load.push(user_id)
                     state.users.user_by_id[user_id] = async_user!
-
-                    return state
                 })
 
-                setTimeout(() => load_requested_users(set, get_supabase), 0)
+                setTimeout(() => load_requested_users(set_state, get_supabase), 0)
             }
 
             return async_user
