@@ -69,6 +69,13 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
                     <b>Units: </b>
                     {component.units}
                 </div>}
+                {component.input_value !== component.result_value && <div className="row">
+                    <b>Calculation: </b>
+                    <div
+                        className="tiptap-content"
+                        dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.input_value || "", false) }}
+                    />
+                </div>}
             </div>}
 
         </div>
