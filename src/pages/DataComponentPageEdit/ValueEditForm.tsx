@@ -87,7 +87,8 @@ export function ValueEditor(props: ValueEditorProps)
                     initial_content={draft_component.units ?? ""}
                     on_change={e =>
                     {
-                        const units = e.currentTarget.value.trim() || undefined
+                        let units = e.currentTarget.value.trim() || undefined
+                        units = units?.replace(" ", "_") // Replace spaces with underscores
                         on_change({ units })
                     }}
                     single_line={true}
