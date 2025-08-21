@@ -61,14 +61,10 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
                 dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.description, false) }}
             />}
 
-            {(value_as_string || component.units) && <div className="section">
+            {value_as_string && <div className="section">
                 {value_as_string && <div className="row">
                     <b>Value: </b>
                     {value_as_string}
-                </div>}
-                {component.units && <div className="row">
-                    <b>Units: </b>
-                    {component.units}
                 </div>}
                 {!is_pure_number(sanitize_with_TipTap(component.input_value || "", true)) && <div className="row">
                     <b>Calculation: </b>
