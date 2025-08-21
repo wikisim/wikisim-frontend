@@ -12,6 +12,7 @@ import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
 import { sanitize_with_TipTap } from "../text_editor/sanitise_html"
 import Loading from "../ui_components/Loading"
+import { is_pure_number } from "../utils/is_pure_number"
 import { time_ago_or_date } from "../utils/time_ago_or_date"
 import "./DataComponentPage.css"
 
@@ -69,7 +70,7 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
                     <b>Units: </b>
                     {component.units}
                 </div>}
-                {component.input_value !== component.result_value && <div className="row">
+                {!is_pure_number(sanitize_with_TipTap(component.input_value || "", true)) && <div className="row">
                     <b>Calculation: </b>
                     <div
                         className="tiptap-content"

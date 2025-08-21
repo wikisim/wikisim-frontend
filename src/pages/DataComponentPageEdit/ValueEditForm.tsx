@@ -36,16 +36,16 @@ export function ValueEditor(props: ValueEditorProps)
         const { input_value } = draft_component
         if (!input_value) return
         const input_value_string = browser_convert_tiptap_to_javascript(input_value, props.data_component_by_id_and_version)
-        console.log("Calculating result value for input:", input_value_string)
 
         evaluate_code_in_sandbox({ value: input_value_string })
         .then(response =>
         {
             if (response.error)
             {
-                console.error("Error calculating result value:", response.error)
+                console.error("Error calculating result value:", response.error, "\nInput value:", input_value_string)
                 return
             }
+            console .debug("Calculated result value:", response.result, "\nInput value:", input_value_string)
             const result_value = response.result || undefined
             on_change({ result_value })
         })
