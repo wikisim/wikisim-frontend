@@ -27,7 +27,7 @@ export function DataComponentPageNew(_props: { query: Record<string, string> })
 
     return (
         <div className="page-container">
-            <h2>New Data Component form</h2>
+            <h2>New Data Component</h2>
 
             <DataComponentEditForm
                 async_status="loaded"

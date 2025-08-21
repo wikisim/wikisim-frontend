@@ -1,4 +1,4 @@
-import { Button, Checkbox, Modal } from "@mantine/core"
+import { Button, Modal } from "@mantine/core"
 import { useState } from "preact/hooks"
 
 import { DataComponent, NewDataComponent } from "core/data/interface"
@@ -72,7 +72,7 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                     start_focused="focused"
                 />
 
-                <Checkbox
+                {/* <Checkbox
                     disabled={is_saving || error_is_unrecoverable}
                     label="Minor changes"
                     checked={props.draft_data_component.version_type === "minor"}
@@ -81,7 +81,7 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                         const version_type = e.currentTarget.checked ? "minor" : undefined
                         props.update_draft_data_component({ version_type }, true)
                     }}
-                />
+                /> */}
 
                 {error_message && <div className="error-message">
                     <strong>Error:</strong> {error_message}
