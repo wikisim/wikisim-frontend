@@ -24,8 +24,9 @@
     --z-index-wikisim-select-label: 1;
 
     --input-border-radius: 5px;
-    --input-component-margin-top: 5px;
     --common-form-gap: 20px;
+    --common-close-form-hgap: 12px;
+    --common-close-form-vgap: 5px;
 }
 
 .vertical-gap

@@ -1,7 +1,11 @@
+import { FunctionArgument, ValueType } from "core/data/interface"
+
 
 export interface EvaluationRequest
 {
     value: string
+    value_type?: ValueType
+    function_arguments?: FunctionArgument[]
     timeout?: number // Optional timeout in milliseconds, default is 100 ms
 }
 

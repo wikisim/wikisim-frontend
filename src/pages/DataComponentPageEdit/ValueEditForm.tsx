@@ -6,14 +6,25 @@ import { useEffect, useState } from "preact/hooks"
 import { DEFAULTS } from "core/data/defaults"
 import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
 import { format_number_to_string } from "core/data/format/format_number_to_string"
-import { DataComponent, NewDataComponent, NUMBER_DISPLAY_TYPES, NUMBER_DISPLAY_TYPES_OBJ, NumberDisplayType } from "core/data/interface"
+import {
+    DataComponent,
+    NewDataComponent,
+    NUMBER_DISPLAY_TYPES,
+    NUMBER_DISPLAY_TYPES_OBJ,
+    NumberDisplayType,
+    VALUE_TYPES,
+    ValueType,
+} from "core/data/interface"
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 
-import { evaluate_code_in_sandbox } from "../../evaluator"
+import { evaluate_input_value_string } from "../../evaluator"
 import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import { Select } from "../../ui_components/Select"
+import { to_sentence_case } from "../../utils/to_sentence_case"
+import { FunctionInputsForm } from "./FunctionInputsForm"
+import { ScenariosForm } from "./ScenariosForm"
 import "./ValueEditForm.css"
 
 
@@ -26,6 +37,7 @@ interface ValueEditorProps
 export function ValueEditor(props: ValueEditorProps)
 {
     const [opened, set_opened] = useState(false)
+    const [error, set_error] = useState<string>()
 
     const { draft_component, on_change } = props
 
@@ -33,23 +45,30 @@ export function ValueEditor(props: ValueEditorProps)
 
     useEffect(() =>
     {
-        const { input_value } = draft_component
+        const { input_value, value_type, function_arguments } = draft_component
         if (!input_value) return
         const input_value_string = browser_convert_tiptap_to_javascript(input_value, props.data_component_by_id_and_version)
 
-        evaluate_code_in_sandbox({ value: input_value_string })
+        evaluate_input_value_string({ value: input_value_string, value_type, function_arguments })
         .then(response =>
         {
             if (response.error)
             {
                 console.error("Error calculating result value:", response.error, "\nInput value:", input_value_string)
+                set_error(response.error)
                 return
             }
             console .debug("Calculated result value:", response.result, "\nInput value:", input_value_string)
             const result_value = response.result || undefined
             on_change({ result_value })
+            set_error(undefined)
         })
-    }, [draft_component.input_value])
+    }, [draft_component.input_value, draft_component.value_type, draft_component.function_arguments])
+
+    const value_type = draft_component.value_type || DEFAULTS.value_type
+    const value_type_is_number = value_type === "number"
+    const value_type_is_function = value_type === "function"
+    const show_units = value_type_is_number
 
     return <>
         <div className={`value-editor-container ${opened ? "opened" : ""}`}>
@@ -68,6 +87,10 @@ export function ValueEditor(props: ValueEditorProps)
                 </ActionIcon>
             </div>
 
+            <div class="vertical-gap" />
+
+            {<div className={`error-message ${error ? "show" : "hide"}`}>Error: {error}</div>}
+
             {opened && <>
                 <TextEditorV2
                     label="Input Value"
@@ -82,7 +105,10 @@ export function ValueEditor(props: ValueEditorProps)
                     auto_focus={true}
                     include_version_in_at_mention={true}
                 />
-                <TextEditorV1
+                {show_units && <TextEditorV1
+                    // Force a re-render when value_type changes by adding it to
+                    // the key, otherwise units field rendered below `.row-group`
+                    key={"units-" + value_type}
                     label="Units"
                     initial_content={draft_component.units ?? ""}
                     on_change={e =>
@@ -93,8 +119,13 @@ export function ValueEditor(props: ValueEditorProps)
                     }}
                     single_line={true}
                     editable={true}
-                />
-                <div className="row">
+                />}
+
+                {/* Force a re-render when value_type changes by adding it to
+                    the key, otherwise units field rendered below the Select for value_type */}
+                <div className="vertical-gap" key={"vertical-gap-1-" + value_type} />
+
+                {value_type_is_number && <div className="row" key={"number-fields-" + value_type}>
                     <TextEditorV1
                         className="sig-figs"
                         label="Sig. figs."
@@ -119,7 +150,7 @@ export function ValueEditor(props: ValueEditorProps)
                         label="Format"
                         data={format_options(draft_component)}
                         size="md"
-                        style={{ marginTop: 2 }}
+                        style={{ width: 200 }}
                         value={valid_value_number_display_type(draft_component.value_number_display_type)}
                         onChange={value =>
                         {
@@ -127,7 +158,29 @@ export function ValueEditor(props: ValueEditorProps)
                             on_change({ value_number_display_type })
                         }}
                     />
-                </div>
+                </div>}
+
+                {value_type_is_function && <>
+                    <FunctionInputsForm draft_component={draft_component} on_change={on_change} />
+                    <ScenariosForm draft_component={draft_component} on_change={on_change} />
+                </>}
+
+                <div className="vertical-gap" key={"vertical-gap-2-" + value_type} />
+
+                <Select
+                    // Force a re-render when value_type changes to ensure
+                    // elements rendered in the right positions
+                    key={"value-type-" + value_type}
+                    label="Type"
+                    data={value_type_options()}
+                    size="md"
+                    style={{ width: 200 }}
+                    value={draft_component.value_type || DEFAULTS.value_type}
+                    onChange={value =>
+                    {
+                        on_change({ value_type: value as ValueType })
+                    }}
+                />
             </>}
 
         </div>
@@ -142,6 +195,14 @@ function valid_value_number_display_type(value_number_display_type: NumberDispla
 }
 
 
+// const READABLE_NUMBER_DISPLAY_TYPES: Record<NumberDisplayType, string> = {
+//     bare: "Plain",
+//     simple: "Commas",
+//     scaled: "Worded",
+//     abbreviated_scaled: "Compact",
+//     percentage: "Percentage",
+//     scientific: "Scientific",
+// }
 function format_options(_data_component: DataComponent | NewDataComponent)
 {
     // const { value = "1230.5", value_number_sig_figs = 2 } = data_component
@@ -158,11 +219,14 @@ function format_options(_data_component: DataComponent | NewDataComponent)
     })
 }
 
-// const READABLE_NUMBER_DISPLAY_TYPES: Record<NumberDisplayType, string> = {
-//     bare: "Plain",
-//     simple: "Commas",
-//     scaled: "Worded",
-//     abbreviated_scaled: "Compact",
-//     percentage: "Percentage",
-//     scientific: "Scientific",
-// }
+
+function value_type_options()
+{
+    return VALUE_TYPES
+    // For now, only allow number and function types
+    .filter(type => type === "number" || type === "function")
+    .map(type =>
+    {
+        return ({ value: type, label: to_sentence_case(type) })
+    })
+}

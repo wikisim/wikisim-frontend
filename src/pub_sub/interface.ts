@@ -1,4 +1,5 @@
-import { DataComponent } from "../../lib/core/src/data/interface"
+import { DataComponent } from "core/data/interface"
+
 
 export interface PublishableEvents
 {

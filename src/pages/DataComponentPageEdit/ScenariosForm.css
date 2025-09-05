@@ -1,0 +1,20 @@
+
+
+.scenarios
+{
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--common-close-form-hgap) - var(--common-close-form-vgap));
+
+    border-top: 1px solid var(--border-colour);
+}
+
+.scenario-form
+{
+    display: flex;
+    flex-direction: row;
+    gap: var(--common-close-form-hgap);
+
+    border-radius: var(--input-border-radius);
+    border-top: 1px solid var(--border-colour);
+}

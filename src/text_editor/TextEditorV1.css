@@ -1,7 +1,7 @@
 
 .text-editor-v1
 {
-    margin-top: var(--input-component-margin-top);
+    margin-top: var(--common-close-form-vgap);
 }
 
 .text-editor-v1 textarea,

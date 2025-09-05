@@ -14,9 +14,9 @@
 
 .value-editor-container.opened
 {
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-colour);
     padding-top: 10px;
-    /* border-bottom: 1px solid var(--border-color); */
+    /* border-bottom: 1px solid var(--border-colour); */
     padding-bottom: 10px;
 }
 
@@ -29,7 +29,7 @@
     width slightly even though the .sig-figs and .format have widths which fit
     within the size of the .value-editor-container element. */
     gap: 10px;
-    min-width: 320px;
+    /* min-width: 320px; -- declare below next to the @media max-width query for .row-group */
 }
 
 .value-editor-container .row .sig-figs
@@ -45,4 +45,45 @@
     /* To set the width we have to over-write the default min-width on the TextEditorV1 */
     min-width: unset;
     flex: 1 1 0;
+}
+
+.row-group
+{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.value-editor-container .row { min-width: 320px; }
+@media (max-width: 760px)
+{
+  .row-group
+  {
+    flex-direction: column;
+  }
+}
+
+
+.error-message
+{
+    margin-top: -10px;
+    margin-bottom: 12px;
+
+    padding: 10px;
+    border-radius: var(--input-border-radius);
+    border: 1px solid var(--colour-invalid);
+    background-color: var(--colour-invalid-fainter);
+
+    transition: border 0.3s ease, background-color 0.3s ease, opacity 0.3s ease, height 0.3s ease;
+}
+
+.error-message.hide
+{
+    opacity: 0;
+    height: 0;
+    margin: 0;
+    border: none;
+    background-color: none;
 }

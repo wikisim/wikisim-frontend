@@ -1,9 +1,9 @@
 import { useLocation } from "preact-iso"
 import { useEffect, useState } from "preact/hooks"
 
+import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
 import { DataComponent } from "core/data/interface"
 
-import { format_data_component_value_to_string } from "../../lib/core/src/data/format/format_data_component_value_to_string"
 import HistoryIcon from "../assets/history.svg"
 import EditOrSaveButton from "../buttons/EditOrSaveButton"
 import pub_sub from "../pub_sub"

@@ -1,0 +1,41 @@
+
+
+.function-arguments
+{
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--common-close-form-hgap) - var(--common-close-form-vgap));
+
+    border-top: 1px solid var(--border-colour);
+}
+
+.function-argument-form
+{
+    display: flex;
+    flex-direction: row;
+    gap: var(--common-close-form-hgap);
+}
+
+.function-argument-delete-button
+{
+    min-width: 90px;
+    margin-top: 12px;
+}
+
+@media (max-width: 700px)
+{
+    .function-arguments
+    {
+        gap: var(--common-form-gap);
+        flex: 1 1 370px;
+    }
+    .function-argument-form
+    {
+        flex-direction: column;
+        gap: var(--common-close-form-vgap);
+    }
+    .function-argument-delete-button
+    {
+        margin-top: var(--common-close-form-vgap);
+    }
+}
