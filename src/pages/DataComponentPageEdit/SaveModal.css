@@ -15,6 +15,6 @@
 
 .save-modal .error-message
 {
-    color: var(--mantine-color-red-6);
+    color: var(--colour-error);
     font-weight: bold;
 }

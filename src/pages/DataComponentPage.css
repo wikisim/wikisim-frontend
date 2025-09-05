@@ -3,7 +3,7 @@
 {
     padding: calc(var(--page-padding) / 2) var(--page-padding);
     font-size: 0.9em;
-    background-color: var(--secondary-fill-color);
+    background-color: var(--secondary-fill-colour);
     margin-top: 10px;
 }
 
@@ -17,7 +17,7 @@
 
 #data-component .section + .section
 {
-    border-top: 1px solid var(--border-color-fainter);
+    border-top: 1px solid var(--border-colour-fainter);
 }
 
 #data-component .section .row

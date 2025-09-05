@@ -10,7 +10,7 @@
 .text-editor-v1 input,
 .tiptap-editor-container
 {
-    border-radius: 5px;
+    border-radius: var(--input-border-radius);
     border: none;
     border: 1px solid #ced4da;
 }
@@ -77,9 +77,9 @@
 .text-editor-v1.invalid_value input,
 .tiptap-editor-container.invalid_value
 {
-    border: 1px solid var(--mantine-color-red-3);
+    border: 1px solid var(--colour-invalid);
     /* !important is needed for styling the tiptap entry element */
-    background-color: var(--mantine-color-red-1-2) !important;
+    background-color: var(--colour-invalid-fainter) !important;
 }
 
 .text-editor-v1.invalid_value.is_focused textarea,

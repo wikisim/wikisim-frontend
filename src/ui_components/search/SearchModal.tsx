@@ -61,6 +61,8 @@ export function SearchModal()
                 trigger_search_on_at_symbol={false}
             />
 
+            <div class="vertical-gap" />
+
             <SearchResults
                 search_term={trimmed_search_term}
                 search_requester_id={search_requester_id}

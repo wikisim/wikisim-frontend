@@ -2,7 +2,6 @@
 .text-editor-v1
 {
     margin-top: var(--input-component-margin-top);
-    margin-bottom: 24px;
 }
 
 .text-editor-v1 textarea,

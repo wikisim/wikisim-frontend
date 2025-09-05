@@ -25,7 +25,7 @@
 
 .data-component-form.view-only .tiptap-editor-container
 {
-    background-color: var(--secondary-fill-color);
+    background-color: var(--secondary-fill-colour);
 }
 .data-component-form.view-only .tiptap-editor-container,
 .data-component-form.view-only .editor-content,

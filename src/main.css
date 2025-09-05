@@ -2,15 +2,18 @@
 :root {
     --header-height: 40px;
     --page-padding: 20px;
-    --secondary-fill-color: #f0f0f0;
-    --secondary-text-color: #333;
+    --secondary-fill-colour: #f0f0f0;
+    --secondary-text-colour: #333;
     --primary-blue: #1c7ed6;
     --secondary-blue: #228be6;
     --tertiary-blue: #5fafff;
-    /* Half way between mantine-color-red-1 and -2 of ffe3e3 and ffc9c9 */
-    --mantine-color-red-1-2: #ffd6d6;
-    --border-color: #dee2e6;
-    --border-color-fainter: #e6e6e6;
+    /* --mantine-color-red-9/8 used for danger & danger:hover colours */
+    --colour-error: #fa5252; /* --mantine-color-red-6 */
+    --colour-invalid: #ffa8a8; /* --mantine-color-red-3 */
+    --colour-invalid-fainter: #ffd6d6;  /* Half way between mantine-color-red-1 and -2 of ffe3e3 and ffc9c9 */
+
+    --border-colour: #dee2e6;
+    --border-colour-fainter: #e6e6e6;
 
     --link-color: #1976d2;
 
@@ -20,7 +23,14 @@
     --z-index-notifications: 401;
     --z-index-wikisim-select-label: 1;
 
+    --input-border-radius: 5px;
     --input-component-margin-top: 5px;
+    --common-form-gap: 20px;
+}
+
+.vertical-gap
+{
+    margin-top: var(--common-form-gap);
 }
 
 
