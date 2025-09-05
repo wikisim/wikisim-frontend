@@ -19,6 +19,9 @@ interface TextEditorV1Props
     on_blur?: (e: JSX.TargetedFocusEvent<HTMLTextAreaElement | HTMLInputElement>) => void
     single_line?: boolean
     start_focused?: false | "focused" | "focused_and_text_selected"
+    /**
+     * default: false
+     */
     trigger_search_on_at_symbol?: boolean
     on_key_down?: (e: JSX.TargetedKeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => void
     /**
