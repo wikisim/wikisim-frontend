@@ -11,6 +11,7 @@ import { is_data_component, type DataComponent, type NewDataComponent } from "co
 import { changes_made } from "core/data/modify"
 import { browser_get_referenced_ids_from_tiptap } from "core/rich_text/browser_get_referenced_ids_from_tiptap"
 
+import { is_data_component_invalid } from "../../../lib/core/src/data/is_data_component_invalid"
 import BinChangesButton from "../../buttons/BinChangesButton"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
@@ -75,11 +76,13 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     const version_mismatch = get_version_of_data_component(props.data_component) !== get_version_of_data_component(draft_component)
     const saving_in_progress = status === "saving"
     const no_changes_made = !changes_made(draft_component, props.data_component)
+    const invalid_data_component = is_data_component_invalid(draft_component)
 
     const saving_disabled = (
         version_mismatch ? "Version out of date, please reload" :
         saving_in_progress ? "Saving..." :
-        no_changes_made ? "No changes made" : false
+        no_changes_made ? "No changes made" :
+        invalid_data_component ? invalid_data_component : false
     )
     const disabled_bin_changes = (
         saving_in_progress ? "Saving..." :

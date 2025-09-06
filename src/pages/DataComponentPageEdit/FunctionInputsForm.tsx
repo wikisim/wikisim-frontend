@@ -5,9 +5,14 @@ import {
     type FunctionArgument,
     type NewDataComponent,
 } from "core/data/interface"
+import {
+    calc_function_argument_error,
+    calc_function_arguments_errors,
+} from "core/data/is_data_component_invalid"
 
 import BinButton from "../../buttons/BinButton"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
+import { ErrorMessage } from "../../ui_components/ErrorMessage"
 import { Select } from "../../ui_components/Select"
 import "./FunctionInputsForm.css"
 
@@ -19,9 +24,9 @@ interface FunctionInputsFormProps
 }
 export function FunctionInputsForm(props: FunctionInputsFormProps)
 {
-    // return null
-
     const function_arguments = props.draft_component.function_arguments || []
+
+    const { name_counts } = calc_function_arguments_errors(function_arguments)
 
     const new_input_obj: FunctionArgument = {
         id: Date.now(), // temporary id until committed
@@ -83,9 +88,11 @@ export function FunctionInputsForm(props: FunctionInputsFormProps)
 
             return <FunctionInputForm
                 key={key}
+                name_counts={name_counts}
                 input={input}
                 on_change={on_change}
                 delete_entry={delete_entry}
+                is_draft_row={is_draft_row}
             />
         })}
     </div>
@@ -95,11 +102,15 @@ export function FunctionInputsForm(props: FunctionInputsFormProps)
 interface FunctionInputFormProps
 {
     input: FunctionArgument
+    name_counts: {[name: string]: number}
     on_change: (updated_input: Partial<FunctionArgument>) => void
     delete_entry: () => void
+    is_draft_row: boolean
 }
-function FunctionInputForm({ input, on_change, delete_entry }: FunctionInputFormProps)
+
+function FunctionInputForm(props: FunctionInputFormProps)
 {
+    const { input, on_change } = props
     const [force_rerender_on_delete, set_force_rerender_on_delete] = useState(false)
 
     useEffect(() =>
@@ -107,7 +118,7 @@ function FunctionInputForm({ input, on_change, delete_entry }: FunctionInputForm
         if (force_rerender_on_delete)
         {
             set_force_rerender_on_delete(false)
-            delete_entry()
+            props.delete_entry()
         }
     }, [force_rerender_on_delete])
     if (force_rerender_on_delete) return null
@@ -117,52 +128,58 @@ function FunctionInputForm({ input, on_change, delete_entry }: FunctionInputForm
         set_force_rerender_on_delete(true)
     }
 
+    const error = props.is_draft_row ? null : calc_function_argument_error(input, props.name_counts)
+
     return <div className="function-argument-form">
-        <TextEditorV1
-            label="Name"
-            initial_content={input.name}
-            on_change={e =>
-            {
-                const name = e.currentTarget.value.trim()
-                on_change({ name })
-            }}
-            single_line={true}
-            editable={true}
-        />
-
-        <Select
-            label="Type"
-            data={[
-                { value: "number", label: "Number" }
-            ]}
-            size="md"
-            style={{ minWidth: 120 }}
-            value={input.value_type}
-            onChange={value_type =>
-            {
-                if (value_type === null) return
-                on_change({ value_type: value_type as FunctionArgument["value_type"] })
-            }}
-        />
-
-        <TextEditorV1
-            label="Default value"
-            initial_content={input.default_value || ""}
-            on_change={e =>
-            {
-                const default_value = e.currentTarget.value.trim()
-                on_change({ default_value })
-            }}
-            single_line={true}
-            editable={true}
-        />
-
-        <div className="function-argument-delete-button">
-            <BinButton
-                on_click={handle_delete}
-                disabled={function_argument_is_empty(input)}
+        <div className="function-argument-form-row">
+            <TextEditorV1
+                label="Name"
+                initial_content={input.name}
+                on_change={e =>
+                {
+                    const name = e.currentTarget.value.trim()
+                    on_change({ name })
+                }}
+                single_line={true}
+                editable={true}
             />
+
+            <Select
+                label="Type"
+                data={[
+                    { value: "number", label: "Number" }
+                ]}
+                size="md"
+                style={{ minWidth: 120 }}
+                value={input.value_type}
+                onChange={value_type =>
+                {
+                    if (value_type === null) return
+                    on_change({ value_type: value_type as FunctionArgument["value_type"] })
+                }}
+            />
+
+            <TextEditorV1
+                label="Default value"
+                initial_content={input.default_value || ""}
+                on_change={e =>
+                {
+                    const default_value = e.currentTarget.value.trim()
+                    on_change({ default_value })
+                }}
+                single_line={true}
+                editable={true}
+            />
+
+            <div className="function-argument-delete-button">
+                <BinButton
+                    on_click={handle_delete}
+                    disabled={function_argument_is_empty(input)}
+                />
+            </div>
         </div>
+
+        <ErrorMessage show={!!error} message={error || ""} />
     </div>
 }
 

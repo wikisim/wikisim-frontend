@@ -12,8 +12,27 @@
 .function-argument-form
 {
     display: flex;
+    flex-direction: column;
+    gap: var(--common-close-form-hgap);
+}
+
+.function-argument-form-row
+{
+    display: flex;
     flex-direction: row;
     gap: var(--common-close-form-hgap);
+}
+
+.value-editor-container .function-arguments .generic-error-message
+{
+    /* For some reason this needs -7px to have 0 height when hidden? */
+    /* Also helps position error message upward to be closer to the
+        function-argument row's input elements */
+    margin-top: -7px;
+}
+.value-editor-container .function-arguments .generic-error-message.show
+{
+    margin-bottom: 10px;
 }
 
 .function-argument-delete-button
@@ -28,7 +47,7 @@
         gap: var(--common-form-gap);
         flex: 1 1 370px;
     }
-    .function-argument-form
+    .function-argument-form-row
     {
         flex-direction: column;
         gap: var(--common-close-form-vgap);

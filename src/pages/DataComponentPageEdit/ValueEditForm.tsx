@@ -17,10 +17,12 @@ import {
 } from "core/data/interface"
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 
+import { calc_function_arguments_errors } from "../../../lib/core/src/data/is_data_component_invalid"
 import { evaluate_input_value_string } from "../../evaluator"
 import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
+import { ErrorMessage } from "../../ui_components/ErrorMessage"
 import { Select } from "../../ui_components/Select"
 import { to_sentence_case } from "../../utils/to_sentence_case"
 import { FunctionInputsForm } from "./FunctionInputsForm"
@@ -37,7 +39,7 @@ interface ValueEditorProps
 export function ValueEditor(props: ValueEditorProps)
 {
     const [opened, set_opened] = useState(false)
-    const [error, set_error] = useState<string>()
+    const [evaluation_error, set_evaluation_error] = useState<string>()
 
     const { draft_component, on_change } = props
 
@@ -55,15 +57,18 @@ export function ValueEditor(props: ValueEditorProps)
             if (response.error)
             {
                 console.error("Error calculating result value:", response.error, "\nInput value:", input_value_string)
-                set_error(response.error)
+                set_evaluation_error(response.error)
                 return
             }
             console .debug("Calculated result value:", response.result, "\nInput value:", input_value_string)
             const result_value = response.result || undefined
             on_change({ result_value })
-            set_error(undefined)
+            set_evaluation_error(undefined)
         })
     }, [draft_component.input_value, draft_component.value_type, draft_component.function_arguments])
+
+    const function_argument_error = calc_function_arguments_errors(draft_component.function_arguments).error
+    const error = evaluation_error || function_argument_error
 
     const value_type = draft_component.value_type || DEFAULTS.value_type
     const value_type_is_number = value_type === "number"
@@ -89,7 +94,7 @@ export function ValueEditor(props: ValueEditorProps)
 
             <div class="vertical-gap" />
 
-            {<div className={`error-message ${error ? "show" : "hide"}`}>Error: {error}</div>}
+            <ErrorMessage show={!!error} message={`Error: ${error}`} />
 
             {opened && <>
                 <TextEditorV2

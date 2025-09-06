@@ -1,0 +1,20 @@
+
+.generic-error-message
+{
+    padding: 10px;
+    border-radius: var(--input-border-radius);
+    border: 1px solid var(--colour-invalid);
+    background-color: var(--colour-invalid-fainter);
+
+    transition: border 0.3s ease, background-color 0.3s ease, opacity 0.3s ease, height 0.3s ease, margin 0.3s ease;
+}
+
+.generic-error-message.hide
+{
+    padding: 0;
+    opacity: 0;
+    height: 0;
+    margin: 0;
+    border: none;
+    background-color: none;
+}
