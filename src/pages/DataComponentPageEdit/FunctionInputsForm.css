@@ -18,11 +18,10 @@
 
 .function-argument-delete-button
 {
-    min-width: 90px;
     margin-top: 12px;
 }
 
-@media (max-width: 700px)
+@media (max-width: 800px)
 {
     .function-arguments
     {

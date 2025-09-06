@@ -1,4 +1,4 @@
-import { Button } from "@mantine/core"
+import { useEffect, useState } from "preact/hooks"
 
 import {
     type DataComponent,
@@ -6,7 +6,7 @@ import {
     type NewDataComponent,
 } from "core/data/interface"
 
-import { useEffect, useState } from "preact/hooks"
+import BinButton from "../../buttons/BinButton"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { Select } from "../../ui_components/Select"
 import "./FunctionInputsForm.css"
@@ -19,6 +19,8 @@ interface FunctionInputsFormProps
 }
 export function FunctionInputsForm(props: FunctionInputsFormProps)
 {
+    // return null
+
     const function_arguments = props.draft_component.function_arguments || []
 
     const new_input_obj: FunctionArgument = {
@@ -156,13 +158,10 @@ function FunctionInputForm({ input, on_change, delete_entry }: FunctionInputForm
         />
 
         <div className="function-argument-delete-button">
-            <Button
-                variant="danger"
-                onClick={handle_delete}
+            <BinButton
+                on_click={handle_delete}
                 disabled={function_argument_is_empty(input)}
-            >
-                Delete
-            </Button>
+            />
         </div>
     </div>
 }
