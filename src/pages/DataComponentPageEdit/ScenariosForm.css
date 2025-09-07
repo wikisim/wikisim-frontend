@@ -9,12 +9,23 @@
     border-top: 1px solid var(--border-colour);
 }
 
-.scenario-form
+.scenario-form-header
 {
-    display: flex;
-    flex-direction: row;
+    justify-content: space-between;
     gap: var(--common-close-form-hgap);
+}
 
-    border-radius: var(--input-border-radius);
-    border-top: 1px solid var(--border-colour);
+.scenario-divider
+{
+    height: 1px;
+    background-color: var(--border-colour);
+    margin: 10px 0;
+}
+
+.scenario-content
+{
+    margin-left: var(--common-indent-size);
+    display: flex;
+    flex-direction: column;
+    gap: var(--common-close-form-hgap);
 }

@@ -126,29 +126,14 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 
     return <>
         <div className="data-component-edit-form-container">
-            <div className={"data-component-form " + (editable ? "editable" : "view-only")}>
-                <TextEditorV2
-                    editable={editable}
-                    initial_content={initial_component.title}
-                    single_line={true}
-                    on_update={title => set_draft_component({ title })}
-                    label={"Title" + (saving_in_progress ? " saving..." : "")}
-                />
-
-                <TextEditorV2
-                    editable={editable}
-                    initial_content={initial_component.description}
-                    single_line={false}
-                    on_update={description => set_draft_component({ description })}
-                    label={"Description" + (saving_in_progress ? " saving..." : "")}
-                />
-
-                <ValueEditor
-                    data_component_by_id_and_version={data_component_by_id_and_version}
-                    draft_component={draft_component}
-                    on_change={set_draft_component}
-                />
-            </div>
+            <DataComponentEditFormInner
+                editable={editable}
+                initial_component={initial_component}
+                draft_component={draft_component}
+                set_draft_component={set_draft_component}
+                saving_in_progress={saving_in_progress}
+                data_component_by_id_and_version={data_component_by_id_and_version}
+            />
 
             <div className="buttons-container-spacer" />
             <div className="buttons-container">
@@ -181,6 +166,53 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
             hide_saving_modal={() => set_show_saving_modal(false)}
         />
     </>
+}
+
+
+function DataComponentEditFormInner(props: {
+    editable: boolean
+    initial_component: DataComponent | NewDataComponent
+    draft_component: DataComponent | NewDataComponent
+    set_draft_component: (updates: Partial<DataComponent | NewDataComponent>, compare_meta_fields?: boolean) => void
+    saving_in_progress: boolean
+    data_component_by_id_and_version: Record<string, DataComponent>
+})
+{
+    const {
+        editable,
+        initial_component, draft_component,
+        set_draft_component,
+        saving_in_progress,
+        data_component_by_id_and_version,
+    } = props
+
+    return <div className={"data-component-form column " + (editable ? "editable" : "view-only")}>
+        <div className="data-component-form-row row">
+            <div className="data-component-form-column column">
+                <TextEditorV2
+                    editable={editable}
+                    initial_content={initial_component.title}
+                    single_line={true}
+                    on_update={title => set_draft_component({ title })}
+                    label={"Title" + (saving_in_progress ? " saving..." : "")}
+                />
+
+                <TextEditorV2
+                    editable={editable}
+                    initial_content={initial_component.description}
+                    single_line={false}
+                    on_update={description => set_draft_component({ description })}
+                    label={"Description" + (saving_in_progress ? " saving..." : "")}
+                />
+            </div>
+        </div>
+
+        <ValueEditor
+            data_component_by_id_and_version={data_component_by_id_and_version}
+            draft_component={draft_component}
+            on_change={set_draft_component}
+        />
+    </div>
 }
 
 

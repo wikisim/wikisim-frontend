@@ -24,14 +24,16 @@
     --z-index-wikisim-select-label: 1;
 
     --input-border-radius: 5px;
-    --common-form-gap: 20px;
+    --common-gap: 20px;
     --common-close-form-hgap: 12px;
     --common-close-form-vgap: 5px;
+
+    --common-indent-size: 20px;
 }
 
 .vertical-gap
 {
-    margin-top: var(--common-form-gap);
+    margin-top: var(--common-gap);
 }
 
 
@@ -46,12 +48,41 @@
 }
 
 
-.page-container .text-editor-v1,
-.value-editor-container .row
+.row
+{
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    gap: var(--common-gap);
+}
+.column
+{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: var(--common-gap);
+}
+.row_to_column
+{
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    gap: var(--common-gap);
+}
+@media (max-width: 800px)
+{
+    .row_to_column
+    {
+        flex-direction: column;
+    }
+}
+
+
+/* Should these really live in main.css? */
+.page-container .text-editor-v1
 {
     display: flex;
 }
-
 .page-container .text-editor-v1 input
 {
     flex-grow: 1;

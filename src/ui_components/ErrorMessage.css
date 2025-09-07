@@ -1,12 +1,13 @@
 
 .generic-error-message
 {
+    margin-top: var(--common-gap);
     padding: 10px;
     border-radius: var(--input-border-radius);
     border: 1px solid var(--colour-invalid);
     background-color: var(--colour-invalid-fainter);
 
-    transition: border 0.3s ease, background-color 0.3s ease, opacity 0.3s ease, height 0.3s ease, margin 0.3s ease;
+    transition: border 0.3s ease, background-color 0.3s ease, opacity 0.3s ease, height 0.3s ease, margin 0.3s ease, padding 0.3s ease;
 }
 
 .generic-error-message.hide

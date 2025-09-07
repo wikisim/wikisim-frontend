@@ -76,117 +76,120 @@ export function ValueEditor(props: ValueEditorProps)
     const show_units = value_type_is_number
 
     return <>
-        <div className={`value-editor-container ${opened ? "opened" : ""}`}>
-            <div
-                className="row value-editor-header"
-                onPointerDown={() => set_opened(!opened)}
-            >
-                <TextDisplayOnlyV1
-                    label="Value"
-                    value={formatted_value}
-                    single_line={true}
-                />
+        <div className={`value-editor-container column ${opened ? "opened" : ""}`}>
+            <div className="data-component-form-column">
+                <div
+                    className="row"
+                    onPointerDown={() => set_opened(!opened)}
+                >
+                    <div style={{ flexGrow: 1 }}>
+                        <TextDisplayOnlyV1
+                            label="Value"
+                            value={formatted_value}
+                        />
+                    </div>
 
-                <ActionIcon size="xl" variant="subtle" style={{ marginTop: 5 }}>
-                    {opened ? <IconCaretUpFilled /> : <IconCaretDownFilled />}
-                </ActionIcon>
-            </div>
+                    <ActionIcon size="xl" variant="subtle" style={{ marginTop: 5 }}>
+                        {opened ? <IconCaretUpFilled /> : <IconCaretDownFilled />}
+                    </ActionIcon>
+                </div>
 
-            <div class="vertical-gap" />
+                <ErrorMessage show={!!error} message={error ? `Error: ${error}` : ""} />
 
-            <ErrorMessage show={!!error} message={`Error: ${error}`} />
+                <div class="vertical-gap" />
 
-            {opened && <>
-                <TextEditorV2
-                    label="Input Value"
-                    initial_content={draft_component.input_value ?? ""}
-                    on_update={value =>
-                    {
-                        const input_value = value.trim() || undefined
-                        on_change({ input_value })
-                    }}
-                    single_line={false}
-                    editable={true}
-                    auto_focus={true}
-                    include_version_in_at_mention={true}
-                />
-                {show_units && <TextEditorV1
-                    // Force a re-render when value_type changes by adding it to
-                    // the key, otherwise units field rendered below `.row-group`
-                    key={"units-" + value_type}
-                    label="Units"
-                    initial_content={draft_component.units ?? ""}
-                    on_change={e =>
-                    {
-                        let units = e.currentTarget.value.trim() || undefined
-                        units = units?.replace(" ", "_") // Replace spaces with underscores
-                        on_change({ units })
-                    }}
-                    single_line={true}
-                    editable={true}
-                />}
-
-                {/* Force a re-render when value_type changes by adding it to
-                    the key, otherwise units field rendered below the Select for value_type */}
-                <div className="vertical-gap" key={"vertical-gap-1-" + value_type} />
-
-                {value_type_is_number && <div className="row" key={"number-fields-" + value_type}>
-                    <TextEditorV1
-                        className="sig-figs"
-                        label="Sig. figs."
-                        initial_content={`${draft_component.value_number_sig_figs ?? DEFAULTS.value_number_sig_figs}`}
+                {opened && <>
+                    <TextEditorV2
+                        label="Input Value"
+                        initial_content={draft_component.input_value ?? ""}
+                        on_update={value =>
+                        {
+                            const input_value = value.trim() || undefined
+                            on_change({ input_value })
+                        }}
+                        single_line={false}
+                        editable={true}
+                        auto_focus={true}
+                        include_version_in_at_mention={true}
+                    />
+                    {show_units && <TextEditorV1
+                        // Force a re-render when value_type changes by adding it to
+                        // the key, otherwise units field rendered below `.row-group`
+                        key={"units-" + value_type}
+                        label="Units"
+                        initial_content={draft_component.units ?? ""}
                         on_change={e =>
                         {
-                            const value_number_sig_figs = e.currentTarget.value.trim()
-                            let num = parseInt(value_number_sig_figs, 10)
-                            if (isNaN(num))
-                            {
-                                on_change({ value_number_sig_figs: undefined })
-                                return
-                            }
-                            num = Math.max(0, num)
-                            on_change({ value_number_sig_figs: num })
+                            let units = e.currentTarget.value.trim() || undefined
+                            units = units?.replace(" ", "_") // Replace spaces with underscores
+                            on_change({ units })
                         }}
                         single_line={true}
                         editable={true}
-                    />
+                    />}
+
+                    {/* Force a re-render when value_type changes by adding it to
+                        the key, otherwise units field rendered below the Select for value_type */}
+                    <div className="vertical-gap" key={"vertical-gap-1-" + value_type} />
+
+                    {value_type_is_number && <div className="row" key={"number-fields-" + value_type}>
+                        <TextEditorV1
+                            className="sig-figs"
+                            label="Sig. figs."
+                            initial_content={`${draft_component.value_number_sig_figs ?? DEFAULTS.value_number_sig_figs}`}
+                            on_change={e =>
+                            {
+                                const value_number_sig_figs = e.currentTarget.value.trim()
+                                let num = parseInt(value_number_sig_figs, 10)
+                                if (isNaN(num))
+                                {
+                                    on_change({ value_number_sig_figs: undefined })
+                                    return
+                                }
+                                num = Math.max(0, num)
+                                on_change({ value_number_sig_figs: num })
+                            }}
+                            single_line={true}
+                            editable={true}
+                        />
+
+                        <Select
+                            label="Format"
+                            data={format_options(draft_component)}
+                            size="md"
+                            style={{ width: 200 }}
+                            value={valid_value_number_display_type(draft_component.value_number_display_type)}
+                            onChange={value =>
+                            {
+                                const value_number_display_type = valid_value_number_display_type(value as NumberDisplayType)
+                                on_change({ value_number_display_type })
+                            }}
+                        />
+                    </div>}
+
+                    {value_type_is_function && <>
+                        <FunctionInputsForm draft_component={draft_component} on_change={on_change} />
+                        <ScenariosForm draft_component={draft_component} on_change={on_change} />
+                    </>}
+
+                    <div className="vertical-gap" key={"vertical-gap-2-" + value_type} />
 
                     <Select
-                        label="Format"
-                        data={format_options(draft_component)}
+                        // Force a re-render when value_type changes to ensure
+                        // elements rendered in the right positions
+                        key={"value-type-" + value_type}
+                        label="Type"
+                        data={value_type_options()}
                         size="md"
                         style={{ width: 200 }}
-                        value={valid_value_number_display_type(draft_component.value_number_display_type)}
+                        value={draft_component.value_type || DEFAULTS.value_type}
                         onChange={value =>
                         {
-                            const value_number_display_type = valid_value_number_display_type(value as NumberDisplayType)
-                            on_change({ value_number_display_type })
+                            on_change({ value_type: value as ValueType })
                         }}
                     />
-                </div>}
-
-                {value_type_is_function && <>
-                    <FunctionInputsForm draft_component={draft_component} on_change={on_change} />
-                    <ScenariosForm draft_component={draft_component} on_change={on_change} />
                 </>}
-
-                <div className="vertical-gap" key={"vertical-gap-2-" + value_type} />
-
-                <Select
-                    // Force a re-render when value_type changes to ensure
-                    // elements rendered in the right positions
-                    key={"value-type-" + value_type}
-                    label="Type"
-                    data={value_type_options()}
-                    size="md"
-                    style={{ width: 200 }}
-                    value={draft_component.value_type || DEFAULTS.value_type}
-                    onChange={value =>
-                    {
-                        on_change({ value_type: value as ValueType })
-                    }}
-                />
-            </>}
+            </div>
 
         </div>
     </>

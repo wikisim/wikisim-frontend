@@ -1,17 +1,4 @@
 
-.value-editor-container
-{
-    display: flex;
-    flex-direction: column;
-}
-
-.value-editor-container .value-editor-header div
-{
-    /* Need to make `TextDisplayOnlyV1` grow to fill the space.  Works in
-    conjunction with `.value-editor-container .row` rules */
-    flex: 1;
-}
-
 .value-editor-container.opened
 {
     border-top: 1px solid var(--border-colour);
@@ -20,10 +7,8 @@
     padding-bottom: 10px;
 }
 
-.value-editor-container .row
+.value-editor-container > .row
 {
-    display: flex;
-    flex-direction: row;
     align-items: flex-start;
     /* This "gap" causes the .value-editor-container element to increase in
     width slightly even though the .sig-figs and .format have widths which fit
@@ -32,7 +17,7 @@
     /* min-width: 320px; -- declare below next to the @media max-width query for .row-group */
 }
 
-.value-editor-container .row .sig-figs
+.value-editor-container > .row .sig-figs
 {
     width: 100px;
     /* To set the width we have to over-write the default min-width on the TextEditorV1 */
@@ -40,7 +25,7 @@
     flex: 0 0 100px;
 }
 
-.value-editor-container .row .format
+.value-editor-container > .row .format
 {
     /* To set the width we have to over-write the default min-width on the TextEditorV1 */
     min-width: unset;
@@ -65,9 +50,8 @@
   }
 }
 
-
-.value-editor-container > .generic-error-message
+/*
+.value-editor-container > .generic-error-message.hide
 {
-    margin-top: -10px;
-    margin-bottom: 12px;
-}
+    margin-top: -20px;
+} */
