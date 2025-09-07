@@ -1,4 +1,5 @@
 import { Checkbox } from "@mantine/core"
+import { TargetedEvent } from "preact/compat"
 import { useEffect, useState } from "preact/hooks"
 
 import { DEFAULTS } from "core/data/defaults"
@@ -9,17 +10,14 @@ import {
     type NewDataComponent,
     type Scenario,
 } from "core/data/interface"
-import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_javascript"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 
-import { TargetedEvent } from "preact/compat"
 import BinButton from "../../buttons/BinButton"
 import HelpText from "../../buttons/HelpText"
-import { EvaluationResponse } from "../../evaluator/interface"
-import { evaluate_code_in_sandbox } from "../../evaluator/sandboxed_javascript"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import { WarningMessage } from "../../ui_components/ErrorMessage"
+import { ScenarioResults } from "./ScenarioResults"
 import "./ScenariosForm.css"
 
 
@@ -104,7 +102,7 @@ export function ScenariosForm(props: ScenariosFormProps)
                 </div>
 
                 <div className="data-component-form-column column">
-                    <ScenarioGraph
+                    <ScenarioResults
                         is_draft_row={is_draft_row}
                         scenario={scenario}
                         component={props.component}
@@ -148,6 +146,7 @@ function ScenarioForm(props: ScenarioFormProps)
     }
 
     // const error = props.is_draft_row ? null : calc_scenario_error(scenario, props.name_counts)
+    const inputs_iterated_over = Object.values(scenario.values).filter(v => v.usage === "iterate_over").length
 
     return <>
         <div className="scenario-form-header row">
@@ -177,6 +176,10 @@ function ScenarioForm(props: ScenarioFormProps)
             {props.inputs.map(({ name: input_name, default_value }) =>
             {
                 const existing = scenario.values[input_name]
+                const iterate_over = existing?.usage === "iterate_over"
+                const enable_iterate_over = (
+                    iterate_over || (!!existing && inputs_iterated_over < 1)
+                )
 
                 return <div className="column" style={{ gap: "var(--common-close-gap)" }} key={input_name}>
                     {!is_draft_row && <WarningMessage
@@ -191,10 +194,9 @@ function ScenarioForm(props: ScenarioFormProps)
                         <TextEditorV1
                             key={input_name}
                             label={input_name}
-                            initial_content={scenario.values[input_name]?.value || ""}
+                            initial_content={existing?.value || ""}
                             on_change={e =>
                             {
-                                const existing = scenario.values[input_name]
                                 const value = e.currentTarget.value.trim()
                                 const usage = existing?.usage || DEFAULTS.scenario_value_usage
                                 const updated_values = { ...scenario.values, [input_name]: { value, usage } }
@@ -210,13 +212,13 @@ function ScenarioForm(props: ScenarioFormProps)
                             <Checkbox
                                 onChange={(e: TargetedEvent<HTMLInputElement, Event>) =>
                                 {
-                                    const existing = scenario.values[input_name]
                                     const value = existing?.value || ""
                                     const usage: ScenarioValueUsage = e.currentTarget.checked ? "iterate_over" : "as_is"
                                     const updated_values = { ...scenario.values, [input_name]: { value, usage } }
                                     on_change({ values: updated_values })
                                 }}
-                                checked={scenario.values[input_name]?.usage === "iterate_over"}
+                                checked={iterate_over}
+                                disabled={!enable_iterate_over}
                             />
                             <HelpText message={<>
                                 If you set the value of this input to an array or range of values,
@@ -246,44 +248,4 @@ function scenario_is_empty(arg: Scenario): boolean
 function is_scenario(arg: Scenario | null): arg is Scenario
 {
     return arg !== null
-}
-
-
-interface ScenarioGraphProps
-{
-    is_draft_row: boolean
-    component: DataComponent | NewDataComponent
-    scenario: Scenario
-}
-function ScenarioGraph(props: ScenarioGraphProps)
-{
-    if (props.is_draft_row)
-    {
-        // We just want a single pixel high placeholder to keep the layout stable
-        return <div style={{ height: "1px" }} />
-    }
-
-    const javascript = prepare_scenario_javascript(props)
-
-    const [result, set_result] = useState<EvaluationResponse>()
-
-    useEffect(() =>
-    {
-        async function run_calc()
-        {
-            const result = await evaluate_code_in_sandbox({
-                value: javascript,
-            })
-            set_result(result)
-        }
-        run_calc()
-
-    }, [javascript])
-
-    return <div>
-        {result?.error && <WarningMessage show={true} message={result.error} />}
-        {result?.result && <pre className="scenario-graph-output">
-            {result.result}
-        </pre>}
-    </div>
 }
