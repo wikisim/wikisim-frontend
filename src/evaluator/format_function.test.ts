@@ -1,8 +1,8 @@
 import { expect } from "chai"
 
 import { FunctionArgument } from "core/data/interface"
+import { deindent } from "core/utils/deindent"
 
-import { deindent } from "../utils/deindent"
 import { format_function_input_value_string } from "./format_function"
 import { EvaluationRequest } from "./interface"
 

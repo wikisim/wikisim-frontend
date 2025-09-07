@@ -1,33 +1,36 @@
+import { Checkbox } from "@mantine/core"
 import { useEffect, useState } from "preact/hooks"
 
+import { DEFAULTS } from "core/data/defaults"
 import {
+    FunctionArgument,
+    ScenarioValueUsage,
     type DataComponent,
     type NewDataComponent,
     type Scenario,
 } from "core/data/interface"
+import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_javascript"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 
+import { TargetedEvent } from "preact/compat"
 import BinButton from "../../buttons/BinButton"
+import HelpText from "../../buttons/HelpText"
+import { EvaluationResponse } from "../../evaluator/interface"
+import { evaluate_code_in_sandbox } from "../../evaluator/sandboxed_javascript"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
+import { WarningMessage } from "../../ui_components/ErrorMessage"
 import "./ScenariosForm.css"
 
 
 interface ScenariosFormProps
 {
-    draft_component: DataComponent | NewDataComponent
+    component: DataComponent | NewDataComponent
     on_change: (updated_component: Partial<DataComponent | NewDataComponent>) => void
 }
 export function ScenariosForm(props: ScenariosFormProps)
 {
-    const scenarios = props.draft_component.scenarios || []
-
-    // useEffect(() =>
-    // {
-    //     props.on_change({ scenarios: [] })
-    // }, [])
-
-    const input_names = (props.draft_component.function_arguments || []).map(arg => arg.name)
+    const scenarios = props.component.scenarios || []
 
     const new_scenario_obj: Scenario = {
         id: Date.now(), // temporary id until committed
@@ -87,20 +90,27 @@ export function ScenariosForm(props: ScenariosFormProps)
             // when committed on first edit.
             const key = scenario.id
 
-            return <>
-                <ScenarioForm
-                    key={key}
-                    ordinal={index + 1}
-                    total_scenarios={scenarios.length}
-                    input_names={input_names}
-                    scenario={scenario}
-                    on_change={on_change}
-                    delete_entry={delete_entry}
-                    is_draft_row={is_draft_row}
-                />
+            return <div className="row_to_column scenario-divider" key={key}>
+                <div className="data-component-form-column column" style={{ gap: "var(--common-mid-gap)" }}>
+                    <ScenarioForm
+                        ordinal={index + 1}
+                        total_scenarios={scenarios.length}
+                        inputs={props.component.function_arguments || []}
+                        scenario={scenario}
+                        on_change={on_change}
+                        delete_entry={delete_entry}
+                        is_draft_row={is_draft_row}
+                    />
+                </div>
 
-                <div className="scenario-divider" />
-            </>
+                <div className="data-component-form-column column">
+                    <ScenarioGraph
+                        is_draft_row={is_draft_row}
+                        scenario={scenario}
+                        component={props.component}
+                    />
+                </div>
+            </div>
         })}
     </div>
 }
@@ -111,7 +121,7 @@ interface ScenarioFormProps
     ordinal: number
     total_scenarios: number
     scenario: Scenario
-    input_names: string[]
+    inputs: FunctionArgument[]
     on_change: (updated_scenario: Partial<Scenario>) => void
     delete_entry: () => void
     is_draft_row: boolean
@@ -119,7 +129,7 @@ interface ScenarioFormProps
 
 function ScenarioForm(props: ScenarioFormProps)
 {
-    const { scenario, on_change } = props
+    const { scenario, on_change, is_draft_row } = props
     const [force_rerender_on_delete, set_force_rerender_on_delete] = useState(false)
 
     useEffect(() =>
@@ -139,24 +149,13 @@ function ScenarioForm(props: ScenarioFormProps)
 
     // const error = props.is_draft_row ? null : calc_scenario_error(scenario, props.name_counts)
 
-    return <div className="column" style={{ gap: "var(--common-close-form-hgap)" }}>
+    return <>
         <div className="scenario-form-header row">
             <div>
-                {props.is_draft_row ? "New Scenario" : `Scenario ${props.ordinal} of ${props.total_scenarios}`}
+                {is_draft_row ? "New Scenario" : `Scenario ${props.ordinal} of ${props.total_scenarios}`}
             </div>
-            {/* <TextEditorV1
-                label="Name"
-                initial_content={scenario.name || ""}
-                on_change={e =>
-                {
-                    const name = e.currentTarget.value.trim()
-                    on_change({ name })
-                }}
-                single_line={true}
-                editable={true}
-            /> */}
 
-            {!scenario_is_empty(scenario) && <div className="scenario-delete-button">
+            {!is_draft_row && <div className="scenario-delete-button">
                 <BinButton
                     on_click={handle_delete}
                     disabled={scenario_is_empty(scenario)}
@@ -175,36 +174,116 @@ function ScenarioForm(props: ScenarioFormProps)
 
             <div>Input values</div>
 
-            {props.input_names.map(input_name =>
+            {props.inputs.map(({ name: input_name, default_value }) =>
             {
-                return <TextEditorV1
-                    key={input_name}
-                    label={input_name}
-                    initial_content={scenario.values[input_name] || ""}
-                    on_change={e =>
-                    {
-                        const value = e.currentTarget.value.trim()
-                        const updated_values = { ...scenario.values, [input_name]: value }
-                        on_change({ values: updated_values })
-                    }}
-                    single_line={true}
-                    editable={true}
-                />
+                const existing = scenario.values[input_name]
+
+                return <div className="column" style={{ gap: "var(--common-close-gap)" }} key={input_name}>
+                    {!is_draft_row && <WarningMessage
+                        show={!default_value && (!existing || !existing.value)}
+                        message={!existing
+                            ? `No input named "${input_name}" exists any more.  Please delete this scenario value or re-add a function input called "${input_name}" above.`
+                            : `No value set, input default is empty.`
+                        }
+                    />}
+
+                    <div className="row">
+                        <TextEditorV1
+                            key={input_name}
+                            label={input_name}
+                            initial_content={scenario.values[input_name]?.value || ""}
+                            on_change={e =>
+                            {
+                                const existing = scenario.values[input_name]
+                                const value = e.currentTarget.value.trim()
+                                const usage = existing?.usage || DEFAULTS.scenario_value_usage
+                                const updated_values = { ...scenario.values, [input_name]: { value, usage } }
+                                if (value === "") delete updated_values[input_name]
+                                on_change({ values: updated_values })
+                            }}
+                            single_line={true}
+                            editable={true}
+                        />
+
+                        <div className="row" style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}>
+                            Iterate
+                            <Checkbox
+                                onChange={(e: TargetedEvent<HTMLInputElement, Event>) =>
+                                {
+                                    const existing = scenario.values[input_name]
+                                    const value = existing?.value || ""
+                                    const usage: ScenarioValueUsage = e.currentTarget.checked ? "iterate_over" : "as_is"
+                                    const updated_values = { ...scenario.values, [input_name]: { value, usage } }
+                                    on_change({ values: updated_values })
+                                }}
+                                checked={scenario.values[input_name]?.usage === "iterate_over"}
+                            />
+                            <HelpText message={<>
+                                If you set the value of this input to an array or range of values,
+                                then use this option to run this scenario over those values rather
+                                than treat them as a single value to pass to the input.
+                                For example using <code>[1, 2, 3]</code> with this option on will run the scenario 3 times,
+                                once with each value, whereas with this option off it will run once
+                                with the array <code>[1, 2, 3]</code> as the input value.
+                            </>} />
+                        </div>
+                    </div>
+                </div>
             })}
         </div>
 
         {/* <ErrorMessage show={!!error} message={error || ""} /> */}
-    </div>
+    </>
 }
 
 
 function scenario_is_empty(arg: Scenario): boolean
 {
     return (!arg.description || browser_convert_tiptap_to_plain(arg.description).trim() === "")
-        && Object.values(arg.values).every(v => v.trim() === "")
+        && Object.values(arg.values).every(v => v.value.trim() === "")
 }
 
 function is_scenario(arg: Scenario | null): arg is Scenario
 {
     return arg !== null
+}
+
+
+interface ScenarioGraphProps
+{
+    is_draft_row: boolean
+    component: DataComponent | NewDataComponent
+    scenario: Scenario
+}
+function ScenarioGraph(props: ScenarioGraphProps)
+{
+    if (props.is_draft_row)
+    {
+        // We just want a single pixel high placeholder to keep the layout stable
+        return <div style={{ height: "1px" }} />
+    }
+
+    const javascript = prepare_scenario_javascript(props)
+
+    const [result, set_result] = useState<EvaluationResponse>()
+
+    useEffect(() =>
+    {
+        async function run_calc()
+        {
+            const result = await evaluate_code_in_sandbox({
+                value: javascript,
+            })
+            set_result(result)
+        }
+        run_calc()
+
+    }, [javascript])
+
+    return <div>
+        {result?.error && <WarningMessage show={true} message={result.error} />}
+        {result?.result && <pre className="scenario-graph-output">
+            {result.result}
+        </pre>}
+    </div>
 }

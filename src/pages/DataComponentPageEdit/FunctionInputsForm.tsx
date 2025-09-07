@@ -11,6 +11,7 @@ import {
 } from "core/data/is_data_component_invalid"
 
 import BinButton from "../../buttons/BinButton"
+import HelpText from "../../buttons/HelpText"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
 import { Select } from "../../ui_components/Select"
@@ -38,7 +39,7 @@ export function FunctionInputsForm(props: FunctionInputsFormProps)
     // with a stable key so Preact doesn't unmount/remount the input on first edit.
     const inputs_with_draft = [...function_arguments, new_input_obj]
 
-    return <div className="function-arguments">
+    return <div className="data-component-form-column function-arguments">
         <h4>Inputs</h4>
 
         {inputs_with_draft.map((input, index) =>
@@ -144,20 +145,30 @@ function FunctionInputForm(props: FunctionInputFormProps)
                 editable={true}
             />
 
-            <Select
-                label="Type"
-                data={[
-                    { value: "number", label: "Number" }
-                ]}
-                size="md"
-                style={{ minWidth: 120 }}
-                value={input.value_type}
-                onChange={value_type =>
-                {
-                    if (value_type === null) return
-                    on_change({ value_type: value_type as FunctionArgument["value_type"] })
-                }}
-            />
+            <div className="row" style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}>
+                <Select
+                    label="Type"
+                    data={[
+                        { value: "number", label: "Number" },
+                    ]}
+                    size="md"
+                    style={{ minWidth: 120, flexGrow: 1 }}
+                    value={input.value_type}
+                    onChange={value_type =>
+                    {
+                        if (value_type === null) return
+                        on_change({ value_type: value_type as FunctionArgument["value_type"] })
+                    }}
+                />
+
+                <HelpText message={`
+                    At the moment only numbers are supported but in the future other
+                    types like arrays of numbers, functions and references to other data
+                    components are aimed to be supported.
+                    (Note that actually you can put in any valid javascript here but
+                    only numbers are guarenteed to work as expected.)
+                `} />
+            </div>
 
             <TextEditorV1
                 label="Default value"

@@ -1,6 +1,6 @@
 import { FunctionArgument } from "core/data/interface"
+import { deindent } from "core/utils/deindent"
 
-import { deindent } from "../utils/deindent"
 import { EvaluationRequest, EvaluationResponse } from "./interface"
 
 

@@ -1,6 +1,6 @@
 .wikisim-select
 {
-    margin-top: var(--common-close-form-vgap);
+    margin-top: var(--common-close-gap);
 }
 
 .wikisim-select .mantine-Select-root

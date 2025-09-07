@@ -113,9 +113,6 @@ export function ValueEditor(props: ValueEditorProps)
                         include_version_in_at_mention={true}
                     />
                     {show_units && <TextEditorV1
-                        // Force a re-render when value_type changes by adding it to
-                        // the key, otherwise units field rendered below `.row-group`
-                        key={"units-" + value_type}
                         label="Units"
                         initial_content={draft_component.units ?? ""}
                         on_change={e =>
@@ -128,11 +125,9 @@ export function ValueEditor(props: ValueEditorProps)
                         editable={true}
                     />}
 
-                    {/* Force a re-render when value_type changes by adding it to
-                        the key, otherwise units field rendered below the Select for value_type */}
-                    <div className="vertical-gap" key={"vertical-gap-1-" + value_type} />
+                    <div className="vertical-gap" />
 
-                    {value_type_is_number && <div className="row" key={"number-fields-" + value_type}>
+                    {value_type_is_number && <div className="row">
                         <TextEditorV1
                             className="sig-figs"
                             label="Sig. figs."
@@ -167,29 +162,29 @@ export function ValueEditor(props: ValueEditorProps)
                         />
                     </div>}
 
-                    {value_type_is_function && <>
-                        <FunctionInputsForm draft_component={draft_component} on_change={on_change} />
-                        <ScenariosForm draft_component={draft_component} on_change={on_change} />
-                    </>}
-
-                    <div className="vertical-gap" key={"vertical-gap-2-" + value_type} />
-
-                    <Select
-                        // Force a re-render when value_type changes to ensure
-                        // elements rendered in the right positions
-                        key={"value-type-" + value_type}
-                        label="Type"
-                        data={value_type_options()}
-                        size="md"
-                        style={{ width: 200 }}
-                        value={draft_component.value_type || DEFAULTS.value_type}
-                        onChange={value =>
-                        {
-                            on_change({ value_type: value as ValueType })
-                        }}
-                    />
                 </>}
             </div>
+
+            {opened && value_type_is_function && <>
+                <FunctionInputsForm draft_component={draft_component} on_change={on_change} />
+                <ScenariosForm component={draft_component} on_change={on_change} />
+            </>}
+
+            {opened && <div className="data-component-form-column">
+                <div className="vertical-gap" />
+
+                <Select
+                    label="Type"
+                    data={value_type_options()}
+                    size="md"
+                    style={{ width: 200 }}
+                    value={draft_component.value_type || DEFAULTS.value_type}
+                    onChange={value =>
+                    {
+                        on_change({ value_type: value as ValueType })
+                    }}
+                />
+            </div>}
 
         </div>
     </>

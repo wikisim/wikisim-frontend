@@ -38,7 +38,7 @@
     display: flex;
     align-items: center;
     flex-direction: row;
-    flex-grow: 1;
+    flex: 1 1;
     gap: 10px;
 }
 

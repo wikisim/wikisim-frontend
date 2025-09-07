@@ -11,6 +11,8 @@
     --colour-error: #fa5252; /* --mantine-color-red-6 */
     --colour-invalid: #ffa8a8; /* --mantine-color-red-3 */
     --colour-invalid-fainter: #ffd6d6;  /* Half way between mantine-color-red-1 and -2 of ffe3e3 and ffc9c9 */
+    --colour-warning: #ffc078; /* --mantine-color-orange-3 */
+    --colour-warning-fainter: #ffe3bf; /* --mantine-color-orange-1 */
 
     --border-colour: #dee2e6;
     --border-colour-fainter: #e6e6e6;
@@ -25,8 +27,8 @@
 
     --input-border-radius: 5px;
     --common-gap: 20px;
-    --common-close-form-hgap: 12px;
-    --common-close-form-vgap: 5px;
+    --common-mid-gap: 12px;
+    --common-close-gap: 5px;
 
     --common-indent-size: 20px;
 }
@@ -52,21 +54,21 @@
 {
     display: flex;
     flex-direction: row;
-    flex-grow: 1;
+    flex: 1 1;
     gap: var(--common-gap);
 }
 .column
 {
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
+    flex: 1 1;
     gap: var(--common-gap);
 }
 .row_to_column
 {
     display: flex;
     flex-direction: row;
-    flex-grow: 1;
+    flex: 1 1;
     gap: var(--common-gap);
 }
 @media (max-width: 800px)
@@ -75,15 +77,4 @@
     {
         flex-direction: column;
     }
-}
-
-
-/* Should these really live in main.css? */
-.page-container .text-editor-v1
-{
-    display: flex;
-}
-.page-container .text-editor-v1 input
-{
-    flex-grow: 1;
 }

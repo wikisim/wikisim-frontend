@@ -113,10 +113,11 @@ export function Evaluator()
                 try {
                     // Evaluate the code inside the sandboxed iframe
                     const result = eval(payload.value);
-                    // console .log(' [iFrame] ==========> Success, result:', result);
+                    const result_json = JSON.stringify(result);
+                    console .log(' [iFrame] ==========> Success, result:', result_json);
                     e.source.postMessage({
                         evaluation_id: payload.evaluation_id,
-                        result,
+                        result: result_json,
                         error: null,
                     }, '*');
                 } catch (err) {

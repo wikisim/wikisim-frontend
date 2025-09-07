@@ -19,3 +19,9 @@
     border: none;
     background-color: none;
 }
+
+.generic-error-message.warning
+{
+    border: 1px solid var(--colour-warning);
+    background-color: var(--colour-warning-fainter);
+}

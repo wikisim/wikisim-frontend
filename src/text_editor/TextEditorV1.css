@@ -1,12 +1,16 @@
 
 .text-editor-v1
 {
-    margin-top: var(--common-close-form-vgap);
+    margin-top: var(--common-close-gap);
+    display: flex;
+    flex: 1 1;
 }
+
 
 .text-editor-v1 textarea,
 .text-editor-v1 input
 {
+    flex: 1 1;
     font-size: 16px;
     transition: border 0.2s;
     resize: none; /* Hide resize handle */
