@@ -38,6 +38,7 @@ export function TextEditorV2({
     {
         return label + "_" + Math.random().toString(10).slice(2, 10) // Generate a random source ID
     }, [label])
+    const ignore_initial_non_updates = useRef(true)
 
     const cursor_position_on_blur_to_search = useRef<number | undefined>(undefined)
     const [edit_url_enabled, set_edit_url_enabled] = useState<Selection | undefined>(undefined)
@@ -163,6 +164,17 @@ export function TextEditorV2({
             // Replace every double space with space+&nbsp; to preserve multiple spaces visually
             html = html.replace(/ {2}/g, " &nbsp;")
             if (single_line) html = remove_p_tags(html)
+
+            // For some reason, tiptap editor emits 3 onUpdate calls on init,
+            // even though the content is not changing.  So we add this check
+            // that ignores those initial non-updates.
+            if (ignore_initial_non_updates.current)
+            {
+                const no_change = html === initial_content
+                if (no_change) return
+                ignore_initial_non_updates.current = false
+            }
+
             on_update?.(html, json)
         },
     })
