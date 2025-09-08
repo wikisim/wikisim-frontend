@@ -21,13 +21,13 @@ import { ErrorMessage } from "../../ui_components/ErrorMessage"
 
 
 
-interface ScenarioGraphProps
+interface ScenarioResultsProps
 {
     is_draft_row: boolean
     component: DataComponent | NewDataComponent
     scenario: Scenario
 }
-export function ScenarioResults(props: ScenarioGraphProps)
+export function ScenarioResults(props: ScenarioResultsProps)
 {
     if (props.is_draft_row)
     {
@@ -52,9 +52,7 @@ export function ScenarioResults(props: ScenarioGraphProps)
 
     return <div>
         {result?.error && <ErrorMessage show={true} message={result.error} />}
-        {result?.result && <pre className="scenario-graph-output">
-            <ScenarioResultsDisplay result={result.result} />
-        </pre>}
+        {result?.result && <ScenarioResultsDisplay result={result.result} />}
     </div>
 }
 
@@ -80,9 +78,9 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const json = JSON.parse(props.result)
     const data = assert_json_is_labels_and_results(json)
-    if (!data) return <div style={{ textAlign: "center", padding: "30px 0" }}>
+    if (!data) return <pre style={{ textAlign: "center", padding: "30px 0" }}>
         Result = {props.result}
-    </div>
+    </pre>
 
     const graph_data: ChartData<"line", number[], unknown> =
     {

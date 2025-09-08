@@ -2,13 +2,12 @@ import { Checkbox } from "@mantine/core"
 import { TargetedEvent } from "preact/compat"
 import { useEffect, useMemo, useState } from "preact/hooks"
 
-import { DEFAULTS } from "core/data/defaults"
-import {
+import type {
+    DataComponent,
     FunctionArgument,
-    ScenarioValueUsage,
-    type DataComponent,
-    type NewDataComponent,
-    type Scenario,
+    NewDataComponent,
+    Scenario,
+    ScenarioValues,
 } from "core/data/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 
@@ -146,7 +145,7 @@ function ScenarioForm(props: ScenarioFormProps)
     }
 
     // const error = props.is_draft_row ? null : calc_scenario_error(scenario, props.name_counts)
-    const inputs_iterated_over = Object.values(scenario.values).filter(v => v.usage === "iterate_over").length
+    const inputs_iterated_over = Object.values(scenario.values).filter(v => v.iterate_over).length
 
     return <>
         <div className="scenario-form-header row">
@@ -177,9 +176,8 @@ function ScenarioForm(props: ScenarioFormProps)
             {props.inputs.map(({ name: input_name, default_value }) =>
             {
                 const existing = scenario.values[input_name]
-                const iterate_over = existing?.usage === "iterate_over"
                 const enable_iterate_over = (
-                    iterate_over || (!!existing && inputs_iterated_over < 1)
+                    existing?.iterate_over || (!!existing && inputs_iterated_over < 1)
                 )
 
                 return <div className="column" style={{ gap: "var(--common-close-gap)" }} key={input_name}>
@@ -199,8 +197,8 @@ function ScenarioForm(props: ScenarioFormProps)
                             on_change={e =>
                             {
                                 const value = e.currentTarget.value.trim()
-                                const usage = existing?.usage || DEFAULTS.scenario_value_usage
-                                const updated_values = { ...scenario.values, [input_name]: { value, usage } }
+                                const iterate_over = existing?.iterate_over
+                                const updated_values: ScenarioValues = { ...scenario.values, [input_name]: { value, iterate_over } }
                                 if (value === "") delete updated_values[input_name]
                                 on_change({ values: updated_values })
                             }}
@@ -214,11 +212,11 @@ function ScenarioForm(props: ScenarioFormProps)
                                 onChange={(e: TargetedEvent<HTMLInputElement, Event>) =>
                                 {
                                     const value = existing?.value || ""
-                                    const usage: ScenarioValueUsage = e.currentTarget.checked ? "iterate_over" : "as_is"
-                                    const updated_values = { ...scenario.values, [input_name]: { value, usage } }
+                                    const iterate_over = e.currentTarget.checked || undefined
+                                    const updated_values = { ...scenario.values, [input_name]: { value, iterate_over } }
                                     on_change({ values: updated_values })
                                 }}
-                                checked={iterate_over}
+                                checked={existing?.iterate_over || false}
                                 disabled={!enable_iterate_over}
                             />
                             <HelpText message={<>
