@@ -1,6 +1,6 @@
 import { Checkbox } from "@mantine/core"
 import { TargetedEvent } from "preact/compat"
-import { useEffect, useState } from "preact/hooks"
+import { useEffect, useMemo, useState } from "preact/hooks"
 
 import { DEFAULTS } from "core/data/defaults"
 import {
@@ -30,11 +30,11 @@ export function ScenariosForm(props: ScenariosFormProps)
 {
     const scenarios = props.component.scenarios || []
 
-    const new_scenario_obj: Scenario = {
+    const new_scenario_obj: Scenario = useMemo(() => ({
         id: Date.now(), // temporary id until committed
         description: "<p></p>", // tiptap empty document
         values: {},
-    }
+    }), [])
 
     // Important: render the "new" row inside the same mapped list as existing rows
     // with a stable key so Preact doesn't unmount/remount the scenario on first edit.
@@ -158,6 +158,7 @@ function ScenarioForm(props: ScenarioFormProps)
                 <BinButton
                     on_click={handle_delete}
                     disabled={scenario_is_empty(scenario)}
+                    label={`Delete scenario ${props.ordinal}`}
                 />
             </div>}
         </div>

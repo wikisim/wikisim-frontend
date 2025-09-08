@@ -100,7 +100,7 @@ export function ValueEditor(props: ValueEditorProps)
 
                 {opened && <>
                     <TextEditorV2
-                        label="Input Value"
+                        label={value_type_is_number ? "Input Value" : "Function"}
                         initial_content={draft_component.input_value ?? ""}
                         on_update={value =>
                         {
