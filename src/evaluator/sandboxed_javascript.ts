@@ -105,8 +105,19 @@ export function Evaluator()
 
         // Load a blank page with a script that listens for code
         const raw_src_doc = `
+        // Add mathjs from https://unpkg.com/mathjs@14.7.0/lib/browser/math.js
+        // Alternatives listed here: https://mathjs.org/download.html
+        <script src="https://unpkg.com/mathjs@14.7.0/lib/browser/math.js"></script>
+
+        <script>
+            // Expose some global functions for easier use
+            window.range = (...args) => math.range(...args).toArray();
+        </script>
+
         <script>
             // console .log(' [iFrame] ==========> Sandboxed iframe loaded');
+            // console .log(' [iFrame] ==========> mathjs...', window.math);
+
             window.addEventListener('message', (e) => {
                 const payload = JSON.parse(e.data);
                 // console .log(' [iFrame] ==========> received payload:', payload);
