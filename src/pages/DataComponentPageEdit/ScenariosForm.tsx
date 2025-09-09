@@ -16,6 +16,7 @@ import HelpText from "../../buttons/HelpText"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import { WarningMessage } from "../../ui_components/ErrorMessage"
+import OpenCloseSection from "../../ui_components/OpenCloseSection"
 import { ScenarioResultsAndExpectations } from "./ScenarioResultsAndExpectations"
 import "./ScenariosForm.css"
 
@@ -27,6 +28,8 @@ interface ScenariosFormProps
 }
 export function ScenariosForm(props: ScenariosFormProps)
 {
+    const [opened, set_opened] = useState(false)
+
     const scenarios = props.component.scenarios || []
 
     const new_scenario_obj: Scenario = useMemo(() => ({
@@ -40,9 +43,16 @@ export function ScenariosForm(props: ScenariosFormProps)
     const scenarios_with_draft = [...scenarios, new_scenario_obj]
 
     return <div className="scenarios">
-        <h4>Scenarios</h4>
+        <div
+            className="data-component-form-column row"
+            style={{ alignItems: "center", justifyContent: "space-between" }}
+            onPointerDown={() => set_opened(!opened)}
+        >
+            <h4>Scenarios</h4>
+            <OpenCloseSection opened={opened} />
+        </div>
 
-        {scenarios_with_draft.map((scenario, index) =>
+        {opened && scenarios_with_draft.map((scenario, index) =>
         {
             const is_draft_row = index === scenarios.length
 
@@ -184,10 +194,7 @@ function ScenarioForm(props: ScenarioFormProps)
                 return <div className="column" style={{ gap: "var(--gap-common-close)" }} key={input_name}>
                     {!is_draft_row && <WarningMessage
                         show={!default_value && (!existing || !existing.value)}
-                        message={!existing
-                            ? `No input named "${input_name}" exists any more.  Please delete this scenario value or re-add a function input called "${input_name}" above.`
-                            : `No value set, input default is empty.`
-                        }
+                        message={`Please set a value for "${input_name}" as it has no default.`}
                     />}
 
                     <div className="row">

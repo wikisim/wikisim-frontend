@@ -14,6 +14,7 @@ import BinButton from "../../buttons/BinButton"
 import HelpText from "../../buttons/HelpText"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
+import OpenCloseSection from "../../ui_components/OpenCloseSection"
 import { Select } from "../../ui_components/Select"
 import "./FunctionInputsForm.css"
 
@@ -25,6 +26,8 @@ interface FunctionInputsFormProps
 }
 export function FunctionInputsForm(props: FunctionInputsFormProps)
 {
+    const [opened, set_opened] = useState(false)
+
     const function_arguments = props.draft_component.function_arguments || []
 
     const { name_counts } = calc_function_arguments_errors(function_arguments)
@@ -40,9 +43,16 @@ export function FunctionInputsForm(props: FunctionInputsFormProps)
     const inputs_with_draft = [...function_arguments, new_input_obj]
 
     return <div className="data-component-form-column function-arguments">
-        <h4>Inputs</h4>
+        <div
+            className="data-component-form-column row"
+            style={{ alignItems: "center", justifyContent: "space-between" }}
+            onPointerDown={() => set_opened(!opened)}
+        >
+            <h4>Inputs</h4>
+            <OpenCloseSection opened={opened} />
+        </div>
 
-        {inputs_with_draft.map((input, index) =>
+        {opened && inputs_with_draft.map((input, index) =>
         {
             const is_draft_row = index === function_arguments.length
 

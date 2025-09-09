@@ -1,6 +1,3 @@
-import { ActionIcon } from "@mantine/core"
-import IconCaretDownFilled from "@tabler/icons-react/dist/esm/icons/IconCaretDownFilled"
-import IconCaretUpFilled from "@tabler/icons-react/dist/esm/icons/IconCaretUpFilled"
 import { useEffect, useState } from "preact/hooks"
 
 import { DEFAULTS } from "core/data/defaults"
@@ -15,14 +12,15 @@ import {
     VALUE_TYPES,
     ValueType,
 } from "core/data/interface"
+import { calc_function_arguments_errors } from "core/data/is_data_component_invalid"
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 
-import { calc_function_arguments_errors } from "../../../lib/core/src/data/is_data_component_invalid"
 import { evaluate_input_value_string } from "../../evaluator"
 import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
+import OpenCloseSection from "../../ui_components/OpenCloseSection"
 import { Select } from "../../ui_components/Select"
 import { to_sentence_case } from "../../utils/to_sentence_case"
 import { FunctionInputsForm } from "./FunctionInputsForm"
@@ -80,6 +78,7 @@ export function ValueEditor(props: ValueEditorProps)
             <div className="data-component-form-column">
                 <div
                     className="row"
+                    style={{ alignItems: "center" }}
                     onPointerDown={() => set_opened(!opened)}
                 >
                     <div style={{ flexGrow: 1 }}>
@@ -89,9 +88,7 @@ export function ValueEditor(props: ValueEditorProps)
                         />
                     </div>
 
-                    <ActionIcon size="xl" variant="subtle" style={{ marginTop: 5 }}>
-                        {opened ? <IconCaretUpFilled /> : <IconCaretDownFilled />}
-                    </ActionIcon>
+                    <OpenCloseSection opened={opened} />
                 </div>
 
                 <ErrorMessage show={!!error} message={error ? `Error: ${error}` : ""} />

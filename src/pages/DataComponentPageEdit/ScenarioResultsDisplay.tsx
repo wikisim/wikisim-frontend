@@ -85,6 +85,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
             label: "Expected Result",
             data: merged_data.expected.results,
             borderColor: colour_expected,
+            backgroundColor: "white",
             borderDash: [5, 5],
             yAxisID: "y",
         })
