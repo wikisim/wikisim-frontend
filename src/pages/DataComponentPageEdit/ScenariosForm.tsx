@@ -36,7 +36,7 @@ export function ScenariosForm(props: ScenariosFormProps)
         id: Date.now(), // temporary id until committed
         description: "<p></p>", // tiptap empty document
         values: {},
-    }), [])
+    }), [scenarios.length])
 
     // Important: render the "new" row inside the same mapped list as existing rows
     // with a stable key so Preact doesn't unmount/remount the scenario on first edit.
