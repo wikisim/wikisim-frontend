@@ -38,6 +38,7 @@ interface ScenarioResultsDisplayProps
 {
     result: string
     expected_result: string | undefined
+    expectation_met: boolean | undefined
 }
 
 export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
@@ -47,14 +48,10 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
 
     if (!data)
     {
-        const match = props.expected_result
-            ? props.result === props.expected_result
-            : undefined
-
         return <pre style={{ textAlign: "center", padding: "30px 0" }}>
             Result = {props.result}<br/>
             {props.expected_result && `Expected = ${props.expected_result}`}<br/>
-            <ExpectationsMet met={match} />
+            <ExpectationsMet met={props.expectation_met} />
         </pre>
     }
 
@@ -68,7 +65,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
                 type: "line",
                 label: "Scenario Result",
                 data: merged_data.results,
-                borderColor: merged_data.any_error ? colour_mismatch_line : colour_actual,
+                borderColor: props.expectation_met === false ? colour_mismatch_line : colour_actual,
                 backgroundColor: merged_data.result_colours ?? colour_actual,
                 yAxisID: "y",
                 pointRadius: 4,
@@ -94,33 +91,30 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
     return <>
         {/* {props.result} */}
         <Line data={graph_props} />
-        <ExpectationsMet mismatch={merged_data.any_error} />
+        <ExpectationsMet met={props.expectation_met} />
     </>
 }
 
 
-function merge_data(data: LabelsAndResults, expected_data: LabelsAndResults | false): MergedLabelsAndResults & { any_error?: boolean, result_colours?: string[] }
+function merge_data(data: LabelsAndResults, expected_data: LabelsAndResults | false): MergedLabelsAndResults & { result_colours?: string[] }
 {
     const merged = compare_results_to_expectations(data, expected_data)
 
     if (!merged.expected) return merged
 
-    let any_error = false
     const result_colours: string[] = merged.expected.matched.map(matched =>
     {
-        any_error = any_error || !matched
         return matched ? colour_actual : colour_mismatch
     })
 
-    return { ...merged, any_error, result_colours }
+    return { ...merged, result_colours }
 }
 
 
-function ExpectationsMet(props: { met?: boolean, mismatch?: boolean })
+function ExpectationsMet(props: { met?: boolean })
 {
-    if (props.met === undefined && props.mismatch === undefined) return null
-
-    const met = props.met ?? !props.mismatch
+    const { met } = props
+    if (met === undefined) return null
 
     return <HelpToolTip
         message={met ? "The results match the expectations" : "The results do not match the expectations"}
