@@ -1,9 +1,9 @@
 
 .generic-error-message
 {
-    margin-top: var(--common-gap);
+    margin-top: var(--gap-common);
     padding: 10px;
-    border-radius: var(--input-border-radius);
+    border-radius: var(--radius-border);
     border: 1px solid var(--colour-invalid);
     background-color: var(--colour-invalid-fainter);
 

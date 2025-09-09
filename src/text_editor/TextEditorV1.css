@@ -1,7 +1,7 @@
 
 .text-editor-v1
 {
-    margin-top: var(--common-close-gap);
+    margin-top: var(--gap-common-close);
     display: flex;
     flex: 1 1;
 }

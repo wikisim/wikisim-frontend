@@ -16,7 +16,7 @@ import HelpText from "../../buttons/HelpText"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import { WarningMessage } from "../../ui_components/ErrorMessage"
-import { ScenarioResults } from "./ScenarioResults"
+import { ScenarioResultsAndExpectations } from "./ScenarioResultsAndExpectations"
 import "./ScenariosForm.css"
 
 
@@ -88,7 +88,7 @@ export function ScenariosForm(props: ScenariosFormProps)
             const key = scenario.id
 
             return <div className="row_to_column scenario-divider" key={key}>
-                <div className="data-component-form-column column" style={{ gap: "var(--common-mid-gap)" }}>
+                <div className="data-component-form-column column" style={{ gap: "var(--gap-common-mid)" }}>
                     <ScenarioForm
                         ordinal={index + 1}
                         total_scenarios={scenarios.length}
@@ -101,10 +101,11 @@ export function ScenariosForm(props: ScenariosFormProps)
                 </div>
 
                 <div className="data-component-form-column column">
-                    <ScenarioResults
+                    <ScenarioResultsAndExpectations
                         is_draft_row={is_draft_row}
                         scenario={scenario}
                         component={props.component}
+                        on_change={on_change}
                     />
                 </div>
             </div>
@@ -180,7 +181,7 @@ function ScenarioForm(props: ScenarioFormProps)
                     existing?.iterate_over || (!!existing && inputs_iterated_over < 1)
                 )
 
-                return <div className="column" style={{ gap: "var(--common-close-gap)" }} key={input_name}>
+                return <div className="column" style={{ gap: "var(--gap-common-close)" }} key={input_name}>
                     {!is_draft_row && <WarningMessage
                         show={!default_value && (!existing || !existing.value)}
                         message={!existing

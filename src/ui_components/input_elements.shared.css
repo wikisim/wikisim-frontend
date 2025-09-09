@@ -10,7 +10,7 @@
 .text-editor-v1 input,
 .tiptap-editor-container
 {
-    border-radius: var(--input-border-radius);
+    border-radius: var(--radius-border);
     border: none;
     border: 1px solid #ced4da;
 }
@@ -19,7 +19,7 @@
 .text-editor-v1.is_focused input,
 .tiptap-editor-container.is_focused
 {
-    border: 1px solid var(--tertiary-blue);
+    border: 1px solid var(--colour-tertiary-blue);
     /* Prevent browser's default outline as we're using border */
     outline: none;
 }
@@ -43,7 +43,7 @@
 .text-editor-v1.is_focused label,
 .tiptap-editor-container.is_focused label
 {
-    color: var(--secondary-blue);
+    color: var(--colour-secondary-blue);
 }
 
 .text-editor-v1.has_value label,

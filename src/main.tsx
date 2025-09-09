@@ -46,7 +46,7 @@ function App() {
                         tooltip: {
                             // Light blue
                             backgroundColor: "#e7f3ff",
-                            color: "var(--primary-blue)",
+                            color: "var(--colour-primary-blue)",
                             // Light grey
                             // backgroundColor: "#f8f9fa",
                             // color: "#495057",
@@ -56,7 +56,7 @@ function App() {
                             // backgroundColor: "#ffffff",
                             // color: "#374151",
 
-                            border: "1px solid var(--border-colour)",
+                            border: "1px solid var(--colour-border)",
                             // fontSize: "12px",
                             // fontWeight: 500,
                         },

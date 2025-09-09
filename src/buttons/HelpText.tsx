@@ -44,3 +44,37 @@ export default function HelpText(props: Props)
         </Tooltip>
     </div>
 }
+
+
+interface HelpToolTipProps
+{
+    delay?: number
+    message: string | JSX.Element
+    children?: JSX.Element
+}
+
+export function HelpToolTip(props: HelpToolTipProps)
+{
+    const { delay = 700 } = props
+    const [active, set_active] = useState(false)
+
+    const message = props.message
+
+    return <div
+        onPointerEnter={() => !IS_MOBILE && setTimeout(() => set_active(true), delay)}
+        onPointerLeave={() => !IS_MOBILE && set_active(false)}
+        onPointerDown={() => IS_MOBILE && setTimeout(() => set_active(!active), active ? 0 : delay)}
+    >
+        <Tooltip
+            openDelay={delay}
+            label={message}
+            position="bottom"
+            opened={active}
+            withArrow={true}
+            multiline={true}
+            style={{ maxWidth: IS_MOBILE ? 300 : 600 }}
+        >
+            {props.children}
+        </Tooltip>
+    </div>
+}

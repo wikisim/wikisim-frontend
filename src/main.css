@@ -2,22 +2,23 @@
 :root {
     --header-height: 40px;
     --page-padding: 20px;
+
     --secondary-fill-colour: #f0f0f0;
     --secondary-text-colour: #333;
-    --primary-blue: #1c7ed6;
-    --secondary-blue: #228be6;
-    --tertiary-blue: #5fafff;
+    --colour-primary-blue: rgb(28, 126, 214);  /* #1c7ed6 */
+    --colour-secondary-blue: rgb(34, 139, 230);  /* #228be6 */
+    --colour-tertiary-blue: rgb(95, 175, 255); /* #5fafff */
     /* --mantine-color-red-9/8 used for danger & danger:hover colours */
-    --colour-error: #fa5252; /* --mantine-color-red-6 */
-    --colour-invalid: #ffa8a8; /* --mantine-color-red-3 */
-    --colour-invalid-fainter: #ffd6d6;  /* Half way between mantine-color-red-1 and -2 of ffe3e3 and ffc9c9 */
-    --colour-warning: #ffc078; /* --mantine-color-orange-3 */
-    --colour-warning-fainter: #ffe3bf; /* --mantine-color-orange-1 */
+    --colour-error: rgb(250, 82, 82); /* #fa5252 --mantine-color-red-6 */
+    --colour-invalid: rgb(255, 168, 168); /* #ffa8a8 --mantine-color-red-3 */
+    --colour-invalid-fainter: rgb(255, 214, 214);  /* #ffd6d6 Half way between mantine-color-red-1 and -2 of ffe3e3 and ffc9c9 */
+    --colour-warning: rgb(255, 192, 120); /* #ffc078 --mantine-color-orange-3 */
+    --colour-warning-fainter: rgb(255, 227, 191); /* #ffe3bf --mantine-color-orange-1 */
+    --colour-border: #dee2e6;
+    --colour-border-fainter: #e6e6e6;
+    --colour-success: rgb(47, 158, 68); /* #2f9e44 --mantine-color-green-8 */
 
-    --border-colour: #dee2e6;
-    --border-colour-fainter: #e6e6e6;
-
-    --link-color: #1976d2;
+    --link-color: rgb(25, 118, 210); /* #1976d2 */
 
     --z-index-header: 200;
     --z-index-modal-save: 301;
@@ -25,17 +26,17 @@
     --z-index-notifications: 401;
     --z-index-wikisim-select-label: 1;
 
-    --input-border-radius: 5px;
-    --common-gap: 20px;
-    --common-mid-gap: 12px;
-    --common-close-gap: 5px;
+    --radius-border: 5px;
+    --gap-common: 20px;
+    --gap-common-mid: 12px;
+    --gap-common-close: 5px;
 
     --common-indent-size: 20px;
 }
 
 .vertical-gap
 {
-    margin-top: var(--common-gap);
+    margin-top: var(--gap-common);
 }
 
 
@@ -55,21 +56,21 @@
     display: flex;
     flex-direction: row;
     flex: 1 1;
-    gap: var(--common-gap);
+    gap: var(--gap-common);
 }
 .column
 {
     display: flex;
     flex-direction: column;
     flex: 1 1;
-    gap: var(--common-gap);
+    gap: var(--gap-common);
 }
 .row_to_column
 {
     display: flex;
     flex-direction: row;
     flex: 1 1;
-    gap: var(--common-gap);
+    gap: var(--gap-common);
 }
 @media (max-width: 800px)
 {

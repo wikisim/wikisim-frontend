@@ -1,9 +1,9 @@
 
 .value-editor-container.opened
 {
-    border-top: 1px solid var(--border-colour);
+    border-top: 1px solid var(--colour-border);
     padding-top: 10px;
-    /* border-bottom: 1px solid var(--border-colour); */
+    /* border-bottom: 1px solid var(--colour-border); */
     padding-bottom: 10px;
 }
 

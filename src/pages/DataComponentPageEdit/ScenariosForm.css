@@ -2,19 +2,19 @@
 
 .scenarios
 {
-    border-top: 1px solid var(--border-colour);
+    border-top: 1px solid var(--colour-border);
 }
 
 .scenario-form-header
 {
     justify-content: space-between;
-    gap: var(--common-mid-gap);
+    gap: var(--gap-common-mid);
 }
 
 .scenario-divider
 {
     /* height: 1px; */
-    border-bottom: 1px solid var(--border-colour);
+    border-bottom: 1px solid var(--colour-border);
     padding: 15px 0;
     margin: 15px 0;
 }
@@ -24,5 +24,5 @@
     margin-left: var(--common-indent-size);
     display: flex;
     flex-direction: column;
-    gap: var(--common-mid-gap);
+    gap: var(--gap-common-mid);
 }

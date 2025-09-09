@@ -4,23 +4,23 @@
 {
     display: flex;
     flex-direction: column;
-    gap: calc(var(--common-mid-gap) - var(--common-close-gap));
+    gap: calc(var(--gap-common-mid) - var(--gap-common-close));
 
-    border-top: 1px solid var(--border-colour);
+    border-top: 1px solid var(--colour-border);
 }
 
 .function-argument-form
 {
     display: flex;
     flex-direction: column;
-    gap: var(--common-mid-gap);
+    gap: var(--gap-common-mid);
 }
 
 .function-argument-form-row
 {
     display: flex;
     flex-direction: row;
-    gap: var(--common-mid-gap);
+    gap: var(--gap-common-mid);
 }
 
 /* .value-editor-container .function-arguments .generic-error-message
@@ -44,16 +44,16 @@
 {
     .function-arguments
     {
-        gap: var(--common-gap);
+        gap: var(--gap-common);
         flex: 1 1 370px;
     }
     .function-argument-form-row
     {
         flex-direction: column;
-        gap: var(--common-close-gap);
+        gap: var(--gap-common-close);
     }
     .function-argument-delete-button
     {
-        margin-top: var(--common-close-gap);
+        margin-top: var(--gap-common-close);
     }
 }

@@ -8,10 +8,10 @@ import { get_id_str_of_data_component, get_version_of_data_component } from "cor
 import { flatten_data_component_for_db, hydrate_data_component_from_db } from "core/data/convert_between_db"
 import { IdAndVersion, TempId } from "core/data/id"
 import { is_data_component, type DataComponent, type NewDataComponent } from "core/data/interface"
+import { is_data_component_invalid } from "core/data/is_data_component_invalid"
 import { changes_made } from "core/data/modify"
 import { browser_get_referenced_ids_from_tiptap } from "core/rich_text/browser_get_referenced_ids_from_tiptap"
 
-import { is_data_component_invalid } from "../../../lib/core/src/data/is_data_component_invalid"
 import BinChangesButton from "../../buttons/BinChangesButton"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
@@ -367,7 +367,7 @@ function notify_if_loaded_previously_saved_draft(
                 ? <VersionMismatchNotificationMessage on_click={on_click} />
                 : <SavedDraftLoadedNotificationMessage on_click={on_click} timer={timer} />}
             </div>),
-            color: version_mismatch ? "var(--mantine-color-red-9)" : "var(--primary-blue)",
+            color: version_mismatch ? "var(--mantine-color-red-9)" : "var(--colour-primary-blue)",
             position: "bottom-right",
             // autoClose: close_in * 1000,
             autoClose: false,

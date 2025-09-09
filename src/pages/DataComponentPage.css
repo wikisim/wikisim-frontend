@@ -17,7 +17,7 @@
 
 #data-component .section + .section
 {
-    border-top: 1px solid var(--border-colour-fainter);
+    border-top: 1px solid var(--colour-border-fainter);
 }
 
 #data-component .section .row
