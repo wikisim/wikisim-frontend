@@ -4,7 +4,7 @@ import { JSX } from "preact/jsx-runtime"
 // all 5,000+ icons into the dev environment.
 import IconInfoCircle from "@tabler/icons-react/dist/esm/icons/IconInfoCircle"
 import IconInfoCircleFilled from "@tabler/icons-react/dist/esm/icons/IconInfoCircleFilled"
-import { useState } from "preact/hooks"
+import { useRef, useState } from "preact/hooks"
 
 import { is_mobile_device } from "../utils/is_mobile_device"
 
@@ -57,13 +57,28 @@ export function HelpToolTip(props: HelpToolTipProps)
 {
     const { delay = 700 } = props
     const [active, set_active] = useState(false)
+    const timeout_ref = useRef<NodeJS.Timeout>()
 
     const message = props.message
 
     return <div
-        onPointerEnter={() => !IS_MOBILE && setTimeout(() => set_active(true), delay)}
-        onPointerLeave={() => !IS_MOBILE && set_active(false)}
-        onPointerDown={() => IS_MOBILE && setTimeout(() => set_active(!active), active ? 0 : delay)}
+        onPointerEnter={() =>
+        {
+            if (IS_MOBILE) return
+            timeout_ref.current = setTimeout(() => set_active(true), delay)
+        }}
+        onPointerLeave={() =>
+        {
+            if (IS_MOBILE) return
+            set_active(false)
+            clearTimeout(timeout_ref.current)
+        }}
+        onPointerDown={() =>
+        {
+            if (!IS_MOBILE) return
+            clearTimeout(timeout_ref.current)
+            timeout_ref.current = setTimeout(() => set_active(!active), active ? 0 : delay)
+        }}
     >
         <Tooltip
             openDelay={delay}

@@ -45,7 +45,6 @@
     .function-arguments
     {
         gap: var(--gap-common);
-        flex: 1 1 370px;
     }
     .function-argument-form-row
     {

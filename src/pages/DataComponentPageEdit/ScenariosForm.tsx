@@ -98,7 +98,10 @@ export function ScenariosForm(props: ScenariosFormProps)
             const key = scenario.id
 
             return <div className="row_to_column scenario-divider" key={key}>
-                <div className="data-component-form-column column" style={{ gap: "var(--gap-common-mid)" }}>
+                <div
+                    className="data-component-form-column column"
+                    style={{ gap: "var(--gap-common-mid)" }}
+                >
                     <ScenarioForm
                         ordinal={index + 1}
                         total_scenarios={scenarios.length}
@@ -159,7 +162,7 @@ function ScenarioForm(props: ScenarioFormProps)
     const inputs_iterated_over = Object.values(scenario.values).filter(v => v.iterate_over).length
 
     return <>
-        <div className="scenario-form-header row">
+        <div className="scenario-form-header row" style={{ maxHeight: "35px" }}>
             <div>
                 {is_draft_row ? "New Scenario" : `Scenario ${props.ordinal} of ${props.total_scenarios}`}
             </div>

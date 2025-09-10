@@ -65,7 +65,7 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
                 const merged = compare_results_to_expectations(data, expected_data)
                 match = merged.expected?.matched.every(d => d)
             }
-            console.log("Expectation met?", match, { result, expected_result, data, expected_data })
+            // console .log("Expectation met?", match, { result, expected_result, data, expected_data })
             props.on_change({ expectation_met: match })
         }
     }, [result?.result, props.scenario.expected_result])
