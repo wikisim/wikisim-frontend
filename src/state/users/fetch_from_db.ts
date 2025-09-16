@@ -1,10 +1,10 @@
-import { PostgrestError } from "@supabase/supabase-js"
+import type { PostgrestError } from "@supabase/supabase-js"
 
-import { GetSupabase } from "core/supabase"
-import { Database } from "core/supabase/interface"
+import type { GetSupabase } from "core/supabase/browser"
+import type { Database } from "core/supabase/interface"
 import { clamp } from "core/utils/clamp"
 
-import { User } from "./interface"
+import type { User } from "./interface"
 
 
 type UsersDBRow = Database["public"]["Tables"]["users"]["Row"]

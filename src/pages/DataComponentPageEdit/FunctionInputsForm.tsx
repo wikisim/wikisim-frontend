@@ -11,11 +11,9 @@ import {
 } from "core/data/is_data_component_invalid"
 
 import BinButton from "../../buttons/BinButton"
-import HelpText from "../../buttons/HelpText"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
 import OpenCloseSection from "../../ui_components/OpenCloseSection"
-import { Select } from "../../ui_components/Select"
 import "./FunctionInputsForm.css"
 
 
@@ -35,7 +33,6 @@ export function FunctionInputsForm(props: FunctionInputsFormProps)
     const new_input_obj: FunctionArgument = {
         id: Date.now(), // temporary id until committed
         name: "",
-        value_type: "number",
     }
 
     // Important: render the "new" row inside the same mapped list as existing rows
@@ -155,7 +152,7 @@ function FunctionInputForm(props: FunctionInputFormProps)
                 editable={true}
             />
 
-            <div className="row" style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}>
+            {/* <div className="row" style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}>
                 <Select
                     label="Type"
                     data={[
@@ -178,7 +175,7 @@ function FunctionInputForm(props: FunctionInputFormProps)
                     (Note that actually you can put in any valid javascript here but
                     only numbers are guarenteed to work as expected.)
                 `} />
-            </div>
+            </div> */}
 
             <TextEditorV1
                 label="Default value"

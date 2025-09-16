@@ -15,7 +15,7 @@ import {
 import { calc_function_arguments_errors } from "core/data/is_data_component_invalid"
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 
-import { evaluate_input_value_string } from "../../evaluator"
+import { calculate_result_value } from "../../evaluator"
 import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
@@ -41,17 +41,16 @@ export function ValueEditor(props: ValueEditorProps)
 
     const { draft_component, on_change } = props
 
-    const formatted_value = format_data_component_value_to_string(draft_component)
-
     useEffect(() =>
     {
         const { input_value, value_type, function_arguments } = draft_component
         if (!input_value) return
         const input_value_string = browser_convert_tiptap_to_javascript(input_value, props.data_component_by_id_and_version)
 
-        evaluate_input_value_string({ value: input_value_string, value_type, function_arguments })
+        calculate_result_value({ input_value: input_value_string, value_type, function_arguments })
         .then(response =>
         {
+            if (!response) return
             if (response.error)
             {
                 console.error("Error calculating result value:", response.error, "\nInput value:", input_value_string)
@@ -67,6 +66,8 @@ export function ValueEditor(props: ValueEditorProps)
 
     const function_argument_error = calc_function_arguments_errors(draft_component.function_arguments).error
     const error = evaluation_error || function_argument_error
+
+    const formatted_value = format_data_component_value_to_string(draft_component)
 
     const value_type = draft_component.value_type || DEFAULTS.value_type
     const value_type_is_number = value_type === "number"

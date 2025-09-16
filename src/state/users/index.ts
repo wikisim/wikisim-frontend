@@ -1,8 +1,8 @@
-import type { GetSupabase } from "core/supabase"
+import type { GetSupabase } from "core/supabase/browser"
 
-import { GetAppState, RootAppState, SetAppState } from "../interface"
+import type { GetAppState, RootAppState, SetAppState } from "../interface"
 import { request_users } from "./fetch_from_db"
-import { User, UsersState } from "./interface"
+import type { User, UsersState } from "./interface"
 
 
 export function initial_state(set_state: SetAppState, get_state: GetAppState, get_supabase: GetSupabase): UsersState

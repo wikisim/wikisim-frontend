@@ -23,7 +23,6 @@ export function DataComponentPageNew(_props: { query: Record<string, string> })
 
     const data_component = init_new_data_component()
     data_component.editor_id = id
-    delete data_component.test_run_id
 
     return (
         <div className="page-container">

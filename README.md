@@ -9,6 +9,7 @@ Application frontend for WikiSim, an open source platform for data, back of the 
 
 ## Dev
 
+    git clone --recursive git@github.com:wikisim/wikisim-frontend.git
     pnpm install
     pnpm run dev
 

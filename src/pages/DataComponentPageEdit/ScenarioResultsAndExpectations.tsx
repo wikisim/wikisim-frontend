@@ -28,7 +28,7 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
         return <div style={{ height: "1px" }} />
     }
 
-    const javascript = prepare_scenario_javascript(props)
+    const javascript = prepare_scenario_javascript(pick(props, "component", "scenario"))
 
     const [result, set_result] = useState<EvaluationResponse>()
 
@@ -37,7 +37,7 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
     {
         async function run_calc()
         {
-            const result = await evaluate_code_in_sandbox({ value: javascript })
+            const result = await evaluate_code_in_sandbox({ input_value: javascript })
             set_result(result)
         }
         run_calc()
@@ -85,4 +85,14 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
             on_change={props.on_change}
         />
     </>
+}
+
+
+function pick<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K>
+{
+    const ret: Partial<T> = {}
+    keys.forEach(key => {
+        ret[key] = obj[key]
+    })
+    return ret as Pick<T, K>
 }

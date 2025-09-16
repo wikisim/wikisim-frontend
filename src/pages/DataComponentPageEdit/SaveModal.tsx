@@ -13,7 +13,7 @@ interface SaveModalProps<V>
     opened: boolean
     draft_data_component: V
     update_draft_data_component: (a: Partial<DataComponent | NewDataComponent>, compare_meta_fields?: boolean) => void
-    handle_save: (draft_data_component: V) => Promise<{ error?: Error }>
+    handle_save: (draft_data_component: V) => Promise<{ error?: Error | string }>
     hide_saving_modal: () => void
 }
 export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: SaveModalProps<V>)
@@ -32,14 +32,16 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
         .then(({ error }) =>
         {
             set_is_saving(false)
-            if (error?.message.startsWith("ERR09."))
+            const error_str = typeof error === "string" ? error : error?.message
+
+            if (error_str?.startsWith("ERR09."))
             {
                 set_error_is_unrecoverable(true)
                 set_error_message("A newer version of this data component has been saved.  Please copy your changes to another document, refresh the page and try again.")
             }
-            else if (error)
+            else if (error_str)
             {
-                const code = error.message.match(/^(ERR\d+\.)/)
+                const code = error_str.match(/^(ERR\d+\.)/)
                 set_error_message(`An error occurred while saving the data component.  Please try again.  ${code ? code[0] : ""}`)
             }
             else

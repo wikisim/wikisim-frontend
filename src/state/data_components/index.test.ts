@@ -1,7 +1,8 @@
 import { expect } from "chai"
 import sinon from "sinon"
+import { z } from "zod"
 
-import { convert_from_db_row } from "core/data/convert_between_db"
+import { hydrate_data_component_from_json } from "core/data/convert_between_json"
 import { IdAndVersion, IdOnly } from "core/data/id"
 import { init_data_component } from "core/data/modify"
 import { DBDataComponentRow } from "core/supabase"
@@ -10,9 +11,14 @@ import { create_mocked_supabase, MockedSupabase } from "core/test/mock_supabase_
 import { deep_equals } from "core/utils/deep_equals"
 
 import { mutate_store_state_with_loaded_data_components } from "."
+import { make_field_validators } from "../../../lib/core/src/data/validate_fields"
 import "../../monkey_patch"
 import { wait_for } from "../../utils/wait_for"
 import { AppStore, get_new_app_store } from "../store"
+
+
+
+const validators = make_field_validators(z)
 
 
 describe("mutate_store_state_with_loaded_data_components", () =>
@@ -193,7 +199,7 @@ describe("store.data_components", () =>
                 await wait_for(0)
                 const { data_components: data_components3 } = store.getState()
                 // check that the data component was added to the store
-                const expected_data_component = convert_from_db_row(mock_db_data_component_row)
+                const expected_data_component = hydrate_data_component_from_json(mock_db_data_component_row, validators)
                 deep_equals(data_components3.data_component_by_id_and_maybe_version["-123"]!.component, expected_data_component, "Data component with id only should be added to the store after loading")
                 deep_equals(data_components3.data_component_by_id_and_maybe_version["-123"]!.status, "loaded", "Async data component status after the Supabase request resolves successfully")
                 deep_equals(data_components3.data_component_by_id_and_maybe_version["-123v2"]!.component, expected_data_component, "Data component of id and version should be added to the store after loading")
@@ -221,7 +227,7 @@ describe("store.data_components", () =>
                 await wait_for(0)
                 const { data_components: data_components3 } = store.getState()
                 // check that the data component was added to the store
-                const expected_data_component = convert_from_db_row(mock_db_data_component_row)
+                const expected_data_component = hydrate_data_component_from_json(mock_db_data_component_row, validators)
                 deep_equals(data_components3.data_component_by_id_and_maybe_version["-123"]!.component, expected_data_component, "Data component should be added to the store after loading")
                 deep_equals(data_components3.data_component_by_id_and_maybe_version["-123"]!.status, "loaded", "Async data component status after the Supabase request resolves successfully")
                 deep_equals(data_components3.data_component_by_id_and_maybe_version["-123v2"]!.component, expected_data_component, "Data component of id and version should be added to the store after loading")
@@ -446,11 +452,11 @@ describe("store.data_components", () =>
             expect(data_components3.data_component_ids_for_home_page?.ids).to.deep.equal([new IdAndVersion(mock_db_data_component_row.id, mock_db_data_component_row.version_number)], "data_component_ids_for_home_page.ids should contain the id of the loaded data component")
             expect(data_components3.data_component_by_id_and_maybe_version["-123"]!.status).equals("loaded", "Async data component status should be 'loaded' after the request resolves")
             expect(data_components3.data_component_by_id_and_maybe_version["-123"]!.component).to.deep.equal(
-                convert_from_db_row(mock_db_data_component_row),
+                hydrate_data_component_from_json(mock_db_data_component_row, validators),
                 "Data component should be added to the store after loading"
             )
             expect(data_components3.data_component_by_id_and_maybe_version["-123v2"]!.component).to.deep.equal(
-                convert_from_db_row(mock_db_data_component_row),
+                hydrate_data_component_from_json(mock_db_data_component_row, validators),
                 "Data component of id and version should be added to the store after loading"
             )
         })

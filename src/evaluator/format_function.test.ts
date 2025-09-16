@@ -13,15 +13,15 @@ describe("format_function_input_value_string", () =>
     const function_arguments: FunctionArgument[] = [
         // Swap around the order to ensure formatting uses argument
         // positions not names
-        { id: 0, name: "min", value_type: "number", default_value: "0" },
-        { id: 1, name: "value", value_type: "number" },
+        { id: 0, name: "min", default_value: "0" },
+        { id: 1, name: "value" },
     ]
 
 
     it("formats a single line function correctly", () =>
     {
         const basic_request: EvaluationRequest = {
-            value: "Math.max(value, min)",
+            input_value: "Math.max(value, min)",
             value_type,
             function_arguments,
         }
@@ -33,10 +33,10 @@ describe("format_function_input_value_string", () =>
     it("does not use empty default_value", () =>
     {
         const function_arguments: FunctionArgument[] = [
-            { id: 0, name: "min", value_type: "number", default_value: "" }
+            { id: 0, name: "min", default_value: "" }
         ]
         const basic_request: EvaluationRequest = {
-            value: "Math.max(1, min)",
+            input_value: "Math.max(1, min)",
             value_type,
             function_arguments,
         }
@@ -48,7 +48,7 @@ describe("format_function_input_value_string", () =>
     it("formats a multi-line function with a return correctly", () =>
     {
         const basic_request: EvaluationRequest = {
-            value: `
+            input_value: `
             result = Math.max(min, value)
             return result`,
             value_type,
@@ -66,7 +66,7 @@ describe("format_function_input_value_string", () =>
     it("formats a multi-line function without a return by auto inserting return", () =>
     {
         const basic_request: EvaluationRequest = {
-            value: `
+            input_value: `
             result = Math.max(min, value)
             result + 1`,
             value_type,

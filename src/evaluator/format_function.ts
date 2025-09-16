@@ -6,7 +6,7 @@ import { EvaluationRequest, EvaluationResponse } from "./interface"
 
 export function format_function_input_value_string(basic_request: EvaluationRequest): EvaluationResponse
 {
-    const formatted_function = function_signature(basic_request.function_arguments) + " => " + function_body(basic_request.value)
+    const formatted_function = function_signature(basic_request.function_arguments) + " => " + function_body(basic_request.input_value)
 
     return {
         result: formatted_function,

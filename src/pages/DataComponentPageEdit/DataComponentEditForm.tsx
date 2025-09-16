@@ -3,13 +3,14 @@ import { notifications } from "@mantine/notifications"
 import IconDeviceFloppy from "@tabler/icons-react/dist/esm/icons/IconDeviceFloppy"
 import IconTrashX from "@tabler/icons-react/dist/esm/icons/IconTrashX"
 import { useEffect, useMemo, useState } from "preact/hooks"
+import { z } from "zod"
 
 import { get_id_str_of_data_component, get_version_of_data_component } from "core/data/accessor"
-import { flatten_data_component_for_db, hydrate_data_component_from_db } from "core/data/convert_between_db"
-import { IdAndVersion, TempId } from "core/data/id"
-import { is_data_component, type DataComponent, type NewDataComponent } from "core/data/interface"
+import { flatten_new_or_data_component_to_json, hydrate_data_component_from_json } from "core/data/convert_between_json"
+import { type DataComponent, type NewDataComponent } from "core/data/interface"
 import { is_data_component_invalid } from "core/data/is_data_component_invalid"
 import { changes_made } from "core/data/modify"
+import { make_field_validators } from "core/data/validate_fields"
 import { browser_get_referenced_ids_from_tiptap } from "core/rich_text/browser_get_referenced_ids_from_tiptap"
 
 import BinChangesButton from "../../buttons/BinChangesButton"
@@ -27,11 +28,14 @@ import { ValueEditor } from "./ValueEditForm"
 
 
 
+const validators = make_field_validators(z)
+
+
 interface DataComponentEditFormProps<V>
 {
     async_status: AsyncDataComponentStatus
     data_component: V
-    handle_save: (draft_data_component: V) => Promise<{ error?: Error }>
+    handle_save: (draft_data_component: V) => Promise<{ error?: Error | string }>
 }
 export function DataComponentEditForm<V extends (DataComponent | NewDataComponent)>(props: DataComponentEditFormProps<V>)
 {
@@ -247,7 +251,7 @@ function store_draft_component_to_local(draft_component: DataComponent | NewData
 
     const id_str = get_id_str_of_data_component(draft_component, true)
     const draft_key = `draft_component_${id_str}`
-    const flattened = flatten_data_component_for_local_storage(draft_component)
+    const flattened = flatten_new_or_data_component_to_json(draft_component)
 
     localStorage.setItem(draft_key, JSON.stringify({
         draft_component: flattened,
@@ -270,7 +274,7 @@ function load_previously_saved_draft(data_component: DataComponent | NewDataComp
         if (draft_data && draft_data.draft_component)
         {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            return hydrate_data_component_from_local_storage(draft_data.draft_component)
+            return hydrate_data_component_from_json(draft_data.draft_component, validators)
         }
     }
     catch (error)
@@ -286,55 +290,6 @@ function clear_previously_saved_draft(data_component: DataComponent | NewDataCom
     const id_str = get_id_str_of_data_component(data_component, true)
     const draft_key = `draft_component_${id_str}`
     localStorage.removeItem(draft_key)
-}
-
-
-type FlattenedDataComponent = ReturnType<typeof flatten_data_component_for_db> & { id: number, version_number: number }
-type FlattenedNewDataComponent = ReturnType<typeof flatten_data_component_for_db> & { temporary_id: string }
-type FlattenedDataComponentOrNew = FlattenedDataComponent | FlattenedNewDataComponent
-function flatten_data_component_for_local_storage(draft_component: DataComponent | NewDataComponent)
-{
-    let flattened: FlattenedDataComponentOrNew
-    if (is_data_component(draft_component))
-    {
-        flattened = {
-            ...flatten_data_component_for_db(draft_component),
-            id: draft_component.id.id,
-            version_number: draft_component.id.version,
-        }
-    }
-    else
-    {
-        flattened = {
-            ...flatten_data_component_for_db(draft_component),
-            temporary_id: draft_component.temporary_id.to_str(),
-        }
-    }
-
-    return flattened
-}
-
-
-function hydrate_data_component_from_local_storage(row: FlattenedDataComponentOrNew): DataComponent | NewDataComponent
-{
-    if ("id" in row)
-    {
-        const id = new IdAndVersion(row.id, row.version_number)
-        // This is a DataComponent
-        return {
-            id,
-            ...hydrate_data_component_from_db(row),
-        } as DataComponent
-    }
-    else
-    {
-        const temporary_id = new TempId(row.temporary_id)
-        // This is a NewDataComponent
-        return {
-            temporary_id,
-            ...hydrate_data_component_from_db(row),
-        } as NewDataComponent
-    }
 }
 
 

@@ -2,7 +2,7 @@ import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 
 import { CoreStoreDependencies, get_new_core_store } from "core/state/store"
-import { get_supabase } from "core/supabase"
+import { get_supabase } from "core/supabase/browser"
 
 import { deep_copy } from "../utils/deep_copy"
 import { deep_freeze } from "../utils/deep_freeze"

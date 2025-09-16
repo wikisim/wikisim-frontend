@@ -1,8 +1,8 @@
 import { request_data_components, request_historical_data_components } from "core/data/fetch_from_db"
 import { all_are_id_and_version, all_are_id_only, IdAndMaybeVersion, IdAndVersion, IdOnly } from "core/data/id"
 import type { DataComponent, NewDataComponent } from "core/data/interface"
-import { insert_data_component, update_data_component } from "core/data/write_to_db"
-import type { GetSupabase } from "core/supabase"
+import { insert_data_component, update_data_component } from "core/data/post_to_edge_functions"
+import type { GetSupabase } from "core/supabase/browser"
 
 import { GetAppState, RootAppState, SetAppState } from "../interface"
 import { AsyncDataComponent, AsyncNewDataComponent, DataComponentsState, UpsertDataComponentResult } from "./interface"
@@ -454,10 +454,12 @@ async function attempt_to_update_data_component(
     {
         const { data_component_by_id_and_maybe_version } = state.data_components
 
-        if (response.error)
+        if (response.error || !response.data)
         {
             result = { error: response.error, id: undefined }
-            console.error("Error updating data component:", response.error)
+            if (response.error) console.error("Error updating data component:", response.error)
+            else console.error("Error updating data component: No data returned")
+
             const id_str = data_component.id.to_str_without_version()
 
             const async_data_component: AsyncDataComponent = {
@@ -509,10 +511,12 @@ async function attempt_to_insert_data_component(
         const id_str = data_component.temporary_id.to_str()
         const async_data_component = state.data_components.new_data_component_by_temp_id[id_str]!
 
-        if (response.error)
+        if (response.error || !response.data)
         {
             result = { error: response.error, id: undefined }
-            console.error("Error updating data component:", response.error)
+            if (response.error) console.error("Error inserting data component:", response.error)
+            else console.error("Error inserting data component: No data returned")
+
             async_data_component.status = "error"
             async_data_component.error = response.error
             return

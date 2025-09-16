@@ -12,7 +12,7 @@ export interface AsyncDataComponent
     id: IdAndMaybeVersion
     component: DataComponent | null
     status: AsyncDataComponentStatus
-    error?: Error
+    error?: string | Error
 }
 
 export interface AsyncDataComponentIdsForHomePage
@@ -30,10 +30,10 @@ export interface AsyncNewDataComponent
     temporary_id: TempId
     new_id?: IdAndVersion
     status: SavingStatus
-    error?: Error
+    error?: string
 }
 
-export type UpsertDataComponentResult = { error: Error, id: undefined } | { error: undefined, id: IdAndVersion }
+export type UpsertDataComponentResult = { error: string, id: undefined } | { error: undefined, id: IdAndVersion }
 
 export interface DataComponentsState
 {
