@@ -13,9 +13,10 @@ import {
     ValueType,
 } from "core/data/interface"
 import { calc_function_arguments_errors } from "core/data/is_data_component_invalid"
+import { calculate_result_value } from "core/evaluator"
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 
-import { calculate_result_value } from "../../evaluator"
+import { evaluate_code_in_browser_sandbox } from "../../../lib/core/src/evaluator/browser_sandboxed_javascript"
 import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
@@ -43,21 +44,22 @@ export function ValueEditor(props: ValueEditorProps)
 
     useEffect(() =>
     {
-        const { input_value, value_type, function_arguments } = draft_component
-        if (!input_value) return
-        const input_value_string = browser_convert_tiptap_to_javascript(input_value, props.data_component_by_id_and_version)
-
-        calculate_result_value({ input_value: input_value_string, value_type, function_arguments })
+        calculate_result_value({
+            component: draft_component,
+            data_component_by_id_and_version: props.data_component_by_id_and_version,
+            convert_tiptap_to_javascript: browser_convert_tiptap_to_javascript,
+            evaluate_code_in_sandbox: evaluate_code_in_browser_sandbox,
+        })
         .then(response =>
         {
             if (!response) return
             if (response.error)
             {
-                console.error("Error calculating result value:", response.error, "\nInput value:", input_value_string)
+                console.error("Error calculating result value:", response.error, "\nInput value:", response.js_input_value)
                 set_evaluation_error(response.error)
                 return
             }
-            console .debug("Calculated result value:", response.result, "\nInput value:", input_value_string)
+            console .debug("Calculated result value:", response.result, "\nInput value:", response.js_input_value)
             const result_value = response.result || undefined
             on_change({ result_value })
             set_evaluation_error(undefined)

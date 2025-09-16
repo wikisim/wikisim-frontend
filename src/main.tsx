@@ -5,7 +5,8 @@ import "@mantine/notifications/styles.css"
 import { render } from "preact"
 import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso"
 
-import { Evaluator } from "./evaluator"
+import { Evaluator } from "core/evaluator/browser_sandboxed_javascript"
+
 import "./main.css"
 import "./monkey_patch"
 import { DataComponentPage } from "./pages/DataComponentPage"

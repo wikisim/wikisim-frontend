@@ -3,10 +3,10 @@ import { useEffect, useState } from "preact/hooks"
 import { DataComponent, NewDataComponent, Scenario } from "core/data/interface"
 import { result_string_to_graphable } from "core/evaluation/parse_result"
 import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_javascript"
+import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
+import { EvaluationResponse } from "core/evaluator/interface"
 import { compare_results_to_expectations } from "core/expectation/compare_results_to_expectations"
 
-import { EvaluationResponse } from "../../evaluator/interface"
-import { evaluate_code_in_sandbox } from "../../evaluator/sandboxed_javascript"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
 import { ScenarioExpectations } from "./ScenarioExpectations"
 import { ScenarioResultsDisplay } from "./ScenarioResultsDisplay"
@@ -37,7 +37,11 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
     {
         async function run_calc()
         {
-            const result = await evaluate_code_in_sandbox({ input_value: javascript })
+            const result = await evaluate_code_in_browser_sandbox({
+                js_input_value: javascript,
+                value_type: props.component.value_type,
+                requested_at: performance.now(),
+            })
             set_result(result)
         }
         run_calc()
