@@ -1,5 +1,6 @@
 import { Button, Menu, Modal, TextInput } from "@mantine/core"
 import IconLogout from "@tabler/icons-react/dist/esm/icons/IconLogout"
+import IconNotebook from "@tabler/icons-react/dist/esm/icons/IconNotebook"
 import IconUser from "@tabler/icons-react/dist/esm/icons/IconUser"
 import { h } from "preact"
 import { useLocation } from "preact-iso"
@@ -196,7 +197,18 @@ function LogInModal({ on_close }: { on_close: () => void })
 
 function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) => void })
 {
+    const location = useLocation()
     const { user_auth_session } = app_store()
+
+
+    function go_to_user_page()
+    {
+        if (!user_auth_session.session) return
+        const user_id = user_auth_session.session.user.id
+        // Navigate to user's pages
+        location.route(ROUTES.USER.VIEW(user_id))
+    }
+
 
     return <Menu
         shadow="md"
@@ -211,6 +223,17 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
         </Menu.Target>
 
         <Menu.Dropdown>
+            <Menu.Item
+                leftSection={<IconNotebook size={14} />}
+                onClick={go_to_user_page}
+            >
+                Your pages (public)
+            </Menu.Item>
+
+            <Menu.Item onClick={go_to_user_page}>
+                ___________________________
+            </Menu.Item>
+
             <Menu.Item
                 leftSection={<IconLogout size={14} />}
                 onClick={() =>

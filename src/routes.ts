@@ -32,5 +32,5 @@ export const ROUTES = {
         {
             return `/user/${user_id || ":user_id"}`
         },
-    }
+    },
 }
