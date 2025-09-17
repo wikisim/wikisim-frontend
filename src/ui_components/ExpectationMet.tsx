@@ -1,6 +1,7 @@
-import { Scenario } from "../../lib/core/src/data/interface"
-import { EvaluationResponse } from "../../lib/core/src/evaluator/interface"
-import { calculate_if_expectation_met } from "../../lib/core/src/expectation/calculate_if_expectation_met"
+import { Scenario } from "core/data/interface"
+import { EvaluationResponse } from "core/evaluator/interface"
+import { calculate_if_expectation_met } from "core/expectation/calculate_if_expectation_met"
+
 import { HelpToolTip } from "../buttons/HelpText"
 
 

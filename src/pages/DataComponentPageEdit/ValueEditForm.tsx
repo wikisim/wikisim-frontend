@@ -14,9 +14,9 @@ import {
 } from "core/data/interface"
 import { calc_function_arguments_errors } from "core/data/is_data_component_invalid"
 import { calculate_result_value } from "core/evaluator"
+import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 
-import { evaluate_code_in_browser_sandbox } from "../../../lib/core/src/evaluator/browser_sandboxed_javascript"
 import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
