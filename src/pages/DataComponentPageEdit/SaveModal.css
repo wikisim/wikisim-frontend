@@ -18,3 +18,28 @@
     color: var(--colour-error);
     font-weight: bold;
 }
+
+
+.create-as-user-toggle
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0px;
+    margin-top: 10;
+    margin-bottom: 10;
+    font-size: 14px;
+}
+
+/* Based on https://mantine.dev/core/switch/?t=styles-api */
+.create-as-user-toggle .mantine-Switch-track
+{
+    /* Ensure when the toggle is set to "Wiki" data component that it is blue
+        and not greyed out. */
+    --switch-bg: var(--colour-primary-blue);
+}
+
+.create-as-user-toggle s
+{
+    color: var(--colour-border);
+}

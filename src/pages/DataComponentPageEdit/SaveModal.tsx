@@ -1,8 +1,10 @@
-import { Button, Modal } from "@mantine/core"
+import { Button, Modal, Switch } from "@mantine/core"
+import { TargetedEvent } from "preact/compat"
 import { useState } from "preact/hooks"
 
-import { DataComponent, NewDataComponent } from "core/data/interface"
+import { DataComponent, is_data_component, NewDataComponent } from "core/data/interface"
 
+import { app_store } from "../../state/store"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import Loading from "../../ui_components/Loading"
 import "./SaveModal.css"
@@ -21,6 +23,17 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
     const [is_saving, set_is_saving] = useState(false)
     const [error_is_unrecoverable, set_error_is_unrecoverable] = useState(false)
     const [error_message, set_error_message] = useState("")
+
+    const state = app_store()
+    const create_as_user = props.draft_data_component.owner_id !== undefined
+    const set_create_as_user = (v: boolean) =>
+    {
+        const owner_id = v ? state.user_auth_session.session?.user.id : undefined
+        props.update_draft_data_component({ owner_id })
+    }
+
+    const saving_existing = is_data_component(props.draft_data_component)
+    const creating_new = !saving_existing
 
     const handle_save = () =>
     {
@@ -85,6 +98,11 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                     }}
                 /> */}
 
+                {creating_new && <ToggleCreateAsUser
+                    create_as_user={create_as_user}
+                    set_create_as_user={set_create_as_user}
+                />}
+
                 {error_message && <div className="error-message">
                     <strong>Error:</strong> {error_message}
                 </div>}
@@ -94,8 +112,9 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                         disabled={is_saving || error_is_unrecoverable}
                         onClick={handle_save}
                         title={error_is_unrecoverable ? error_message : ""}
+                        {...(create_as_user ? { variant: "primary-user" } : {})}
                     >
-                        Save {is_saving ? <Loading /> : ""}
+                        {saving_existing ? "Save" : `Create ${create_as_user ? "User" : "Wiki"} Data` } {is_saving ? <Loading /> : ""}
                     </Button>
 
                     <Button
@@ -109,4 +128,30 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
             </div>
         </Modal>
     )
+}
+
+
+
+interface ToggleCreateAsUserProps
+{
+    create_as_user: boolean
+    set_create_as_user: (v: boolean) => void
+}
+function ToggleCreateAsUser(props: ToggleCreateAsUserProps)
+{
+    const { create_as_user, set_create_as_user } = props
+
+    return <div className="create-as-user-toggle">
+        <Switch
+            checked={create_as_user}
+            onChange={(event: TargetedEvent<HTMLInputElement, Event>) =>
+            {
+                set_create_as_user(event.currentTarget.checked)
+            }}
+            withThumbIndicator={false}
+            color="var(--mantine-color-green-filled)"
+            labelPosition="left"
+            label={`Create as ${create_as_user ? "User" : "Wiki"} Data Component`}
+        />
+    </div>
 }
