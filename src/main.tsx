@@ -112,10 +112,21 @@ function variantColorResolver (input: VariantColorsResolverInput)
 {
     const default_resolved_colours = defaultVariantColorsResolver(input)
 
-    if (input.variant === "danger") {
+    if (input.variant === "danger")
+    {
         return {
             background: "var(--mantine-color-red-9)",
             hover: "var(--mantine-color-red-8)",
+            color: "var(--mantine-color-white)",
+            border: "none",
+        }
+    }
+
+    if (input.variant === "primary-user")
+    {
+        return {
+            background: "var(--mantine-color-green-filled)",
+            hover: "var(--mantine-color-green-7)",
             color: "var(--mantine-color-white)",
             border: "none",
         }

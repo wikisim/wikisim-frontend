@@ -6,7 +6,7 @@ export const ROUTES = {
     DATA_COMPONENT:
     {
         SEARCH: (search_term?: string) => "/wiki/search" + (search_term ? "?q=" + encodeURIComponent(search_term) : ""),
-        NEW: () => "/wiki/new",
+        NEW: (user_component?: boolean) => `/wiki/new${user_component === undefined ? "" :`?user_component=${user_component}`}`,
         VIEW: (id: IdAndVersion | IdOnly | number | ":data_component_id") =>
         {
             const path = typeof id === "string" ? id
