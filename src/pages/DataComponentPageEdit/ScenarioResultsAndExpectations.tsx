@@ -1,15 +1,14 @@
 import { useEffect, useState } from "preact/hooks"
 
 import { DataComponent, NewDataComponent, Scenario } from "core/data/interface"
-import { result_string_to_graphable } from "core/evaluation/parse_result"
 import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_javascript"
 import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
 import { EvaluationResponse } from "core/evaluator/interface"
-import { compare_results_to_expectations } from "core/expectation/compare_results_to_expectations"
+import { calculate_if_expectation_met } from "core/expectation/calculate_if_expectation_met"
 
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
+import { ScenarioResultsDisplay } from "../../ui_components/ScenarioResultsDisplay"
 import { ScenarioExpectations } from "./ScenarioExpectations"
-import { ScenarioResultsDisplay } from "./ScenarioResultsDisplay"
 
 
 
@@ -54,23 +53,9 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
         const { expected_result } = props.scenario
         if (result?.result && expected_result)
         {
-            const data = result_string_to_graphable(result.result)
-            const expected_data = result_string_to_graphable(expected_result)
-
-            let match: boolean | undefined
-            if (!data)
-            {
-                match = expected_result
-                    ? result.result === expected_result
-                    : undefined
-            }
-            else
-            {
-                const merged = compare_results_to_expectations(data, expected_data)
-                match = merged.expected?.matched.every(d => d)
-            }
-            // console .log("Expectation met?", match, { result, expected_result, data, expected_data })
-            props.on_change({ expectation_met: match })
+            const expectation_met = calculate_if_expectation_met(result, expected_result)
+            // console .log("Expectation met?", expectation_met, { result, expected_result, data, expected_data })
+            props.on_change({ expectation_met })
         }
     }, [result?.result, props.scenario.expected_result])
 

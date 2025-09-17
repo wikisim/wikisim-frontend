@@ -15,7 +15,8 @@ import { LabelsAndResults } from "core/evaluation/interface"
 import { result_string_to_graphable } from "core/evaluation/parse_result"
 import { compare_results_to_expectations } from "core/expectation/compare_results_to_expectations"
 import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
-import { HelpToolTip } from "../../buttons/HelpText"
+
+import { ExpectationMet } from "./ExpectationMet"
 
 
 const colour_actual = "rgb(28, 126, 214)" // --colour-primary-blue
@@ -51,7 +52,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         return <pre style={{ textAlign: "center", padding: "30px 0" }}>
             Result = {props.result}<br/>
             {props.expected_result && `Expected = ${props.expected_result}`}<br/>
-            <ExpectationsMet met={props.expectation_met} />
+            <ExpectationMet met={props.expectation_met} />
         </pre>
     }
 
@@ -91,7 +92,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
     return <>
         {/* {props.result} */}
         <Line data={graph_props} />
-        <ExpectationsMet met={props.expectation_met} />
+        <ExpectationMet met={props.expectation_met} />
     </>
 }
 
@@ -108,26 +109,4 @@ function merge_data(data: LabelsAndResults, expected_data: LabelsAndResults | fa
     })
 
     return { ...merged, result_colours }
-}
-
-
-function ExpectationsMet(props: { met?: boolean })
-{
-    const { met } = props
-    if (met === undefined) return null
-
-    return <HelpToolTip
-        message={met ? "The results match the expectations" : "The results do not match the expectations"}
-    >
-        <div style={{
-            textAlign: "center",
-            marginTop: "0.5em",
-            color: "white",
-            borderRadius: "var(--radius-border)",
-            padding: "0.2em 0.5em",
-            backgroundColor: met ? "var(--colour-success)" : "var(--colour-error)"
-        }}>
-            {met ? "Pass" : "Fail"}
-        </div>
-    </HelpToolTip>
 }
