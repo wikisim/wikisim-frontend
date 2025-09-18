@@ -36,7 +36,7 @@ export function DataComponentPageNew(_props: { query: Record<string, string> })
                     return state.data_components.insert_data_component(draft_data_component)
                         .then(({ error, id }) =>
                         {
-                            if (id) location.route(ROUTES.DATA_COMPONENT.VIEW(id.as_IdOnly()))
+                            if (id) location.route(ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(id.as_IdOnly()))
 
                             return { error }
                         })

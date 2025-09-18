@@ -138,7 +138,7 @@ function HistoryRow(props: { id: IdAndVersion })
     return (
         <div
             className="history-row loaded"
-            onClick={() => location.route(ROUTES.DATA_COMPONENT.VIEW(props.id))}
+            onClick={() => location.route(ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(props.id))}
         >
             Version {props.id.version}: &nbsp; &nbsp;
             {component.comment || " -- "} &nbsp; &nbsp;

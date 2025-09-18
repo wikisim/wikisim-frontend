@@ -15,7 +15,7 @@ export function DataComponentCard({ data_component }: { data_component: DataComp
     return (
         <Card
             component="a"
-            href={ROUTES.DATA_COMPONENT.VIEW(data_component.id.id)}
+            href={ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(data_component.id.id)}
             // className="data-component-card tiptap-content"
             className="data-component-card"
         >

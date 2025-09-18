@@ -20,7 +20,6 @@ import { WelcomeModal } from "./pages/WelcomeModal"
 import "./pub_sub/publish_key_down_events"
 import "./remove_supabase_hash"
 import { ROUTES } from "./routes"
-import { TextEditorDemos } from "./text_editor/Demos"
 import { MentionsClickHandler } from "./text_editor/MentionsClickHandler"
 import Header from "./ui_components/Header"
 import { SearchModal } from "./ui_components/search/SearchModal"
@@ -88,14 +87,15 @@ function App() {
                 <ErrorBoundary>
                     <Router>
                         <Route path="/" component={HomePage} />
-                        <Route path={ROUTES.USER.VIEW(false)} component={UserPage} />
+                        <Route path={ROUTES.USER.VIEW()} component={UserPage} />
 
                         <Route path={ROUTES.DATA_COMPONENT.NEW()} component={DataComponentPageNew} />
                         <Route path={ROUTES.DATA_COMPONENT.SEARCH()} component={DataComponentsSearchPage} />
-                        <Route path={ROUTES.DATA_COMPONENT.EDIT(":data_component_id")} component={DataComponentPageEdit} />
-                        <Route path={ROUTES.DATA_COMPONENT.VIEW(":data_component_id")} component={DataComponentPage} />
-                        <Route path={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY(":data_component_id")} component={DataComponentPageVersionHistory} />
-                        <Route path="/demo/text_editor_demos" component={TextEditorDemos} />
+                        <Route path={ROUTES.DATA_COMPONENT.EDIT()} component={DataComponentPageEdit} />
+                        <Route path={ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT()} component={DataComponentPage} />
+                        <Route path={ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT()} component={DataComponentPage} />
+                        <Route path={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY()} component={DataComponentPageVersionHistory} />
+                        {/* <Route path="/demo/text_editor_demos" component={TextEditorDemos} /> */}
                         <Route default component={NotFound} />
                     </Router>
                 </ErrorBoundary>

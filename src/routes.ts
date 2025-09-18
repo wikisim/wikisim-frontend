@@ -7,30 +7,40 @@ export const ROUTES = {
     {
         SEARCH: (search_term?: string) => "/wiki/search" + (search_term ? "?q=" + encodeURIComponent(search_term) : ""),
         NEW: (user_component?: boolean) => `/wiki/new${user_component === undefined ? "" :`?user_component=${user_component}`}`,
-        VIEW: (id: IdAndVersion | IdOnly | number | ":data_component_id") =>
+        VIEW_WIKI_COMPONENT: (id: IdAndVersion | IdOnly | number | ":data_component_id" = ":data_component_id") =>
         {
             const path = typeof id === "string" ? id
                 : typeof id === "number" ? id
                 : id.to_str()
             return `/wiki/${path}`
         },
-        EDIT: (id: IdOnly | number | ":data_component_id") =>
+        VIEW_USER_COMPONENT: (args?: { user_id_or_name: string, id: IdAndVersion | IdOnly | number | ":data_component_id" }) =>
+        {
+            args = args || { user_id_or_name: ":user_id_or_name", id: ":data_component_id" }
+            const { user_id_or_name, id } = args
+
+            const path = typeof id === "string" ? id
+                : typeof id === "number" ? id
+                : id.to_str()
+            return `/u/${user_id_or_name}/${path}`
+        },
+        EDIT: (id: IdOnly | number | ":data_component_id" = ":data_component_id") =>
         {
             const path = typeof id === "string" ? id
                 : typeof id === "number" ? id
                 : id.to_str_without_version()
             return `/wiki/${path}/edit`
         },
-        VIEW_VERSION_HISTORY: (id: IdOnly | ":data_component_id") =>
+        VIEW_VERSION_HISTORY: (id: IdOnly | ":data_component_id" = ":data_component_id") =>
         {
             return `/wiki/${typeof id === "string" ? id : id.to_str_without_version()}/history`
         },
     },
     USER:
     {
-        VIEW: (user_id: string | false) =>
+        VIEW: (user_id_or_name: string = ":user_id_or_name") =>
         {
-            return `/user/${user_id || ":user_id"}`
+            return `/u/${user_id_or_name}`
         },
     },
 }

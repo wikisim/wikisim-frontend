@@ -13,6 +13,7 @@ import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
+import { get_async_user } from "../state/users/accessor"
 import { sanitize_with_TipTap } from "../text_editor/sanitise_html"
 import { ErrorMessage } from "../ui_components/ErrorMessage"
 import { ExpectationsMet } from "../ui_components/ExpectationMet"
@@ -24,7 +25,7 @@ import { time_ago_or_date } from "../utils/time_ago_or_date"
 import "./DataComponentPage.css"
 
 
-export function DataComponentPage(props: { data_component_id: string, query: Record<string, string> })
+export function DataComponentPage(props: { user_id_or_name?: string, data_component_id: string, query: Record<string, string> })
 {
     const location = useLocation()
     const state = app_store()
@@ -34,10 +35,54 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
 
     if (!component)
     {
-        if (status === "loading") return <div>Loading data component...</div>
+        if (status === "loading") return <div>Loading data component<Loading /></div>
         if (status === "error") return <div>Error loading data component.</div>
         return <div>Data component not found.</div>
     }
+
+
+    // Check that if this component has an owner_id, that some kind of user_name
+    // was provided in the props, if not, then redirect the page from this wiki
+    // page to the user spaces page
+    useEffect(() =>
+    {
+        if (component.owner_id && props.user_id_or_name === undefined)
+        {
+            const new_user_space_route = ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT({
+                user_id_or_name: component.owner_id,
+                id: component.id.as_IdOnly(),
+            })
+            location.route(new_user_space_route )
+        }
+    }, [component.owner_id, props.user_id_or_name])
+
+
+    const async_user = component.owner_id !== undefined ? get_async_user(state, component.owner_id) : undefined
+    if (async_user)
+    {
+        if (async_user.status === "loading") return <div>Loading user<Loading /></div>
+    }
+
+
+    // Check that if this component has an owner_id, that the user_id_or_name
+    // provided in the props matches the name of the user given by the owner_id
+    // of the component, if not, then redirect the page from this page to the
+    // user spaces page give by that name
+    useEffect(() =>
+    {
+        if (component.owner_id && async_user?.status === "loaded")
+        {
+            const user_name = async_user.user!.name
+            if (props.user_id_or_name !== user_name)
+            {
+                const new_user_space_route = ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT({
+                    user_id_or_name: user_name,
+                    id: component.id.as_IdOnly(),
+                })
+                location.route(new_user_space_route )
+            }
+        }
+    }, [component.owner_id, async_user, props.user_id_or_name])
 
 
     // Subscribe to cmd + enter key combo to open the save modal for the component
@@ -54,7 +99,19 @@ export function DataComponentPage(props: { data_component_id: string, query: Rec
     const show_calculation = is_number_type && !value_is_pure_number
 
 
+    const user_owned = !!component.owner_id
+    const unknown_user = user_owned && async_user?.status === "not_found"
+
+
     return <div id="data-component">
+        {user_owned && <div className="generic-error-message warning">
+            This data component belongs to {unknown_user
+                ? `an unknown user (ID: ${component.owner_id}).`
+                : <a href={ROUTES.USER.VIEW(component.owner_id)}>
+                    {async_user?.user?.name}
+                </a>}. It is not in the wiki but you can copy anything here into
+                your own user pages.
+        </div>}
         <div className="page-container">
             <div style={{ float: "right", margin: "10px" }}>
                 <EditOrSaveButton

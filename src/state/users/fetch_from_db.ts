@@ -4,7 +4,9 @@ import type { GetSupabase } from "core/supabase/browser"
 import type { Database } from "core/supabase/interface"
 import { clamp } from "core/utils/clamp"
 
+import { is_uuid_v4 } from "../../utils/is_uuid_v4"
 import type { User } from "./interface"
+import { sanitise_user_id_or_name } from "./sanitise_user_id_or_name"
 
 
 type UsersDBRow = Database["public"]["Tables"]["users"]["Row"]
@@ -20,18 +22,35 @@ export type RequestUsersReturn =
 }
 export async function request_users(
     get_supabase: GetSupabase,
-    ids: string[] = [],
+    ids_or_names: string[] = [],
     options: { page?: number, size?: number } = {},
 ): Promise<RequestUsersReturn>
 {
-    limit_ids(ids)
+    limit_ids(ids_or_names)
 
     const { from, to } = get_range_from_options(options)
+
+    const ids: string[] = []
+    const names: string[] = []
+    ids_or_names.forEach(id_or_name =>
+    {
+        // Sanitize the ID or name again just in case
+        id_or_name = sanitise_user_id_or_name(id_or_name)
+
+        if (is_uuid_v4(id_or_name)) ids.push(id_or_name)
+        else names.push(id_or_name)
+    })
+
+    // Build the or filter string
+    const filters = []
+    if (ids.length > 0) filters.push(`id.in.(${ids.map(id => `"${id}"`).join(",")})`)
+    if (names.length > 0) filters.push(`name.in.(${names.map(name => `"${name}"`).join(",")})`)
+    const or_filter = filters.join(",")
 
     return get_supabase()
         .from("users")
         .select("*")
-        .in("id", ids)
+        .or(or_filter)
         .order("id", { ascending: true })
         .range(from, to)
         .then(({ data, error }) =>
@@ -43,7 +62,7 @@ export async function request_users(
 }
 
 
-function limit_ids(ids: string[])
+function limit_ids<U>(ids: U[])
 {
     if (ids.length > 1000)
     {

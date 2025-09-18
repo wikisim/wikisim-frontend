@@ -40,7 +40,7 @@ export function DataComponentsSearchPage()
                 search_requester_id={search_requester_id}
                 on_chosen_search_result={data =>
                 {
-                    location.route(ROUTES.DATA_COMPONENT.VIEW(data.data_component.id))
+                    location.route(ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(data.data_component.id))
                 }}
             />
         </div>

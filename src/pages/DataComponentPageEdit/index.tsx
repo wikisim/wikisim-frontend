@@ -82,7 +82,7 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
                         if (id)
                         {
                             console.debug("DataComponentPageEdit on_save_success navigating to: ", id.as_IdOnly())
-                            location.route(ROUTES.DATA_COMPONENT.VIEW(id.as_IdOnly()))
+                            location.route(ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(id.as_IdOnly()))
                         }
                         return { error }
                     })

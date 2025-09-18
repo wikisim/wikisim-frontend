@@ -18,7 +18,7 @@ export function MentionsClickHandler()
         if (!data.data_component_id) return
 
         const id = parse_id(data.data_component_id, false)
-        location.route(ROUTES.DATA_COMPONENT.VIEW(id))
+        location.route(ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(id))
     }), [])
 
     return null
