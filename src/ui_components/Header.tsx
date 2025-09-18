@@ -265,11 +265,14 @@ function UserProfileModal(props: { opened: boolean, on_close: () => void })
         onClose={props.on_close}
         centered
         size="lg"
+        title={<h2>User Profile</h2>}
     >
-        <h2>User Profile</h2>
+        <div className="vertical-gap" />
 
-        <p>Edit user name</p>
+        <p>Edit your user name</p>
 
         <EditUserName />
+
+        <div className="vertical-gap" />
     </Modal>
 }

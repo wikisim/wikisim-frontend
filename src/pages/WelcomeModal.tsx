@@ -22,12 +22,10 @@ export function WelcomeModal()
         onClose={() => {
             if (user_name_set) set_model_open(false)
         }}
-        title=""
+        title={<h2>Welcome to WikiSim</h2>}
         zIndex="var(--z-index-modal-welcome)"
         size="lg"
     >
-        <h1>Welcome to WikiSim</h1>
-
         <div className="vertical-gap" />
 
         <p style={{ display: "flex", flexDirection: "row", gap: "0.5em", alignItems: "center" }}>
