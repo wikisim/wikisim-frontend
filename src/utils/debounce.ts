@@ -8,11 +8,12 @@ export function debounce<T extends (...args: any[]) => void>(func: T, wait: numb
     return function (...args: Parameters<T>)
     {
         if (timeout_id) clearTimeout(timeout_id)
+        if (last_call_time === null) last_call_time = Date.now()
 
-        const time_until_next_call = wait - (Date.now() - (last_call_time ?? 0))
-        // If the last time we called the function was never or more than `wait`
+        const time_until_next_call = wait - (Date.now() - last_call_time)
+        // If the last time we called the function was more than `wait`
         // milliseconds ago, we can call it immediately.
-        if (!last_call_time || (time_until_next_call <= 0))
+        if (time_until_next_call <= 0)
         {
             last_call_time = Date.now()
             func(...args)
