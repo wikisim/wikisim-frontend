@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "preact/hooks"
 
 import pub_sub from "../../pub_sub"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
+import { debounce } from "../../utils/debounce"
 import { is_mobile_device } from "../../utils/is_mobile_device"
 import { SearchResults } from "./SearchResults"
 
@@ -27,16 +28,8 @@ export function SearchModal()
         return unsubscribe
     }, [])
 
-    const throttle_set_search_term = useMemo(() => {
-        let timeout: ReturnType<typeof setTimeout> | null = null
-        return (term: string) => {
-            if (timeout) clearTimeout(timeout)
-            timeout = setTimeout(() => {
-                set_search_term(term)
-                timeout = null
-            }, 300) // Throttle to 300ms
-        }
-    }, [])
+
+    const debounce_set_search_term = useMemo(() => debounce(set_search_term, 300), [])
 
 
     const on_mobile = is_mobile_device()
@@ -53,7 +46,7 @@ export function SearchModal()
                 editable={true}
                 label=""
                 initial_content={search_term}
-                on_change={e => throttle_set_search_term(e.currentTarget.value)}
+                on_change={e => debounce_set_search_term(e.currentTarget.value)}
                 single_line={true}
                 // This is a hack to ensure the search modal is shown on the
                 // screen otherwise it is mostly hidden off the top of the screen
