@@ -16,6 +16,7 @@ import { DataComponentPageVersionHistory } from "./pages/DataComponentPageVersio
 import { DataComponentsSearchPage } from "./pages/DataComponentsSearchPage"
 import { HomePage } from "./pages/HomePage"
 import { UserPage } from "./pages/UserPage"
+import { WelcomeModal } from "./pages/WelcomeModal"
 import "./pub_sub/publish_key_down_events"
 import "./remove_supabase_hash"
 import { ROUTES } from "./routes"
@@ -78,6 +79,7 @@ function App() {
             }}
         />
 
+        <WelcomeModal />
         <SearchModal />
 
         <LocationProvider>
