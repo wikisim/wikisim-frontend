@@ -2,6 +2,7 @@ import { Button, Menu, Modal, TextInput } from "@mantine/core"
 import IconLogout from "@tabler/icons-react/dist/esm/icons/IconLogout"
 import IconNotebook from "@tabler/icons-react/dist/esm/icons/IconNotebook"
 import IconUser from "@tabler/icons-react/dist/esm/icons/IconUser"
+import IconUserFilled from "@tabler/icons-react/dist/esm/icons/IconUserFilled"
 import { h } from "preact"
 import { useLocation } from "preact-iso"
 import { useEffect, useRef, useState } from "preact/hooks"
@@ -9,6 +10,7 @@ import { useEffect, useRef, useState } from "preact/hooks"
 import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
+import { EditUserName } from "./EditUserName"
 import "./Header.css"
 import Loading from "./Loading"
 
@@ -200,6 +202,8 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
     const location = useLocation()
     const { user_auth_session } = app_store()
 
+    const [opened_user_profile, set_opened_user_profile] = useState(false)
+
 
     function go_to_user_page()
     {
@@ -210,7 +214,8 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
     }
 
 
-    return <Menu
+    return <>
+    <Menu
         shadow="md"
         width={200}
         opened={props.opened}
@@ -230,8 +235,11 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
                 Your pages (public)
             </Menu.Item>
 
-            <Menu.Item onClick={go_to_user_page}>
-                ___________________________
+            <Menu.Item
+                leftSection={<IconUserFilled size={14} />}
+                onClick={() => set_opened_user_profile(true)}
+            >
+                Profile
             </Menu.Item>
 
             <Menu.Item
@@ -245,4 +253,23 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
             </Menu.Item>
         </Menu.Dropdown>
     </Menu>
+    <UserProfileModal opened={opened_user_profile} on_close={() => set_opened_user_profile(false)} />
+    </>
+}
+
+
+function UserProfileModal(props: { opened: boolean, on_close: () => void })
+{
+    return <Modal
+        opened={props.opened}
+        onClose={props.on_close}
+        centered
+        size="lg"
+    >
+        <h2>User Profile</h2>
+
+        <p>Edit user name</p>
+
+        <EditUserName />
+    </Modal>
 }
