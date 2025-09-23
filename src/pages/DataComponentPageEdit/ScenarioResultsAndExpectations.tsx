@@ -38,7 +38,6 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
         {
             const result = await evaluate_code_in_browser_sandbox({
                 js_input_value: javascript,
-                value_type: props.component.value_type,
                 requested_at: performance.now(),
             })
             set_result(result)

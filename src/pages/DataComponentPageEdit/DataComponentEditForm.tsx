@@ -141,7 +141,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     })
 
 
-    const data_component_by_id_and_version: Record<string, DataComponent> = useMemo(() =>
+    const data_components_by_id_and_version: Record<string, DataComponent> = useMemo(() =>
     {
         const map: Record<string, DataComponent> = {}
         Object.values(state.data_components.data_component_by_id_and_maybe_version).forEach(async_data_component =>
@@ -162,7 +162,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
                 draft_component={draft_component}
                 set_draft_component={set_draft_component}
                 saving_in_progress={saving_in_progress}
-                data_component_by_id_and_version={data_component_by_id_and_version}
+                data_components_by_id_and_version={data_components_by_id_and_version}
             />
 
             <div className="buttons-container-spacer" />
@@ -205,7 +205,7 @@ function DataComponentEditFormInner(props: {
     draft_component: DataComponent | NewDataComponent
     set_draft_component: (updates: Partial<DataComponent | NewDataComponent>, compare_meta_fields?: boolean) => void
     saving_in_progress: boolean
-    data_component_by_id_and_version: Record<string, DataComponent>
+    data_components_by_id_and_version: Record<string, DataComponent>
 })
 {
     const {
@@ -213,7 +213,7 @@ function DataComponentEditFormInner(props: {
         initial_component, draft_component,
         set_draft_component,
         saving_in_progress,
-        data_component_by_id_and_version,
+        data_components_by_id_and_version,
     } = props
 
     return <div className={"data-component-form column " + (editable ? "editable" : "view-only")}>
@@ -238,7 +238,7 @@ function DataComponentEditFormInner(props: {
         </div>
 
         <ValueEditor
-            data_component_by_id_and_version={data_component_by_id_and_version}
+            data_components_by_id_and_version={data_components_by_id_and_version}
             draft_component={draft_component}
             on_change={set_draft_component}
         />

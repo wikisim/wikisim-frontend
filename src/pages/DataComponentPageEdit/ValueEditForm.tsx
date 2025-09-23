@@ -31,7 +31,7 @@ import "./ValueEditForm.css"
 
 interface ValueEditorProps
 {
-    data_component_by_id_and_version: Record<string, DataComponent>
+    data_components_by_id_and_version: Record<string, DataComponent>
     draft_component: DataComponent | NewDataComponent
     on_change: (updated_component: Partial<DataComponent | NewDataComponent>) => void
 }
@@ -46,7 +46,7 @@ export function ValueEditor(props: ValueEditorProps)
     {
         calculate_result_value({
             component: draft_component,
-            data_component_by_id_and_version: props.data_component_by_id_and_version,
+            data_components_by_id_and_version: props.data_components_by_id_and_version,
             convert_tiptap_to_javascript: browser_convert_tiptap_to_javascript,
             evaluate_code_in_sandbox: evaluate_code_in_browser_sandbox,
         })

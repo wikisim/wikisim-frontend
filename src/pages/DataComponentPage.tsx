@@ -209,7 +209,6 @@ function Scenarios(props: { component: DataComponent })
 
             const result = await evaluate_code_in_browser_sandbox({
                 js_input_value: javascript,
-                value_type: component.value_type,
                 requested_at: performance.now(),
             })
             set_results(results =>
