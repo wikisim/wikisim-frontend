@@ -99,18 +99,21 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
     const show_calculation = is_number_type && !value_is_pure_number
 
 
-    const user_owned = !!component.owner_id
-    const unknown_user = user_owned && async_user?.status === "not_found"
+    const page_is_user_owned = !!component.owner_id
+    const page_owner_not_found = page_is_user_owned && async_user?.status === "not_found"
+    const user_is_you = async_user?.user!.id === state.user_auth_session.session?.user.id
+    const user_is_logged_in = !!state.user_auth_session.session?.user.id
 
 
     return <div id="data-component">
-        {user_owned && <div className="generic-error-message warning">
-            This data component belongs to {unknown_user
+        {page_is_user_owned && <div className="generic-error-message warning">
+            This data component belongs to {page_owner_not_found
                 ? `an unknown user (ID: ${component.owner_id}).`
                 : <a href={ROUTES.USER.VIEW(component.owner_id)}>
-                    {async_user?.user?.name}
-                </a>}. It is not in the wiki but you can copy anything here into
-                your own user pages.
+                    {user_is_you ? `you (${async_user?.user?.name})` : async_user?.user?.name}
+                </a>
+            }.
+            It is not in the wiki but{(!user_is_logged_in || user_is_you) ? " anyone can copy anything here into their" : " you can copy anything here into your"} own user pages.
         </div>}
         <div className="page-container">
             <div style={{ float: "right", margin: "10px" }}>
