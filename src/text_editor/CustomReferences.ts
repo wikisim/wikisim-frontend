@@ -1,6 +1,8 @@
 import Mention from "@tiptap/extension-mention"
 
+import { IdAndMaybeVersion, IdOnly, parse_id } from "../../lib/core/src/data/id"
 import pub_sub from "../pub_sub"
+import { ROUTES } from "../routes"
 import "./CustomReferences.css"
 
 
@@ -86,30 +88,45 @@ const CustomMention = Mention.extend({
     {
         return ({ node }) =>
         {
-            const dom = document.createElement("span")
-            dom.className = "mention-chip"
+            let parsed_id: IdAndMaybeVersion
+            try
+            {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                parsed_id = parse_id(node.attrs.id)
+            }
+            catch (_)
+            {
+                const empty_dom = document.createElement("span")
+                return { dom: empty_dom }
+            }
+
+            const dom = document.createElement("a")
+
+            dom.className = `mention-chip ${parsed_id instanceof IdOnly ? "IDo" : "IDv"}`
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             dom.setAttribute("data-id", node.attrs.id)
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             dom.setAttribute("data-label", node.attrs.label)
 
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const dangerous_str = node.attrs.label || node.attrs.id || ""
-            const label = String(dangerous_str)
+            const dangerous_str = `${node.attrs.label || node.attrs.id || ""}`
             const label_span = document.createElement("span")
-            label_span.style.color = "var(--link-color)"
+            label_span.className = "mention-label"
 
             // Use textContent instead of innerHTML to prevent XSS
-            label_span.textContent = label
+            label_span.textContent = dangerous_str
             dom.appendChild(label_span)
 
             // const percentage = "+20%"
             // dom.className += " alternative-value"
 
+            dom.href = ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(parsed_id)
             // Make chip clickable and editable
             dom.addEventListener("click", (e) =>
             {
                 e.preventDefault()
+                // prevent the anchor tag from working as we do our own routing
+                e.stopImmediatePropagation()
+
                 // When editing, we will want to add some different functionality
                 // here that allows the user to customise / edit the reference.
                 // For now, we just publish an mention_clicked event and that

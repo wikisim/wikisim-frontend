@@ -116,6 +116,6 @@
 
 
 .editor-link {
-    color: var(--link-color);
+    color: var(--colour-link);
     text-decoration: underline;
 }

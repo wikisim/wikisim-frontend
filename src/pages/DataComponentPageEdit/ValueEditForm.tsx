@@ -97,7 +97,7 @@ export function ValueEditor(props: ValueEditorProps)
 
     return <>
         <div className={`value-editor-container column ${opened ? "opened" : ""}`}>
-            <div className="data-component-form-column">
+            <div className="data-component-form-column component-ids-should-have-versions">
                 <div
                     className="row"
                     style={{ alignItems: "center" }}

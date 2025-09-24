@@ -1,12 +1,13 @@
+
 .mention-chip {
     /* background: #e3f2fd; */
-    color: var(--link-color);
+    color: var(--colour-link);
     text-decoration: underline;
     /* padding: 2px 6px; */
     /* border-radius: 12px; */
     font-size: 0.9em;
     cursor: pointer;
-    /* border: 1px solid var(--link-color); */
+    /* border: 1px solid var(--colour-link); */
     display: inline-block;
     margin: 0 2px;
 }
@@ -17,4 +18,21 @@
 
 .mention-chip:hover {
     background: #bbdefb;
+}
+
+.mention-chip .mention-label
+{
+    color: var(--colour-link);
+}
+
+.component-ids-should-have-versions .mention-chip.IDo,
+.component-ids-should-have-versions .mention-chip.IDo .mention-label
+{
+    color: var(--colour-error);
+}
+
+.component-ids-should-not-have-versions .mention-chip.IDv,
+.component-ids-should-not-have-versions .mention-chip.IDv .mention-label
+{
+    color: var(--colour-error);
 }

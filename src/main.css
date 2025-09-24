@@ -18,7 +18,7 @@
     --colour-border-fainter: #e6e6e6;
     --colour-success: rgb(47, 158, 68); /* #2f9e44 --mantine-color-green-8 */
 
-    --link-color: rgb(25, 118, 210); /* #1976d2 */
+    --colour-link: rgb(25, 118, 210); /* #1976d2 */
 
     --z-index-header: 200;
     --z-index-modal-save: 301;
