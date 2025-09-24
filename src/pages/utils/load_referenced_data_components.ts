@@ -5,21 +5,35 @@ import {
     browser_get_referenced_ids_from_tiptap,
 } from "core/rich_text/browser_get_referenced_ids_from_tiptap"
 
+import { IdAndVersion } from "../../../lib/core/src/data/id"
 import { RootAppState } from "../../state/interface"
 
 
 interface LoadReferencedDataComponentsResult
 {
-    status: "loading" | "loaded" //| "error"
+    status: "loading" | "loaded" | "error"
+    error: string | undefined
     loading_count: number
-    referenced_data_component_count: number
-    referenced_data_components: Record<string, DataComponent>
+    referenced_data_component_ids: IdAndVersion[]
+    referenced_data_components_by_id_str: Record<string, DataComponent>
 }
 export function load_referenced_data_components(state: RootAppState, data_component: DataComponent | NewDataComponent): LoadReferencedDataComponentsResult
 {
+    let error: string | undefined = undefined
+
     const referenced_data_component_ids = useMemo(() =>
     {
-        return browser_get_referenced_ids_from_tiptap(data_component.input_value || "")
+        let ids: IdAndVersion[] = []
+        try
+        {
+            ids = browser_get_referenced_ids_from_tiptap(data_component.input_value || "")
+        }
+        catch (e)
+        {
+            error = (e as Error).message
+        }
+
+        return ids
     }, [data_component.input_value])
 
     const async_referenced_data_components = useMemo(() =>
@@ -29,24 +43,25 @@ export function load_referenced_data_components(state: RootAppState, data_compon
 
     const loading = async_referenced_data_components.filter(async_data_component => async_data_component.status === "loading")
 
-    const referenced_data_component_count = referenced_data_component_ids.length
     const loading_count = loading.length
-    const status = loading_count > 0 ? "loading" : "loaded"
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    const status = error ? "error" : (loading_count > 0 ? "loading" : "loaded")
 
-    const referenced_data_components: Record<string, DataComponent> = {}
+    const referenced_data_components_by_id_str: Record<string, DataComponent> = {}
     async_referenced_data_components.forEach(async_data_component =>
     {
         const { component } = async_data_component
         if (async_data_component.status === "loaded" && component)
         {
-            referenced_data_components[component.id.to_str()] = component
+            referenced_data_components_by_id_str[component.id.to_str()] = component
         }
     })
 
     return {
         status,
+        error,
         loading_count,
-        referenced_data_component_count,
-        referenced_data_components,
+        referenced_data_component_ids,
+        referenced_data_components_by_id_str,
     }
 }

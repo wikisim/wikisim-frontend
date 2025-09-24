@@ -63,12 +63,12 @@ describe("load_referenced_data_components", () =>
         // For these tests just re-hydrate the data components from JSON to make
         // it easier to compare.
         const validators = make_field_validators(z)
-        Object.entries(parsed.referenced_data_components).forEach(([key, value]: any) =>
+        Object.entries(parsed.referenced_data_components_by_id_str).forEach(([key, value]: any) =>
         {
             const { id, version } = value.id
             value.id = id
             value.version_number = version
-            parsed.referenced_data_components[key] = hydrate_data_component_from_json(value, validators)
+            parsed.referenced_data_components_by_id_str[key] = hydrate_data_component_from_json(value, validators)
         })
         /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
 
@@ -91,8 +91,8 @@ describe("load_referenced_data_components", () =>
         expect(result).deep.equals({
             status: "loading",
             loading_count: 1,
-            referenced_data_component_count: 2,
-            referenced_data_components: {
+            referenced_data_component_ids: [ dc3.id, dc4.id ],
+            referenced_data_components_by_id_str: {
                 "-3v1": dc3,
             },
         })
@@ -113,8 +113,8 @@ describe("load_referenced_data_components", () =>
         expect(result).to.deep.equal({
             status: "loaded",
             loading_count: 0,
-            referenced_data_component_count: 2,
-            referenced_data_components: {
+            referenced_data_component_ids: [ dc3.id, dc4.id ],
+            referenced_data_components_by_id_str: {
                 "-3v1": dc3,
                 "-4v1": dc4,
             },
@@ -133,8 +133,26 @@ describe("load_referenced_data_components", () =>
         expect(result).to.deep.equal({
             status: "loaded",
             loading_count: 0,
-            referenced_data_component_count: 0,
-            referenced_data_components: {},
+            referenced_data_component_ids: [],
+            referenced_data_components_by_id_str: {},
+        })
+    })
+
+
+    it("should return an error for tiptap mention chips without a version", () =>
+    {
+        mock_state.data_components.request_data_components.returns([])
+
+        const result = test_helper_run_load_referenced_data_components(
+            `<p>3 + ${tiptap_mention_chip("123")}</p>`
+        )
+
+        expect(result).to.deep.equal({
+            status: "error",
+            error: "ERR34. Data component id in mention chip lacks version number: 123",
+            loading_count: 0,
+            referenced_data_component_ids: [],
+            referenced_data_components_by_id_str: {},
         })
     })
 })

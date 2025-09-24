@@ -17,6 +17,7 @@ import { calculate_result_value } from "core/evaluator"
 import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 
+import { app_store } from "../../state/store"
 import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
@@ -24,6 +25,7 @@ import { ErrorMessage } from "../../ui_components/ErrorMessage"
 import OpenCloseSection from "../../ui_components/OpenCloseSection"
 import { Select } from "../../ui_components/Select"
 import { to_sentence_case } from "../../utils/to_sentence_case"
+import { load_referenced_data_components } from "../utils/load_referenced_data_components"
 import { FunctionInputsForm } from "./FunctionInputsForm"
 import { ScenariosForm } from "./ScenariosForm"
 import "./ValueEditForm.css"
@@ -31,22 +33,38 @@ import "./ValueEditForm.css"
 
 interface ValueEditorProps
 {
-    data_components_by_id_and_version: Record<string, DataComponent>
     draft_component: DataComponent | NewDataComponent
     on_change: (updated_component: Partial<DataComponent | NewDataComponent>) => void
 }
 export function ValueEditor(props: ValueEditorProps)
 {
+    const { draft_component, on_change } = props
+
+    const state = app_store()
     const [opened, set_opened] = useState(false)
     const [evaluation_error, set_evaluation_error] = useState<string>()
 
-    const { draft_component, on_change } = props
+    const load_referenced = load_referenced_data_components(state, draft_component)
 
     useEffect(() =>
     {
+        if (load_referenced.status !== "loaded") return
+
+        let component = { ...draft_component }
+        // If the dependencies have changed, update them
+        if (JSON.stringify(draft_component.recursive_dependency_ids) !== JSON.stringify(load_referenced.referenced_data_component_ids))
+        {
+            on_change({ recursive_dependency_ids: load_referenced.referenced_data_component_ids })
+            // Modify in place to
+            component.recursive_dependency_ids = load_referenced.referenced_data_component_ids
+        }
+
+
+        const data_components_by_id_and_version = load_referenced.referenced_data_components_by_id_str
+
         calculate_result_value({
-            component: draft_component,
-            data_components_by_id_and_version: props.data_components_by_id_and_version,
+            component,
+            data_components_by_id_and_version,
             convert_tiptap_to_javascript: browser_convert_tiptap_to_javascript,
             evaluate_code_in_sandbox: evaluate_code_in_browser_sandbox,
         })
@@ -64,10 +82,11 @@ export function ValueEditor(props: ValueEditorProps)
             on_change({ result_value })
             set_evaluation_error(undefined)
         })
-    }, [draft_component.input_value, draft_component.value_type, draft_component.function_arguments])
+        .catch(e => { throw e })
+    }, [load_referenced.status, draft_component.input_value, draft_component.value_type, draft_component.function_arguments])
 
     const function_argument_error = calc_function_arguments_errors(draft_component.function_arguments).error
-    const error = evaluation_error || function_argument_error
+    const error = load_referenced.error || evaluation_error || function_argument_error
 
     const formatted_value = format_data_component_value_to_string(draft_component)
 
@@ -94,7 +113,7 @@ export function ValueEditor(props: ValueEditorProps)
                     <OpenCloseSection opened={opened} />
                 </div>
 
-                <ErrorMessage show={!!error} message={error ? `Error: ${error}` : ""} />
+                <ErrorMessage show={!!error} message={error} />
 
                 <div class="vertical-gap" />
 

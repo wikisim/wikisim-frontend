@@ -2,7 +2,7 @@ import { ActionIcon } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import IconDeviceFloppy from "@tabler/icons-react/dist/esm/icons/IconDeviceFloppy"
 import IconTrashX from "@tabler/icons-react/dist/esm/icons/IconTrashX"
-import { useEffect, useMemo, useState } from "preact/hooks"
+import { useEffect, useState } from "preact/hooks"
 import { z } from "zod"
 
 import { get_id_str_of_data_component, get_version_of_data_component } from "core/data/accessor"
@@ -11,17 +11,16 @@ import { type DataComponent, type NewDataComponent } from "core/data/interface"
 import { is_data_component_invalid } from "core/data/is_data_component_invalid"
 import { changes_made } from "core/data/modify"
 import { make_field_validators } from "core/data/validate_fields"
-import { browser_get_referenced_ids_from_tiptap } from "core/rich_text/browser_get_referenced_ids_from_tiptap"
 
 import BinChangesButton from "../../buttons/BinChangesButton"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
 import type { AsyncDataComponentStatus } from "../../state/data_components/interface"
-import { RootAppState } from "../../state/interface"
 import { app_store } from "../../state/store"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import Countdown, { CountdownTimer } from "../../ui_components/Countdown"
 import Loading from "../../ui_components/Loading"
+import { load_referenced_data_components } from "../utils/load_referenced_data_components"
 import "./DataComponentEditForm.css"
 import { SaveModal } from "./SaveModal"
 import { ValueEditor } from "./ValueEditForm"
@@ -59,10 +58,10 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 
 
     const result = load_referenced_data_components(state, draft_component)
-    if (result)
+    if (result.status === "loading")
     {
         return <div className="page-container">
-            <p>Loading {result.loading_count}/{result.referenced_data_component_count} referenced components.</p>
+            <p>Loading {result.loading_count}/{result.referenced_data_component_ids} referenced components.</p>
             <Loading />
         </div>
     }
@@ -141,19 +140,6 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     })
 
 
-    const data_components_by_id_and_version: Record<string, DataComponent> = useMemo(() =>
-    {
-        const map: Record<string, DataComponent> = {}
-        Object.values(state.data_components.data_component_by_id_and_maybe_version).forEach(async_data_component =>
-        {
-            const { component } = async_data_component
-            if (!component) return
-            map[component.id.to_str()] = component
-        })
-        return map
-    }, [state.data_components.data_component_by_id_and_maybe_version])
-
-
     return <>
         <div className="data-component-edit-form-container">
             <DataComponentEditFormInner
@@ -162,7 +148,6 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
                 draft_component={draft_component}
                 set_draft_component={set_draft_component}
                 saving_in_progress={saving_in_progress}
-                data_components_by_id_and_version={data_components_by_id_and_version}
             />
 
             <div className="buttons-container-spacer" />
@@ -205,7 +190,6 @@ function DataComponentEditFormInner(props: {
     draft_component: DataComponent | NewDataComponent
     set_draft_component: (updates: Partial<DataComponent | NewDataComponent>, compare_meta_fields?: boolean) => void
     saving_in_progress: boolean
-    data_components_by_id_and_version: Record<string, DataComponent>
 })
 {
     const {
@@ -213,7 +197,6 @@ function DataComponentEditFormInner(props: {
         initial_component, draft_component,
         set_draft_component,
         saving_in_progress,
-        data_components_by_id_and_version,
     } = props
 
     return <div className={"data-component-form column " + (editable ? "editable" : "view-only")}>
@@ -238,32 +221,10 @@ function DataComponentEditFormInner(props: {
         </div>
 
         <ValueEditor
-            data_components_by_id_and_version={data_components_by_id_and_version}
             draft_component={draft_component}
             on_change={set_draft_component}
         />
     </div>
-}
-
-
-function load_referenced_data_components(state: RootAppState, data_component: DataComponent | NewDataComponent)
-{
-    const referenced_data_component_ids = useMemo(() =>
-    {
-        return browser_get_referenced_ids_from_tiptap(data_component.input_value || "")
-    }, [data_component.input_value])
-
-    const async_referenced_data_components = useMemo(() =>
-    {
-        return state.data_components.request_data_components(referenced_data_component_ids)
-    }, [referenced_data_component_ids, state.data_components.data_component_by_id_and_maybe_version])
-
-    const loading = async_referenced_data_components.filter(async_data_component => async_data_component.status === "loading")
-
-    const referenced_data_component_count = referenced_data_component_ids.length
-    const loading_count = loading.length
-
-    return loading_count === 0 ? undefined : { loading_count, referenced_data_component_count }
 }
 
 
