@@ -15,10 +15,8 @@ describe("get_async_data_component", () =>
     let state: RootAppState
     let stubbed_request_data_component: sinon.SinonStub
 
-    beforeEach(() =>
+    before(() =>
     {
-        sinon.restore() // Reset all stubs and spies before each test
-
         // Reset the store before each test
         const { get_supabase } = create_mocked_supabase()
         store = get_new_app_store({ get_supabase })
@@ -29,6 +27,11 @@ describe("get_async_data_component", () =>
             status: "loading",
             component: null,
         })
+    })
+
+    afterEach(() =>
+    {
+        stubbed_request_data_component.resetHistory()
     })
 
     it("should call request_data_component", () =>
