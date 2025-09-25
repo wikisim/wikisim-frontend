@@ -1,5 +1,4 @@
-import { Button, Modal, Switch } from "@mantine/core"
-import { TargetedEvent } from "preact/compat"
+import { Button, Modal } from "@mantine/core"
 import { useState } from "preact/hooks"
 
 import { DataComponent, is_data_component, NewDataComponent } from "core/data/interface"
@@ -7,6 +6,7 @@ import { DataComponent, is_data_component, NewDataComponent } from "core/data/in
 import { app_store } from "../../state/store"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import Loading from "../../ui_components/Loading"
+import { ToggleTwo } from "../../ui_components/ToggleTwo"
 import "./SaveModal.css"
 
 
@@ -98,9 +98,10 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                     }}
                 /> */}
 
-                {creating_new && <ToggleCreateAsUser
-                    create_as_user={create_as_user}
-                    set_create_as_user={set_create_as_user}
+                {creating_new && <ToggleTwo
+                    active={create_as_user}
+                    label={active => `Create as ${active ? "User" : "Wiki"} Data Component`}
+                    set_active={set_create_as_user}
                 />}
 
                 {error_message && <div className="error-message">
@@ -128,30 +129,4 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
             </div>
         </Modal>
     )
-}
-
-
-
-interface ToggleCreateAsUserProps
-{
-    create_as_user: boolean
-    set_create_as_user: (v: boolean) => void
-}
-function ToggleCreateAsUser(props: ToggleCreateAsUserProps)
-{
-    const { create_as_user, set_create_as_user } = props
-
-    return <div className="create-as-user-toggle">
-        <Switch
-            checked={create_as_user}
-            onChange={(event: TargetedEvent<HTMLInputElement, Event>) =>
-            {
-                set_create_as_user(event.currentTarget.checked)
-            }}
-            withThumbIndicator={false}
-            color="var(--mantine-color-green-filled)"
-            labelPosition="left"
-            label={`Create as ${create_as_user ? "User" : "Wiki"} Data Component`}
-        />
-    </div>
 }

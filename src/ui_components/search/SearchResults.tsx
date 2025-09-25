@@ -14,12 +14,17 @@ interface SearchResultsProps
 {
     search_term: string
     use_empty_search_term?: boolean
+    filter_by_owner_id?: string
     search_requester_id: string
     on_chosen_search_result: (data: { search_requester_id: string, data_component: DataComponent }) => void
 }
 export function SearchResults(props: SearchResultsProps)
 {
-    const { search_requester_id, use_empty_search_term = false } = props
+    const {
+        search_requester_id,
+        use_empty_search_term = false,
+        filter_by_owner_id,
+    } = props
     const search_term = props.search_term.trim()
 
     const [search_response, set_search_response] = useState<SearchResultsResponse | undefined>(undefined)
@@ -32,8 +37,9 @@ export function SearchResults(props: SearchResultsProps)
     useEffect(() => search_async_api({
         search_term,
         use_empty_search_term,
+        filter_by_owner_id,
         search_requester_id,
-    }, set_search_response), [search_term, props.search_requester_id])
+    }, set_search_response), [search_term, filter_by_owner_id, props.search_requester_id])
 
     useEffect(() => {
         // When props.search_term changes, reset the selected result index
@@ -79,8 +85,10 @@ export function SearchResults(props: SearchResultsProps)
     return <div>
         {(search_term || props.use_empty_search_term) && (search_term !== results?.search_term
             ? <SearchingFor search_term={search_term} />
-            : `Search results for "${results.search_term}"`)
+            : ("Search results " + (search_term ? `for "${results.search_term}"` : "")))
         }
+
+        <div class="vertical-gap" />
 
         {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
@@ -127,6 +135,7 @@ interface SearchResultsRequest
 {
     search_term: string
     use_empty_search_term: boolean
+    filter_by_owner_id?: string
     search_requester_id: string
 }
 interface SearchResults extends SearchResultsRequest
@@ -145,7 +154,12 @@ type SearchResultsResponse =
 type SetSearchResponse = (fn_or_value: SearchResultsResponse | ((current_response: SearchResultsResponse | undefined) => SearchResultsResponse)) => void
 function search_async_api(request: SearchResultsRequest, set_search_response: SetSearchResponse)
 {
-    const { search_term, use_empty_search_term, search_requester_id } = request
+    const {
+        search_term,
+        use_empty_search_term,
+        filter_by_owner_id,
+        search_requester_id,
+    } = request
 
     const search_start_time = Date.now() // Unique ID for this search
     if (!search_term && !use_empty_search_term)
@@ -165,7 +179,7 @@ function search_async_api(request: SearchResultsRequest, set_search_response: Se
 
     let cancel_search = false
 
-    search_data_components(get_supabase, search_term, { page: 0, size: 20 })
+    search_data_components(get_supabase, search_term, { page: 0, size: 20, filter_by_owner_id })
     .then(({ data, error }) =>
     {
         if (cancel_search) return

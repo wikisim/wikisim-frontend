@@ -1,0 +1,28 @@
+
+.toggle-two
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0px;
+    margin-top: 10;
+    margin-bottom: 10;
+}
+
+/* Based on https://mantine.dev/core/switch/?t=styles-api */
+.toggle-two .mantine-Switch-track
+{
+    /* Ensure when the toggle is set to "Wiki" data component that it is blue
+        and not greyed out. */
+    --switch-bg: var(--colour-primary-blue);
+}
+
+.toggle-two s
+{
+    color: var(--colour-border);
+}
+
+.toggle-two .mantine-Switch-label
+{
+    font-size: 16px;
+}
