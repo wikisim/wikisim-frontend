@@ -24,7 +24,7 @@
     padding-left: 10px;
 }
 
-.header-bar .right
+.header-bar .right-user-and-dropdown
 {
     flex: 1;
     display: flex;
@@ -38,7 +38,9 @@
     display: flex;
     align-items: center;
     flex-direction: row;
-    flex: 1 1;
+    /*  Grow 2 instead of 1 to give the search bar more space (relative to
+        user name and drop down menu) on narrow windows */
+    flex: 2 1;
     gap: 10px;
 }
 

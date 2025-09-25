@@ -31,7 +31,7 @@ export default function Header()
 
             {!location.path.startsWith("/wiki/search") && <SearchBar />}
 
-            <nav className="right">
+            <nav className="right-user-and-dropdown">
                 <UserSession
                     toggle_show_user_options_dropdown={toggle_show_user_options_dropdown}
                 />
@@ -89,7 +89,7 @@ function SearchBar()
                 variant={"outline"}
                 onClick={navigate_to_search}
             >
-                Search
+                {search_query.trim() ? "Search" : "Browse"}
             </Button>
         </div>
     )
