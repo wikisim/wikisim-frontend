@@ -72,7 +72,9 @@ export function DataComponentPageVersionHistory(props: { data_component_id: stri
 
     return (
         <div className="page-container">
-            <h2>Version History for <span dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true)}}/></h2>
+            <h2>Version History for <a href={ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(component.id.as_IdOnly())}>
+                <span dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true)}}/>
+            </a></h2>
 
             Page {page + 1} showing {number_to_show} of {max_version} from version {to_version} to {from_version}.
             {row_versions.map(v => <HistoryRow key={v} id={id.add_version(v)} />)}
@@ -93,12 +95,16 @@ function DataComponentPageVersionHistoryRedirect(props: { id: IdAndVersion })
     {
         const interval = setInterval(() =>
         {
-            if (seconds <= 1)
+            set_seconds(s =>
             {
-                location.route(redirect_to)
-                return
-            }
-            set_seconds(s => s - 1)
+                if (s <= 1)
+                {
+                    location.route(redirect_to)
+                    clearInterval(interval)
+                    return s
+                }
+                return s - 1
+            })
         }, 1000)
 
         return () => clearInterval(interval)
