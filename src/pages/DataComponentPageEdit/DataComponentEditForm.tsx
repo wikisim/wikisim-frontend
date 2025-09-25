@@ -116,25 +116,19 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 
     useEffect(() =>
     {
-        // On first render, check the URL parameters for `=user_component=true`
+        // On first render, check the URL parameters for `=is_user_component=true`
         // and if set, save a draft of the current component with the owner_id
         // set to the current user id.
         // Then clear the URL parameter without reloading the page.
         const params = new URLSearchParams(window.location.search)
-        const user_component = params.get("user_component")
-        if (!user_component) return
+        const is_user_component = params.get("is_user_component")
+        if (is_user_component === null) return
 
         const user_id = state.user_auth_session.session?.user.id
-        if (!user_id)
-        {
-            console.error("No user logged in so can not set owner_id on component")
-            return
-        }
-
-        if (user_component === "true") set_draft_component({ owner_id: user_id })
+        if (is_user_component === "true") set_draft_component({ owner_id: user_id })
         else set_draft_component({ owner_id: undefined })
 
-        params.delete("user_component")
+        params.delete("is_user_component")
         const new_url = window.location.pathname + (params.toString() ? `?${params.toString()}` : "")
         window.history.replaceState({}, "", new_url)
     })
