@@ -29,7 +29,7 @@ export const ROUTES = {
             const path = typeof id === "string" ? id
                 : typeof id === "number" ? id
                 : id.to_str_without_version()
-            return `/wiki/${path}/edit`
+            return `/edit/${path}`
         },
         VIEW_VERSION_HISTORY: (id: IdOnly | ":data_component_id" = ":data_component_id") =>
         {
