@@ -7,9 +7,11 @@ import "./ToggleTwo.css"
 
 interface ToggleTwoProps
 {
+    disabled?: boolean
     active: boolean
     label: (v: boolean) => string
     set_active: (v: boolean) => void
+    labelPosition?: "left" | "right"
 }
 export function ToggleTwo(props: ToggleTwoProps)
 {
@@ -17,6 +19,7 @@ export function ToggleTwo(props: ToggleTwoProps)
 
     return <div className="toggle-two">
         <Switch
+            disabled={props.disabled}
             checked={active}
             onChange={(event: TargetedEvent<HTMLInputElement, Event>) =>
             {
@@ -24,7 +27,7 @@ export function ToggleTwo(props: ToggleTwoProps)
             }}
             withThumbIndicator={false}
             color="var(--mantine-color-green-filled)"
-            labelPosition="left"
+            labelPosition={props.labelPosition || "right"}
             label={props.label(active)}
         />
     </div>

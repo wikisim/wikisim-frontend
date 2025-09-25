@@ -3,18 +3,26 @@ import { useEffect, useMemo, useState } from "preact/hooks"
 
 
 import pub_sub from "../../pub_sub"
+import { app_store } from "../../state/store"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { debounce } from "../../utils/debounce"
 import { is_mobile_device } from "../../utils/is_mobile_device"
+import { ToggleTwo } from "../ToggleTwo"
 import { SearchResults } from "./SearchResults"
 
 
 export function SearchModal()
 {
+    const state = app_store()
+
     const [search_window_is_open, set_search_window_is_open] = useState(false)
     const [search_term, set_search_term] = useState("")
     const [search_requester_id, set_search_requester_id] = useState("")
     const trimmed_search_term = search_term.trim()
+
+    const user_signed_in = state.user_auth_session.session?.user
+    const [filter_by_user, set_filter_by_user] = useState(localStorage.getItem("search_modal_filter_by_user") === "true")
+    localStorage.setItem("search_modal_filter_by_user", filter_by_user.toString())
 
     useEffect(() => {
         const unsubscribe = pub_sub.sub("search_for_reference", data =>
@@ -56,8 +64,17 @@ export function SearchModal()
 
             <div class="vertical-gap" />
 
+            {user_signed_in && <ToggleTwo
+                active={filter_by_user}
+                label={active => active ? "Only your pages" : "All pages (Wiki, yours and others)"}
+                set_active={set_filter_by_user}
+            />}
+
+            <div class="vertical-gap" />
+
             <SearchResults
                 search_term={trimmed_search_term}
+                filter_by_owner_id={filter_by_user ? state.user_auth_session.session?.user.id : undefined}
                 search_requester_id={search_requester_id}
                 on_chosen_search_result={data =>
                 {
