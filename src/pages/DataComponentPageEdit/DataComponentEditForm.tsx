@@ -34,6 +34,7 @@ interface DataComponentEditFormProps<V>
 {
     async_status: AsyncDataComponentStatus
     data_component: V
+    on_component_change?: (draft_data_component: V) => void
     handle_save: (draft_data_component: V) => Promise<{ error?: Error | string }>
 }
 export function DataComponentEditForm<V extends (DataComponent | NewDataComponent)>(props: DataComponentEditFormProps<V>)
@@ -54,6 +55,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
         ...potential_initial_component,
         ...previously_saved_draft,
     }
+    useEffect(() => props.on_component_change?.(initial_component), [])
     const [draft_component, _set_draft_component] = useState<V>(initial_component)
 
 
@@ -72,6 +74,8 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
         const any_changes_made = changes_made(new_draft, potential_initial_component, true)
         store_draft_component_to_local(new_draft, any_changes_made)
         if (!changes_made(new_draft, draft_component, compare_meta_fields)) return
+
+        props.on_component_change?.(new_draft)
         _set_draft_component(new_draft)
     }
 
@@ -97,7 +101,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     function discard_previously_saved_draft()
     {
         clear_previously_saved_draft(draft_component)
-        window.location.reload() // Reload to reset the form
+
     }
     useEffect(() => notify_if_loaded_previously_saved_draft(previously_saved_draft, version_mismatch, discard_previously_saved_draft), [])
 

@@ -2,6 +2,7 @@ import { useLocation } from "preact-iso"
 
 import { init_new_data_component } from "core/data/modify"
 
+import { useState } from "preact/hooks"
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { LogInInlineText } from "../ui_components/LogInInlineText"
@@ -13,11 +14,13 @@ export function DataComponentPageNew(_props: { query: Record<string, string> })
     const state = app_store()
     const location = useLocation()
 
+    const [is_user_owned, set_is_user_owned] = useState(false)
+
     const { id } = state.user_auth_session.session?.user || {}
     if (!id)
     {
         return <div className="page-container">
-            <p>Please <LogInInlineText /> to create a new data component.</p>
+            <p>Please <LogInInlineText /> to create a new page.</p>
         </div>
     }
 
@@ -26,11 +29,12 @@ export function DataComponentPageNew(_props: { query: Record<string, string> })
 
     return (
         <div className="page-container">
-            <h2>New Data Component</h2>
+            <h2>New {is_user_owned ? "User Owned" : "Wiki"} Page</h2>
 
             <DataComponentEditForm
                 async_status="loaded"
                 data_component={data_component}
+                on_component_change={dc => set_is_user_owned(!!dc.owner_id)}
                 handle_save={draft_data_component =>
                 {
                     return state.data_components.insert_data_component(draft_data_component)

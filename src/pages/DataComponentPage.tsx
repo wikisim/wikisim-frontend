@@ -39,9 +39,9 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
 
     if (!component)
     {
-        if (status === "loading") return <div>Loading data component<Loading /></div>
-        if (status === "error") return <div>Error loading data component.</div>
-        return <div>Data component not found.</div>
+        if (status === "loading") return <div>Loading page<Loading /></div>
+        if (status === "error") return <div>Error loading page.</div>
+        return <div>Page not found.</div>
     }
 
 
@@ -68,13 +68,13 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
 
     const page_is_user_owned = !!component.owner_id
     const page_owner_not_found = page_is_user_owned && async_user?.status === "not_found"
-    const user_is_you = async_user?.user!.id === state.user_auth_session.session?.user.id
+    const user_is_you = async_user?.user?.id === state.user_auth_session.session?.user.id
     const user_is_logged_in = !!state.user_auth_session.session?.user.id
 
 
     return <div id="data-component">
         {page_is_user_owned && <div className="generic-error-message warning">
-            This data component belongs to {page_owner_not_found
+            This page belongs to {page_owner_not_found
                 ? `an unknown user (ID: ${component.owner_id}).`
                 : <a href={ROUTES.USER.VIEW(component.owner_id)}>
                     {user_is_you ? `you (${async_user?.user?.name})` : async_user?.user?.name}

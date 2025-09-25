@@ -50,12 +50,12 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
             if (error_str?.startsWith("ERR09."))
             {
                 set_error_is_unrecoverable(true)
-                set_error_message("A newer version of this data component has been saved.  Please copy your changes to another document, refresh the page and try again.")
+                set_error_message("A newer version of this page has been saved.  Please copy your changes to another document, refresh the page and try again.")
             }
             else if (error_str)
             {
                 const code = error_str.match(/^(ERR\d+\.)/)
-                set_error_message(`An error occurred while saving the data component.  Please try again.  ${code ? code[0] : ""}`)
+                set_error_message(`An error occurred while saving the page.  Please try again.  ${code ? code[0] : ""}`)
             }
             else
             {
@@ -98,11 +98,12 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                     }}
                 /> */}
 
-                {creating_new && <ToggleTwo
+                <ToggleTwo
+                    disabled={is_saving || error_is_unrecoverable || !creating_new}
                     active={create_as_user}
-                    label={active => `Create as ${active ? "User" : "Wiki"} Data Component`}
+                    label={active => `Create${creating_new ? "" : "d"} as ${active ? "User" : "Wiki"} Page`}
                     set_active={set_create_as_user}
-                />}
+                />
 
                 {error_message && <div className="error-message">
                     <strong>Error:</strong> {error_message}
@@ -115,7 +116,7 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                         title={error_is_unrecoverable ? error_message : ""}
                         {...(create_as_user ? { variant: "primary-user" } : {})}
                     >
-                        {saving_existing ? "Save" : `Create ${create_as_user ? "User" : "Wiki"} Data` } {is_saving ? <Loading /> : ""}
+                        {saving_existing ? "Save" : `Create ${create_as_user ? "User" : "Wiki"} Page` } {is_saving ? <Loading /> : ""}
                     </Button>
 
                     <Button

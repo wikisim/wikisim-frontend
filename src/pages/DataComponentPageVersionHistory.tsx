@@ -47,19 +47,19 @@ export function DataComponentPageVersionHistory(props: { data_component_id: stri
     if (newest_async_data_component.status === "loading")
     {
         return <div className="page-container">
-            <div>{initial_data_component_present ? "Refreshing" : "Loading"} data component version history<Loading/></div>
+            <div>{initial_data_component_present ? "Refreshing" : "Loading"} page version history<Loading/></div>
         </div>
     }
     else if (newest_async_data_component.status === "error")
     {
         return <div className="page-container">
-            <div>Error loading data component version history: {newest_async_data_component.error}</div>
+            <div>Error loading page version history: {newest_async_data_component.error}</div>
         </div>
     }
     else if (newest_async_data_component.status === "not_found" || !component)
     {
         return <div className="page-container">
-            <div>Data component not found.</div>
+            <div>Page not found.</div>
         </div>
     }
 
@@ -105,8 +105,7 @@ function DataComponentPageVersionHistoryRedirect(props: { id: IdAndVersion })
     }, [])
 
     return <div className="page-container">
-        <p>Can not view version history of component with version.</p>
-        <p>Use the <a href={redirect_to}>view page</a> to view the latest version of this component.</p>
+        <p>Click here <a href={redirect_to}>to view the history</a> of this page.</p>
         <p>Redirecting in {seconds}<Loading /></p>
     </div>
 }

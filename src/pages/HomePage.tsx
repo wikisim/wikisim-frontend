@@ -53,7 +53,7 @@ export function HomePage()
             </p>
 
             <div class="section">
-                <h2>Data Components</h2>
+                <h2>Pages</h2>
                 <div class="data-component-cards">
                     {!data_components_for_home_page
                         ? <p>Loading...</p>
@@ -70,7 +70,7 @@ export function HomePage()
                     size="lg"
                     variant="primary"
                 >
-                    Browse all Data Components
+                    Browse all pages
                 </Button>
 
                 or
@@ -82,7 +82,7 @@ export function HomePage()
                     size="lg"
                     variant="primary"
                 >
-                    Add new data&nbsp;<IconNewSection />
+                    Create new page&nbsp;<IconNewSection />
                 </Button>
 
             </div>
