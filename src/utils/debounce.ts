@@ -15,7 +15,7 @@ export function debounce<T extends (...args: any[]) => void>(func: T, wait: numb
         // milliseconds ago, we can call it immediately.
         if (time_until_next_call <= 0)
         {
-            last_call_time = Date.now()
+            last_call_time = null
             func(...args)
             return
         }
@@ -24,7 +24,7 @@ export function debounce<T extends (...args: any[]) => void>(func: T, wait: numb
         // come in before then.
         timeout_id = setTimeout(() =>
         {
-            last_call_time = Date.now()
+            last_call_time = null
             func(...args)
         }, time_until_next_call)
     } as T
