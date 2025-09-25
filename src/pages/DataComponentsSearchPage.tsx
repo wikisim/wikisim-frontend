@@ -37,6 +37,7 @@ export function DataComponentsSearchPage()
 
             <SearchResults
                 search_term={search_term}
+                use_empty_search_term={true}
                 search_requester_id={search_requester_id}
                 on_chosen_search_result={data =>
                 {
