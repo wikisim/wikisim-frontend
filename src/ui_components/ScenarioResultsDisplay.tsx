@@ -68,12 +68,17 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
     const data = assert_result_json_is_graphable(parsed_json.parsed)
     if (!data)
     {
+        const expected_json = result_string_to_json(props.expected_result || "")
+        const expected_result_str = expected_json ? stringify(expected_json.parsed, { maxLength: 60 }) : props.expected_result
+
         return <div className="scenario-results-display">
             <pre>
                 Result = {stringify(parsed_json.parsed, { maxLength: 60 })}<br/>
-                {props.expected_result && `Expected = ${props.expected_result}`}<br/>
-                <ExpectationMet met={props.expectation_met} />
             </pre>
+            <pre>
+                {expected_result_str && `Expected = ${expected_result_str}`}<br/>
+            </pre>
+            <ExpectationMet met={props.expectation_met} />
         </div>
     }
 
