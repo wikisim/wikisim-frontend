@@ -24,6 +24,7 @@ import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
 import OpenCloseSection from "../../ui_components/OpenCloseSection"
 import { Select } from "../../ui_components/Select"
+import { debounce } from "../../utils/debounce"
 import { to_sentence_case } from "../../utils/to_sentence_case"
 import { load_referenced_data_components } from "../utils/load_referenced_data_components"
 import { FunctionInputsForm } from "./FunctionInputsForm"
@@ -121,15 +122,16 @@ export function ValueEditor(props: ValueEditorProps)
                     <TextEditorV2
                         label={value_type_is_number ? "Input Value" : "Function"}
                         initial_content={draft_component.input_value ?? ""}
-                        on_update={value =>
+                        on_update={debounce((value: string) =>
                         {
                             const input_value = value.trim() || undefined
                             on_change({ input_value })
-                        }}
+                        }, 1000)}
                         single_line={false}
                         editable={true}
                         auto_focus={true}
                         include_version_in_at_mention={true}
+                        experimental_code_editor_features={true}
                     />
                     {show_units && <TextEditorV1
                         label="Units"
