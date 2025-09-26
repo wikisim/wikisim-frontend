@@ -9,14 +9,20 @@ import {
     Title,
     Tooltip
 } from "chart.js"
+import stringify from "json-stringify-pretty-compact"
 import { Line } from "react-chartjs-2"
 
 import { LabelsAndResults } from "core/evaluation/interface"
-import { result_string_to_graphable } from "core/evaluation/parse_result"
+import {
+    assert_result_json_is_graphable,
+    result_string_to_graphable,
+    result_string_to_json,
+} from "core/evaluation/parse_result"
 import { compare_results_to_expectations } from "core/expectation/compare_results_to_expectations"
 import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
 
 import { ExpectationMet } from "./ExpectationMet"
+import "./ScenarioResultsDisplay.css"
 
 
 const colour_actual = "rgb(28, 126, 214)" // --colour-primary-blue
@@ -44,18 +50,34 @@ interface ScenarioResultsDisplayProps
 
 export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
 {
-    const data = result_string_to_graphable(props.result)
-    const expected_data = result_string_to_graphable(props.expected_result)
+    const parsed_json = result_string_to_json(props.result)
 
-    if (!data)
+    if (!parsed_json)
     {
-        return <pre style={{ textAlign: "center", padding: "30px 0" }}>
-            Result = {props.result}<br/>
-            {props.expected_result && `Expected = ${props.expected_result}`}<br/>
-            <ExpectationMet met={props.expectation_met} />
-        </pre>
+        // Not sure if this will ever happen as the results should always be a
+        // string of JSON
+        return <div className="scenario-results-display">
+            <pre>
+                Result = {props.result}<br/>
+                {props.expected_result && `Expected = ${props.expected_result}`}<br/>
+                <ExpectationMet met={props.expectation_met} />
+            </pre>
+        </div>
     }
 
+    const data = assert_result_json_is_graphable(parsed_json.parsed)
+    if (!data)
+    {
+        return <div className="scenario-results-display">
+            <pre>
+                Result = {stringify(parsed_json.parsed, { maxLength: 60 })}<br/>
+                {props.expected_result && `Expected = ${props.expected_result}`}<br/>
+                <ExpectationMet met={props.expectation_met} />
+            </pre>
+        </div>
+    }
+
+    const expected_data = result_string_to_graphable(props.expected_result)
     const merged_data = merge_data(data, expected_data)
 
     const graph_props: ChartData<"line", ResultPoint[], unknown> =
@@ -89,11 +111,11 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         })
     }
 
-    return <>
+    return <div className="scenario-results-display">
         {/* {props.result} */}
         <Line data={graph_props} />
         <ExpectationMet met={props.expectation_met} />
-    </>
+    </div>
 }
 
 

@@ -1,0 +1,12 @@
+
+
+.scenario-results-display
+{
+    display: flex;
+    justify-content: center;
+}
+
+.scenario-results-display pre
+{
+    padding: 30px;
+}
