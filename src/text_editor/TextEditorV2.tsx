@@ -22,6 +22,7 @@ interface TextEditorV2Props
     label?: string
     invalid_value?: false | string
     include_version_in_at_mention?: boolean
+    experimental_code_editor_features?: boolean
 }
 
 export function TextEditorV2({
@@ -33,6 +34,7 @@ export function TextEditorV2({
     label = "Start typing...",
     invalid_value = false,
     include_version_in_at_mention = false,
+    experimental_code_editor_features = false,
 }: TextEditorV2Props) {
     const search_requester_id = useMemo(() =>
     {
@@ -179,6 +181,20 @@ export function TextEditorV2({
                     })
                     return true
                 }
+
+
+                // Handle Tab and Shift+Tab for indenting and outdenting
+                if (experimental_code_editor_features && (event.key === "Tab"))
+                {
+                    // Some really strange behavior here with eslint.  If we
+                    // inline the return from handle_tab_indent_outdent()
+                    // eslint produces errors all over the place.  So we just
+                    // assign it to the variable `result` and return that... ?!
+                    // return handle_tab_indent_outdent(editor, event)
+                    const result = handle_tab_indent_outdent(editor, event)
+                    return result
+                }
+
                 return false
             },
         },
@@ -456,4 +472,125 @@ function handle_wikicommons_image_paste(text: string, editor: Editor, event: Cli
         // Fallback to default
     }
     return undefined
+}
+
+
+const INDENT_SIZE = 4 // Number of spaces per indent level
+const INDENT_STRING = " ".repeat(INDENT_SIZE)
+function handle_tab_indent_outdent(editor: Editor, event: KeyboardEvent): boolean
+{
+    event.preventDefault()
+
+    const { state, dispatch } = editor.view
+    const { selection } = state
+    const { from, to } = selection
+
+    const is_indenting = !event.shiftKey
+    const tr = state.tr
+    let modified = false
+
+    // Doesn't work without it
+    const unknown_fudge = 1
+
+    // Helper function to apply indentation changes to a single line
+    const change_indentation = (line_start: number, line_text: string): void =>
+    {
+        if (is_indenting)
+        {
+            // Add indentation at the start of the line
+            // Only indent the first line if there are multiple lines
+            const node = state.doc.nodeAt(line_start)
+            if (!node) return
+            // const pos_in_node = line_start - state.doc.resolve(line_start).start()
+            // const updated_text = INDENT_STRING + node.textContent.slice(pos_in_node)
+            // const pos_in_node = line_start - state.doc.resolve(line_start).start()
+            const updated_text = INDENT_STRING + node.textContent.slice(0)
+            tr.replaceWith(line_start, line_start + node.nodeSize - unknown_fudge, state.schema.text(updated_text))
+            // editor.commands.insertContentAt(line_start, INDENT_STRING)
+            modified = true
+        }
+        else
+        {
+            const matches = /^\s+/.exec(line_text)
+            // Remove indentation from the start of the line
+            if (matches)
+            {
+                const white_space = matches[0].length
+                const to_remove = Math.min(white_space, INDENT_SIZE)
+                tr.delete(line_start, line_start + to_remove + unknown_fudge)
+                modified = true
+            }
+        }
+    }
+
+    if (selection.empty)
+    {
+        // Handle single cursor position - just indent/outdent the current line
+        const line_start = find_start_position_of_line_from_cursor(editor, from)
+        const line_text = state.doc.textBetween(line_start, state.doc.content.size, "\n")
+        change_indentation(line_start, line_text)
+    }
+    else
+    {
+        // Handle selection - collect all line positions first
+        const line_start = find_start_position_of_line_from_cursor(editor, from)
+        const lines_to_process: Array<{ start: number, text: string }> = []
+
+        state.doc.nodesBetween(line_start, to, (node, pos) =>
+        {
+            if (!node.isTextblock) return
+
+            const node_text = node.textContent
+            if (!node_text) return
+
+            const lines = node_text.split("\n")
+            let current_line_start = pos
+
+            for (let i = 0; i < lines.length; i++)
+            {
+                const line = lines[i]!
+                const line_end = current_line_start + line.length
+
+                // Check if this line intersects with our selection
+                if (current_line_start <= to && line_end >= from)
+                {
+                    lines_to_process.push({ start: current_line_start, text: line })
+                }
+
+                // Move to next line (+ 1 for the newline character)
+                current_line_start = line_end + 1
+            }
+        })
+
+        // Process lines from end to beginning to avoid position shifting
+        for (let i = lines_to_process.length - 1; i >= 0; i--)
+        {
+            const line_info = lines_to_process[i]!
+            change_indentation(line_info.start, line_info.text)
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (modified) dispatch(tr)
+    return true
+}
+
+
+function find_start_position_of_line_from_cursor(editor: Editor, cursor_position: number): number
+{
+    const { state } = editor.view
+    const doc = state.doc
+
+    // Start from cursor position and work backwards to find start of line
+    for (let pos = cursor_position - 1; pos >= 0; pos--)
+    {
+        if (doc.textBetween(pos, pos + 2, "\n") === "\n")
+        {
+            // Found newline, so start of line is the position after it
+            return pos + 1
+        }
+    }
+
+    // No newline found before cursor, so we're on the first line
+    return 0
 }
