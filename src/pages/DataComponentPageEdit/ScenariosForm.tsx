@@ -17,6 +17,7 @@ import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import { WarningMessage } from "../../ui_components/ErrorMessage"
 import OpenCloseSection from "../../ui_components/OpenCloseSection"
+import { debounce } from "../../utils/debounce"
 import { ScenarioResultsAndExpectations } from "./ScenarioResultsAndExpectations"
 import "./ScenariosForm.css"
 
@@ -180,7 +181,7 @@ function ScenarioForm(props: ScenarioFormProps)
             <TextEditorV2
                 label="Description"
                 initial_content={scenario.description || ""}
-                on_update={description => on_change({ description })}
+                on_update={debounce((description: string) => on_change({ description }), 300)}
                 single_line={false}
                 editable={true}
             />
