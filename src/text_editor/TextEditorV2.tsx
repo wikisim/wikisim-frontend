@@ -51,6 +51,9 @@ export function TextEditorV2({
         editorProps: {
             attributes: {
                 class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""}`,
+                // spellCheck: "false",
+                // autoCorrect: "off",
+                // autoCapitalize: "off",
             },
             handlePaste(_view, event)
             {
@@ -95,6 +98,28 @@ export function TextEditorV2({
                     return text.replace(/\n/g, " ").replace(/\s+/g, " ").trim()
                 }
                 return text
+            },
+            handleDOMEvents:
+            {
+                beforeinput: (view, event) =>
+                {
+                    if (event.inputType === "insertText")
+                    {
+                        if ((event.data === '"' || event.data === "“" || event.data === "”"))
+                        {
+                            event.preventDefault()
+                            view.dispatch(view.state.tr.insertText('"'))
+                            return true
+                        }
+                        else if (event.data === "'" || event.data === "‘")
+                        {
+                            event.preventDefault()
+                            view.dispatch(view.state.tr.insertText("'"))
+                            return true
+                        }
+                    }
+                    return false
+                }
             },
             handleKeyDown: (_view, event) =>
             {
