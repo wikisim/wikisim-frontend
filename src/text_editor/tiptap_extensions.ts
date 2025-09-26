@@ -10,7 +10,7 @@ import { CustomReferences } from "./CustomReferences"
 import { SingleLineExtension } from "./extension_enforce_single_line"
 
 
-export function get_tiptap_extensions(single_line: boolean)
+export function get_tiptap_extensions(single_line: boolean, experimental_code_editor_features: boolean)
 {
     return [
         StarterKit.configure({
@@ -18,8 +18,9 @@ export function get_tiptap_extensions(single_line: boolean)
             heading: single_line ? false : undefined,
             bulletList: single_line ? false : undefined,
             orderedList: single_line ? false : undefined,
-            blockquote: single_line ? false : undefined,
-            codeBlock: single_line ? false : undefined,
+            blockquote: (single_line || experimental_code_editor_features) ? false : undefined,
+            code: (experimental_code_editor_features) ? false : undefined,
+            codeBlock: (single_line || experimental_code_editor_features) ? false : undefined,
             horizontalRule: single_line ? false : undefined,
         }),
         // Add single line extension only when in single line mode

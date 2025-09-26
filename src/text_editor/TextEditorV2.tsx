@@ -46,13 +46,13 @@ export function TextEditorV2({
     const [edit_url_enabled, set_edit_url_enabled] = useState<Selection | undefined>(undefined)
 
     const editor = useEditor({
-        extensions: get_tiptap_extensions(single_line),
+        extensions: get_tiptap_extensions(single_line, experimental_code_editor_features),
         enableContentCheck: true,
         content: initial_content,
         autofocus: auto_focus,
         editorProps: {
             attributes: {
-                class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""}`,
+                class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""} ${experimental_code_editor_features ? "code-editor" : ""}`,
                 // spellCheck: "false",
                 // autoCorrect: "off",
                 // autoCapitalize: "off",
@@ -154,9 +154,12 @@ export function TextEditorV2({
                             editor.chain().focus().toggleUnderline().run()
                             return true
                         case "k":
-                            event.preventDefault()
-                            set_edit_url_enabled(editor.state.selection)
-                            return true
+                            if (!experimental_code_editor_features)
+                            {
+                                event.preventDefault()
+                                set_edit_url_enabled(editor.state.selection)
+                                return true
+                            }
                     }
                 }
 
@@ -203,7 +206,7 @@ export function TextEditorV2({
             const json = editor.getJSON()
             let html = editor.getHTML()
             // Replace every double space with space+&nbsp; to preserve multiple spaces visually
-            html = html.replace(/ {2}/g, " &nbsp;")
+            html = html.replace(/ {2}/g, "&nbsp; ")
             if (single_line) html = remove_p_tags(html)
 
             // For some reason, tiptap editor emits 3 onUpdate calls on init,
@@ -285,7 +288,7 @@ export function TextEditorV2({
 
         </Tooltip>
 
-        {edit_url_enabled && <URLEditor
+        {!experimental_code_editor_features && edit_url_enabled && <URLEditor
             selection={edit_url_enabled}
             on_close={(data, remove_link_at) => {
                 set_edit_url_enabled(undefined)
@@ -318,7 +321,7 @@ export function TextEditorV2({
             }}
         />}
 
-        <ContextMenu
+        {!experimental_code_editor_features && <ContextMenu
             editor={editor}
             set_edit_url_enabled={set_edit_url_enabled}
             set_superscript_enabled={selection =>
@@ -327,7 +330,7 @@ export function TextEditorV2({
                 const { from, to } = selection
                 editor.chain().focus().setTextSelection({ from, to }).toggleSuperscript().run()
             }}
-        />
+        />}
 
         {/* <div className="editor-toolbar">
             <button

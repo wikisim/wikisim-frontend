@@ -114,6 +114,9 @@
     margin: 0;
 }
 
+.tiptap-content.code-editor {
+    font-family: monospace;
+}
 
 .editor-link {
     color: var(--colour-link);
