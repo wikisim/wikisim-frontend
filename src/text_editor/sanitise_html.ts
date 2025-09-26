@@ -7,12 +7,12 @@ let singleton_single_line_editor: Editor | undefined = undefined
 let singleton_editor: Editor | undefined = undefined
 
 // Function to sanitize HTML using TipTap
-export function sanitize_with_TipTap(html: string, single_line: boolean): string
+export function sanitize_with_TipTap(html: string, single_line: boolean, is_code = false): string
 {
     if (!singleton_single_line_editor)
     {
         singleton_single_line_editor = new Editor({
-            extensions: get_tiptap_extensions(true),
+            extensions: get_tiptap_extensions(true, is_code),
             editable: false,
             content: "",
         })
@@ -20,7 +20,7 @@ export function sanitize_with_TipTap(html: string, single_line: boolean): string
     if (!singleton_editor)
     {
         singleton_editor = new Editor({
-            extensions: get_tiptap_extensions(false),
+            extensions: get_tiptap_extensions(false, is_code),
             editable: false,
             content: "",
         })

@@ -109,7 +109,7 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
                     <b>Calculation: </b>
                     <div
                         className="tiptap-content"
-                        dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.input_value || "", false) }}
+                        dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.input_value || "", false, true) }}
                     />
                 </div>}
             </div>}
