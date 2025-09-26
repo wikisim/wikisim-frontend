@@ -8,6 +8,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "core": resolve(__dirname, "lib/core/src"),
+      "json-stringify-pretty-compact": resolve(__dirname, "lib/json-stringify-pretty-compact"),
     }
   },
   build: {
