@@ -44,7 +44,7 @@ export async function request_users(
     // Build the or filter string
     const filters = []
     if (ids.length > 0) filters.push(`id.in.(${ids.map(id => `"${id}"`).join(",")})`)
-    if (names.length > 0) filters.push(`name.in.(${names.map(name => `"${name}"`).join(",")})`)
+    if (names.length > 0) filters.push(`name_lowercase.in.(${names.map(name => `"${name}"`).join(",")})`)
     const or_filter = filters.join(",")
 
     return get_supabase()
