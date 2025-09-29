@@ -4,6 +4,7 @@ import { useCallback, useState } from "preact/hooks"
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { TextEditorV1 } from "../text_editor/TextEditorV1"
+import Loading from "../ui_components/Loading"
 import { SearchResults } from "../ui_components/search/SearchResults"
 import { ToggleTwo } from "../ui_components/ToggleTwo"
 import { debounce } from "../utils/debounce"
@@ -13,21 +14,28 @@ import "./DataComponentsSearchPage.css"
 export function DataComponentsSearchPage()
 {
     const location = useLocation()
-    const state = app_store()
 
     const initial_search_term = location.query["q"] || ""
+    const initial_user_id = location.query["user_id"] || ""
+
     const [search_term, _set_search_term] = useState(initial_search_term)
     const search_requester_id = "data_components_search_page"
 
-    const user_signed_in = state.user_auth_session.session?.user
-    const [filter_by_user, set_filter_by_user] = useState(localStorage.getItem("data_components_search_page_filter_by_user") === "true")
-    localStorage.setItem("data_components_search_page_filter_by_user", filter_by_user.toString())
+    const [filter_by_user_id, set_filter_by_user_id] = useState<string | undefined>(
+        initial_user_id
+        || localStorage.getItem("data_components_search_page_filter_by_user_id")
+        || undefined
+    )
+    localStorage.setItem("data_components_search_page_filter_by_user_id", filter_by_user_id || "")
+    // Update URL to reflect current state
+    history.replaceState({}, "", ROUTES.DATA_COMPONENT.SEARCH({ search_query: search_term, user_id: filter_by_user_id }))
 
-    const set_search_term = useCallback(debounce((term: string) =>
+
+    const set_search_term = useCallback(debounce((search_query: string) =>
     {
-        _set_search_term(term)
+        _set_search_term(search_query)
         // Update the URL query parameter
-        history.pushState({}, "", ROUTES.DATA_COMPONENT.SEARCH(term))
+        history.pushState({}, "", ROUTES.DATA_COMPONENT.SEARCH({ search_query }))
     }, 500), [_set_search_term, location])
 
 
@@ -46,18 +54,17 @@ export function DataComponentsSearchPage()
 
             <div class="vertical-gap" />
 
-            {user_signed_in && <ToggleTwo
-                active={filter_by_user}
-                label={active => active ? "Only your pages" : "All pages (Wiki, yours and others)"}
-                set_active={set_filter_by_user}
-            />}
+            <ToggleFilterByUser
+                filter_by_user_id={filter_by_user_id}
+                set_filter_by_user_id={set_filter_by_user_id}
+            />
 
             <div class="vertical-gap" />
 
             <SearchResults
                 search_term={search_term}
                 use_empty_search_term={true}
-                filter_by_owner_id={filter_by_user ? state.user_auth_session.session?.user.id : undefined}
+                filter_by_owner_id={filter_by_user_id || undefined}
                 search_requester_id={search_requester_id}
                 on_chosen_search_result={data =>
                 {
@@ -66,4 +73,42 @@ export function DataComponentsSearchPage()
             />
         </div>
     )
+}
+
+
+interface ToggleFilterByUserProps
+{
+    filter_by_user_id: string | undefined
+    set_filter_by_user_id: (user_id: string) => void
+}
+function ToggleFilterByUser(props: ToggleFilterByUserProps)
+{
+    const { filter_by_user_id, set_filter_by_user_id } = props
+
+    const state = app_store()
+    const user_signed_in = state.user_auth_session.session?.user
+
+    const toggle_filter_by_user_id = useCallback(() =>
+    {
+        if (filter_by_user_id) set_filter_by_user_id("")
+        else if (user_signed_in?.id) set_filter_by_user_id(user_signed_in.id)
+    }, [filter_by_user_id, set_filter_by_user_id, user_signed_in])
+
+
+    const other_user_id = filter_by_user_id && user_signed_in?.id !== filter_by_user_id ? filter_by_user_id : undefined
+    const async_other_user = other_user_id ? state.users.request_user(other_user_id) : undefined
+
+    const filter_by_user_message = filter_by_user_id
+        ? (user_signed_in?.id === filter_by_user_id
+            ? "Showing only your pages"
+            : <>Showing only pages of {async_other_user?.user?.name || <Loading/>}</>)
+        : "Showing pages by all users"
+
+
+    return <ToggleTwo
+        active={!!filter_by_user_id}
+        disabled={!user_signed_in && !filter_by_user_id}
+        label={() => filter_by_user_message}
+        set_active={toggle_filter_by_user_id}
+    />
 }

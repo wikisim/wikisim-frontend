@@ -1,6 +1,6 @@
 import { Switch } from "@mantine/core"
+import { h } from "preact"
 import { TargetedEvent } from "preact/compat"
-
 
 import "./ToggleTwo.css"
 
@@ -9,7 +9,7 @@ interface ToggleTwoProps
 {
     disabled?: boolean
     active: boolean
-    label: (v: boolean) => string
+    label: (v: boolean) => string | h.JSX.Element
     set_active: (v: boolean) => void
     labelPosition?: "left" | "right"
 }

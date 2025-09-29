@@ -2,6 +2,7 @@ import { Button, Menu, Modal, TextInput } from "@mantine/core"
 import IconLogout from "@tabler/icons-react/dist/esm/icons/IconLogout"
 import IconNotebook from "@tabler/icons-react/dist/esm/icons/IconNotebook"
 import IconUser from "@tabler/icons-react/dist/esm/icons/IconUser"
+import IconUserEdit from "@tabler/icons-react/dist/esm/icons/IconUserEdit"
 import IconUserFilled from "@tabler/icons-react/dist/esm/icons/IconUserFilled"
 import { h } from "preact"
 import { useLocation } from "preact-iso"
@@ -29,7 +30,7 @@ export default function Header()
                 </h1>
             </a>
 
-            {!location.path.startsWith("/wiki/search") && <SearchBar />}
+            {!location.path.startsWith(ROUTES.DATA_COMPONENT.SEARCH()) && <SearchBar />}
 
             <nav className="right-user-and-dropdown">
                 <UserSession
@@ -65,7 +66,7 @@ function SearchBar()
         })
     }, [])
 
-    const navigate_to_search = () => location.route(ROUTES.DATA_COMPONENT.SEARCH(search_query))
+    const navigate_to_search = () => location.route(ROUTES.DATA_COMPONENT.SEARCH({ search_query }))
 
     return (
         <div className="search-bar">
@@ -202,16 +203,22 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
     const location = useLocation()
     const { user_auth_session } = app_store()
 
-    const [opened_user_profile, set_opened_user_profile] = useState(false)
+    const [opened_edit_user_name, set_opened_edit_user_name] = useState(false)
 
 
-    function go_to_user_page()
+    const go_to_users_pages = user_auth_session.session ? () =>
     {
-        if (!user_auth_session.session) return
-        const user_id = user_auth_session.session.user.id
-        // Navigate to user's pages
+        const user_id = user_auth_session.session!.user.id
+        // Navigate to search page filterd by user's pages
+        location.route(ROUTES.DATA_COMPONENT.SEARCH({ user_id }))
+    } : undefined
+
+    const go_to_user_page = user_auth_session.session ? () =>
+    {
+        const user_id = user_auth_session.session!.user.id
+        // Navigate to user's profile page
         location.route(ROUTES.USER.VIEW(user_id))
-    }
+    } : undefined
 
 
     return <>
@@ -228,18 +235,25 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
         </Menu.Target>
 
         <Menu.Dropdown>
-            <Menu.Item
+            {go_to_users_pages && <Menu.Item
                 leftSection={<IconNotebook size={14} />}
-                onClick={go_to_user_page}
+                onClick={go_to_users_pages}
             >
                 Your pages (public)
-            </Menu.Item>
+            </Menu.Item>}
 
-            <Menu.Item
+            {go_to_user_page && <Menu.Item
                 leftSection={<IconUserFilled size={14} />}
-                onClick={() => set_opened_user_profile(true)}
+                onClick={go_to_user_page}
             >
                 Profile
+            </Menu.Item>}
+
+            <Menu.Item
+                leftSection={<IconUserEdit size={14} />}
+                onClick={() => set_opened_edit_user_name(true)}
+            >
+                Edit user name
             </Menu.Item>
 
             <Menu.Item
@@ -253,23 +267,21 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
             </Menu.Item>
         </Menu.Dropdown>
     </Menu>
-    <UserProfileModal opened={opened_user_profile} on_close={() => set_opened_user_profile(false)} />
+    <EditUserNameModal opened={opened_edit_user_name} on_close={() => set_opened_edit_user_name(false)} />
     </>
 }
 
 
-function UserProfileModal(props: { opened: boolean, on_close: () => void })
+function EditUserNameModal(props: { opened: boolean, on_close: () => void })
 {
     return <Modal
         opened={props.opened}
         onClose={props.on_close}
         centered
         size="lg"
-        title={<h2>User Profile</h2>}
+        title={<h2>Edit your user name</h2>}
     >
         <div className="vertical-gap" />
-
-        <p>Edit your user name</p>
 
         <EditUserName />
 
