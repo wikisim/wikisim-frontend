@@ -1,3 +1,4 @@
+import { Button } from "@mantine/core"
 import { useEffect, useState } from "preact/hooks"
 
 import { search_data_components } from "core/data/fetch_from_db"
@@ -5,7 +6,6 @@ import type { DataComponent } from "core/data/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase/browser"
 
-import { Button } from "@mantine/core"
 import pub_sub from "../../pub_sub"
 import Loading from "../../ui_components/Loading"
 import "./SearchResults.css"
@@ -127,6 +127,13 @@ export function SearchResults(props: SearchResultsProps)
 
         <div class="vertical-gap" />
 
+        {results && <>
+            <div>
+                Page {page + 1} (showing result {page * page_size + 1} to {page * page_size + Math.min(page_size, results.data_components.length)})
+            </div>
+            <div class="vertical-gap" />
+        </>}
+
         <div style={{ display: "flex", gap: 10 }}>
             <Button
                 disabled={page === 0}
@@ -166,8 +173,10 @@ interface SearchResultsRequest
     filter_by_owner_id: string | undefined
     search_requester_id: string
 }
-interface SearchResults extends SearchResultsRequest
+interface SearchResults
 {
+    search_term: string | undefined
+    search_requester_id: string
     search_start_time: number
     data_components: DataComponent[]
 }
@@ -197,11 +206,7 @@ function search_async_api(request: SearchResultsRequest, set_search_response: Se
         set_search_response({
             error: null,
             results: {
-                search_term: "",
-                page,
-                page_size,
-                use_empty_search_term,
-                filter_by_owner_id,
+                search_term: undefined,
                 search_requester_id,
                 search_start_time,
                 data_components: [],
@@ -224,12 +229,8 @@ function search_async_api(request: SearchResultsRequest, set_search_response: Se
         }
         set_search_response(current_results_response =>
         {
-            let new_results: SearchResults = {
+            const new_results: SearchResults = {
                 search_term,
-                page,
-                page_size,
-                use_empty_search_term,
-                filter_by_owner_id,
                 search_requester_id,
                 search_start_time,
                 data_components: data,

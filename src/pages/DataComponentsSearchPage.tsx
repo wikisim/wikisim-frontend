@@ -102,7 +102,7 @@ function ToggleFilterByUser(props: ToggleFilterByUserProps)
         ? (user_signed_in?.id === filter_by_user_id
             ? "Showing only your pages"
             : <>Showing only pages of {async_other_user?.user?.name || <Loading/>}</>)
-        : "Showing pages by all users"
+        : "Showing all pages (wiki, yours and other users)"
 
 
     return <ToggleTwo
