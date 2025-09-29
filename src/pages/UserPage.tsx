@@ -31,6 +31,10 @@ export function UserPage(props: { user_id_or_name: string })
     }, [user.name, props.user_id_or_name])
 
 
+    const signed_in_user_id = state.user_auth_session.session?.user.id
+    const is_you = signed_in_user_id === user.id
+
+
     return <>
         <div className="page-container">
             <h2>
@@ -38,7 +42,7 @@ export function UserPage(props: { user_id_or_name: string })
                 {" " + user.name}
             </h2>
 
-            <div style={{ gap: 10, display: "flex", flexWrap: "wrap", alignItems: "center", marginTop: 20 }}>
+            {is_you && <div style={{ gap: 10, display: "flex", flexWrap: "wrap", alignItems: "center", marginTop: 20 }}>
                 Add data to
                 <Button
                     component="a"
@@ -59,7 +63,7 @@ export function UserPage(props: { user_id_or_name: string })
                 >
                     user&nbsp;<IconNewSection />
                 </Button>
-            </div>
+            </div>}
         </div>
     </>
 }
