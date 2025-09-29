@@ -73,7 +73,7 @@ export function SearchModal()
             <div class="vertical-gap" />
 
             <SearchResults
-                search_query={trimmed_search_term}
+                search_term={trimmed_search_term}
                 filter_by_owner_id={filter_by_user ? state.user_auth_session.session?.user.id : undefined}
                 search_requester_id={search_requester_id}
                 on_chosen_search_result={data =>
