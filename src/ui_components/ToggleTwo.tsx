@@ -1,7 +1,8 @@
 import { Switch } from "@mantine/core"
 import { h } from "preact"
-import { TargetedEvent } from "preact/compat"
+import { TargetedEvent, useEffect, useState } from "preact/compat"
 
+import pub_sub from "../pub_sub"
 import "./ToggleTwo.css"
 
 
@@ -17,6 +18,13 @@ export function ToggleTwo(props: ToggleTwoProps)
 {
     const { active, set_active } = props
 
+    const [focused, set_focused] = useState(false)
+
+    useEffect(() => pub_sub.sub("key_down", e =>
+    {
+        if (e.key === "Enter" && focused) set_active(!active)
+    }), [focused, set_active, active])
+
     return <div className="toggle-two">
         <Switch
             disabled={props.disabled}
@@ -25,6 +33,8 @@ export function ToggleTwo(props: ToggleTwoProps)
             {
                 set_active(event.currentTarget.checked)
             }}
+            onFocus={() => set_focused(true)}
+            onBlur={() => set_focused(false)}
             withThumbIndicator={false}
             color="var(--mantine-color-green-filled)"
             labelPosition={props.labelPosition || "right"}
