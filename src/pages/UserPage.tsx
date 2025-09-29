@@ -1,10 +1,9 @@
-import { Button } from "@mantine/core"
-import IconNewSection from "@tabler/icons-react/dist/esm/icons/IconNewSection"
 import { useEffect } from "preact/hooks"
 
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { get_async_user } from "../state/users/accessor"
+import { NewDataComponentButtons } from "../ui_components/NewDataComponentButtons"
 import "./DataComponentPage.css"
 
 
@@ -42,28 +41,7 @@ export function UserPage(props: { user_id_or_name: string })
                 {" " + user.name}
             </h2>
 
-            {is_you && <div style={{ gap: 10, display: "flex", flexWrap: "wrap", alignItems: "center", marginTop: 20 }}>
-                Add data to
-                <Button
-                    component="a"
-                    href={ROUTES.DATA_COMPONENT.NEW()}
-                    className="browse-all-button"
-                    size="lg"
-                    variant="primary"
-                >
-                    Wiki&nbsp;<IconNewSection />
-                </Button>
-
-                <Button
-                    component="a"
-                    href={ROUTES.DATA_COMPONENT.NEW(true)}
-                    className="browse-all-button"
-                    size="lg"
-                    variant="primary-user"
-                >
-                    user&nbsp;<IconNewSection />
-                </Button>
-            </div>}
+            {is_you && <NewDataComponentButtons />}
         </div>
     </>
 }

@@ -1,5 +1,4 @@
 import { Button } from "@mantine/core"
-import IconNewSection from "@tabler/icons-react/dist/esm/icons/IconNewSection"
 import { useEffect } from "preact/hooks"
 
 import { is_data_component } from "core/data/interface"
@@ -7,6 +6,7 @@ import { is_data_component } from "core/data/interface"
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { DataComponentCard } from "../ui_components/DataComponentCard"
+import { NewDataComponentButtons } from "../ui_components/NewDataComponentButtons"
 import "./HomePage.css"
 
 
@@ -75,15 +75,7 @@ export function HomePage()
 
                 or
 
-                <Button
-                    component="a"
-                    href={ROUTES.DATA_COMPONENT.NEW()}
-                    className="browse-all-button"
-                    size="lg"
-                    variant="primary"
-                >
-                    Create new page&nbsp;<IconNewSection />
-                </Button>
+                <NewDataComponentButtons />
 
             </div>
         </div>

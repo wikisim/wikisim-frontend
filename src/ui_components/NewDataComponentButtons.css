@@ -1,0 +1,12 @@
+
+.new-data-component-buttons
+{
+    margin: 0 auto;
+
+    align-items: center;
+
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
