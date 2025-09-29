@@ -127,7 +127,7 @@ function LastEditedBy({ component }: { component: DataComponent })
     const store = app_store()
 
     const { created_at, editor_id } = component
-    const user_link = `/user/${editor_id}`
+    const user_link = ROUTES.USER.VIEW(editor_id)
 
     const [user_name, set_user_name] = useState("")
     const async_user = store.users.request_user(editor_id)
