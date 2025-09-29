@@ -1,0 +1,9 @@
+
+
+.user-page-row
+{
+    display: flex;
+    flex-direction: row;
+    gap: var(--hgap-mid);
+    align-items: center;
+}

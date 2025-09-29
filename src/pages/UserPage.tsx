@@ -1,10 +1,11 @@
+import { Button } from "@mantine/core"
 import { useEffect } from "preact/hooks"
 
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { get_async_user } from "../state/users/accessor"
 import { NewDataComponentButtons } from "../ui_components/NewDataComponentButtons"
-import "./DataComponentPage.css"
+import "./UserPage.css"
 
 
 export function UserPage(props: { user_id_or_name: string })
@@ -41,7 +42,28 @@ export function UserPage(props: { user_id_or_name: string })
                 {" " + user.name}
             </h2>
 
-            {is_you && <NewDataComponentButtons />}
+            <div className="user-page-row">
+                <s>Show list of edits by {user.name}</s><Button
+                    disabled={true}
+                    component="a"
+                    href={ROUTES.DATA_COMPONENT.SEARCH({ user_id: user.id })}
+                    variant="primary-user"
+                    size="md"
+                >Not implemented yet</Button>
+            </div>
+
+            <div class="vertical-gap" />
+
+            <div className="user-page-row">
+                Show list of {user.name}'s user space pages<Button
+                    component="a"
+                    href={ROUTES.DATA_COMPONENT.SEARCH({ user_id: user.id })}
+                    variant="primary-user"
+                    size="md"
+                >Search</Button>
+            </div>
+
+            {is_you && <NewDataComponentButtons button_size="md" />}
         </div>
     </>
 }
