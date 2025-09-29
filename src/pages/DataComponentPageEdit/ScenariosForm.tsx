@@ -101,7 +101,7 @@ export function ScenariosForm(props: ScenariosFormProps)
             return <div className="row_to_column scenario-divider" key={key}>
                 <div
                     className="data-component-form-column column"
-                    style={{ gap: "var(--gap-common-mid)" }}
+                    style={{ gap: "var(--vgap-mid)" }}
                 >
                     <ScenarioForm
                         ordinal={index + 1}
@@ -195,7 +195,7 @@ function ScenarioForm(props: ScenarioFormProps)
                     existing?.iterate_over || (!!existing && inputs_iterated_over < 1)
                 )
 
-                return <div className="column" style={{ gap: "var(--gap-common-close)" }} key={input_name}>
+                return <div className="column" style={{ gap: "var(--vgap-small)" }} key={input_name}>
                     {!is_draft_row && <WarningMessage
                         show={!default_value && (!existing || !existing.value)}
                         message={`Please set a value for "${input_name}" as it has no default.`}

@@ -6,7 +6,7 @@
     align-items: center;
 
     display: flex;
-    gap: 10px;
+    gap: var(--hgap-mid);
     flex-wrap: wrap;
     margin-top: 20px;
 }

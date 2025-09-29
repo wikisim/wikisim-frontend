@@ -1,7 +1,7 @@
 
 .generic-error-message
 {
-    margin-top: var(--gap-common);
+    margin-top: var(--vgap-large);
     padding: 10px;
     border-radius: var(--radius-border);
     border: 1px solid var(--colour-invalid);

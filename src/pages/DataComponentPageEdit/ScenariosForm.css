@@ -8,7 +8,7 @@
 .scenario-form-header
 {
     justify-content: space-between;
-    gap: var(--gap-common-mid);
+    gap: var(--vgap-mid);
 }
 
 .scenario-divider
@@ -24,5 +24,5 @@
     margin-left: var(--common-indent-size);
     display: flex;
     flex-direction: column;
-    gap: var(--gap-common-mid);
+    gap: var(--vgap-mid);
 }

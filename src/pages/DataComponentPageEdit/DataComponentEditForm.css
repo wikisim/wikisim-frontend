@@ -51,7 +51,7 @@
     right: 30px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--vgap-mid);
 }
 
 

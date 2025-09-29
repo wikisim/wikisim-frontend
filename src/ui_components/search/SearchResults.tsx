@@ -134,7 +134,7 @@ export function SearchResults(props: SearchResultsProps)
             <div class="vertical-gap" />
         </>}
 
-        <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ display: "flex", gap: "var(--hgap-mid)" }}>
             <Button
                 disabled={page === 0}
                 size="md"

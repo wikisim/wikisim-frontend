@@ -32,16 +32,20 @@
     --z-index-wikisim-select-label: 1;
 
     --radius-border: 5px;
-    --gap-common: 20px;
-    --gap-common-mid: 12px;
-    --gap-common-close: 5px;
+
+    --vgap-large: 20px;
+    --vgap-mid: 12px;
+    --vgap-small: 5px;
+
+    --hgap-large: 20px;
+    --hgap-mid: 10px;
 
     --common-indent-size: 20px;
 }
 
 .vertical-gap
 {
-    padding-top: var(--gap-common);
+    padding-top: var(--vgap-large);
 }
 
 
@@ -61,21 +65,21 @@
     display: flex;
     flex-direction: row;
     flex: 1 1;
-    gap: var(--gap-common);
+    gap: var(--hgap-large);
 }
 .column
 {
     display: flex;
     flex-direction: column;
     flex: 1 1;
-    gap: var(--gap-common);
+    gap: var(--vgap-large);
 }
 .row_to_column
 {
     display: flex;
     flex-direction: row;
     flex: 1 1;
-    gap: var(--gap-common);
+    gap: var(--vgap-large);
 }
 @media (max-width: 800px)
 {

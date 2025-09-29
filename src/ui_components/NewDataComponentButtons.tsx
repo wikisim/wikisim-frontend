@@ -6,15 +6,17 @@ import "./NewDataComponentButtons.css"
 
 
 
-export function NewDataComponentButtons()
+export function NewDataComponentButtons(props: { button_size?: "md" })
 {
+    const { button_size = "lg" } = props
+
     return <div className="new-data-component-buttons">
         Create page in
         <Button
             component="a"
             href={ROUTES.DATA_COMPONENT.NEW()}
             className="browse-all-button"
-            size="lg"
+            size={button_size}
             variant="primary"
         >
             Wiki&nbsp;<IconNewSection />
@@ -24,7 +26,7 @@ export function NewDataComponentButtons()
             component="a"
             href={ROUTES.DATA_COMPONENT.NEW(true)}
             className="browse-all-button"
-            size="lg"
+            size={button_size}
             variant="primary-user"
         >
             user space&nbsp;<IconNewSection />

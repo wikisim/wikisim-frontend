@@ -4,7 +4,7 @@
 {
     display: flex;
     flex-direction: column;
-    gap: calc(var(--gap-common-mid) - var(--gap-common-close));
+    gap: calc(var(--vgap-mid) - var(--vgap-small));
 
     border-top: 1px solid var(--colour-border);
 }
@@ -13,14 +13,14 @@
 {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-common-mid);
+    gap: var(--vgap-mid);
 }
 
 .function-argument-form-row
 {
     display: flex;
     flex-direction: row;
-    gap: var(--gap-common-mid);
+    gap: var(--vgap-mid);
 }
 
 /* .value-editor-container .function-arguments .generic-error-message
@@ -44,15 +44,15 @@
 {
     .function-arguments
     {
-        gap: var(--gap-common);
+        gap: var(--vgap-large);
     }
     .function-argument-form-row
     {
         flex-direction: column;
-        gap: var(--gap-common-close);
+        gap: var(--vgap-small);
     }
     .function-argument-delete-button
     {
-        margin-top: var(--gap-common-close);
+        margin-top: var(--vgap-small);
     }
 }

@@ -41,7 +41,7 @@
     /*  Grow 2 instead of 1 to give the search bar more space (relative to
         user name and drop down menu) on narrow windows */
     flex: 2 1;
-    gap: 10px;
+    gap: var(--hgap-mid);
 }
 
 .search-bar .search-input

@@ -212,7 +212,7 @@ function Scenarios(props: { component: DataComponent })
             return <div className="row_to_column scenario-divider" key={scenario.id}>
                 <div
                     className="data-component-form-column column"
-                    style={{ gap: "var(--gap-common-close)" }}
+                    style={{ gap: "var(--vgap-small)" }}
                 >
                     <b>Scenario {index + 1} of {scenarios.length}</b>
 
