@@ -5,6 +5,7 @@ import type { DataComponent } from "core/data/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase/browser"
 
+import { Button } from "@mantine/core"
 import pub_sub from "../../pub_sub"
 import Loading from "../../ui_components/Loading"
 import "./SearchResults.css"
@@ -29,6 +30,8 @@ export function SearchResults(props: SearchResultsProps)
 
     const [search_response, set_search_response] = useState<SearchResultsResponse | undefined>(undefined)
     const [selected_result_index, set_selected_result_index] = useState<number | null>(null)
+    const [page, set_page] = useState<number>(0)
+    const [page_size, _] = useState<number>(20)
 
     const error = search_response?.error
     const results = search_response?.results
@@ -36,10 +39,12 @@ export function SearchResults(props: SearchResultsProps)
 
     useEffect(() => search_async_api({
         search_term,
+        page,
+        page_size,
         use_empty_search_term,
         filter_by_owner_id,
         search_requester_id,
-    }, set_search_response), [search_term, filter_by_owner_id, props.search_requester_id])
+    }, set_search_response), [search_term, page, page_size, filter_by_owner_id, props.search_requester_id])
 
     useEffect(() => {
         // When props.search_term changes, reset the selected result index
@@ -95,7 +100,7 @@ export function SearchResults(props: SearchResultsProps)
         {results && (results.search_term || props.use_empty_search_term) &&
             (results.data_components.length > 0 ? (
                 <div className="search-results-table">
-                    {results.data_components.map((row, index) =>
+                    {results.data_components.slice(0, page_size).map((row, index) =>
                         <div
                             key={index}
                             className={"result-row " + (selected_result_index === index ? "selected" : "")}
@@ -119,6 +124,27 @@ export function SearchResults(props: SearchResultsProps)
                 <p>No results found.</p>
             ))
         }
+
+        <div class="vertical-gap" />
+
+        <div style={{ display: "flex", gap: 10 }}>
+            <Button
+                disabled={page === 0}
+                size="md"
+                variant="primary"
+                onClick={() => set_page(page - 1)}
+            >
+                Previous Page
+            </Button>
+            <Button
+                disabled={(results?.data_components.length || 0) <= page_size}
+                size="md"
+                variant="primary"
+                onClick={() => set_page(page + 1)}
+            >
+                Next Page
+            </Button>
+        </div>
     </div>
 }
 
@@ -134,8 +160,10 @@ function SearchingFor({ search_term }: { search_term: string })
 interface SearchResultsRequest
 {
     search_term: string
+    page: number
+    page_size: number
     use_empty_search_term: boolean
-    filter_by_owner_id?: string
+    filter_by_owner_id: string | undefined
     search_requester_id: string
 }
 interface SearchResults extends SearchResultsRequest
@@ -156,6 +184,8 @@ function search_async_api(request: SearchResultsRequest, set_search_response: Se
 {
     const {
         search_term,
+        page,
+        page_size,
         use_empty_search_term,
         filter_by_owner_id,
         search_requester_id,
@@ -168,7 +198,10 @@ function search_async_api(request: SearchResultsRequest, set_search_response: Se
             error: null,
             results: {
                 search_term: "",
+                page,
+                page_size,
                 use_empty_search_term,
+                filter_by_owner_id,
                 search_requester_id,
                 search_start_time,
                 data_components: [],
@@ -179,7 +212,7 @@ function search_async_api(request: SearchResultsRequest, set_search_response: Se
 
     let cancel_search = false
 
-    search_data_components(get_supabase, search_term, { page: 0, size: 20, filter_by_owner_id })
+    search_data_components(get_supabase, search_term, { page, size: page_size + 1, filter_by_owner_id })
     .then(({ data, error }) =>
     {
         if (cancel_search) return
@@ -192,10 +225,13 @@ function search_async_api(request: SearchResultsRequest, set_search_response: Se
         set_search_response(current_results_response =>
         {
             let new_results: SearchResults = {
-                search_start_time,
-                use_empty_search_term,
                 search_term,
+                page,
+                page_size,
+                use_empty_search_term,
+                filter_by_owner_id,
                 search_requester_id,
+                search_start_time,
                 data_components: data,
             }
 
