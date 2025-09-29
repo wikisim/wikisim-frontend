@@ -1,6 +1,5 @@
 import { Button } from "@mantine/core"
 import IconNewSection from "@tabler/icons-react/dist/esm/icons/IconNewSection"
-import { useLocation } from "preact-iso"
 import { useEffect } from "preact/hooks"
 
 import { ROUTES } from "../routes"
@@ -12,7 +11,6 @@ import "./DataComponentPage.css"
 export function UserPage(props: { user_id_or_name: string })
 {
     const state = app_store()
-    const location = useLocation()
     const async_user = get_async_user(state, props.user_id_or_name)
     const { user, status } = async_user
 
@@ -25,15 +23,11 @@ export function UserPage(props: { user_id_or_name: string })
 
 
     // Check that the user_id_or_name provided in the props matches the name of
-    // the user, if not, then redirect the page from this page to the
-    // user spaces page give by that name
+    // the user, if not, then replace that in the page URL to be the users name.
     useEffect(() =>
     {
-        if (user.name !== props.user_id_or_name)
-        {
-            const new_user_space_route = ROUTES.USER.VIEW(user.name)
-            location.route(new_user_space_route )
-        }
+        if (user.name === props.user_id_or_name) return
+        history.replaceState({}, "", ROUTES.USER.VIEW(user.name))
     }, [user.name, props.user_id_or_name])
 
 
