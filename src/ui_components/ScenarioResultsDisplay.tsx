@@ -57,10 +57,13 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         // Not sure if this will ever happen as the results should always be a
         // string of JSON
         return <div className="scenario-results-display">
+            <ExpectationMet met={props.expectation_met} />
             <pre>
                 Result = {props.result}<br/>
-                {props.expected_result && `Expected = ${props.expected_result}`}<br/>
-                <ExpectationMet met={props.expectation_met} />
+            </pre>
+            <pre>
+                {props.expectation_met && `Result matched expected result` }
+                {!props.expectation_met && props.expected_result && `Expected = ${props.expected_result}`}<br/>
             </pre>
         </div>
     }
@@ -72,13 +75,14 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         const expected_result_str = expected_json ? stringify(expected_json.parsed, { maxLength: 60 }) : props.expected_result
 
         return <div className="scenario-results-display">
+            <ExpectationMet met={props.expectation_met} />
             <pre>
                 Result = {stringify(parsed_json.parsed, { maxLength: 60 })}<br/>
             </pre>
             <pre>
-                {expected_result_str && `Expected = ${expected_result_str}`}<br/>
+                {props.expectation_met && `Result matched expected result` }
+                {!props.expectation_met && expected_result_str && `Expected = ${expected_result_str}`}<br/>
             </pre>
-            <ExpectationMet met={props.expectation_met} />
         </div>
     }
 
@@ -117,9 +121,9 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
     }
 
     return <div className="scenario-results-display">
+        <ExpectationMet met={props.expectation_met} />
         {/* {props.result} */}
         <Line data={graph_props} />
-        <ExpectationMet met={props.expectation_met} />
     </div>
 }
 
