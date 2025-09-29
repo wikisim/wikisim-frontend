@@ -28,4 +28,10 @@ describe("sanitise_user_id_or_name", function()
         const name = "  !@#$%^&*()  "
         expect(sanitise_user_id_or_name(name)).equals("")
     })
+
+    it("allow space in Suarez Miranda", function()
+    {
+        const name = "  Suarez Mir and!!!!a  "
+        expect(sanitise_user_id_or_name(name)).equals("suarez mir anda")
+    })
 })

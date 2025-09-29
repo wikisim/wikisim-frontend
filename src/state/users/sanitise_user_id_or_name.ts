@@ -9,7 +9,7 @@ export function sanitise_user_id_or_name(user_id_or_name: string): string
 
     // Otherwise we want to strip all non-valid characters from the user name,
     // this also protects against SQL injection attacks
-    user_id_or_name = user_id_or_name.replace(/[^a-z0-9_]/g, "")
+    user_id_or_name = user_id_or_name.replace(/[^a-z0-9_ ]/g, "").trim()
 
     return user_id_or_name
 }
