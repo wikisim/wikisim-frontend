@@ -76,7 +76,9 @@ export function DataComponentPageVersionHistory(props: { data_component_id: stri
                 <span dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true)}}/>
             </a></h2>
 
-            Page {page + 1} showing {number_to_show} of {max_version} from version {to_version} to {from_version}.
+            Page {page + 1} showing{" "}
+            {/* {number_to_show} of {max_version} from */}
+            versions {to_version} to {from_version}.
             {row_versions.map(v => <HistoryRow key={v} id={id.add_version(v)} />)}
 
         </div>
