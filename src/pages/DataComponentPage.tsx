@@ -105,10 +105,16 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
             />}
 
             {value_as_string && <div className="section">
-                {value_as_string && <div className="row">
+                <div className="row">
                     <b>{is_function ? "Function" : "Value"}: </b>
-                    {value_as_string}
-                </div>}
+                    {is_function ? "" : value_as_string}
+                </div>
+
+                {is_function && <div
+                    className="tiptap-content is-code"
+                    dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.input_value || "", false, true)}}
+                />}
+
                 {show_calculation && <div className="row">
                     <b>Calculation: </b>
                     <div

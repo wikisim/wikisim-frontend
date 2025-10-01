@@ -39,12 +39,20 @@
 }
 
 .tiptap-content {
-    line-height: 1.5;
+    /** Set lower so that the vertical spaces between lines was less otherwise
+     *  when rendering the code for wikisim.org/wiki/1021v3 it was harder to read.
+     */
+    line-height: 1.2;
     color: #374151;
 }
 
 .tiptap-content p {
     margin: 0.25rem 0;
+    /** Ensure empty paragraphs have some height otherwise when rendering
+     *  the code for wikisim.org/wiki/1021v3 there were no spaces between
+     *  the function definitions.
+     */
+    min-height: 1em;
 }
 
 .tiptap-content h1 {
