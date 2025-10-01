@@ -3,9 +3,9 @@ import { immer } from "zustand/middleware/immer"
 
 import { CoreStoreDependencies, get_new_core_store } from "core/state/store"
 import { get_supabase } from "core/supabase/browser"
+import { deep_freeze } from "core/utils/deep_freeze"
 
 import { deep_copy } from "../utils/deep_copy"
-import { deep_freeze } from "../utils/deep_freeze"
 import * as data_components from "./data_components"
 import { RootAppState } from "./interface"
 import * as ui_state from "./ui_state"
