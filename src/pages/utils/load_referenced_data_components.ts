@@ -1,11 +1,11 @@
 import { useMemo } from "preact/hooks"
 
+import { IdAndVersion } from "core/data/id"
 import { DataComponent, NewDataComponent } from "core/data/interface"
 import {
     browser_get_referenced_ids_from_tiptap,
 } from "core/rich_text/browser_get_referenced_ids_from_tiptap"
 
-import { IdAndVersion } from "../../../lib/core/src/data/id"
 import { RootAppState } from "../../state/interface"
 
 

@@ -1,6 +1,7 @@
 import Mention from "@tiptap/extension-mention"
 
-import { IdAndMaybeVersion, IdOnly, parse_id } from "../../lib/core/src/data/id"
+import { IdAndMaybeVersion, IdOnly, parse_id } from "core/data/id"
+
 import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
 import "./CustomReferences.css"
