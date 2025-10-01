@@ -2,12 +2,13 @@ import { ActionIcon } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import IconDeviceFloppy from "@tabler/icons-react/dist/esm/icons/IconDeviceFloppy"
 import IconTrashX from "@tabler/icons-react/dist/esm/icons/IconTrashX"
+import { useLocation } from "preact-iso"
 import { useEffect, useState } from "preact/hooks"
 import { z } from "zod"
 
 import { get_id_str_of_data_component, get_version_of_data_component } from "core/data/accessor"
 import { flatten_new_or_data_component_to_json, hydrate_data_component_from_json } from "core/data/convert_between_json"
-import { type DataComponent, type NewDataComponent } from "core/data/interface"
+import { is_data_component, type DataComponent, type NewDataComponent } from "core/data/interface"
 import { is_data_component_invalid } from "core/data/is_data_component_invalid"
 import { changes_made } from "core/data/modify"
 import { make_field_validators } from "core/data/validate_fields"
@@ -15,6 +16,7 @@ import { make_field_validators } from "core/data/validate_fields"
 import BinChangesButton from "../../buttons/BinChangesButton"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
+import { ROUTES } from "../../routes"
 import type { AsyncDataComponentStatus } from "../../state/data_components/interface"
 import { app_store } from "../../state/store"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
@@ -40,6 +42,7 @@ interface DataComponentEditFormProps<V>
 export function DataComponentEditForm<V extends (DataComponent | NewDataComponent)>(props: DataComponentEditFormProps<V>)
 {
     const state = app_store()
+    const location = useLocation()
 
     const { async_status: status } = props
 
@@ -101,7 +104,17 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     function discard_previously_saved_draft()
     {
         clear_previously_saved_draft(draft_component)
-
+        // Go back to original component
+        if (is_data_component(props.data_component))
+        {
+            const new_route = ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(props.data_component.id)
+            location.route(new_route)
+        }
+        else
+        {
+            // Or reload the page
+            document.location.reload()
+        }
     }
     useEffect(() => notify_if_loaded_previously_saved_draft(previously_saved_draft, version_mismatch, discard_previously_saved_draft), [])
 
