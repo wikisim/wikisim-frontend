@@ -63,7 +63,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     if (result.status === "loading")
     {
         return <div className="page-container">
-            <p>Loading {result.loading_count}/{result.referenced_data_component_ids} referenced components.</p>
+            <p>Loading {result.loading_count}/{result.referenced_data_component_ids.length} referenced components.</p>
             <Loading />
         </div>
     }
