@@ -7,6 +7,8 @@ import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_ja
 import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
 import { EvaluationResponse } from "core/evaluator/interface"
 
+import { request_dependencies_and_setup_sandbox } from "../../lib/core/src/evaluation/request_dependencies_and_setup_sandbox"
+import { get_supabase } from "../../lib/core/src/supabase/browser"
 import HistoryIcon from "../assets/history.svg"
 import EditOrSaveButton from "../buttons/EditOrSaveButton"
 import pub_sub from "../pub_sub"
@@ -168,11 +170,25 @@ function Scenarios(props: { component: DataComponent })
     if (!scenarios.length) return null
 
 
+    const [sandbox_error, set_sandbox_error] = useState<null | false | Error>(null)
     const [results, set_results] = useState<{[scenario_index: number]: EvaluationResponse}>({})
+
+
+    // Load dependencies
+    useEffect(() =>
+    {
+        // This will result in the component being reqeuested a second time
+        // but as we're likely to load multiple dependent components then it
+        // won't make much difference
+        request_dependencies_and_setup_sandbox(get_supabase, component.id)
+        .then(response => set_sandbox_error(response.error || false))
+    })
 
 
     useEffect(() =>
     {
+        if (sandbox_error === null || sandbox_error) return
+
         scenarios.forEach(async (scenario, index) =>
         {
             const javascript = prepare_scenario_javascript({ component, scenario })
@@ -187,7 +203,7 @@ function Scenarios(props: { component: DataComponent })
                 return { ...results }
             })
         })
-    }, [])
+    }, [sandbox_error])
 
 
     return <div class="scenarios">
@@ -205,6 +221,11 @@ function Scenarios(props: { component: DataComponent })
             </div>
             <OpenCloseSection opened={opened} />
         </div>
+
+        {sandbox_error && <div className="data-component-form-column">
+            <ErrorMessage show={true} message={"Error running scenarios: " + sandbox_error.message} />
+        </div>}
+
         {opened && scenarios.map((scenario, index) =>
         {
             const result = results[index]
