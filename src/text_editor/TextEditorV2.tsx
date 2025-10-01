@@ -52,7 +52,7 @@ export function TextEditorV2({
         autofocus: auto_focus,
         editorProps: {
             attributes: {
-                class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""} ${experimental_code_editor_features ? "code-editor" : ""}`,
+                class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""} ${experimental_code_editor_features ? "is-code" : ""}`,
                 // spellCheck: "false",
                 // autoCorrect: "off",
                 // autoCapitalize: "off",

@@ -114,7 +114,7 @@
     margin: 0;
 }
 
-.tiptap-content.code-editor {
+.tiptap-content.is-code {
     font-family: monospace;
 }
 
