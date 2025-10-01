@@ -1,6 +1,7 @@
 import { useLocation } from "preact-iso"
 import { useEffect, useState } from "preact/hooks"
 
+import { valid_value_type } from "core/data/field_values_with_defaults"
 import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
 import { DataComponent } from "core/data/interface"
 import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_javascript"
@@ -62,8 +63,9 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
     }), [component.id.id])
 
     const value_as_string = format_data_component_value_to_string(component)
-    const is_function = component.value_type === "function"
-    const is_number_type = component.value_type === "number"
+    const value_type = valid_value_type(component.value_type)
+    const is_function = value_type === "function"
+    const is_number_type = value_type === "number"
     const value_is_pure_number = is_pure_number(sanitize_with_TipTap(component.input_value || "", true))
     const show_calculation = is_number_type && !value_is_pure_number
 

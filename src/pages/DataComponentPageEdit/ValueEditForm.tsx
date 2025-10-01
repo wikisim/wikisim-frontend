@@ -1,14 +1,15 @@
 import { useEffect, useState } from "preact/hooks"
 
 import { DEFAULTS } from "core/data/defaults"
-import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
+import { valid_value_number_display_type } from "core/data/field_values_with_defaults"
+import {
+    format_data_component_value_to_string,
+} from "core/data/format/format_data_component_value_to_string"
 import { format_number_to_string } from "core/data/format/format_number_to_string"
 import {
     DataComponent,
     NewDataComponent,
     NUMBER_DISPLAY_TYPES,
-    NUMBER_DISPLAY_TYPES_OBJ,
-    NumberDisplayType,
     VALUE_TYPES,
     ValueType,
 } from "core/data/interface"
@@ -177,7 +178,7 @@ export function ValueEditor(props: ValueEditorProps)
                             value={valid_value_number_display_type(draft_component.value_number_display_type)}
                             onChange={value =>
                             {
-                                const value_number_display_type = valid_value_number_display_type(value as NumberDisplayType)
+                                const value_number_display_type = valid_value_number_display_type(value)
                                 on_change({ value_number_display_type })
                             }}
                         />
@@ -209,13 +210,6 @@ export function ValueEditor(props: ValueEditorProps)
 
         </div>
     </>
-}
-
-
-function valid_value_number_display_type(value_number_display_type: NumberDisplayType | undefined): NumberDisplayType
-{
-    if (!value_number_display_type || !(value_number_display_type in NUMBER_DISPLAY_TYPES_OBJ)) return DEFAULTS.value_number_display_type
-    return value_number_display_type
 }
 
 
