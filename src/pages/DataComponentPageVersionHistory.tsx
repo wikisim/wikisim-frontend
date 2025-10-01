@@ -7,7 +7,7 @@ import { clamp } from "core/utils/clamp"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
-import { sanitize_with_TipTap } from "../text_editor/sanitise_html"
+import { ReadOnly } from "../text_editor/sanitise_html"
 import Loading from "../ui_components/Loading"
 import { time_ago_or_date } from "../utils/time_ago_or_date"
 import "./DataComponentPageVersionHistory.css"
@@ -73,7 +73,7 @@ export function DataComponentPageVersionHistory(props: { data_component_id: stri
     return (
         <div className="page-container">
             <h2>Version History for <a href={ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(component.id.as_IdOnly())}>
-                <span dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true)}}/>
+                <ReadOnly html={component.title} single_line={true} />
             </a></h2>
 
             Page {page + 1} showing{" "}

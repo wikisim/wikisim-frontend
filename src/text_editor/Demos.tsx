@@ -1,5 +1,7 @@
 import { useState } from "preact/hooks"
 
+import { tiptap_mention_chip } from "core/test/fixtures"
+
 import EditOrSaveButton from "../buttons/EditOrSaveButton"
 import { TextEditorV2 } from "./TextEditorV2"
 
@@ -49,10 +51,10 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
 {
     const [title, set_title] = useState("Some title")
     const [description, set_description] = useState(`
-        <h2>Some description</h2>
-        <p>This is a multiline description with some markdown triggered formatting saved as html.</p>
-        <p>This <span class="mention-chip" data-type="customMention" data-id="2" data-label="Some label">@Some label</span><u>20 million homes</u> can become <u>25 million (+25%) homes</u>.</p>
-        <ul><li><p>Item 1</p></li><li><p>Item 2</p></li><li><p>Item 3</p></li></ul>
+        <p>
+            This ${tiptap_mention_chip("123", "a")}
+            That ${tiptap_mention_chip("123", "span")}
+        </p>
     `)
 
     return <>

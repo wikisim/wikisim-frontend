@@ -12,32 +12,90 @@ import "./CustomReferences.css"
 const CustomMention = Mention.extend({
     name: "customMention",
 
+    parseHTML()
+    {
+        return [
+            {
+                tag: "a.mention-chip",
+            },
+            {
+                tag: "span.mention-chip",
+            }
+        ]
+    },
+
     addAttributes()
     {
         return {
             id: {
                 default: null,
+                // This is used to parse out the ID from the HTML element and
+                // set the `node.attrs.id` use in the addNodeView function.
                 parseHTML: element => element.getAttribute("data-id"),
-                renderHTML: attributes =>
-                {
-                    if (!attributes.id) return {}
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                    return { "data-id": attributes.id }
-                },
+                // This will be set in the `HTMLAttributes` passed to the
+                // renderHTML function
+                renderHTML: attributes => ({ "data-id": attributes.id as string }),
             },
             label: {
                 default: null,
-                parseHTML: element => element.getAttribute("data-label"),
-                renderHTML: attributes =>
-                {
-                    if (!attributes.label) return {}
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                    return { "data-label": attributes.label }
-                },
+                // This is used to parse out the ID from the HTML element and
+                // set the `node.attrs.id` use in the addNodeView function.
+                // Older span based mentions may have had an @ symbol prepended
+                // so we remove it here.
+                parseHTML: el => el.textContent?.replace(/^@/, "") || "",
+                // Don't emit data-label; label will be rendered as inner text
+                renderHTML: () => ({}),
             },
             // Override the default mention extension to NOT include mention suggestion char
         }
     },
+
+
+    addNodeView()
+    {
+        return ({ node }) =>
+        {
+            const parsed_id = parse_id_safely(node.attrs.id as string)
+            if (!parsed_id) return { dom: document.createElement("span") }
+
+            const dom = document.createElement("a")
+            dom.className = `mention-chip ${parsed_id instanceof IdOnly ? "IDo" : "IDv"}`
+            const dangerous_str = `${node.attrs.label || ""}`
+            // Use textContent instead of innerHTML to prevent XSS
+            dom.textContent = dangerous_str
+            dom.href = ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(parsed_id)
+
+            // // label_span.textContent = dangerous_str
+            // // dom.appendChild(label_span)
+
+            // // const percentage = "+20%"
+            // // dom.className += " alternative-value"
+
+            // Custom chip click behaviour
+            dom.addEventListener("click", e => {
+                e.preventDefault()
+                // prevent the anchor tag from working as we do our own routing
+                e.stopImmediatePropagation()
+                pub_sub.pub("mention_clicked", { data_component_id: node.attrs.id as string })
+            })
+
+            return { dom }
+        }
+    },
+
+
+    renderHTML({ HTMLAttributes, node })
+    {
+        if (!HTMLAttributes["data-id"]) console.warn("CustomMention renderHTML missing data-id attribute", HTMLAttributes)
+        const label = (node.attrs.label as string || "")
+
+        return [
+            "a",
+            { ...HTMLAttributes, class: "mention-chip" },
+            label
+        ]
+    },
+
 
     addKeyboardShortcuts()
     {
@@ -84,60 +142,6 @@ const CustomMention = Mention.extend({
             }
         }
     },
-
-    addNodeView()
-    {
-        return ({ node }) =>
-        {
-            let parsed_id: IdAndMaybeVersion
-            try
-            {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                parsed_id = parse_id(node.attrs.id)
-            }
-            catch (_)
-            {
-                const empty_dom = document.createElement("span")
-                return { dom: empty_dom }
-            }
-
-            const dom = document.createElement("a")
-
-            dom.className = `mention-chip ${parsed_id instanceof IdOnly ? "IDo" : "IDv"}`
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            dom.setAttribute("data-id", node.attrs.id)
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            dom.setAttribute("data-label", node.attrs.label)
-
-            const dangerous_str = `${node.attrs.label || node.attrs.id || ""}`
-            const label_span = document.createElement("span")
-            label_span.className = "mention-label"
-
-            // Use textContent instead of innerHTML to prevent XSS
-            label_span.textContent = dangerous_str
-            dom.appendChild(label_span)
-
-            // const percentage = "+20%"
-            // dom.className += " alternative-value"
-
-            dom.href = ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(parsed_id)
-            // Make chip clickable and editable
-            dom.addEventListener("click", (e) =>
-            {
-                e.preventDefault()
-                // prevent the anchor tag from working as we do our own routing
-                e.stopImmediatePropagation()
-
-                // When editing, we will want to add some different functionality
-                // here that allows the user to customise / edit the reference.
-                // For now, we just publish an mention_clicked event and that
-                // will redirect to the corresponding data component view.
-                pub_sub.pub("mention_clicked", { data_component_id: node.attrs.id as string })
-            })
-
-            return { dom }
-        }
-    }
 })
 
 
@@ -147,3 +151,16 @@ export const CustomReferences = CustomMention.configure({
         class: "mention-chip",
     },
 })
+
+
+function parse_id_safely(id_str: string): IdAndMaybeVersion | undefined
+{
+    try
+    {
+        return parse_id(id_str)
+    }
+    catch (_)
+    {
+        return undefined
+    }
+}

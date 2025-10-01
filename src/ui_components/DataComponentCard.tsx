@@ -4,7 +4,7 @@ import { format_data_component_value_to_string } from "core/data/format/format_d
 import { DataComponent } from "core/data/interface"
 
 import { ROUTES } from "../routes"
-import { sanitize_with_TipTap } from "../text_editor/sanitise_html"
+import { ReadOnly } from "../text_editor/sanitise_html"
 import "./DataComponentCard.css"
 
 
@@ -19,7 +19,7 @@ export function DataComponentCard({ data_component }: { data_component: DataComp
             // className="data-component-card tiptap-content"
             className="data-component-card"
         >
-            <h3 dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(data_component.title, true) }} />
+            <h3><ReadOnly html={data_component.title} single_line={true} /></h3>
             <p>{ellipsis(data_component.plain_description)}</p>
             {value_as_string && <p>{value_as_string}</p>}
         </Card>

@@ -10,13 +10,14 @@ import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandbox
 import { EvaluationResponse } from "core/evaluator/interface"
 import { get_supabase } from "core/supabase/browser"
 
+import { browser_convert_tiptap_to_plain } from "../../lib/core/src/rich_text/browser_convert_tiptap_to_plain"
 import HistoryIcon from "../assets/history.svg"
 import EditOrSaveButton from "../buttons/EditOrSaveButton"
 import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
-import { sanitize_with_TipTap } from "../text_editor/sanitise_html"
+import { ReadOnly } from "../text_editor/sanitise_html"
 import { ErrorMessage } from "../ui_components/ErrorMessage"
 import { ExpectationsMet } from "../ui_components/ExpectationMet"
 import Loading from "../ui_components/Loading"
@@ -66,7 +67,7 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
     const value_type = valid_value_type(component.value_type)
     const is_function = value_type === "function"
     const is_number_type = value_type === "number"
-    const value_is_pure_number = is_pure_number(sanitize_with_TipTap(component.input_value || "", true))
+    const value_is_pure_number = is_pure_number(browser_convert_tiptap_to_plain(component.input_value || ""))
     const show_calculation = is_number_type && !value_is_pure_number
 
 
@@ -94,15 +95,13 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
                 />
             </div>
 
-            <h2
-                className="section tiptap-content"
-                dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.title, true) }}
-            />
+            <h2 className="section tiptap-content">
+                <ReadOnly html={component.title} single_line={true} />
+            </h2>
 
-            {component.plain_description && <div
-                className="section tiptap-content"
-                dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.description, false) }}
-            />}
+            {component.plain_description && <div className="section tiptap-content">
+                <ReadOnly html={component.description} />
+            </div>}
 
             {value_as_string && <div className="section">
                 <div className="row">
@@ -110,17 +109,11 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
                     {is_function ? "" : value_as_string}
                 </div>
 
-                {is_function && <div
-                    className="tiptap-content is-code"
-                    dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.input_value || "", false, true)}}
-                />}
+                {is_function && <ReadOnly html={component.input_value} is_code={true}/>}
 
                 {show_calculation && <div className="row">
                     <b>Calculation: </b>
-                    <div
-                        className="tiptap-content"
-                        dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(component.input_value || "", false, true) }}
-                    />
+                    <ReadOnly html={component.input_value} is_code={true}/>
                 </div>}
             </div>}
 
@@ -245,10 +238,7 @@ function Scenarios(props: { component: DataComponent })
                 >
                     <b>Scenario {index + 1} of {scenarios.length}</b>
 
-                    {scenario.description && <div
-                        className="tiptap-content"
-                        dangerouslySetInnerHTML={{ __html: sanitize_with_TipTap(scenario.description, false) }}
-                    />}
+                    <ReadOnly html={scenario.description} />
                 </div>
 
                 <div className="data-component-form-column column">
