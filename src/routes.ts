@@ -13,14 +13,14 @@ export const ROUTES = {
     {
         SEARCH: (args: SearchArgs = {}) => "/wiki/search" + search_args_to_query_string(args),
         NEW: (is_user_component?: boolean) => `/new${is_user_component === undefined ? "" :`?is_user_component=${is_user_component}`}`,
-        VIEW_WIKI_COMPONENT: (id: IdAndVersion | IdOnly | number | ":data_component_id" = ":data_component_id") =>
+        VIEW_WIKI_COMPONENT: (id: IdAndVersion | IdOnly | number | string = ":data_component_id") =>
         {
             const path = typeof id === "string" ? id
                 : typeof id === "number" ? id
                 : id.to_str()
             return `/wiki/${path}`
         },
-        VIEW_USER_COMPONENT: (args?: { user_id_or_name: string, id: IdAndVersion | IdOnly | number | ":data_component_id" }) =>
+        VIEW_USER_COMPONENT: (args?: { user_id_or_name: string, id: IdAndVersion | IdOnly | string | number }) =>
         {
             args = args || { user_id_or_name: ":user_id_or_name", id: ":data_component_id" }
             const { user_id_or_name, id } = args
@@ -30,7 +30,7 @@ export const ROUTES = {
                 : id.to_str()
             return `/u/${user_id_or_name}/${path}`
         },
-        VIEW: (component: { id: IdAndVersion | IdOnly | number, owner_id?: string }) =>
+        VIEW: (component: { id: IdAndVersion | IdOnly | string | number, owner_id?: string }) =>
         {
             if (component.owner_id)
             {

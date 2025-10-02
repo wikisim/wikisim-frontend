@@ -50,11 +50,11 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
     }
 
 
-    ensure_owner_id_or_name_is_in_url(component, props.user_id_or_name)
+    ensure_owner_id_or_name_is_in_url(props.data_component_id, component, props.user_id_or_name)
     const { async_user, loading_user_jsx } = ensure_owner_is_loaded(state, component)
     if (loading_user_jsx) return loading_user_jsx
 
-    ensure_owner_name_matches_in_url(component, async_user, props.user_id_or_name)
+    ensure_owner_name_matches_in_url(props.data_component_id, component, async_user, props.user_id_or_name)
 
 
     // Subscribe to cmd + enter key combo to open the save modal for the component
@@ -87,7 +87,7 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
                     {user_is_you ? `you (${async_user?.user?.name})` : async_user?.user?.name}
                 </a>
             }.
-            It is not in the wiki but{(!user_is_logged_in || user_is_you) ? " anyone can copy anything here into their" : " you can copy anything here into your"} own user pages.
+            It is not in the wiki yet but{(!user_is_logged_in || user_is_you) ? " anyone can copy anything here into their" : " you can copy anything here into your"} own user pages or the wiki.
         </div>}
 
         <BannerWarningIfOlderVersion partial_component={component} />

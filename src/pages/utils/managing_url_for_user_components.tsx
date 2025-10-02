@@ -15,7 +15,7 @@ import Loading from "../../ui_components/Loading"
  * was provided in the props, if not, then redirect the page from this wiki
  * page to the user spaces page
  */
-export function ensure_owner_id_or_name_is_in_url(component: DataComponent, user_id_or_name: string | undefined)
+export function ensure_owner_id_or_name_is_in_url(component_id: string, component: DataComponent, user_id_or_name: string | undefined)
 {
     const location = useLocation()
 
@@ -25,11 +25,11 @@ export function ensure_owner_id_or_name_is_in_url(component: DataComponent, user
         {
             const new_user_space_route = ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT({
                 user_id_or_name: component.owner_id,
-                id: component.id.as_IdOnly(),
+                id: component_id,
             })
             location.route(new_user_space_route)
         }
-    }, [component.owner_id, user_id_or_name])
+    }, [component_id, component.owner_id, user_id_or_name])
 }
 
 
@@ -53,7 +53,7 @@ export function ensure_owner_is_loaded(state: ReturnType<typeof app_store>, comp
  * of the component, if not, then redirect the page from this page to the
  * user spaces page give by that name
  */
-export function ensure_owner_name_matches_in_url(component: DataComponent, async_user: AsyncUser | undefined, user_id_or_name: string | undefined)
+export function ensure_owner_name_matches_in_url(component_id: string, component: DataComponent, async_user: AsyncUser | undefined, user_id_or_name: string | undefined)
 {
     const location = useLocation()
 
@@ -66,10 +66,10 @@ export function ensure_owner_name_matches_in_url(component: DataComponent, async
             {
                 const new_user_space_route = ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT({
                     user_id_or_name: user_name,
-                    id: component.id.as_IdOnly(),
+                    id: component_id,
                 })
                 location.route(new_user_space_route )
             }
         }
-    }, [component.owner_id, async_user, user_id_or_name])
+    }, [component_id, component.owner_id, async_user, user_id_or_name])
 }
