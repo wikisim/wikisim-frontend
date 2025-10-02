@@ -30,6 +30,17 @@ export const ROUTES = {
                 : id.to_str()
             return `/u/${user_id_or_name}/${path}`
         },
+        VIEW: (component: { id: IdAndVersion | IdOnly | number, owner_id?: string }) =>
+        {
+            if (component.owner_id)
+            {
+                return ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT({ user_id_or_name: component.owner_id, id: component.id })
+            }
+            else
+            {
+                return ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(component.id)
+            }
+        },
         EDIT: (id: IdOnly | number | ":data_component_id" = ":data_component_id") =>
         {
             const path = typeof id === "string" ? id

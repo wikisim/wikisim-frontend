@@ -72,15 +72,16 @@ export function DataComponentPageVersionHistory(props: { data_component_id: stri
 
     return (
         <div className="page-container">
-            <h2>Version History for <a href={ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(component.id.as_IdOnly())}>
-                <ReadOnly html={component.title} single_line={true} />
-            </a></h2>
+            <h2>Version History for
+                <a href={ROUTES.DATA_COMPONENT.VIEW(component)}>
+                    <ReadOnly html={component.title} single_line={true} />
+                </a>
+            </h2>
 
             Page {page + 1} showing{" "}
             {/* {number_to_show} of {max_version} from */}
             versions {to_version} to {from_version}.
             {row_versions.map(v => <HistoryRow key={v} id={id.add_version(v)} />)}
-
         </div>
     )
 }
@@ -122,7 +123,6 @@ function DataComponentPageVersionHistoryRedirect(props: { id: IdAndVersion })
 function HistoryRow(props: { id: IdAndVersion })
 {
     const state = app_store()
-    const location = useLocation()
     const async_data_component = get_async_data_component(state, props.id.to_str(), false)
     const { component } = async_data_component
 
@@ -142,11 +142,8 @@ function HistoryRow(props: { id: IdAndVersion })
     const async_editor = state.users.request_user(component.editor_id)
     const { user: editor } = async_editor
 
-    return (
-        <div
-            className="history-row loaded"
-            onClick={() => location.route(ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(props.id))}
-        >
+    return <div className="history-row loaded">
+        <a href={ROUTES.DATA_COMPONENT.VIEW({ id: props.id, owner_id: component.owner_id })}>
             Version {props.id.version}: &nbsp; &nbsp;
             {component.comment || " -- "} &nbsp; &nbsp;
             {time_ago_or_date(component.created_at, true)}{" "}
@@ -155,6 +152,6 @@ function HistoryRow(props: { id: IdAndVersion })
             {async_editor.status === "loading" ? <Loading />
             : async_editor.status === "loaded" && editor ? editor.name
             : "Error loading editor name"}
-        </div>
-    )
+        </a>
+    </div>
 }

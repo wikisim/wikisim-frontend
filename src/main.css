@@ -43,6 +43,11 @@
     --common-indent-size: 20px;
 }
 
+a
+{
+    color: var(--colour-link);
+}
+
 .vertical-gap
 {
     padding-top: var(--vgap-large);
