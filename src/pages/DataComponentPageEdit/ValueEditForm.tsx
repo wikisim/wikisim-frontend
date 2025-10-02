@@ -9,9 +9,7 @@ import { format_number_to_string } from "core/data/format/format_number_to_strin
 import {
     DataComponent,
     NewDataComponent,
-    NUMBER_DISPLAY_TYPES,
-    VALUE_TYPES,
-    ValueType,
+    NUMBER_DISPLAY_TYPES
 } from "core/data/interface"
 import { calc_function_arguments_errors } from "core/data/is_data_component_invalid"
 import { calculate_result_value } from "core/evaluator"
@@ -22,12 +20,12 @@ import { app_store } from "../../state/store"
 import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
+import { ValueTypeDropdown } from "../../ui_components/data_component/ValueTypeDropdown"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
 import OpenCloseSection from "../../ui_components/OpenCloseSection"
 import { Select } from "../../ui_components/Select"
 import { load_referenced_data_components } from "../../ui_components/utils/load_referenced_data_components"
 import { debounce } from "../../utils/debounce"
-import { to_sentence_case } from "../../utils/to_sentence_case"
 import { FunctionInputsForm } from "./FunctionInputsForm"
 import { ScenariosForm } from "./ScenariosForm"
 import "./ValueEditForm.css"
@@ -95,6 +93,7 @@ export function ValueEditor(props: ValueEditorProps)
     const value_type = draft_component.value_type || DEFAULTS.value_type
     const value_type_is_number = value_type === "number"
     const value_type_is_function = value_type === "function"
+    // const value_type_is_interactable = value_type === "interactable"
     const show_units = value_type_is_number
 
     return <>
@@ -194,16 +193,9 @@ export function ValueEditor(props: ValueEditorProps)
             {opened && <div className="data-component-form-column">
                 <div className="vertical-gap" />
 
-                <Select
-                    label="Type"
-                    data={value_type_options()}
-                    size="md"
-                    style={{ width: 200 }}
-                    value={draft_component.value_type || DEFAULTS.value_type}
-                    onChange={value =>
-                    {
-                        on_change({ value_type: value as ValueType })
-                    }}
+                <ValueTypeDropdown
+                    draft_component={draft_component}
+                    on_change={on_change}
                 />
             </div>}
 
@@ -245,17 +237,5 @@ function format_options(_data_component: DataComponent | NewDataComponent)
         // const label = `${label_str} (${readable_type} e.g. ${format_number_to_string(1230.5, value_number_sig_figs, type)})`
         const label = `${format_number_to_string(1230.5, 3, type)}`
         return ({ value: type, label })
-    })
-}
-
-
-function value_type_options()
-{
-    return VALUE_TYPES
-    // For now, only allow number and function types
-    .filter(type => type === "number" || type === "function")
-    .map(type =>
-    {
-        return ({ value: type, label: to_sentence_case(type) })
     })
 }
