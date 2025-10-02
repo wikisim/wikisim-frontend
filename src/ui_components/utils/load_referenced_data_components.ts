@@ -9,7 +9,7 @@ import {
 import { RootAppState } from "../../state/interface"
 
 
-interface LoadReferencedDataComponentsResult
+interface AsyncLoadReferencedDataComponentsResult
 {
     status: "loading" | "loaded" | "error"
     error: string | undefined
@@ -17,7 +17,7 @@ interface LoadReferencedDataComponentsResult
     referenced_data_component_ids: IdAndVersion[]
     referenced_data_components_by_id_str: Record<string, DataComponent>
 }
-export function load_referenced_data_components(state: RootAppState, data_component: DataComponent | NewDataComponent): LoadReferencedDataComponentsResult
+export function load_referenced_data_components(state: RootAppState, data_component: DataComponent | NewDataComponent): AsyncLoadReferencedDataComponentsResult
 {
     let error: string | undefined = undefined
 

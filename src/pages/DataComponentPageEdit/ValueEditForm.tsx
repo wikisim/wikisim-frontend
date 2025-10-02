@@ -46,23 +46,23 @@ export function ValueEditor(props: ValueEditorProps)
     const [opened, set_opened] = useState(false)
     const [evaluation_error, set_evaluation_error] = useState<string>()
 
-    const load_referenced = load_referenced_data_components(state, draft_component)
+    const async_loading_referenced_data_components = load_referenced_data_components(state, draft_component)
 
     useEffect(() =>
     {
-        if (load_referenced.status !== "loaded") return
+        if (async_loading_referenced_data_components.status !== "loaded") return
 
         let component = { ...draft_component }
         // If the dependencies have changed, update them
-        if (JSON.stringify(draft_component.recursive_dependency_ids) !== JSON.stringify(load_referenced.referenced_data_component_ids))
+        if (JSON.stringify(draft_component.recursive_dependency_ids) !== JSON.stringify(async_loading_referenced_data_components.referenced_data_component_ids))
         {
-            on_change({ recursive_dependency_ids: load_referenced.referenced_data_component_ids })
+            on_change({ recursive_dependency_ids: async_loading_referenced_data_components.referenced_data_component_ids })
             // Modify in place to
-            component.recursive_dependency_ids = load_referenced.referenced_data_component_ids
+            component.recursive_dependency_ids = async_loading_referenced_data_components.referenced_data_component_ids
         }
 
 
-        const data_components_by_id_and_version = load_referenced.referenced_data_components_by_id_str
+        const data_components_by_id_and_version = async_loading_referenced_data_components.referenced_data_components_by_id_str
 
         calculate_result_value({
             component,
@@ -85,10 +85,10 @@ export function ValueEditor(props: ValueEditorProps)
             set_evaluation_error(undefined)
         })
         .catch(e => { throw e })
-    }, [load_referenced.status, draft_component.input_value, draft_component.value_type, draft_component.function_arguments])
+    }, [async_loading_referenced_data_components.status, draft_component.input_value, draft_component.value_type, draft_component.function_arguments])
 
     const function_argument_error = calc_function_arguments_errors(draft_component.function_arguments).error
-    const error = load_referenced.error || evaluation_error || function_argument_error
+    const error = async_loading_referenced_data_components.error || evaluation_error || function_argument_error
 
     const formatted_value = format_data_component_value_to_string(draft_component)
 
