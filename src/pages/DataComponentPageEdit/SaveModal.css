@@ -18,3 +18,11 @@
     color: var(--colour-error);
     font-weight: bold;
 }
+
+.warning-about-user-pages
+{
+    background-color: var(--colour-warning-fainter);
+    border: 1px solid var(--colour-warning);
+    padding: var(--vgap-mid) var(--common-indent-size);
+    border-radius: var(--radius-border);
+}

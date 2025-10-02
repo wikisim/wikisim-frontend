@@ -8,9 +8,9 @@ import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_ja
 import { request_dependencies_and_setup_sandbox } from "core/evaluation/request_dependencies_and_setup_sandbox"
 import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
 import { EvaluationResponse } from "core/evaluator/interface"
+import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase/browser"
 
-import { browser_convert_tiptap_to_plain } from "../../lib/core/src/rich_text/browser_convert_tiptap_to_plain"
 import HistoryIcon from "../assets/history.svg"
 import EditOrSaveButton from "../buttons/EditOrSaveButton"
 import pub_sub from "../pub_sub"
@@ -19,19 +19,20 @@ import { get_async_data_component } from "../state/data_components/accessor"
 import { CheckIfIdIsLatestResponse } from "../state/data_components/interface"
 import { app_store } from "../state/store"
 import { ReadOnly } from "../text_editor/sanitise_html"
+import { BannerWarningOfUserOwnedPage } from "../ui_components/BannerWarningOfUserOwnedPage"
 import { ErrorMessage } from "../ui_components/ErrorMessage"
 import { ExpectationsMet } from "../ui_components/ExpectationMet"
 import Loading from "../ui_components/Loading"
 import OpenCloseSection from "../ui_components/OpenCloseSection"
 import { ScenarioResultsDisplay } from "../ui_components/ScenarioResultsDisplay"
-import { is_pure_number } from "../utils/is_pure_number"
-import { time_ago_or_date } from "../utils/time_ago_or_date"
-import "./DataComponentPage.css"
 import {
     ensure_owner_id_or_name_is_in_url,
     ensure_owner_is_loaded,
     ensure_owner_name_matches_in_url,
-} from "./utils/managing_url_for_user_components"
+} from "../ui_components/utils/managing_url_for_user_components"
+import { is_pure_number } from "../utils/is_pure_number"
+import { time_ago_or_date } from "../utils/time_ago_or_date"
+import "./DataComponentPage.css"
 
 
 export function DataComponentPage(props: { user_id_or_name?: string, data_component_id: string, query: Record<string, string> })
@@ -72,23 +73,9 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
     const show_calculation = is_number_type && !value_is_pure_number
 
 
-    const page_is_user_owned = !!component.owner_id
-    const page_owner_not_found = page_is_user_owned && async_user?.status === "not_found"
-    const user_is_you = async_user?.user?.id === state.user_auth_session.session?.user.id
-    const user_is_logged_in = !!state.user_auth_session.session?.user.id
-
-
     return <div id="data-component">
 
-        {page_is_user_owned && <div className="generic-error-message warning">
-            This page belongs to {page_owner_not_found
-                ? `an unknown user (ID: ${component.owner_id}).`
-                : <a href={ROUTES.USER.VIEW(component.owner_id)}>
-                    {user_is_you ? `you (${async_user?.user?.name})` : async_user?.user?.name}
-                </a>
-            }.
-            It is not in the wiki yet but{(!user_is_logged_in || user_is_you) ? " anyone can copy anything here into their" : " you can copy anything here into your"} own user pages or the wiki.
-        </div>}
+        <BannerWarningOfUserOwnedPage component={component} />
 
         <BannerWarningIfOlderVersion partial_component={component} />
 

@@ -5,6 +5,7 @@ import { DataComponent, is_data_component, NewDataComponent } from "core/data/in
 
 import { app_store } from "../../state/store"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
+import { WARNING_TEXT_OWNED_PAGE } from "../../ui_components/BannerWarningOfUserOwnedPage"
 import Loading from "../../ui_components/Loading"
 import { ToggleTwo } from "../../ui_components/ToggleTwo"
 import "./SaveModal.css"
@@ -104,6 +105,8 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                     label={active => `Create${creating_new ? "" : "d"} as ${active ? "User" : "Wiki"} Page`}
                     set_active={set_create_as_user}
                 />
+
+                {create_as_user && <div className="warning-about-user-pages">{WARNING_TEXT_OWNED_PAGE}</div>}
 
                 {error_message && <div className="error-message">
                     <strong>Error:</strong> {error_message}
