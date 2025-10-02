@@ -16,18 +16,18 @@ import { calculate_result_value } from "core/evaluator"
 import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 
-import { app_store } from "../../state/store"
-import { TextDisplayOnlyV1 } from "../../text_editor/TextDisplayOnlyV1"
-import { TextEditorV1 } from "../../text_editor/TextEditorV1"
-import { TextEditorV2 } from "../../text_editor/TextEditorV2"
-import { ValueTypeDropdown } from "../../ui_components/data_component/ValueTypeDropdown"
-import { ErrorMessage } from "../../ui_components/ErrorMessage"
-import OpenCloseSection from "../../ui_components/OpenCloseSection"
-import { Select } from "../../ui_components/Select"
-import { load_referenced_data_components } from "../../ui_components/utils/load_referenced_data_components"
-import { debounce } from "../../utils/debounce"
-import { FunctionInputsForm } from "./FunctionInputsForm"
-import { ScenariosForm } from "./ScenariosForm"
+import { app_store } from "../../../state/store"
+import { TextDisplayOnlyV1 } from "../../../text_editor/TextDisplayOnlyV1"
+import { TextEditorV1 } from "../../../text_editor/TextEditorV1"
+import { TextEditorV2 } from "../../../text_editor/TextEditorV2"
+import { ValueTypeDropdown } from "../../../ui_components/data_component/ValueTypeDropdown"
+import { ErrorMessage } from "../../../ui_components/ErrorMessage"
+import OpenCloseSection from "../../../ui_components/OpenCloseSection"
+import { Select } from "../../../ui_components/Select"
+import { load_referenced_data_components } from "../../../ui_components/utils/load_referenced_data_components"
+import { debounce } from "../../../utils/debounce"
+import { FunctionInputsForm } from "../FunctionInputsForm"
+import { ScenariosForm } from "../ScenariosForm"
 import "./ValueEditForm.css"
 
 
@@ -39,6 +39,8 @@ interface ValueEditorProps
 export function ValueEditor(props: ValueEditorProps)
 {
     const { draft_component, on_change } = props
+
+    if (draft_component.value_type === "interactable") return null
 
     const state = app_store()
     const [opened, set_opened] = useState(false)
