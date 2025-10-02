@@ -7,7 +7,7 @@ import { ROUTES } from "../../routes"
 import { app_store } from "../../state/store"
 import { get_async_user } from "../../state/users/accessor"
 import { AsyncUser } from "../../state/users/interface"
-import Loading from "../../ui_components/Loading"
+import Loading from "../Loading"
 
 
 /**
