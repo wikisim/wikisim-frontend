@@ -12,6 +12,7 @@ export function initial_state(set_state: SetAppState, get_state: GetAppState, ge
 {
     return {
         data_component_ids_for_home_page: undefined,
+        new_data_component_by_temp_id: {},
         data_component_by_id_and_maybe_version: {},
 
         request_data_component_error: undefined,
@@ -44,15 +45,15 @@ export function initial_state(set_state: SetAppState, get_state: GetAppState, ge
             request_data_component_history(set_state, get_supabase, data_component_id, page, page_size, force_refresh)
         },
 
-        update_data_component: (data_component: DataComponent) =>
-        {
-            return attempt_to_update_data_component(data_component, set_state, get_supabase)
-        },
 
-        new_data_component_by_temp_id: {},
         insert_data_component: (data_component: NewDataComponent) =>
         {
             return attempt_to_insert_data_component(data_component, set_state, get_supabase)
+        },
+
+        update_data_component: (data_component: DataComponent) =>
+        {
+            return attempt_to_update_data_component(data_component, set_state, get_supabase)
         },
     }
 }
@@ -423,6 +424,60 @@ async function process_request_data_component_history(
 }
 
 
+async function attempt_to_insert_data_component(
+    data_component: NewDataComponent,
+    set_state: SetAppState,
+    get_supabase: GetSupabase,
+): Promise<UpsertDataComponentResult>
+{
+    set_state(state =>
+    {
+        const async_data_component: AsyncNewDataComponent = {
+            temporary_id: data_component.temporary_id,
+            new_id: undefined,
+            status: "saving",
+            error: undefined,
+        }
+        const id_str = data_component.temporary_id.to_str()
+
+        state.data_components.new_data_component_by_temp_id[id_str] = async_data_component
+    })
+
+    // Insert the data component in the database
+    const response = await insert_data_component(get_supabase, data_component)
+
+    let result: UpsertDataComponentResult
+
+    set_state(state =>
+    {
+        const id_str = data_component.temporary_id.to_str()
+        const async_data_component = state.data_components.new_data_component_by_temp_id[id_str]!
+
+        if (response.error || !response.data)
+        {
+            result = { error: response.error, id: undefined }
+            if (response.error) console.error("Error inserting data component:", response.error)
+            else console.error("Error inserting data component: No data returned")
+
+            async_data_component.status = "error"
+            async_data_component.error = response.error
+            return
+        }
+
+        result = { error: undefined, id: response.data.id }
+        // If the insert was successful, insert the component in the store
+        mutate_store_state_with_loaded_data_components([response.data], state)
+
+        // And update the async new data component placeholder with status and ID
+        async_data_component.status = "loaded"
+        async_data_component.new_id = response.data.id
+        async_data_component.error = undefined
+    })
+
+    return result!
+}
+
+
 async function attempt_to_update_data_component(
     data_component: DataComponent,
     set_state: SetAppState,
@@ -475,61 +530,6 @@ async function attempt_to_update_data_component(
 
         result = { error: undefined, id: response.data.id }
         mutate_store_state_with_loaded_data_components([response.data], state)
-    })
-
-    return result!
-}
-
-
-
-async function attempt_to_insert_data_component(
-    data_component: NewDataComponent,
-    set_state: SetAppState,
-    get_supabase: GetSupabase,
-): Promise<UpsertDataComponentResult>
-{
-    set_state(state =>
-    {
-        const async_data_component: AsyncNewDataComponent = {
-            temporary_id: data_component.temporary_id,
-            new_id: undefined,
-            status: "saving",
-            error: undefined,
-        }
-        const id_str = data_component.temporary_id.to_str()
-
-        state.data_components.new_data_component_by_temp_id[id_str] = async_data_component
-    })
-
-    // Insert the data component in the database
-    const response = await insert_data_component(get_supabase, data_component)
-
-    let result: UpsertDataComponentResult
-
-    set_state(state =>
-    {
-        const id_str = data_component.temporary_id.to_str()
-        const async_data_component = state.data_components.new_data_component_by_temp_id[id_str]!
-
-        if (response.error || !response.data)
-        {
-            result = { error: response.error, id: undefined }
-            if (response.error) console.error("Error inserting data component:", response.error)
-            else console.error("Error inserting data component: No data returned")
-
-            async_data_component.status = "error"
-            async_data_component.error = response.error
-            return
-        }
-
-        result = { error: undefined, id: response.data.id }
-        // If the insert was successful, insert the component in the store
-        mutate_store_state_with_loaded_data_components([response.data], state)
-
-        // And update the async new data component placeholder with status and ID
-        async_data_component.status = "loaded"
-        async_data_component.new_id = response.data.id
-        async_data_component.error = undefined
     })
 
     return result!
