@@ -1,11 +1,15 @@
-import { request_data_components, request_historical_data_components } from "core/data/fetch_from_db"
-import { all_are_id_and_version, all_are_id_only, IdAndMaybeVersion, IdAndVersion, IdOnly } from "core/data/id"
+import {
+    request_data_components,
+    request_historical_data_components,
+    request_latest_data_component_version,
+} from "core/data/fetch_from_db"
+import { all_are_id_and_version, all_are_id_only, IdAndMaybeVersion, IdAndVersion, IdOnly, parse_id } from "core/data/id"
 import type { DataComponent, NewDataComponent } from "core/data/interface"
 import { insert_data_component, update_data_component } from "core/data/post_to_edge_functions"
 import type { GetSupabase } from "core/supabase/browser"
 
 import { GetAppState, RootAppState, SetAppState } from "../interface"
-import { AsyncDataComponent, AsyncNewDataComponent, DataComponentsState, UpsertDataComponentResult } from "./interface"
+import { AsyncDataComponent, AsyncNewDataComponent, CheckIfIdIsLatestResponse, DataComponentsState, UpsertDataComponentResult } from "./interface"
 
 
 export function initial_state(set_state: SetAppState, get_state: GetAppState, get_supabase: GetSupabase): DataComponentsState
@@ -43,6 +47,14 @@ export function initial_state(set_state: SetAppState, get_state: GetAppState, ge
         request_data_component_history: (data_component_id: IdOnly, page: number, page_size: number, force_refresh?: boolean) =>
         {
             request_data_component_history(set_state, get_supabase, data_component_id, page, page_size, force_refresh)
+        },
+
+        request_check_if_id_is_latest: async (data_component_id: string | IdAndMaybeVersion): Promise<CheckIfIdIsLatestResponse> =>
+        {
+            const id = typeof data_component_id === "string" ? parse_id(data_component_id) : data_component_id
+            if (id instanceof IdOnly) return Promise.resolve({ is_latest: true, latest_version: null, error: null })
+
+            return request_check_if_id_is_latest(id, get_supabase)
         },
 
 
@@ -421,6 +433,27 @@ async function process_request_data_component_history(
         }
         mutate_store_state_with_loaded_data_components(response.data, state)
     })
+}
+
+
+async function request_check_if_id_is_latest(
+    data_component_id: IdAndVersion,
+    get_supabase: GetSupabase,
+): Promise<CheckIfIdIsLatestResponse>
+{
+    return request_latest_data_component_version(get_supabase, data_component_id)
+        .then(response =>
+        {
+            if (response.error) return { is_latest: null, latest_version: null, error: response.error }
+            if (response.data.version === data_component_id.version)
+            {
+                return { is_latest: true, latest_version: null, error: null }
+            }
+            else
+            {
+                return { is_latest: false, latest_version: response.data, error: null }
+            }
+        })
 }
 
 

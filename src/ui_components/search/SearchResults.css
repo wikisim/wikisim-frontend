@@ -12,8 +12,8 @@
     border-style: solid;
     border-color: transparent;
     cursor: pointer;
-    background: transparent;
-    transition: background 0.15s, colour-border 0.15s;
+    background-color: transparent;
+    transition: background-color 0.15s, border-color 0.15s;
 }
 
 .result-row + .result-row
@@ -24,5 +24,5 @@
 .result-row.selected
 {
     border-color: var(--colour-primary-blue);
-    background: #f0f4fa;
+    background-color: #f0f4fa;
 }

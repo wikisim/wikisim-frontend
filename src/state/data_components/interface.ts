@@ -25,6 +25,15 @@ export interface AsyncDataComponentIdsForHomePage
 }
 
 
+export type CheckIfIdIsLatestResponse = {
+    is_latest: true, latest_version: null, error: null
+} | {
+    is_latest: false, latest_version: IdAndVersion, error: null
+} | {
+    is_latest: null, latest_version: null, error: Error
+}
+
+
 export interface AsyncNewDataComponent
 {
     temporary_id: TempId
@@ -47,6 +56,7 @@ export interface DataComponentsState
     request_data_components: (data_component_ids: IdAndMaybeVersion[]) => AsyncDataComponent[]
     request_data_components_for_home_page: () => void
     request_data_component_history: (data_component_id: IdOnly, page: number, page_size: number, force_refresh?: boolean) => void
+    request_check_if_id_is_latest: (data_component_id: string | IdAndMaybeVersion) => Promise<CheckIfIdIsLatestResponse>
 
     insert_data_component: (data_component: NewDataComponent) => Promise<UpsertDataComponentResult>
     update_data_component: (data_component: DataComponent) => Promise<UpsertDataComponentResult>

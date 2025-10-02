@@ -16,6 +16,7 @@ import EditOrSaveButton from "../buttons/EditOrSaveButton"
 import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
+import { CheckIfIdIsLatestResponse } from "../state/data_components/interface"
 import { app_store } from "../state/store"
 import { ReadOnly } from "../text_editor/sanitise_html"
 import { ErrorMessage } from "../ui_components/ErrorMessage"
@@ -78,6 +79,7 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
 
 
     return <div id="data-component">
+
         {page_is_user_owned && <div className="generic-error-message warning">
             This page belongs to {page_owner_not_found
                 ? `an unknown user (ID: ${component.owner_id}).`
@@ -87,6 +89,9 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
             }.
             It is not in the wiki but{(!user_is_logged_in || user_is_you) ? " anyone can copy anything here into their" : " you can copy anything here into your"} own user pages.
         </div>}
+
+        <BannerWarningIfOlderVersion partial_component={component} />
+
         <div className="page-container">
             <div style={{ float: "right", margin: "10px" }}>
                 <EditOrSaveButton
@@ -121,6 +126,40 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
 
         </div>
         <LastEditedBy component={component} />
+    </div>
+}
+
+
+function BannerWarningIfOlderVersion({ partial_component }: { partial_component: Pick<DataComponent, "id" | "owner_id"> })
+{
+    const state = app_store()
+
+    const [latest_version_check_response, set_latest_version_check_response] = useState<CheckIfIdIsLatestResponse | null>(null)
+    useEffect(() =>
+    {
+        // Race condition here if the component ID changes very quickly then
+        // previous request with now irrelevant data might overwrite a more
+        // recent request.  Unlikely though.
+        state.data_components.request_check_if_id_is_latest(partial_component.id)
+        .then(set_latest_version_check_response)
+    }, [partial_component.id.to_str()])
+
+    // return <div>latest_version_check_response: {JSON.stringify(latest_version_check_response)}</div>
+
+    if (!latest_version_check_response) return null
+    if (latest_version_check_response.is_latest) return null
+    if (latest_version_check_response.error) return null
+
+    const url_to_latest = ROUTES.DATA_COMPONENT.VIEW({
+        id: partial_component.id.as_IdOnly(),
+        owner_id: partial_component.owner_id,
+    })
+
+    return <div className="generic-error-message warning">
+        You are viewing an older version of this page (v{partial_component.id.version}).
+        A <a href={url_to_latest}>
+            newer version (v{latest_version_check_response.latest_version.version}) is available
+        </a>.
     </div>
 }
 
