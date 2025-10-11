@@ -1,0 +1,51 @@
+
+#data-component .section.play-interactable
+{
+    width: 50%;
+    aspect-ratio: 2 / 1; /* width:height ratio, e.g. 2:1 */
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    /* transition: width 0.3s ease, height 0.3s ease, padding 0.3s ease, margin 0.3s ease; */
+}
+
+#data-component .section.play-interactable.playing
+{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    aspect-ratio: auto;
+    z-index: var(--z-index-full-screen-game-loading);
+    padding: 0;
+    margin: 0;
+    cursor: default;
+}
+
+
+.play-interactable-iframe
+{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: var(--z-index-full-screen-game);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: none;
+}
+
+.play-interactable-close-button
+{
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: var(--z-index-full-screen-game-close-button);
+}

@@ -20,6 +20,7 @@ import { CheckIfIdIsLatestResponse } from "../state/data_components/interface"
 import { app_store } from "../state/store"
 import { ReadOnly } from "../text_editor/sanitise_html"
 import { BannerWarningOfUserOwnedPage } from "../ui_components/BannerWarningOfUserOwnedPage"
+import { PlayInteractable } from "../ui_components/data_component/PlayInteractable"
 import { ErrorMessage } from "../ui_components/ErrorMessage"
 import { ExpectationsMet } from "../ui_components/ExpectationMet"
 import Loading from "../ui_components/Loading"
@@ -90,6 +91,8 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
             <h2 className="section tiptap-content">
                 <ReadOnly html={component.title} single_line={true} />
             </h2>
+
+            <PlayInteractable component={component} />
 
             {component.plain_description && <div className="section tiptap-content">
                 <ReadOnly html={component.description} />

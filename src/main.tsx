@@ -134,6 +134,16 @@ function variantColorResolver (input: VariantColorsResolverInput)
         }
     }
 
+    if (input.variant === "light")
+    {
+        return {
+            background: "rgba(255, 255, 255, 0.4)",
+            hover: "var(--mantine-color-grey-0)",
+            color: "black",
+            border: "none",
+        }
+    }
+
     return default_resolved_colours
 }
 

@@ -29,7 +29,10 @@
     --z-index-modal-save: 301;
     --z-index-modal-search: 302;
     --z-index-modal-welcome: 303;
-    --z-index-notifications: 401;
+    --z-index-full-screen-game-loading: 400;
+    --z-index-full-screen-game: 401;
+    --z-index-full-screen-game-close-button: 402;
+    --z-index-notifications: 501;
     --z-index-wikisim-select-label: 1;
 
     --radius-border: 5px;
