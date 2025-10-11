@@ -37,7 +37,6 @@ export function PlayInteractable(props: { component: DataComponent })
             <iframe
                 src={`https://wikisim-server.wikisim.deno.net/${component.id.to_str()}/` }
                 className="play-interactable-iframe"
-                title="Interactable"
                 sandbox="allow-scripts allow-same-origin"
             />
             <div className="play-interactable-close-button">
