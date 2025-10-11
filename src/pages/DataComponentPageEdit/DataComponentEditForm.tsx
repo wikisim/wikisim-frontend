@@ -3,7 +3,7 @@ import { notifications } from "@mantine/notifications"
 import IconDeviceFloppy from "@tabler/icons-react/dist/esm/icons/IconDeviceFloppy"
 import IconTrashX from "@tabler/icons-react/dist/esm/icons/IconTrashX"
 import { useLocation } from "preact-iso"
-import { useEffect, useState } from "preact/hooks"
+import { useEffect, useMemo, useState } from "preact/hooks"
 import { z } from "zod"
 
 import { get_id_str_of_data_component, get_version_of_data_component } from "core/data/accessor"
@@ -72,16 +72,19 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
         </div>
     }
 
-    const set_draft_component = (updates: Partial<DataComponent | NewDataComponent>, compare_meta_fields?: boolean) =>
+    const set_draft_component = useMemo(() => (updates: Partial<DataComponent | NewDataComponent>, compare_meta_fields?: boolean) =>
     {
-        const new_draft: V = { ...draft_component, ...updates }
-        const any_changes_made = changes_made(new_draft, potential_initial_component, true)
-        store_draft_component_to_local(new_draft, any_changes_made)
-        if (!changes_made(new_draft, draft_component, compare_meta_fields)) return
+        _set_draft_component(draft_component =>
+        {
+            const new_draft: V = { ...draft_component, ...updates }
+            const any_changes_made = changes_made(new_draft, potential_initial_component, true)
+            store_draft_component_to_local(new_draft, any_changes_made)
+            if (!changes_made(new_draft, draft_component, compare_meta_fields)) return draft_component
 
-        props.on_component_change?.(new_draft)
-        _set_draft_component(new_draft)
-    }
+            props.on_component_change?.(new_draft)
+            return new_draft
+        })
+    }, [props.on_component_change])
 
 
     const version_mismatch = get_version_of_data_component(props.data_component) !== get_version_of_data_component(draft_component)
