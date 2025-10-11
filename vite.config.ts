@@ -13,6 +13,15 @@ export default defineConfig({
   },
   build: {
     sourcemap: true, // Keep source maps for your own code
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor'
+          }
+        }
+      }
+    }
   },
   optimizeDeps: {
     // Disable source maps for pre-bundled dependencies
