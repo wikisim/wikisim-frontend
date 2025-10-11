@@ -132,6 +132,18 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     }, [saving_disabled])
 
 
+    // Subscribe to "open_save_modal" that comes from `ValueEditorForInteractable`
+    // to open the save modal for the component
+    useEffect(() =>
+    {
+        if (saving_disabled) return
+        return pub_sub.sub("open_save_modal_request_from_ValueEditorForInteractable", () =>
+        {
+            set_show_saving_modal(true)
+        })
+    }, [saving_disabled])
+
+
     useEffect(() =>
     {
         // On first render, check the URL parameters for `=is_user_component=true`

@@ -5,8 +5,9 @@
 
     --secondary-fill-colour: #f0f0f0;
     --secondary-text-colour: #333;
-    --requires-manual-sync-colour-primary-blue: rgb(28, 126, 214);  /* #1c7ed6 */
-    --colour-primary-blue: var(--requires-manual-sync-colour-primary-blue);
+    --requires-manual-sync-colour-primary-blue-rgb: 28, 126, 214;  /* #1c7ed6 */
+    --colour-primary-blue-rgb: var(--requires-manual-sync-colour-primary-blue-rgb);
+    --colour-primary-blue: rgb(var(--requires-manual-sync-colour-primary-blue-rgb));
     --colour-secondary-blue: rgb(34, 139, 230);  /* #228be6 */
     --colour-tertiary-blue: rgb(95, 175, 255); /* #5fafff */
     /* --mantine-color-red-9/8 used for danger & danger:hover colours */

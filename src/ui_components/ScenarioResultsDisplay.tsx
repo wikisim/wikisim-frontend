@@ -25,7 +25,7 @@ import { ExpectationMet } from "./ExpectationMet"
 import "./ScenarioResultsDisplay.css"
 
 
-const colour_actual = "rgb(28, 126, 214)" // --requires-manual-sync-colour-primary-blue
+const colour_actual = "rgb(28, 126, 214)" // --requires-manual-sync-colour-primary-blue-rgb
 const colour_expected = "rgb(255, 192, 120)" // --requires-manual-sync-colour-warning
 const colour_mismatch = "rgb(250, 82, 82)" // --requires-manual-sync-colour-error
 const colour_mismatch_line = "rgb(255, 168, 168)" // --requires-manual-sync-colour-invalid

@@ -27,4 +27,5 @@ export interface PublishableEvents
     mention_clicked: {
         data_component_id: string
     }
+    open_save_modal_request_from_ValueEditorForInteractable: true
 }

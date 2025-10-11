@@ -1,4 +1,5 @@
-import { DataComponent } from "../../lib/core/src/data/interface"
+import type { DataComponent } from "core/data/interface"
+
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { ensure_owner_is_loaded } from "./utils/managing_url_for_user_components"

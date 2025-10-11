@@ -17,7 +17,7 @@ export default function EditOrSaveButton(props: Props)
     const { editing, set_editing } = props
     const label = (
         typeof props.disabled === "string" ? props.disabled
-        : editing ? "Save Version" : "Edit"
+        : editing ? "Save Page" : "Edit Page"
     )
 
     return (
