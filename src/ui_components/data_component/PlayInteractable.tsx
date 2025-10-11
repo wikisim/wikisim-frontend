@@ -1,9 +1,10 @@
 import { Button } from "@mantine/core"
+import { JSX } from "preact"
 import { useState } from "preact/hooks"
 
 import { DataComponent } from "core/data/interface"
 
-import { JSX } from "preact"
+import Loading from "../Loading"
 import "./PlayInteractable.css"
 
 
@@ -30,7 +31,8 @@ export function PlayInteractable(props: { component: DataComponent })
         className={`section play-interactable ${playing ? "playing" : ""}`}
         onClick={() => set_playing(true)}
     >
-        <Button onClick={() => set_playing(true)}>Play Interactable</Button>
+        {!playing && <Button onClick={() => set_playing(true)}>Play Interactable</Button>}
+        {playing && <div style={{ width: 100 }}>Loading Interactable<Loading /></div>}
         {playing && <>
             <iframe
                 src={`https://wikisim-server.wikisim.deno.net/${component.id.to_str()}/` }
