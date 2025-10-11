@@ -1,5 +1,5 @@
 import { Button, Switch } from "@mantine/core"
-import { useState } from "preact/hooks"
+import { useRef, useState } from "preact/hooks"
 
 import { format_number_to_string } from "core/data/format/format_number_to_string"
 import {
@@ -120,6 +120,7 @@ function UploadInteractableFolder(props: ValueEditorForInteractableProps)
                 <div className="vertical-gap" />
 
                 <UploadFilesButtonAndStatus
+                    draft_component={props.draft_component}
                     file_map={processed_file_map.file_map}
                     update_draft_component={props.on_change}
                 />
@@ -204,12 +205,20 @@ function file_size_to_colour(size: number, max_bytes_size: number): number
 }
 
 
+
+interface UploadFilesButtonAndStatusProps
+{
+    draft_component: DataComponent | NewDataComponent
+    file_map: { [key: string]: File }
+    update_draft_component: (updated_component: Partial<DataComponent | NewDataComponent>) => void
+}
 // Posts files to edge function and gets back a URL that is hosting the resources
 // If the user closes window they will have to reupload.  The server will be
 // able to find and clean uploads which have no data components pointing to them.
-function UploadFilesButtonAndStatus(props: { file_map: { [key: string]: File }, update_draft_component: (updated_component: Partial<DataComponent | NewDataComponent>) => void })
+function UploadFilesButtonAndStatus(props: UploadFilesButtonAndStatusProps)
 {
     const { file_map, update_draft_component } = props
+    const initial_result_value = useRef(props.draft_component.result_value)
     const [is_uploading, set_is_uploading] = useState(false)
     const [upload_result, set_upload_result] = useState<{[file_path: string]: string} | string | null>(null)
 
@@ -230,6 +239,10 @@ function UploadFilesButtonAndStatus(props: { file_map: { [key: string]: File }, 
         }
     }
 
+    const result_value_changed = (typeof upload_result === "object" && upload_result !== null)
+        ? initial_result_value.current !== JSON.stringify(upload_result)
+        : undefined
+
     return <div>
         {(!upload_result || typeof upload_result === "string") && <Button
             variant="primary-user"
@@ -247,16 +260,36 @@ function UploadFilesButtonAndStatus(props: { file_map: { [key: string]: File }, 
             <div style={{ color: "var(--colour-success)" }}>
                 Upload successful!
             </div>
-            Now Save Page to publish this interactable
 
-            <div className="vertical-gap" />
+            {result_value_changed === false && <>
+                <div className="generic-error-message warning">
+                    No changes were detected to the interactable files from
+                    the last upload.
+                </div>
+                <ul>
+                    <li>
+                        If this is because you loaded up a draft then
+                        you can ignore this message and just save the page.
+                    </li>
+                    <li>
+                        Otherwise if you have made changes to the files then perhaps
+                        you need to select a different folder for upload?
+                    </li>
+                </ul>
+            </>}
 
-            <Button
-                variant="primary-user"
-                onClick={() => pub_sub.pub("open_save_modal_request_from_ValueEditorForInteractable", true)}
-            >
-                Save Page
-            </Button>
+            {result_value_changed && <>
+                Now Save Page to publish this interactable
+
+                <div className="vertical-gap" />
+
+                <Button
+                    variant="primary-user"
+                    onClick={() => pub_sub.pub("open_save_modal_request_from_ValueEditorForInteractable", true)}
+                >
+                    Save Page
+                </Button>
+            </>}
         </div>}
     </div>
 }
