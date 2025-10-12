@@ -27,7 +27,11 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
         return <div style={{ height: "1px" }} />
     }
 
-    const javascript = prepare_scenario_javascript(pick(props, "component", "scenario"))
+    const javascript = prepare_scenario_javascript({
+        component: props.component,
+        scenario: props.scenario,
+        debugging: false,
+    })
 
     const [result, set_result] = useState<EvaluationResponse>()
 
@@ -72,14 +76,4 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
             on_change={props.on_change}
         />
     </>
-}
-
-
-function pick<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K>
-{
-    const ret: Partial<T> = {}
-    keys.forEach(key => {
-        ret[key] = obj[key]
-    })
-    return ret as Pick<T, K>
 }
