@@ -68,6 +68,7 @@ export function TextEditorV2({
 
                 // This is not a good UX for inserting images but it is a work
                 // around for now.
+                // Why is it not good UX?  And what is it working around?
                 const text = clipboard_data.getData("text/plain").trim()
                 let success = convert_image_url_into_img_tag(text, editor, event)
                 if (success) return true
