@@ -35,7 +35,10 @@ export function TextEditorV2({
     invalid_value = false,
     include_version_in_at_mention = false,
     experimental_code_editor_features = false,
-}: TextEditorV2Props) {
+}: TextEditorV2Props)
+{
+    const editor_unique_id = useRef(`editor-unique-id-${Math.random().toString(10).slice(2, 10)}`)
+
     const search_requester_id = useMemo(() =>
     {
         return label + "_" + Math.random().toString(10).slice(2, 10) // Generate a random source ID
@@ -52,7 +55,7 @@ export function TextEditorV2({
         autofocus: auto_focus,
         editorProps: {
             attributes: {
-                class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""} ${experimental_code_editor_features ? "is-code" : ""}`,
+                class: `tiptap-content ${editor_unique_id.current} focus:outline-none ${single_line ? "single-line" : ""} ${experimental_code_editor_features ? "is-code" : ""}`,
                 // spellCheck: "false",
                 // autoCorrect: "off",
                 // autoCapitalize: "off",
@@ -122,7 +125,7 @@ export function TextEditorV2({
                         }
                     }
                     return false
-                }
+                },
             },
             handleKeyDown: (_view, event) =>
             {
@@ -268,6 +271,10 @@ export function TextEditorV2({
         return () => unsubscribe()
     }, [editor, search_requester_id])
 
+
+    useEffect(() => factory_handle_copy(editor, editor_unique_id.current), [editor])
+
+
     const is_focused = editor.isFocused
     const has_value = (editor.getText() || "").trim().length > 0
 
@@ -411,6 +418,54 @@ function preserve_leading_spaces(input: string, type: "html" | "text"): string
     {
         return input.replace(/ {2}/g, "\u00A0 ")
     }
+}
+
+
+/**
+ * Handle copy from editor to clipboard to remove multiple newlines
+ *
+ * For some reason, without this code, if you copy text from the editor
+ * that has a value like:
+ *      line1
+ *      line2
+ *
+ *      line3
+ * It will paste as:
+ *      line1
+ *
+ *      line2
+ *
+ *
+ *
+ *      line3
+ *
+ * Also taken the opportunity to convert nbsp back into spaces.
+ *
+ * Note this is not working 100% correctly as it is removing newlines on copy
+ * though fortutiously it seems something is then reinserting them on paste.
+ */
+function factory_handle_copy(editor: Editor, editor_unique_id: string)
+{
+    function handle_copy(event: ClipboardEvent)
+    {
+        const selection = window.getSelection()
+        if (!selection) return
+
+        // Check if selection is inside the editor
+        const editorElement = document.querySelector(`.${editor_unique_id}`)
+        if (editorElement && selection.anchorNode && editorElement.contains(selection.anchorNode))
+        {
+            // Get TipTap selection and doc
+            const { state } = editor.view
+            const { from, to } = state.selection
+            const text = state.doc.textBetween(from, to, "\n")
+            const cleaned = text.replaceAll("\u00A0", " ")
+            event.preventDefault()
+            event.clipboardData?.setData("text/plain", cleaned)
+        }
+    }
+    document.addEventListener("copy", handle_copy)
+    return () => document.removeEventListener("copy", handle_copy)
 }
 
 
