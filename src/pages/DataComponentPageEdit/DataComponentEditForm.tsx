@@ -64,6 +64,16 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     const [draft_component, _set_draft_component] = useState<V>(initial_component)
 
 
+    // Ensure that once this draft_component has been saved that we clear it
+    // from local storage and don't try to save it to local again.
+    const [have_saved_changes, set_have_saved_changes] = useState(false)
+    if (have_saved_changes)
+    {
+        clear_previously_saved_draft(draft_component)
+        return null
+    }
+
+
     const result = load_referenced_data_components(state, draft_component)
     if (result.status === "loading")
     {
@@ -204,7 +214,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
                 return props.handle_save(draft_data_component)
                     .then(({ error }) =>
                     {
-                        if (!error) clear_previously_saved_draft(draft_component)
+                        if (!error) set_have_saved_changes(true)
                         return { error }
                     })
             }}
