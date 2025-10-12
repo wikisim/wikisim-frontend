@@ -34,10 +34,10 @@
 .value-editor-container > .row { min-width: 320px; }
 @media (max-width: 760px)
 {
-  .row-group
-  {
-    flex-direction: column;
-  }
+    .row-group
+    {
+        flex-direction: column;
+    }
 }
 
 /*
@@ -45,3 +45,11 @@
 {
     margin-top: -20px;
 } */
+
+
+.value-editor-container .text-editor-v1 textarea
+{
+    text-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

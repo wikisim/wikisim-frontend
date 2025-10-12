@@ -211,15 +211,31 @@ export function ValueEditor(props: ValueEditorProps)
 }
 
 
-function truncate(str: string, max_length: number = 100, max_lines: number = 5)
+function truncate(str: string, max_length: number = 100, max_lines: number = 8)
 {
     const lines = str.split("\n")
     if (lines.length > max_lines)
     {
-        return lines.slice(0, max_lines).join("\n") + "\n(... truncated)"
+        const selected_lines = [
+            ...lines.slice(0, max_lines / 2),
+            "\n(...omitted...)",
+            ...lines.slice(lines.length - (max_lines / 2), lines.length)
+        ]
+
+        return selected_lines.join("\n")
     }
-    if (str.length <= max_length) return str
-    return str.slice(0, max_length) + "\n(... truncated)"
+
+    const accepted_lines: string[] = []
+    for (const line of lines)
+    {
+        if (line.length < max_length) accepted_lines.push(line)
+        else
+        {
+            accepted_lines.push(line.slice(0, max_length) + " (...truncated)")
+        }
+    }
+
+    return accepted_lines.join("\n")
 }
 
 
