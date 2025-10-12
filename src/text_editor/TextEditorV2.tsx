@@ -424,13 +424,13 @@ function preserve_leading_spaces(input: string, type: "html" | "text"): string
 /**
  * Handle copy from editor to clipboard to remove multiple newlines
  *
- * For some reason, without this code, if you copy text from the editor
+ * For some reason, this code, if you copy text from the editor
  * that has a value like:
  *      line1
  *      line2
  *
  *      line3
- * It will paste as:
+ * It will _no longer_ paste into another application (like VSCode) as:
  *      line1
  *
  *      line2
@@ -439,10 +439,12 @@ function preserve_leading_spaces(input: string, type: "html" | "text"): string
  *
  *      line3
  *
- * Also taken the opportunity to convert nbsp back into spaces.
+ * After adding this function, we have also taken the opportunity to
+ * convert nbsp back into spaces.
  *
- * Note this is not working 100% correctly as it is removing newlines on copy
- * though fortutiously it seems something is then reinserting them on paste.
+ * Note this function is not working 100% correctly as it removes newlines from
+ * the copied text.  However, fortutiously, it seems something in the editor is
+ * then reinserting those newlines when that text is pasted back into this editor.
  */
 function factory_handle_copy(editor: Editor, editor_unique_id: string)
 {
