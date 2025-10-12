@@ -91,7 +91,7 @@ export function TextEditorV2({
                         .replace(/\s+/g, " ")
                         .trim()
                 }
-                return html
+                return preserve_leading_spaces(html, "html")
             },
             transformPastedText: (text) =>
             {
@@ -100,7 +100,7 @@ export function TextEditorV2({
                     // Strip newlines from plain text for single-line fields
                     return text.replace(/\n/g, " ").replace(/\s+/g, " ").trim()
                 }
-                return text
+                return preserve_leading_spaces(text, "text")
             },
             handleDOMEvents:
             {
@@ -378,6 +378,39 @@ export function TextEditorV2({
             </button>
         </div> */}
     </>
+}
+
+
+/**
+ * function preserve_leading_spaces
+ *
+ * Will replace multiple spaces with a nbsp and a space.
+ *
+ * This code is necessary otherwise leading spaces will not be
+ * preserved in text.  However it has very strange, hard to
+ * predict behaviour:
+ *          line1            ==>   line1
+ *          {                ==>   {
+ *              return {     ==>   return {    // <-- Wrong indentation
+ *              }            ==>       }
+ *          }                ==>   }
+ *
+ * Not yet happy with this implementation because:
+ *   * No tests
+ *   * Not easy to manually reproduce in browser
+ *   * Converts all double spaces, not just leading ones
+ *   * Have not test with mixed tabs and spaces, or mixed nbsp and spaces
+ */
+function preserve_leading_spaces(input: string, type: "html" | "text"): string
+{
+    if (type === "html")
+    {
+        return input.replace(/ {2}/g, "&nbsp; ")
+    }
+    else
+    {
+        return input.replace(/ {2}/g, "\u00A0 ")
+    }
 }
 
 
