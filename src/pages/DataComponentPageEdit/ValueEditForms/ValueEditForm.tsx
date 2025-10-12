@@ -27,6 +27,7 @@ import { Select } from "../../../ui_components/Select"
 import { load_referenced_data_components } from "../../../ui_components/utils/load_referenced_data_components"
 import { debounce } from "../../../utils/debounce"
 import { FunctionInputsForm } from "../FunctionInputsForm"
+import { UpdatesFnOrValue } from "../interface"
 import { ScenariosForm } from "../ScenariosForm"
 import "./ValueEditForm.css"
 
@@ -34,7 +35,7 @@ import "./ValueEditForm.css"
 interface ValueEditorProps
 {
     draft_component: DataComponent | NewDataComponent
-    on_change: (updated_component: Partial<DataComponent | NewDataComponent>) => void
+    on_change: (updated_component: UpdatesFnOrValue, compare_meta_fields?: boolean) => void
 }
 export function ValueEditor(props: ValueEditorProps)
 {

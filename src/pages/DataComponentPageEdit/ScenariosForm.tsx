@@ -1,6 +1,6 @@
 import { Checkbox } from "@mantine/core"
 import { TargetedEvent } from "preact/compat"
-import { useEffect, useMemo, useState } from "preact/hooks"
+import { useMemo, useState } from "preact/hooks"
 
 import type {
     DataComponent,
@@ -20,12 +20,13 @@ import OpenCloseSection from "../../ui_components/OpenCloseSection"
 import { debounce } from "../../utils/debounce"
 import { ScenarioResultsAndExpectations } from "./ScenarioResultsAndExpectations"
 import "./ScenariosForm.css"
+import { UpdatesFnOrValue } from "./interface"
 
 
 interface ScenariosFormProps
 {
     component: DataComponent | NewDataComponent
-    on_change: (updated_component: Partial<DataComponent | NewDataComponent>) => void
+    on_change: (updated_component: UpdatesFnOrValue, compare_meta_fields?: boolean) => void
 }
 export function ScenariosForm(props: ScenariosFormProps)
 {
@@ -57,73 +58,117 @@ export function ScenariosForm(props: ScenariosFormProps)
         {
             const is_draft_row = index === scenarios.length
 
-            const on_change = (updated_scenario: Partial<Scenario>) =>
-            {
-                if (is_draft_row)
-                {
-                    // First edit of draft row: commit it to the array
-                    const committed = { ...new_scenario_obj, ...updated_scenario }
-                    const updated_scenarios = [
-                        ...scenarios,
-                        committed,
-                    ]
-                    props.on_change({ scenarios: updated_scenarios })
-                }
-                else
-                {
-                    // Edit of existing row: update in place
-                    const updated_scenarios = scenarios.map(arg =>
-                    {
-                        if (arg.id === scenario.id)
-                        {
-                            const modified = { ...arg, ...updated_scenario }
-                            return scenario_is_empty(modified) ? null : modified
-                        }
-                        return arg
-                    }).filter(is_scenario)
-                    props.on_change({ scenarios: updated_scenarios })
-                }
-            }
-
-            const delete_entry = () =>
-            {
-                if (is_draft_row) return
-
-                const updated_scenarios = scenarios.filter(arg => arg.id !== scenario.id)
-                props.on_change({ scenarios: updated_scenarios })
-            }
-
-            // Key choice keeps the DOM node stable across the draft->committed transition.
-            // We use the numeric id (new_scenario_obj.id) for the draft, which becomes the same id
-            // when committed on first edit.
-            const key = scenario.id
-
-            return <div className="row_to_column scenario-divider" key={key}>
-                <div
-                    className="data-component-form-column column"
-                    style={{ gap: "var(--vgap-mid)" }}
-                >
-                    <ScenarioForm
-                        ordinal={index + 1}
-                        total_scenarios={scenarios.length}
-                        inputs={props.component.function_arguments || []}
-                        scenario={scenario}
-                        on_change={on_change}
-                        delete_entry={delete_entry}
-                        is_draft_row={is_draft_row}
-                    />
-                </div>
-
-                <div className="data-component-form-column column">
-                    <ScenarioResultsAndExpectations
-                        is_draft_row={is_draft_row}
-                        scenario={scenario}
-                        component={props.component}
-                        on_change={on_change}
-                    />
-                </div>
-            </div>
+            return <ScenarioRow
+                key={scenario.id}
+                new_scenario_obj={new_scenario_obj}
+                scenario={scenario}
+                index={index}
+                is_draft_row={is_draft_row}
+                total_scenarios={scenarios.length}
+                component={props.component}
+                on_change={props.on_change}
+            />
         })}
+    </div>
+}
+
+
+
+interface ScenarioRowProps
+{
+    new_scenario_obj: Scenario
+    scenario: Scenario
+    index: number
+    is_draft_row: boolean
+    total_scenarios: number
+    component: DataComponent | NewDataComponent
+    on_change: (updated_component: UpdatesFnOrValue, compare_meta_fields?: boolean) => void
+}
+function ScenarioRow(props: ScenarioRowProps)
+{
+    const scenario_id = props.scenario.id
+
+    const on_change = useMemo(() => (updated_scenario: Partial<Scenario>) =>
+    {
+        props.on_change(current =>
+        {
+            const scenarios = current.scenarios || []
+
+            if (props.is_draft_row)
+            {
+                // First edit of draft row: commit it to the array
+                const committed = { ...props.new_scenario_obj, ...updated_scenario }
+                const updated_scenarios = [
+                    ...scenarios,
+                    committed,
+                ]
+                return { scenarios: updated_scenarios }
+            }
+            else
+            {
+                // Edit of existing row: update in place
+                const updated_scenarios = scenarios.map(arg =>
+                {
+                    if (arg.id === scenario_id)
+                    {
+                        const modified = { ...arg, ...updated_scenario }
+                        return scenario_is_empty(modified) ? null : modified
+                    }
+                    return arg
+                }).filter(is_scenario)
+                return { scenarios: updated_scenarios }
+            }
+        })
+    }, [
+        props.is_draft_row, props.new_scenario_obj,
+        props.on_change, scenario_id,
+    ])
+
+
+    const delete_entry = useMemo(() => () =>
+    {
+        props.on_change(current =>
+        {
+            if (is_draft_row) return current // no need to do anything
+
+            const updated_scenarios = (current.scenarios || []).filter(arg => arg.id !== scenario_id)
+            return { scenarios: updated_scenarios }
+        })
+    }, [])
+
+
+    const { is_draft_row, component, total_scenarios } = props
+
+
+    // Key choice keeps the DOM node stable across the draft->committed transition.
+    // We use the numeric id (new_scenario_obj.id) for the draft, which becomes the same id
+    // when committed on first edit.
+    const key = scenario_id
+
+    return <div className="row_to_column scenario-divider" key={key}>
+        <div
+            className="data-component-form-column column"
+            style={{ gap: "var(--vgap-mid)" }}
+        >
+            <ScenarioForm
+                ordinal={props.index + 1}
+                total_scenarios={total_scenarios}
+                inputs={component.function_arguments || []}
+                scenario={props.scenario}
+                on_change={on_change}
+                delete_entry={delete_entry}
+                is_draft_row={is_draft_row}
+            />
+        </div>
+
+        <div className="data-component-form-column column">
+            <ScenarioResultsAndExpectations
+                is_draft_row={is_draft_row}
+                scenario={props.scenario}
+                component={component}
+                on_change={on_change}
+            />
+        </div>
     </div>
 }
 
@@ -142,22 +187,10 @@ interface ScenarioFormProps
 function ScenarioForm(props: ScenarioFormProps)
 {
     const { scenario, on_change, is_draft_row } = props
-    const [force_rerender_on_delete, set_force_rerender_on_delete] = useState(false)
 
-    useEffect(() =>
-    {
-        if (force_rerender_on_delete)
-        {
-            set_force_rerender_on_delete(false)
-            props.delete_entry()
-        }
-    }, [force_rerender_on_delete])
-    if (force_rerender_on_delete) return null
-
-    const handle_delete = () =>
-    {
-        set_force_rerender_on_delete(true)
-    }
+    const on_update_description = useMemo(() =>
+        debounce((description: string) => on_change({ description }), 300)
+    , [on_change])
 
     // const error = props.is_draft_row ? null : calc_scenario_error(scenario, props.name_counts)
     const inputs_iterated_over = Object.values(scenario.values).filter(v => v.iterate_over).length
@@ -170,7 +203,7 @@ function ScenarioForm(props: ScenarioFormProps)
 
             {!is_draft_row && <div className="scenario-delete-button">
                 <BinButton
-                    on_click={handle_delete}
+                    on_click={props.delete_entry}
                     disabled={scenario_is_empty(scenario)}
                     label={`Delete scenario ${props.ordinal}`}
                 />
@@ -181,7 +214,7 @@ function ScenarioForm(props: ScenarioFormProps)
             <TextEditorV2
                 label="Description"
                 initial_content={scenario.description || ""}
-                on_update={debounce((description: string) => on_change({ description }), 300)}
+                on_update={on_update_description}
                 single_line={false}
                 editable={true}
             />

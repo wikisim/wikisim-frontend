@@ -1,7 +1,7 @@
 
 import { Button } from "@mantine/core"
 
-import { DataComponent, NewDataComponent, Scenario } from "core/data/interface"
+import { Scenario } from "core/data/interface"
 
 import BinButton from "../../buttons/BinButton"
 import HelpText from "../../buttons/HelpText"
@@ -11,7 +11,6 @@ import HelpText from "../../buttons/HelpText"
 
 interface ScenarioGraphProps
 {
-    component: DataComponent | NewDataComponent
     scenario: Scenario
     latest_result: string | undefined
     on_change: (updated_scenario: Partial<Scenario>) => void

@@ -67,7 +67,6 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
             expectation_met={props.scenario.expectation_met}
         />}
         <ScenarioExpectations
-            component={props.component}
             scenario={props.scenario}
             latest_result={result?.result || undefined}
             on_change={props.on_change}

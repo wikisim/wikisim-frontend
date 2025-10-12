@@ -27,6 +27,7 @@ import "./DataComponentEditForm.css"
 import { SaveModal } from "./SaveModal"
 import { ValueEditor } from "./ValueEditForms/ValueEditForm"
 import { ValueEditorForInteractable } from "./ValueEditForms/ValueEditFormInteractable"
+import { UpdatesFnOrValue } from "./interface"
 
 
 
@@ -72,10 +73,12 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
         </div>
     }
 
-    const set_draft_component = useMemo(() => (updates: Partial<DataComponent | NewDataComponent>, compare_meta_fields?: boolean) =>
+    const set_draft_component = useMemo(() => (updates: UpdatesFnOrValue, compare_meta_fields?: boolean) =>
     {
         _set_draft_component(draft_component =>
         {
+            if (typeof updates === "function") updates = updates(draft_component)
+
             const new_draft: V = { ...draft_component, ...updates }
             const any_changes_made = changes_made(new_draft, potential_initial_component, true)
             store_draft_component_to_local(new_draft, any_changes_made)
@@ -215,7 +218,7 @@ function DataComponentEditFormInner(props: {
     editable: boolean
     initial_component: DataComponent | NewDataComponent
     draft_component: DataComponent | NewDataComponent
-    set_draft_component: (updates: Partial<DataComponent | NewDataComponent>, compare_meta_fields?: boolean) => void
+    set_draft_component: (updates: UpdatesFnOrValue, compare_meta_fields?: boolean) => void
     saving_in_progress: boolean
 })
 {
