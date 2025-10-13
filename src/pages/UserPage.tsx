@@ -5,6 +5,7 @@ import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { get_async_user } from "../state/users/accessor"
 import { NewDataComponentButtons } from "../ui_components/NewDataComponentButtons"
+import { set_page_title } from "../ui_components/set_page_title"
 import "./UserPage.css"
 
 
@@ -29,6 +30,9 @@ export function UserPage(props: { user_id_or_name: string })
         if (user.name === props.user_id_or_name) return
         history.replaceState({}, "", ROUTES.USER.VIEW(user.name))
     }, [user.name, props.user_id_or_name])
+
+
+    useEffect(() => set_page_title(user.name + " user profile"), [user.name])
 
 
     const signed_in_user_id = state.user_auth_session.session?.user.id

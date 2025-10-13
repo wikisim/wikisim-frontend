@@ -26,6 +26,7 @@ import { ExpectationsMet } from "../ui_components/ExpectationMet"
 import Loading from "../ui_components/Loading"
 import OpenCloseSection from "../ui_components/OpenCloseSection"
 import { ScenarioResultsDisplay } from "../ui_components/ScenarioResultsDisplay"
+import { set_page_title } from "../ui_components/set_page_title"
 import {
     ensure_owner_id_or_name_is_in_url,
     ensure_owner_is_loaded,
@@ -65,6 +66,10 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
         if (data.key !== "Enter" || !data.metaKey) return
         location.route(ROUTES.DATA_COMPONENT.EDIT(component.id.as_IdOnly()))
     }), [component.id.id])
+
+
+    useEffect(() => set_page_title(component.plain_title), [component.plain_title])
+
 
     const value_as_string = format_data_component_value_to_string(component)
     const value_type = valid_value_type(component.value_type)

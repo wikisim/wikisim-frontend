@@ -9,12 +9,15 @@ import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
 import { ReadOnly } from "../text_editor/sanitise_html"
 import Loading from "../ui_components/Loading"
+import { set_page_title } from "../ui_components/set_page_title"
 import { time_ago_or_date } from "../utils/time_ago_or_date"
 import "./DataComponentPageVersionHistory.css"
 
 
 export function DataComponentPageVersionHistory(props: { data_component_id: string, query: Record<string, string> })
 {
+    useEffect(set_page_title, [])
+
     const id = parse_id(props.data_component_id)
     if (id instanceof IdAndVersion) return <DataComponentPageVersionHistoryRedirect id={id} />
 
@@ -62,6 +65,10 @@ export function DataComponentPageVersionHistory(props: { data_component_id: stri
             <div>Page not found.</div>
         </div>
     }
+
+
+    useEffect(() => set_page_title(component.plain_title + " version history"), [component.plain_title])
+
 
     const max_version = component.id.version
     const number_to_show = clamp(page_size, 0, max_version - (page * page_size))

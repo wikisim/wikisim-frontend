@@ -7,6 +7,7 @@ import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso"
 
 import { Evaluator } from "core/evaluator/browser_sandboxed_javascript"
 
+import { useEffect } from "preact/hooks"
 import "./main.css"
 import "./monkey_patch"
 import { DataComponentPage } from "./pages/DataComponentPage"
@@ -23,6 +24,7 @@ import { ROUTES } from "./routes"
 import { MentionsClickHandler } from "./text_editor/MentionsClickHandler"
 import Header from "./ui_components/Header"
 import { SearchModal } from "./ui_components/search/SearchModal"
+import { set_page_title } from "./ui_components/set_page_title"
 
 
 function App() {
@@ -156,6 +158,8 @@ interface NotFoundProps
 }
 function NotFound(_props: NotFoundProps)
 {
+    useEffect(set_page_title, [])
+
     return <div>
         <h2>404 Not Found</h2>
         <p>The page you are looking for does not exist.</p>

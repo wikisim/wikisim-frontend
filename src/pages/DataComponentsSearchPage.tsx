@@ -1,11 +1,12 @@
 import { useLocation } from "preact-iso"
-import { useCallback, useState } from "preact/hooks"
+import { useCallback, useEffect, useState } from "preact/hooks"
 
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { TextEditorV1 } from "../text_editor/TextEditorV1"
 import Loading from "../ui_components/Loading"
 import { SearchResults } from "../ui_components/search/SearchResults"
+import { set_page_title } from "../ui_components/set_page_title"
 import { ToggleTwo } from "../ui_components/ToggleTwo"
 import { debounce } from "../utils/debounce"
 import "./DataComponentsSearchPage.css"
@@ -13,6 +14,8 @@ import "./DataComponentsSearchPage.css"
 
 export function DataComponentsSearchPage()
 {
+    useEffect(() => set_page_title("Search"), [])
+
     const location = useLocation()
 
     const initial_search_term = location.query["q"] || ""

@@ -1,5 +1,5 @@
 import { useLocation } from "preact-iso"
-import { useMemo } from "preact/hooks"
+import { useEffect, useMemo } from "preact/hooks"
 
 import { IdAndVersion, parse_id } from "core/data/id"
 
@@ -8,11 +8,14 @@ import { get_async_data_component } from "../../state/data_components/accessor"
 import { app_store } from "../../state/store"
 import Loading from "../../ui_components/Loading"
 import { LogInInlineText } from "../../ui_components/LogInInlineText"
+import { set_page_title } from "../../ui_components/set_page_title"
 import { DataComponentEditForm } from "./DataComponentEditForm"
 
 
 export function DataComponentPageEdit(props: { data_component_id: string, query: Record<string, string> })
 {
+    useEffect(set_page_title, [])
+
     const location = useLocation()
 
     const state1 = app_store()
@@ -69,6 +72,10 @@ export function DataComponentPageEdit(props: { data_component_id: string, query:
             : <div>Data component not found.</div>}
         </div>
     }
+
+
+    useEffect(() => set_page_title("Edit " + component.plain_title), [component.plain_title])
+
 
     return <div className="page-container">
         <DataComponentEditForm
