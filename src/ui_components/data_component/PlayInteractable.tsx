@@ -1,4 +1,5 @@
 import { Button } from "@mantine/core"
+import IconPlayerPlay from "@tabler/icons-react/dist/esm/icons/IconPlayerPlay"
 import { useState } from "preact/hooks"
 
 import { DataComponent } from "core/data/interface"
@@ -21,8 +22,10 @@ export function PlayInteractable(props: { component: DataComponent })
         className={`section play-interactable ${playing ? "playing" : ""}`}
         onClick={() => set_playing(true)}
     >
-        {!playing && <Button onClick={() => set_playing(true)}>Play Interactable</Button>}
-        {playing && <div style={{ width: 130 }}>Loading&nbsp;Interactable<Loading /></div>}
+        {!playing && <Button onClick={() => set_playing(true)}>
+            <IconPlayerPlay /> &nbsp;Play
+        </Button>}
+        {playing && <div style={{ width: 130 }}>Loading&nbsp;<Loading /></div>}
         {playing && <>
             <iframe
                 src={`https://wikisim-server.wikisim.deno.net/${component.id.to_str()}/` }
