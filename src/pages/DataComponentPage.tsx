@@ -253,7 +253,7 @@ function Scenarios(props: { component: DataComponent })
                 return { ...results }
             })
         })
-    }, [sandbox_error])
+    }, [sandbox_error, scenarios, component.result_value, component.function_arguments])
 
 
     return <div class="scenarios">
