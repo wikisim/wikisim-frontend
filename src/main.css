@@ -97,3 +97,10 @@ a
         flex-direction: column;
     }
 }
+
+
+/* Bring distance between checkbox and label slightly closer */
+.mantine-Checkbox-labelWrapper label
+{
+    padding-inline-start: calc(var(--hgap-mid) - 2px);
+}

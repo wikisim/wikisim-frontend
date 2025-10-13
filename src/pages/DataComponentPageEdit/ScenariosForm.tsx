@@ -12,7 +12,7 @@ import type {
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 
 import BinButton from "../../buttons/BinButton"
-import HelpText from "../../buttons/HelpText"
+import { HelpToolTip } from "../../buttons/HelpText"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import { WarningMessage } from "../../ui_components/ErrorMessage"
@@ -252,26 +252,31 @@ function ScenarioForm(props: ScenarioFormProps)
                         />
 
                         <div className="row" style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}>
-                            Iterate
-                            <Checkbox
-                                onChange={(e: TargetedEvent<HTMLInputElement, Event>) =>
-                                {
-                                    const value = existing?.value || ""
-                                    const iterate_over = e.currentTarget.checked || undefined
-                                    const updated_values = { ...scenario.values, [input_name]: { value, iterate_over } }
-                                    on_change({ values: updated_values })
-                                }}
-                                checked={existing?.iterate_over || false}
-                                disabled={!enable_iterate_over}
-                            />
-                            <HelpText message={<>
-                                If you set the value of this input to an array or range of values,
-                                then use this option to run this scenario over those values rather
-                                than treat them as a single value to pass to the input.
-                                For example using <code>[1, 2, 3]</code> with this option on will run the scenario 3 times,
-                                once with each value, whereas with this option off it will run once
-                                with the array <code>[1, 2, 3]</code> as the input value.
-                            </>} />
+                            <HelpToolTip
+                                message={<>
+                                    If this input value is an array or range of values that can be iterated over,
+                                    then use this "Iterate" option to run this scenario over those values.
+                                    <br/>
+                                    <br/>
+                                    For example using <code>[1, 2, 3]</code> or <code>range(1, 4)</code>
+                                    with this "Iterate" option on will run the scenario 3 times,
+                                    once with each value, whereas with this option off it will run only once
+                                    and use the array <code>[1, 2, 3]</code> as the input value.
+                                </>}
+                            >
+                                <Checkbox
+                                    label="Iterate"
+                                    onChange={(e: TargetedEvent<HTMLInputElement, Event>) =>
+                                    {
+                                        const value = existing?.value || ""
+                                        const iterate_over = e.currentTarget.checked || undefined
+                                        const updated_values = { ...scenario.values, [input_name]: { value, iterate_over } }
+                                        on_change({ values: updated_values })
+                                    }}
+                                    checked={existing?.iterate_over || false}
+                                    disabled={!enable_iterate_over}
+                                />
+                            </HelpToolTip>
                         </div>
                     </div>
                 </div>
