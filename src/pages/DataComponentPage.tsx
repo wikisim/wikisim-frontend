@@ -1,5 +1,5 @@
 import { useLocation } from "preact-iso"
-import { useEffect, useState } from "preact/hooks"
+import { useEffect, useRef, useState } from "preact/hooks"
 
 import { valid_value_type } from "core/data/field_values_with_defaults"
 import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
@@ -42,7 +42,18 @@ export function DataComponentPage(props: { user_id_or_name?: string, data_compon
     const location = useLocation()
     const state = app_store()
 
-    const async_data_component = get_async_data_component(state, props.data_component_id)
+    // Handle scenario when a page like https://wikisim.org/wiki/1021v5 is loaded
+    // and then the user clicks on the link to https://wikisim.org/wiki/1021v6
+    // We need to detect that the ID has changed and then force a refresh of the data
+    const data_component_id_ref = useRef(props.data_component_id)
+    let force_refresh = false
+    if (data_component_id_ref.current !== props.data_component_id)
+    {
+        data_component_id_ref.current = props.data_component_id
+        force_refresh = true
+    }
+
+    const async_data_component = get_async_data_component(state, props.data_component_id, force_refresh)
     const { component, status } = async_data_component
 
     if (!component)
