@@ -221,7 +221,11 @@ function Scenarios(props: { component: DataComponent })
 
         scenarios.forEach(async (scenario, index) =>
         {
-            const javascript = prepare_scenario_javascript({ component, scenario })
+            const javascript = prepare_scenario_javascript({
+                component,
+                scenario,
+                debugging: false,
+            })
 
             const result = await evaluate_code_in_browser_sandbox({
                 js_input_value: javascript,

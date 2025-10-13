@@ -17,6 +17,7 @@ interface ScenarioResultsAndExpectationsProps
     is_draft_row: boolean
     component: DataComponent | NewDataComponent
     scenario: Scenario
+    debugging: boolean
     on_change: (updated_scenario: Partial<Scenario>) => void
 }
 export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectationsProps)
@@ -30,7 +31,7 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
     const javascript = prepare_scenario_javascript({
         component: props.component,
         scenario: props.scenario,
-        debugging: false,
+        debugging: props.debugging,
     })
 
     const [result, set_result] = useState<EvaluationResponse>()

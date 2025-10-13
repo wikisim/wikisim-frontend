@@ -87,6 +87,7 @@ interface ScenarioRowProps
 function ScenarioRow(props: ScenarioRowProps)
 {
     const scenario_id = props.scenario.id
+    const [debugging, set_debugging] = useState(false)
 
     const on_change = useMemo(() => (updated_scenario: Partial<Scenario>) =>
     {
@@ -157,6 +158,8 @@ function ScenarioRow(props: ScenarioRowProps)
                 scenario={props.scenario}
                 on_change={on_change}
                 delete_entry={delete_entry}
+                debugging={debugging}
+                set_debugging={set_debugging}
                 is_draft_row={is_draft_row}
             />
         </div>
@@ -164,8 +167,9 @@ function ScenarioRow(props: ScenarioRowProps)
         <div className="data-component-form-column column">
             <ScenarioResultsAndExpectations
                 is_draft_row={is_draft_row}
-                scenario={props.scenario}
                 component={component}
+                scenario={props.scenario}
+                debugging={debugging}
                 on_change={on_change}
             />
         </div>
@@ -181,6 +185,8 @@ interface ScenarioFormProps
     inputs: FunctionArgument[]
     on_change: (updated_scenario: Partial<Scenario>) => void
     delete_entry: () => void
+    debugging: boolean
+    set_debugging: (debugging: boolean) => void
     is_draft_row: boolean
 }
 
@@ -201,7 +207,19 @@ function ScenarioForm(props: ScenarioFormProps)
                 {is_draft_row ? "New Scenario" : `Scenario ${props.ordinal} of ${props.total_scenarios}`}
             </div>
 
-            {!is_draft_row && <div className="scenario-delete-button">
+            {!is_draft_row && <div className="scenario-options">
+                <HelpToolTip
+                    message={`When enabled, a debugger statement will be added to the start of the function code.  Open your developer terminal and enable "Pause on Debugger" to step through the code as it runs for this scenario.`}
+                >
+                    <Checkbox
+                        label="Debug"
+                        onChange={(e: TargetedEvent<HTMLInputElement, Event>) =>
+                        {
+                            props.set_debugging(e.currentTarget.checked)
+                        }}
+                        checked={props.debugging}
+                    />
+                </HelpToolTip>
                 <BinButton
                     on_click={props.delete_entry}
                     disabled={scenario_is_empty(scenario)}
