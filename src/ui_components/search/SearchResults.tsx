@@ -77,6 +77,13 @@ export function SearchResults(props: SearchResultsProps)
         if (data_components.length === 0) return
 
         if (data.key !== "Enter" || selected_result_index === null) return
+        // We prevent "Enter" from doing anything else.  For example without
+        // this `preventDefault` then when the reference is inserted into the
+        // CodeEditor, the CodeEditor would also see the "Enter" and
+        // insert a newline.
+        data.event.preventDefault()
+        data.event.stopImmediatePropagation()
+
         // If Enter is pressed, choose the currently selected result
         const result = data_components[selected_result_index]
         if (!result) return
