@@ -1,11 +1,57 @@
 
-.monaco-editor .detected-link
+
+.code-editor-container.non-editable
 {
-    color: var(--colour-link);
-    text-decoration: underline;
+    width: 100%;
+    overflow-x: scroll;
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-border);
+    padding: var(--padding-text-box);
+
+    /* Default size for editor is 12, and for page is 16, so using 14
+        makes it seem more like size 16.*/
+    font-size: 14px;
 }
 
-.key-cmd-down .monaco-editor .detected-link
+
+
+/**
+ * The horizontal scroll bar blinks on and then fades out if one of the
+ * lines of its content is over the max width of this container AND
+ * a new line is added/removed from its content.
+ * This behaviour is distracting so hide scrollbar by default and only show
+ * it when the user is interacting with the container.
+ */
+.code-editor-container.non-editable
 {
-    cursor: pointer;
+    scrollbar-width: none; /* Firefox */
+}
+.code-editor-container.non-editable::-webkit-scrollbar
+{
+    display: none; /* Chrome, Safari */
+}
+/* Only show scrollbar while scrolling */
+.code-editor-container.non-editable:active,
+.code-editor-container.non-editable:focus,
+.code-editor-container.non-editable:hover
+{
+    scrollbar-width: thin;
+}
+.code-editor-container.non-editable:active::-webkit-scrollbar,
+.code-editor-container.non-editable:focus::-webkit-scrollbar,
+.code-editor-container.non-editable:hover::-webkit-scrollbar
+{
+    display: block;
+}
+
+
+
+.code-editor-container
+{
+    padding: 12px 0px 8px 12px;
+}
+
+.code-editor-container label
+{
+    top: 12px;
 }

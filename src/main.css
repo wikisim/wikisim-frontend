@@ -44,6 +44,10 @@
     --hgap-large: 20px;
     --hgap-mid: 10px;
 
+    --padding-v-text-box: 4px;
+    --padding-h-text-box: 10px;
+    --padding-text-box: var(--padding-v-text-box) var(--padding-h-text-box);
+
     --width-for-fixed-buttons: 50px;
     --max-column-width: 700px;
 

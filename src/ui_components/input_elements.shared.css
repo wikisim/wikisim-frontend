@@ -1,5 +1,6 @@
 .text-editor-v1,
 .tiptap-editor-container,
+.code-editor-container,
 .wikisim-select
 {
     position: relative;  /* Ensure label can be positioned correctly */
@@ -8,7 +9,8 @@
 
 .text-editor-v1 textarea,
 .text-editor-v1 input,
-.tiptap-editor-container
+.tiptap-editor-container,
+.code-editor-container
 {
     border-radius: var(--radius-border);
     border: none;
@@ -17,7 +19,8 @@
 
 .text-editor-v1.is_focused textarea,
 .text-editor-v1.is_focused input,
-.tiptap-editor-container.is_focused
+.tiptap-editor-container.is_focused,
+.code-editor-container.is_focused
 {
     border: 1px solid var(--colour-tertiary-blue);
     /* Prevent browser's default outline as we're using border */
@@ -27,6 +30,7 @@
 
 .text-editor-v1 label,
 .tiptap-editor-container label,
+.code-editor-container label,
 .wikisim-select label
 {
     position: absolute;
@@ -41,7 +45,8 @@
 }
 
 .text-editor-v1.is_focused label,
-.tiptap-editor-container.is_focused label
+.tiptap-editor-container.is_focused label,
+.code-editor-container.is_focused label
 {
     color: var(--colour-secondary-blue);
 }
@@ -50,6 +55,8 @@
 .text-editor-v1.is_focused label,
 .tiptap-editor-container.has_value label,
 .tiptap-editor-container.is_focused label,
+.code-editor-container.has_value label,
+.code-editor-container.is_focused label,
 .wikisim-select.has_value label
 {
     top: -10px;
