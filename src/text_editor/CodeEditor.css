@@ -1,0 +1,11 @@
+
+.monaco-editor .detected-link
+{
+    color: var(--colour-link);
+    text-decoration: underline;
+}
+
+.key-cmd-down .monaco-editor .detected-link
+{
+    cursor: pointer;
+}

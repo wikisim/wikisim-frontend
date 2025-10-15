@@ -1,10 +1,17 @@
 import preact from "@preact/preset-vite"
 import { resolve } from "path"
 import { defineConfig } from "vite"
+import MonacoEditor from "vite-plugin-monaco-editor"
+
+const MonacoEditorPlugin: typeof MonacoEditor = (MonacoEditor as any).default
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [preact()],
+  plugins: [
+    preact(),
+    MonacoEditorPlugin({}),
+  ],
   resolve: {
     alias: {
       "core": resolve(__dirname, "lib/core/src"),
@@ -16,8 +23,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return 'vendor'
+          if (id.includes("node_modules")) {
+            return "vendor"
           }
         }
       }

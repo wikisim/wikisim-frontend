@@ -130,6 +130,7 @@ export function ValueEditor(props: ValueEditorProps)
                 <div class="vertical-gap" />
 
                 {opened && <>
+                    {/* <CodeEditor initial_content="" /> */}
                     <TextEditorV2
                         label={value_type_is_number ? "Input Value" : "Function"}
                         initial_content={draft_component.input_value ?? ""}

@@ -1,8 +1,10 @@
-import { useState } from "preact/hooks"
+import { useRef, useState } from "preact/hooks"
 
 import { tiptap_mention_chip } from "core/test/fixtures"
 
+import { deindent } from "../../lib/core/src/utils/deindent"
 import EditOrSaveButton from "../buttons/EditOrSaveButton"
+import { CodeEditor } from "./CodeEditor"
 import { TextEditorV2 } from "./TextEditorV2"
 
 
@@ -56,10 +58,21 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
             That ${tiptap_mention_chip("123", "span")}
         </p>
     `)
+    const [input_value, set_input_value] = useState(deindent(`
+    function add(a, b) {
+        // type "@" here to see a component
+        // mention and type d1234v5 overwritten
+        return a + b +
+    }`))
+    // a = b + 1
+    // `))
+    const intial_input_value = useRef(input_value).current
 
     return <>
         <h3>Single Line Editor</h3>
         {title}
+        <br />
+        <br />
         <TextEditorV2
             editable={props.editing}
             initial_content={title}
@@ -73,6 +86,8 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
 
         <h3 style={{ marginTop: "30px" }}>Multi Line Rich Editor</h3>
         {description}
+        <br />
+        <br />
         <TextEditorV2
             editable={props.editing}
             initial_content={description}
@@ -81,6 +96,21 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
             label="Description"
             on_update={(html, _json) => {
                 set_description(html)
+            }}
+        />
+
+        <h3 style={{ marginTop: "30px" }}>Code Rich Editor</h3>
+        {input_value}
+        <br />
+        <br />
+        <CodeEditor
+            editable={props.editing}
+            initial_content={intial_input_value}
+            // single_line={false}
+            // auto_focus={false}
+            label="Function Value"
+            on_update={(html, _json) => {
+                set_input_value(html)
             }}
         />
 
