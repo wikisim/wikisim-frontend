@@ -21,6 +21,19 @@ function add_key_down_listener()
             timestamp: Date.now(),
         })
     })
+
+    window.document.addEventListener("keyup", (event) =>
+    {
+        pub_sub.pub("key_up", {
+            key: event.key,
+            code: event.code,
+            metaKey: event.metaKey,
+            ctrlKey: event.ctrlKey,
+            shiftKey: event.shiftKey,
+            altKey: event.altKey,
+            timestamp: Date.now(),
+        })
+    })
 }
 
 add_key_down_listener()

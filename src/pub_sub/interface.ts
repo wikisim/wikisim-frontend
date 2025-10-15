@@ -13,19 +13,23 @@ export interface PublishableEvents
         search_requester_id: string
         data_component: DataComponent
     }
-    key_down: {
-        key: string
-        code: string
-        // Whether the meta key (Command on Mac, Windows key on Windows) was
-        // depressed when the key was pressed.
-        metaKey: boolean
-        ctrlKey: boolean
-        shiftKey: boolean
-        altKey: boolean
-        timestamp: number
-    }
+    key_down: KeyDownUp
+    key_up: KeyDownUp
     mention_clicked: {
         data_component_id: string
     }
     open_save_modal_request_from_ValueEditorForInteractable: true
+}
+
+interface KeyDownUp
+{
+    key: string
+    code: string
+    // Whether the meta key (Command on Mac, Windows key on Windows) was
+    // depressed when the key was pressed.
+    metaKey: boolean
+    ctrlKey: boolean
+    shiftKey: boolean
+    altKey: boolean
+    timestamp: number
 }
