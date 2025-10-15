@@ -1,5 +1,5 @@
 import * as monaco from "monaco-editor"
-import { useEffect, useRef, useState } from "preact/hooks"
+import { useEffect, useMemo, useRef, useState } from "preact/hooks"
 
 import { clamp } from "core/utils/clamp"
 import { deindent } from "core/utils/deindent"
@@ -48,6 +48,7 @@ export function CodeEditor(props: CodeEditorProps)
     const editor_ref = useRef<HTMLDivElement | null>(null)
     const [monaco_input_model, set_monaco_input_model] = useState<monaco.editor.IStandaloneCodeEditor | null>(null)
     const [cmd_key_down, set_cmd_key_down] = useState(false)
+    const search_requester_id = useMemo(() => `code_editor_${Math.random().toString(36).substring(2, 15)}`, [])
 
 
     useEffect(() =>
@@ -99,10 +100,13 @@ export function CodeEditor(props: CodeEditorProps)
             const markers = monaco.editor.getModelMarkers({ resource: validation_model.uri })
             // Map marker positions back to user's code (subtract wrapper lines)
             const wrapper_line_offset = 1 // `(...function_args) => {` is line 1
+            const wrapper_column_offset = 4 // because of the indentation
             const user_markers = markers.map(marker => ({
                 ...marker,
                 startLineNumber: marker.startLineNumber - wrapper_line_offset,
                 endLineNumber: marker.endLineNumber - wrapper_line_offset,
+                startColumn: marker.startColumn - wrapper_column_offset,
+                endColumn: marker.endColumn - wrapper_column_offset,
             })).filter(marker => marker.startLineNumber > 0)
 
             // Set markers on the visible editor
@@ -139,44 +143,16 @@ export function CodeEditor(props: CodeEditorProps)
         const keydown_handler = (e: KeyboardEvent) =>
         {
             if (e.key !== "@") return
-
             e.preventDefault()
+
+            // Find the word after the cursor
             const position = input_model.getPosition()
             if (!position) return
+            const word_info = input_model.getModel()?.getWordAtPosition(position)
+            const word_after_cursor = word_info?.word ?? ""
 
-            const content = function_args_for_auto_complete + Object.entries(map_of_components_by_ids).map(([id, component]) =>
-                deindent(`
-                /**
-                 * Component description here.
-                 *
-                 * https://wikisim.org/wiki/${id}
-                 */
-                declare var ${component.name}: any; // ${id}
-                `)
-            ).join("\n")
-            monaco.languages.typescript.typescriptDefaults.setExtraLibs([{
-                content
-            }])
-
-            const insert_at_cursor = map_of_components_by_ids["12v3"]!.name
-            const new_lines_count = 0
-
-            input_model.executeEdits("insert-ref-to-component", [
-                {
-                    range: new monaco.Range(
-                        position.lineNumber,
-                        position.column,
-                        position.lineNumber,
-                        position.column
-                    ),
-                    text: insert_at_cursor,
-                    forceMoveMarkers: true
-                }
-            ])
-            // Optionally move cursor after inserted text
-            input_model.setPosition({
-                lineNumber: position.lineNumber + new_lines_count,
-                column: position.column + insert_at_cursor.length
+            pub_sub.pub("search_for_reference", {
+                search_requester_id, search_term: word_after_cursor,
             })
         }
         dom_node.addEventListener("keydown", keydown_handler)
@@ -190,6 +166,64 @@ export function CodeEditor(props: CodeEditorProps)
             set_monaco_input_model(null)
         }
     }, [editor_ref.current, props.initial_content, props.editable])
+
+
+    useEffect(() => pub_sub.sub("search_for_reference_completed", (data) =>
+    {
+        if (data.search_requester_id !== search_requester_id) return
+        if (!monaco_input_model) return
+
+        const position = monaco_input_model.getPosition()
+        if (!position) return
+
+        const word_info = monaco_input_model.getModel()?.getWordAtPosition(position)
+        const range = word_info ? new monaco.Range(
+            position.lineNumber,
+            word_info.startColumn,
+            position.lineNumber,
+            word_info.endColumn
+        ) : new monaco.Range(
+            position.lineNumber,
+            position.column,
+            position.lineNumber,
+            position.column
+        )
+
+
+            // const content = function_args_for_auto_complete + Object.entries(map_of_components_by_ids).map(([id, component]) =>
+            //     deindent(`
+            //     /**
+            //      * Component description here.
+            //      *
+            //      * https://wikisim.org/wiki/${id}
+            //      */
+            //     declare var ${component.name}: any; // ${id}
+            //     `)
+            // ).join("\n")
+            // monaco.languages.typescript.typescriptDefaults.setExtraLibs([{
+            //     content
+            // }])
+
+            // const insert_at_cursor = map_of_components_by_ids["12v3"]!.name
+            // const new_lines_count = 0
+
+        // TODO make component title safe javascript identifier
+        const component_title = data.data_component.title
+
+        monaco_input_model.executeEdits("insert-ref-to-component", [{
+            range,
+            text: component_title,
+            forceMoveMarkers: true,
+        }])
+
+        // Move cursor to end of inserted text
+        const new_position = {
+            lineNumber: position.lineNumber,
+            column: range.startColumn + component_title.length,
+        }
+        monaco_input_model.setPosition(new_position)
+        monaco_input_model.focus()
+    }), [monaco_input_model, search_requester_id])
 
 
     // When on mobile, show help/context (such as JSDoc or hover info) when the
