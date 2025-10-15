@@ -19,6 +19,7 @@ function add_key_down_listener()
             shiftKey: event.shiftKey,
             altKey: event.altKey,
             timestamp: Date.now(),
+            event,
         })
     })
 
@@ -32,6 +33,7 @@ function add_key_down_listener()
             shiftKey: event.shiftKey,
             altKey: event.altKey,
             timestamp: Date.now(),
+            event,
         })
     })
 }

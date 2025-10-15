@@ -32,4 +32,5 @@ interface KeyDownUp
     shiftKey: boolean
     altKey: boolean
     timestamp: number
+    event: KeyboardEvent
 }
