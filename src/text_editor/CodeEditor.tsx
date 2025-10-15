@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "preact/hooks"
 import { clamp } from "core/utils/clamp"
 import { deindent } from "core/utils/deindent"
 
+import { format_function_input_value_string } from "../../lib/core/src/evaluator/format_function"
 import pub_sub from "../pub_sub"
 import { is_mobile_device } from "../utils/is_mobile_device"
 import "./CodeEditor.css"
@@ -45,7 +46,7 @@ interface CodeEditorProps
 export function CodeEditor(props: CodeEditorProps)
 {
     const editor_ref = useRef<HTMLDivElement | null>(null)
-    const [monaco_instance, set_monaco_instance] = useState<monaco.editor.IStandaloneCodeEditor | null>(null)
+    const [monaco_input_model, set_monaco_input_model] = useState<monaco.editor.IStandaloneCodeEditor | null>(null)
     const [cmd_key_down, set_cmd_key_down] = useState(false)
 
 
@@ -53,13 +54,13 @@ export function CodeEditor(props: CodeEditorProps)
     {
         if (!editor_ref.current) return
 
-        if (monaco_instance)
+        if (monaco_input_model)
         {
-            monaco_instance.dispose()
-            set_monaco_instance(null)
+            monaco_input_model.dispose()
+            set_monaco_input_model(null)
         }
 
-        const instance = monaco.editor.create(editor_ref.current, {
+        const input_model = monaco.editor.create(editor_ref.current, {
             value: props.initial_content,
             language: "typescript",
             lineNumbers: "off",
@@ -69,45 +70,59 @@ export function CodeEditor(props: CodeEditorProps)
             scrollBeyondLastLine: false,
             readOnly: !props.editable,
         })
-        set_monaco_instance(instance)
+        set_monaco_input_model(input_model)
 
-        // const model = instance.getModel()
-        // if (model)
-        // {
-        //     REGEX_MATCH_IDS.lastIndex = 0
-        //     let match: RegExpExecArray | null
-        //     while ((match = REGEX_MATCH_IDS.exec(model.getValue())) !== null)
-        //     {
-        //         const start = match.index
-        //         const start_pos = model.getPositionAt(start)
 
-        //         // Create a content widget for each match
-        //         const widgetId = `function-widget-${match[1]}v${match[2]}`
-        //         const function_name = `Some Function name`
-        //         const widget = {
-        //             getId: () => widgetId,
-        //             getDomNode: () => {
-        //                 const node = document.createElement("span")
-        //                 node.textContent = function_name
-        //                 node.style.background = "#e0e0ff"
-        //                 node.style.borderRadius = "3px"
-        //                 node.style.padding = "0 4px"
-        //                 node.style.fontWeight = "bold"
-        //                 node.style.pointerEvents = "none"
-        //                 return node
-        //             },
-        //             getPosition: () => ({
-        //                 position: start_pos,
-        //                 preference: [monaco.editor.ContentWidgetPositionPreference.EXACT]
-        //             })
-        //         }
-        //         instance.addContentWidget(widget)
-        //     }
-        // }
+        const function_arguments = [{ name: "a_param", id: 0 }]
+        // Create a hidden model for validation
+        function wrap_user_code(user_code: string): string
+        {
+            return format_function_input_value_string({
+                js_input_value: user_code,
+                requested_at: Date.now(),
+                function_arguments,
+            }).result!
+        }
+        const validation_model = monaco.editor.createModel(
+            wrap_user_code(props.initial_content ?? ""),
+            "typescript"
+        )
 
+        // Sync changes from visible editor to validation model
+        input_model.onDidChangeModelContent(() => {
+            const user_code = input_model.getValue()
+            validation_model.setValue(wrap_user_code(user_code))
+        })
+
+        // Listen for diagnostics on the validation model
+        monaco.editor.onDidChangeMarkers(() => {
+            const markers = monaco.editor.getModelMarkers({ resource: validation_model.uri })
+            // Map marker positions back to user's code (subtract wrapper lines)
+            const wrapper_line_offset = 1 // `(...function_args) => {` is line 1
+            const user_markers = markers.map(marker => ({
+                ...marker,
+                startLineNumber: marker.startLineNumber - wrapper_line_offset,
+                endLineNumber: marker.endLineNumber - wrapper_line_offset,
+            })).filter(marker => marker.startLineNumber > 0)
+
+            // Set markers on the visible editor
+            monaco.editor.setModelMarkers(input_model.getModel()!, "typescript", user_markers)
+        })
+
+
+        // function_arguments for auto-complete
+        const function_args_for_auto_complete = (
+            `// function args for auto-complete\n`
+            + Object.entries(function_arguments).map(([_, arg]) =>
+                deindent(`
+                declare var ${arg.name}: any;
+                `)
+            ).join("\n")
+            + "\n"
+        )
+        // This also removes any existing extraLibs
         monaco.languages.typescript.typescriptDefaults.setExtraLibs([{
-            // Remove any previous extra libs
-            content: ``
+            content: function_args_for_auto_complete
         }])
 
         const map_of_components_by_ids: Record<string, { name: string }> = {
@@ -123,120 +138,56 @@ export function CodeEditor(props: CodeEditorProps)
         const dom_node = editor_ref.current
         const keydown_handler = (e: KeyboardEvent) =>
         {
-            if (e.key === "@")
-            {
-                e.preventDefault()
-                const position = instance.getPosition()
-                if (!position) return
+            if (e.key !== "@") return
 
-                const content = Object.entries(map_of_components_by_ids).map(([id, component]) =>
-                    deindent(`
-                    /**
-                     * Component description here.
-                     *
-                     * https://wikisim.org/wiki/${id}
-                     */
-                    declare var ${component.name}: any; // ${id}
-                    `)
-                ).join("\n")
-                monaco.languages.typescript.typescriptDefaults.setExtraLibs([{
-                    content
-                }])
+            e.preventDefault()
+            const position = input_model.getPosition()
+            if (!position) return
 
-                const insert_at_cursor = map_of_components_by_ids["12v3"]!.name
-                const new_lines_count = 0
+            const content = function_args_for_auto_complete + Object.entries(map_of_components_by_ids).map(([id, component]) =>
+                deindent(`
+                /**
+                 * Component description here.
+                 *
+                 * https://wikisim.org/wiki/${id}
+                 */
+                declare var ${component.name}: any; // ${id}
+                `)
+            ).join("\n")
+            monaco.languages.typescript.typescriptDefaults.setExtraLibs([{
+                content
+            }])
 
-                instance.executeEdits("insert-ref-to-component", [
-                    {
-                        range: new monaco.Range(
-                            position.lineNumber,
-                            position.column,
-                            position.lineNumber,
-                            position.column
-                        ),
-                        text: insert_at_cursor,
-                        forceMoveMarkers: true
-                    }
-                ])
-                // Optionally move cursor after inserted text
-                instance.setPosition({
-                    lineNumber: position.lineNumber + new_lines_count,
-                    column: position.column + insert_at_cursor.length
-                })
-            }
+            const insert_at_cursor = map_of_components_by_ids["12v3"]!.name
+            const new_lines_count = 0
+
+            input_model.executeEdits("insert-ref-to-component", [
+                {
+                    range: new monaco.Range(
+                        position.lineNumber,
+                        position.column,
+                        position.lineNumber,
+                        position.column
+                    ),
+                    text: insert_at_cursor,
+                    forceMoveMarkers: true
+                }
+            ])
+            // Optionally move cursor after inserted text
+            input_model.setPosition({
+                lineNumber: position.lineNumber + new_lines_count,
+                column: position.column + insert_at_cursor.length
+            })
         }
         dom_node.addEventListener("keydown", keydown_handler)
-
-
-        // // https://microsoft.github.io/monaco-editor/typedoc/interfaces/languages.LinkProvider.html
-        // // Register a LinkProvider for "some_var"
-        // const link_provider_disposable = monaco.languages.registerLinkProvider("typescript",
-        // {
-        //     provideLinks(model, _token)
-        //     {
-
-        //         const links: monaco.languages.ILink[] = []
-        //         const value = model.getValue()
-
-        //         REGEX_MATCH_IDS.lastIndex = 0
-        //         let match: RegExpExecArray | null
-        //         while ((match = REGEX_MATCH_IDS.exec(value)) !== null)
-        //         {
-        //             const start = match.index
-        //             const start_pos = model.getPositionAt(start)
-        //             const end = start + match[0].length
-        //             const end_pos = model.getPositionAt(end)
-        //             links.push({
-        //                 range: new monaco.Range(
-        //                     start_pos.lineNumber,
-        //                     start_pos.column,
-        //                     end_pos.lineNumber,
-        //                     end_pos.column
-        //                 ),
-        //                 url: `https://wikisim.org/wiki/${match[1]}v${match[2]}`,
-        //             })
-        //         }
-        //         REGEX_MATCH_IDS.lastIndex = 0
-        //         return { links }
-        //     }
-        // })
-
-        // // https://microsoft.github.io/monaco-editor/typedoc/interfaces/languages.LinkProvider.html
-        // // Register a LinkProvider for "some_var"
-        // const link_provider_disposable = monaco.languages.registerLinkProvider("typescript",
-        // {
-        //     provideLinks(model, _token)
-        //     {
-        //         const links: monaco.languages.ILink[] = []
-        //         const tokens = get_all_tokens(model)
-
-        //         for (const token of tokens)
-        //         {
-        //             const id = map_of_component_names_to_ids[token.text]
-        //             if (!id) continue
-
-        //             links.push({
-        //                 range: new monaco.Range(
-        //                     token.line_number,
-        //                     token.start_column,
-        //                     token.line_number,
-        //                     token.end_column
-        //                 ),
-        //                 url: `https://wikisim.org/wiki/${id}`,
-        //             })
-        //         }
-
-        //         return { links }
-        //     }
-        // })
 
 
         return () =>
         {
             dom_node.removeEventListener("keydown", keydown_handler)
-            instance.dispose()
-            set_monaco_instance(null)
-            // link_provider_disposable.dispose()
+            validation_model.dispose()
+            input_model.dispose()
+            set_monaco_input_model(null)
         }
     }, [editor_ref.current, props.initial_content, props.editable])
 
@@ -245,54 +196,54 @@ export function CodeEditor(props: CodeEditorProps)
     // cursor is inside a token, not just on hover
     useEffect(() =>
     {
-        if (!monaco_instance || !is_mobile_device()) return
+        if (!monaco_input_model || !is_mobile_device()) return
 
         const show_hover_on_cursor = () =>
         {
-            monaco_instance.trigger("keyboard", "editor.action.showHover", {})
+            monaco_input_model.trigger("keyboard", "editor.action.showHover", {})
         }
 
         // Listen for cursor position changes
-        const disposable = monaco_instance.onDidChangeCursorPosition(show_hover_on_cursor)
+        const disposable = monaco_input_model.onDidChangeCursorPosition(show_hover_on_cursor)
 
         return () => disposable.dispose()
-    }, [monaco_instance, is_mobile_device()])
+    }, [monaco_input_model, is_mobile_device()])
 
 
     // Resize the editor when the window resizes
     useEffect(() =>
     {
-        if (!monaco_instance) return
+        if (!monaco_input_model) return
 
-        const handle_resize = () => monaco_instance.layout()
+        const handle_resize = () => monaco_input_model.layout()
         window.addEventListener("resize", handle_resize)
 
         return () => window.removeEventListener("resize", handle_resize)
-    }, [monaco_instance])
+    }, [monaco_input_model])
 
 
     // Add or remove height from editor_ref div style as more lines are added/removed
     useEffect(() =>
     {
-        if (!monaco_instance || !editor_ref.current) return
+        if (!monaco_input_model || !editor_ref.current) return
 
         const update_height = () =>
         {
-            const raw_line_count = monaco_instance.getModel()?.getLineCount()
+            const raw_line_count = monaco_input_model.getModel()?.getLineCount()
             const line_count = clamp(raw_line_count ?? 1, 8, 20)
             console.log("Updating height", line_count)
-            const line_height = monaco_instance.getOption(monaco.editor.EditorOption.lineHeight)
+            const line_height = monaco_input_model.getOption(monaco.editor.EditorOption.lineHeight)
             const height = line_count * line_height + 20 // +20 for some padding
             editor_ref.current!.style.height = `${height}px`
-            monaco_instance.layout()
+            monaco_input_model.layout()
         }
 
         update_height() // Initial height set
 
-        const disposable = monaco_instance.onDidChangeModelContent(update_height)
+        const disposable = monaco_input_model.onDidChangeModelContent(update_height)
 
         return () => disposable.dispose()
-    }, [monaco_instance, editor_ref.current])
+    }, [monaco_input_model, editor_ref.current])
 
 
     // Listen for cmd/ctrl key presses to add a class to the editor for styling
@@ -323,47 +274,6 @@ export function CodeEditor(props: CodeEditorProps)
         />
     </div>
 }
-
-
-// interface ExtractedToken
-// {
-//     text: string
-//     line_number: number
-//     start_column: number
-//     end_column: number
-// }
-// function get_all_tokens(model: monaco.editor.ITextModel): ExtractedToken[]
-// {
-//     const tokens: ExtractedToken[] = []
-//     const line_count = model.getLineCount()
-//     const language_id = model.getLanguageId()
-
-//     for (let line_number = 1; line_number <= line_count; line_number++)
-//     {
-//         const line_tokens = monaco.editor.tokenize(model.getLineContent(line_number), language_id)
-
-//         for (const token_list of line_tokens)
-//         {
-//             for (const token of token_list)
-//             {
-//                 const start_column = token.offset + 1 // Monaco uses 1-based columns
-//                 const end_offset = token_list[token_list.indexOf(token) + 1]?.offset ?? model.getLineContent(line_number).length
-//                 const end_column = end_offset + 1
-
-//                 const text = model.getLineContent(line_number).substring(token.offset, end_offset)
-
-//                 tokens.push({
-//                     text,
-//                     line_number,
-//                     start_column,
-//                     end_column
-//                 })
-//             }
-//         }
-//     }
-
-//     return tokens
-// }
 
 
 function get_rulers(): number[]

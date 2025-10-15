@@ -62,8 +62,11 @@ const TextEditorV2Demo = (props: { editing: boolean }) =>
     function add(a, b) {
         // type "@" here to see a component
         // mention and type d1234v5 overwritten
-        return a + b +
-    }`))
+        return a + b;
+    }
+
+    return add(param1, 2)  // change param1 to a_param to see error goes away
+    `))
     // a = b + 1
     // `))
     const intial_input_value = useRef(input_value).current
