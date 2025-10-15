@@ -3,9 +3,16 @@ import { MutableRef, useEffect, useMemo, useRef, useState } from "preact/hooks"
 type MonacoEditor = monaco.editor.IStandaloneCodeEditor
 type ITextModel = monaco.editor.ITextModel
 
-import { FunctionArgument } from "../../lib/core/src/data/interface"
-import { format_function_input_value_string } from "../../lib/core/src/evaluator/format_function"
+import { DataComponent, FunctionArgument } from "core/data/interface"
+import { to_javascript_reference } from "core/data/to_javascript_reference"
+import { format_function_input_value_string } from "core/evaluator/format_function"
+
+import pub_sub from "../pub_sub"
+import { DataComponentsById } from "../state/data_components/interface"
+import { is_mobile_device } from "../utils/is_mobile_device"
 import "./CodeEditor.css"
+import { get_global_js_lines } from "./get_global_js_lines"
+import { omit_or_truncate_long_code_string } from "./omit_or_truncate_long_code_string"
 
 
 monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
@@ -40,7 +47,7 @@ interface CodeEditorProps
     auto_focus?: boolean
     on_update?: (text: string) => void
     label?: string
-    invalid_value?: false | string
+    // invalid_value?: false | string
     // include_version_in_at_mention?: boolean
     // experimental_code_editor_features?: boolean
 }
@@ -50,7 +57,11 @@ export function CodeEditor(props: CodeEditorProps)
 
     if (!props.editable)
     {
-        // Just return the content as preformatted text
+        if (!props.initial_content) return null
+        // Just return the code content as preformatted text
+        const wrapped = wrap_user_code(props.function_arguments, props.initial_content)
+        const truncated = omit_or_truncate_long_code_string(wrapped)
+
         return <div
             style={{
                 maxWidth: "var(--max-column-width)",
@@ -58,7 +69,7 @@ export function CodeEditor(props: CodeEditorProps)
             }}
         >
             <pre className="code-editor-container non-editable">
-                {props.initial_content}
+                {truncated}
             </pre>
         </div>
     }
@@ -74,12 +85,15 @@ export function CodeEditor(props: CodeEditorProps)
             "code-editor-container"
             + (is_focused ? " is_focused" : "")
             + (props.value && props.value.length > 0 ? " has_value" : "")
-            + (props.invalid_value ? " invalid_value" : "")
+            // + (props.invalid_value ? " invalid_value" : "")
         }>
             <InnerCodeEditor
                 initial_content={props.initial_content}
                 function_arguments={props.function_arguments}
                 on_update={props.on_update}
+
+                auto_focus={props.auto_focus}
+                set_is_focused={set_is_focused}
             />
             <label>{props.label}</label>
         </div>
@@ -92,6 +106,9 @@ interface InnerCodeEditorProps
     initial_content: string
     function_arguments: FunctionArgument[] | undefined
     on_update?: (text: string) => void
+
+    auto_focus?: boolean
+    set_is_focused: (focused: boolean) => void
 }
 function InnerCodeEditor(props: InnerCodeEditorProps)
 {
@@ -100,8 +117,18 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
     const input_model_ref = useRef<MonacoEditor | null>(null)
     const validation_model_ref = useRef<ITextModel | null>(null)
     const disposable_sync_fns_ref = useRef<(() => void) | null>(null)
-    const search_requester_id = useMemo(() => `code_editor_${Math.random().toString(36).substring(2, 15)}`, [props.initial_content])
+    const search_requester_id = useMemo(() => `code_editor_${Math.random().toString(36).substring(2, 15)}`, [])
     const [setup_or_refresh_part2, set_setup_or_force_refresh_part2] = useState({})
+
+
+    const [data_component_dependencies_by_id, set_deps_by_id] = useState<DataComponentsById>({})
+    const add_data_component_dependency = useMemo(() => (data_component: DataComponent) =>
+    {
+        set_deps_by_id(deps => {
+            if (deps[data_component.id.to_str()]) return deps
+            return { ...deps, [data_component.id.to_str()]: data_component }
+        })
+    }, [])
 
 
     if (initial_content_ref.current !== props.initial_content)
@@ -110,237 +137,70 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
         initial_content_ref.current = props.initial_content
         // update the input_model_ref with new value
         input_model_ref.current?.setValue(props.initial_content)
-        // TODO trigger other required resets
     }
 
 
     useEffect(() =>
     {
-        if (!editor_el_ref.current) return
+        const editor_dom_node = editor_el_ref.current
+        if (!editor_dom_node) return
 
-        const input_model = set_up_monaco_editor(input_model_ref, props.initial_content, editor_el_ref.current)
+        const input_model = set_up_monaco_editor(input_model_ref, props.initial_content, editor_dom_node)
 
         // Create a hidden model for validation
         const validation_model = monaco.editor.createModel(
-            wrap_user_code(props.function_arguments, props.initial_content).result,
+            wrap_user_code(props.function_arguments, props.initial_content),
             "typescript"
         )
         validation_model_ref.current = validation_model
 
         set_setup_or_force_refresh_part2({})
 
+        const keydown_handler = factory_handle_keydown_and_trigger_search_modal(input_model, search_requester_id)
+        editor_dom_node.addEventListener("keydown", keydown_handler)
 
-        // // function_arguments for auto-complete
-        // const function_args_for_auto_complete = (
-        //     `// function args for auto-complete\n`
-        //     + Object.entries(function_arguments).map(([_, arg]) =>
-        //         deindent(`
-        //         declare var ${arg.name}: any;
-        //         `)
-        //     ).join("\n")
-        //     + "\n"
-        // )
-        // // This also removes any existing extraLibs
-        // monaco.languages.typescript.typescriptDefaults.setExtraLibs([{
-        //     content: function_args_for_auto_complete
-        // }])
-
-        // const map_of_components_by_ids: Record<string, { name: string }> = {
-        //     "12v3": { name: "clamp" },
-        //     "45v6": { name: "lerp" },
-        // }
-        // const map_of_component_names_to_ids: Record<string, string> = {}
-        // for (const [id, { name }] of Object.entries(map_of_components_by_ids))
-        // {
-        //     map_of_component_names_to_ids[name] = id
-        // }
-
-        // const dom_node = editor_ref.current
-        // const keydown_handler = (e: KeyboardEvent) =>
-        // {
-        //     if (e.key !== "@") return
-        //     e.preventDefault()
-
-        //     // Find the word after the cursor
-        //     const position = input_model.getPosition()
-        //     if (!position) return
-        //     const word_info = input_model.getModel()?.getWordAtPosition(position)
-        //     const word_after_cursor = word_info?.word ?? ""
-
-        //     pub_sub.pub("search_for_reference", {
-        //         search_requester_id, search_term: word_after_cursor,
-        //     })
-        // }
-        // dom_node.addEventListener("keydown", keydown_handler)
-
-
-        // // Not sure this is the right way of doing this.  Feels buggy
-        // if (props.auto_focus)
-        // {
-        //     setTimeout(() => {
-        //         // input_model.focus()
-        //         // set_is_focused(true) // Ensure this is in sync with state
-        //     }, 10)
-        // }
-
+        const unsub_search_modal_result = handle_search_modal_result(
+            input_model,
+            search_requester_id,
+            add_data_component_dependency
+        )
+        const dispose_focus = handle_focus_blur_events(editor_dom_node, input_model, props.auto_focus, props.set_is_focused)
+        const dispose_hover_tips_mobile = show_hover_tips_on_mobile_cursor(input_model)
+        const dispose_resize = resize_editor_on_window_resize(input_model)
+        const dispose_update_height = update_height_to_match_content(input_model, editor_dom_node)
 
         return () =>
         {
             input_model.dispose()
             validation_model.dispose()
-            // dom_node.removeEventListener("keydown", keydown_handler)
-            // set_monaco_input_model(null)
+            editor_dom_node.removeEventListener("keydown", keydown_handler)
+            dispose_focus()
+            unsub_search_modal_result()
+            dispose_hover_tips_mobile?.()
+            dispose_resize()
+            dispose_update_height()
         }
     }, [])
 
 
     useEffect(() =>
     {
-        const input_model = input_model_ref.current
-        const validation_model = validation_model_ref.current
-        if (!input_model || !validation_model) return
+        if (!input_model_ref.current || !validation_model_ref.current) return
 
         const disposable_sync_fns = upsert_change_and_sync_handler(
             disposable_sync_fns_ref,
-            input_model,
-            validation_model,
+            input_model_ref.current,
+            validation_model_ref.current,
             props.function_arguments ?? [],
             props.on_update
         )
+
+        update_available_globals(data_component_dependencies_by_id, props.function_arguments ?? [])
+
         return disposable_sync_fns
-    }, [setup_or_refresh_part2, props.function_arguments])
+    }, [setup_or_refresh_part2, data_component_dependencies_by_id, props.function_arguments])
 
-
-    // useEffect(() => pub_sub.sub("search_for_reference_completed", (data) =>
-    // {
-    //     if (data.search_requester_id !== search_requester_id) return
-    //     if (!monaco_input_model) return
-
-    //     const position = monaco_input_model.getPosition()
-    //     if (!position) return
-
-    //     const word_info = monaco_input_model.getModel()?.getWordAtPosition(position)
-    //     const range = word_info ? new monaco.Range(
-    //         position.lineNumber,
-    //         word_info.startColumn,
-    //         position.lineNumber,
-    //         word_info.endColumn
-    //     ) : new monaco.Range(
-    //         position.lineNumber,
-    //         position.column,
-    //         position.lineNumber,
-    //         position.column
-    //     )
-
-
-    //         // const content = function_args_for_auto_complete + Object.entries(map_of_components_by_ids).map(([id, component]) =>
-    //         //     deindent(`
-    //         //     /**
-    //         //      * Component description here.
-    //         //      *
-    //         //      * https://wikisim.org/wiki/${id}
-    //         //      */
-    //         //     declare var ${component.name}: any; // ${id}
-    //         //     `)
-    //         // ).join("\n")
-    //         // monaco.languages.typescript.typescriptDefaults.setExtraLibs([{
-    //         //     content
-    //         // }])
-
-    //         // const insert_at_cursor = map_of_components_by_ids["12v3"]!.name
-    //         // const new_lines_count = 0
-
-
-    //     const safe_component_title_ref = to_javascript_reference(data.data_component)
-
-    //     monaco_input_model.executeEdits("insert-ref-to-component", [{
-    //         range,
-    //         text: safe_component_title_ref,
-    //         forceMoveMarkers: true,
-    //     }])
-
-    //     // Move cursor to end of inserted text
-    //     const new_position = {
-    //         lineNumber: position.lineNumber,
-    //         column: range.startColumn + safe_component_title_ref.length,
-    //     }
-    //     monaco_input_model.setPosition(new_position)
-    //     monaco_input_model.focus()
-    // }), [monaco_input_model, search_requester_id])
-
-
-    // // When on mobile, show help/context (such as JSDoc or hover info) when the
-    // // cursor is inside a token, not just on hover
-    // useEffect(() =>
-    // {
-    //     if (!monaco_input_model || !is_mobile_device()) return
-
-    //     const show_hover_on_cursor = () =>
-    //     {
-    //         monaco_input_model.trigger("keyboard", "editor.action.showHover", {})
-    //     }
-
-    //     // Listen for cursor position changes
-    //     const disposable = monaco_input_model.onDidChangeCursorPosition(show_hover_on_cursor)
-
-    //     return () => disposable.dispose()
-    // }, [monaco_input_model, is_mobile_device()])
-
-
-    // // Resize the editor when the window resizes
-    // useEffect(() =>
-    // {
-    //     if (!monaco_input_model) return
-
-    //     const handle_resize = () => monaco_input_model.layout()
-    //     window.addEventListener("resize", handle_resize)
-
-    //     return () => window.removeEventListener("resize", handle_resize)
-    // }, [monaco_input_model])
-
-
-    // // Add or remove height from editor_ref div style as more lines are added/removed
-    // useEffect(() =>
-    // {
-    //     if (!monaco_input_model || !editor_ref.current) return
-
-    //     const update_height = () =>
-    //     {
-    //         const raw_line_count = monaco_input_model.getModel()?.getLineCount()
-    //         const line_count = props.editable ? Math.min(raw_line_count ?? 1, 20): (raw_line_count ?? 1)
-    //         const line_height = monaco_input_model.getOption(monaco.editor.EditorOption.lineHeight)
-    //         const height = line_count * line_height + 20 // +20 for some padding
-    //         editor_ref.current!.style.height = `${height}px`
-    //         monaco_input_model.layout()
-    //     }
-
-    //     update_height() // Initial height set
-
-    //     const disposable = monaco_input_model.onDidChangeModelContent(update_height)
-
-    //     return () => disposable.dispose()
-    // }, [monaco_input_model, editor_ref.current, props.editable])
-
-
-    // // Focus/blur handling for styling
-    // useEffect(() =>
-    // {
-    //     if (!editor_ref.current) return
-
-    //     const focus_handler = () => set_is_focused(true)
-    //     const blur_handler = () => set_is_focused(false)
-
-    //     const dom_node = editor_ref.current
-    //     dom_node.addEventListener("focusin", focus_handler)
-    //     dom_node.addEventListener("focusout", blur_handler)
-
-    //     return () => {
-    //         dom_node.removeEventListener("focusin", focus_handler)
-    //         dom_node.removeEventListener("focusout", blur_handler)
-    //     }
-    // }, [editor_ref.current])
-
-    console.log("Rendering InnerCodeEditor")
+    // console .log("Rendering InnerCodeEditor")
 
     return useMemo(() => <div ref={editor_el_ref} style={{ height: 400 }} />, [])
 }
@@ -348,7 +208,7 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
 
 function set_up_monaco_editor(input_model_ref: React.RefObject<MonacoEditor | null>, initial_content: string, editor_el: HTMLDivElement): MonacoEditor
 {
-    console.log("Setting up monaco editor")
+    // console .log("Setting up monaco editor")
 
     input_model_ref.current?.dispose()
     input_model_ref.current = monaco.editor.create(editor_el, {
@@ -383,7 +243,7 @@ function upsert_change_and_sync_handler(
     function_arguments: FunctionArgument[],
     on_update: ((text: string) => void) | undefined)
 {
-    console.log("Upserting change and sync handler")
+    // console .log("Upserting change and sync handler")
 
     disposable_sync_fns_ref.current?.()
     disposable_sync_fns_ref.current = null
@@ -393,7 +253,7 @@ function upsert_change_and_sync_handler(
     {
         const user_code = input_model.getValue()
         const wrapped_code = wrap_user_code(function_arguments, user_code)
-        validation_model.setValue(wrapped_code.result)
+        validation_model.setValue(wrapped_code)
         on_update?.(user_code)
     }
     const disposable_on_change_modal_content = input_model.onDidChangeModelContent(sync_validation_model)
@@ -407,20 +267,15 @@ function upsert_change_and_sync_handler(
         if (!markers_changed(previous_markers, new_markers)) return
         previous_markers = new_markers
 
-        const validation_model_text = validation_model.getValue()
-        const user_code = input_model.getValue()
-        // wrapped_code.result! should be same as validation_model_text
-        const wrapped_code = wrap_user_code(function_arguments, user_code)
+        const value = input_model.getValue().split("\n").pop() ?? ""
 
-        const is_multi_line = validation_model_text.includes("\n")
         // Map marker positions back to user's code (subtract wrapper lines and indentation)
-        // `(...function_args) => {` is line 1 when multiline however will
-        // be on line 0 when single line like: `(...function_args) => a + 1`
-        const wrapper_line_offset = is_multi_line ? 1 : 0
-
-        // +4 because of the indentation when multi-line
-        // and when single line then +function_signature.length
-        const wrapper_column_offset = is_multi_line ? 4 : wrapped_code.first_line_sans_body.length
+        // `(...function_args) => {` is line 1
+        const wrapper_line_offset = 1
+        // +4 because of the indentation
+        // +7 if the last line doesn't start with "return " because it will be
+        // automatically added inside the wrapper
+        const wrapper_column_offset = 4 + ((value && !value.startsWith("return ")) ? 7 : 0)
 
         const adjusted_markers = new_markers.map(marker => ({
             ...marker,
@@ -447,11 +302,162 @@ function upsert_change_and_sync_handler(
 }
 
 
+function update_available_globals(data_component_dependencies_by_id: DataComponentsById, function_arguments: FunctionArgument[])
+{
+    const content = get_global_js_lines(data_component_dependencies_by_id, function_arguments).join("\n")
+
+    // This also removes any existing extraLibs but will apply globally to all
+    // editors.  Not ideal but for now I can't find a simple way to isolate the
+    // editors / text models from each other.
+    monaco.languages.typescript.typescriptDefaults.setExtraLibs([{
+        content
+    }])
+}
+
+
+function factory_handle_keydown_and_trigger_search_modal(input_model: MonacoEditor, search_requester_id: string)
+{
+    return (e: KeyboardEvent) =>
+    {
+        if (e.key !== "@") return
+        e.preventDefault()
+
+        // Find the word after the cursor
+        const position = input_model.getPosition()
+        if (!position) return
+        const word_info = input_model.getModel()?.getWordAtPosition(position)
+        const word_after_cursor = word_info?.word ?? ""
+
+        pub_sub.pub("search_for_reference", {
+            search_requester_id, search_term: word_after_cursor,
+        })
+    }
+}
+
+
+function handle_search_modal_result(input_model: MonacoEditor, search_requester_id: string, add_data_component_dependency: (data_component: DataComponent) => void)
+{
+    const unsub = pub_sub.sub("search_for_reference_completed", (data) =>
+    {
+        if (data.search_requester_id !== search_requester_id) return
+
+        const position = input_model.getPosition()
+        if (!position) return
+
+        const word_info = input_model.getModel()?.getWordAtPosition(position)
+        const range = word_info ? new monaco.Range(
+            position.lineNumber,
+            word_info.startColumn,
+            position.lineNumber,
+            word_info.endColumn
+        ) : new monaco.Range(
+            position.lineNumber,
+            position.column,
+            position.lineNumber,
+            position.column
+        )
+
+        const safe_component_title_ref = to_javascript_reference(data.data_component)
+
+        input_model.executeEdits("insert-ref-to-component", [{
+            range,
+            text: safe_component_title_ref,
+            forceMoveMarkers: true,
+        }])
+
+        // Move cursor to end of inserted text
+        const new_position = {
+            lineNumber: position.lineNumber,
+            column: range.startColumn + safe_component_title_ref.length,
+        }
+        input_model.setPosition(new_position)
+        input_model.focus()
+
+        add_data_component_dependency(data.data_component)
+    })
+
+    return unsub
+}
+
+
+function handle_focus_blur_events(
+    editor_dom_node: HTMLDivElement,
+    input_model: MonacoEditor,
+    auto_focus: boolean | undefined,
+    set_is_focused: (focused: boolean) => void
+)
+{
+    const focus_handler = () => set_is_focused(true)
+    const blur_handler = () => set_is_focused(false)
+
+    editor_dom_node.addEventListener("focusin", focus_handler)
+    editor_dom_node.addEventListener("focusout", blur_handler)
+
+    if (auto_focus)
+    {
+        input_model.focus()
+        set_is_focused(true) // Ensure this is in sync with state
+    }
+
+    return () => {
+        editor_dom_node.removeEventListener("focusin", focus_handler)
+        editor_dom_node.removeEventListener("focusout", blur_handler)
+    }
+}
+
+
+function show_hover_tips_on_mobile_cursor(input_model: MonacoEditor)
+{
+    // When on mobile, show help/context (such as JSDoc or hover info) when the
+    // cursor is inside a token, not just on hover
+    if (!is_mobile_device()) return
+
+    const show_hover_on_cursor = () =>
+    {
+        input_model.trigger("keyboard", "editor.action.showHover", {})
+    }
+
+    // Listen for cursor position changes
+    const disposable = input_model.onDidChangeCursorPosition(show_hover_on_cursor)
+
+    return () => disposable.dispose()
+}
+
+
+function resize_editor_on_window_resize(input_model: MonacoEditor)
+{
+    // Resize the editor when the window resizes
+    const handle_resize = () => input_model.layout()
+    window.addEventListener("resize", handle_resize)
+
+    return () => window.removeEventListener("resize", handle_resize)
+}
+
+
+function update_height_to_match_content(monaco_input_model: MonacoEditor, editor_dom_node: HTMLDivElement)
+{
+    // Add or remove height from editor_ref div style as more lines are added/removed
+    const update_height = () =>
+    {
+        const raw_line_count = monaco_input_model.getModel()?.getLineCount()
+        const line_count = Math.min(raw_line_count ?? 1, is_mobile_device() ? 20 : 32) //: (raw_line_count ?? 1)
+        const line_height = monaco_input_model.getOption(monaco.editor.EditorOption.lineHeight)
+        const height = line_count * line_height + 20 // +20 for some padding
+        editor_dom_node.style.height = `${height}px`
+        monaco_input_model.layout()
+    }
+    update_height() // Initial height set
+
+    const disposable = monaco_input_model.onDidChangeModelContent(update_height)
+
+    return () => disposable.dispose()
+}
+
+
 function wrap_user_code(function_arguments: FunctionArgument[] | undefined, user_code: string)
 {
     return format_function_input_value_string({
         js_input_value: user_code,
-        requested_at: Date.now(),
         function_arguments: function_arguments ?? [],
     })
 }

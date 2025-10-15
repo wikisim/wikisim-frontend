@@ -164,13 +164,14 @@ function CodeEditorDemo (props: { editing: boolean, invalid_value: false | strin
         Function Arguments: {(function_arguments || []).map(fa => fa.name).join(", ") || "None"}
         <br/>
         <br/>
-        {/* <CodeEditor
+        <CodeEditor
             editable={false}
             initial_content={input_value}
             value={input_value}
+            function_arguments={function_arguments}
             label="Function Value"
-            invalid_value={props.invalid_value}
-        /> */}
+            // invalid_value={props.invalid_value}
+        />
         <br />
         <br />
         <CodeEditor
@@ -183,7 +184,7 @@ function CodeEditorDemo (props: { editing: boolean, invalid_value: false | strin
             label="Input Value"
             auto_focus={true}
             on_update={set_input_value}
-            invalid_value={props.invalid_value}
+            // invalid_value={props.invalid_value}
         />
     </>
 }

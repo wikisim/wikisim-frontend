@@ -17,6 +17,7 @@ import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandbox
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 
 import { app_store } from "../../../state/store"
+import { omit_or_truncate_long_code_string } from "../../../text_editor/omit_or_truncate_long_code_string"
 import { TextDisplayOnlyV1 } from "../../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../../text_editor/TextEditorV2"
@@ -118,7 +119,7 @@ export function ValueEditor(props: ValueEditorProps)
                     <div style={{ flexGrow: 1 }}>
                         <TextDisplayOnlyV1
                             label="Value"
-                            value={opened ? truncate(formatted_value) : formatted_value}
+                            value={opened ? omit_or_truncate_long_code_string(formatted_value) : formatted_value}
                         />
                     </div>
 
@@ -210,34 +211,6 @@ export function ValueEditor(props: ValueEditorProps)
 
         </div>
     </>
-}
-
-
-function truncate(str: string, max_length: number = 100, max_lines: number = 8)
-{
-    const lines = str.split("\n")
-    if (lines.length > max_lines)
-    {
-        const selected_lines = [
-            ...lines.slice(0, max_lines / 2),
-            "\n(...omitted...)",
-            ...lines.slice(lines.length - (max_lines / 2), lines.length)
-        ]
-
-        return selected_lines.join("\n")
-    }
-
-    const accepted_lines: string[] = []
-    for (const line of lines)
-    {
-        if (line.length < max_length) accepted_lines.push(line)
-        else
-        {
-            accepted_lines.push(line.slice(0, max_length) + " (...truncated)")
-        }
-    }
-
-    return accepted_lines.join("\n")
 }
 
 
