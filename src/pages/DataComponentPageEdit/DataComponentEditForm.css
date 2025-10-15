@@ -19,7 +19,7 @@
 
 .data-component-form-column
 {
-    max-width: 700px;
+    max-width: var(--max-column-width);
 }
 
 .data-component-form.editable .tiptap-editor-container
@@ -41,8 +41,8 @@
 
 .buttons-container-spacer
 {
-    width: 50px;
-    flex: 0 0 50px;
+    width: var(--width-for-fixed-buttons);
+    flex: 0 0 var(--width-for-fixed-buttons);
 }
 .buttons-container
 {

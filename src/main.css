@@ -44,6 +44,9 @@
     --hgap-large: 20px;
     --hgap-mid: 10px;
 
+    --width-for-fixed-buttons: 50px;
+    --max-column-width: 700px;
+
     --common-indent-size: 20px;
 }
 
