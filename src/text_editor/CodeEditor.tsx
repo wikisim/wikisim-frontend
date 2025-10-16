@@ -262,7 +262,7 @@ function set_up_monaco_editor(input_model_ref: React.RefObject<MonacoEditor | nu
 
 function upsert_change_and_sync_handler(
     disposable_sync_fns_ref: MutableRef<(() => void) | null>,
-    input_model: MonacoEditor,
+    input_editor: MonacoEditor,
     validation_model: ITextModel,
     function_arguments: FunctionArgument[],
     on_update: ((text: string) => void) | undefined)
@@ -275,29 +275,30 @@ function upsert_change_and_sync_handler(
     // Sync changes from props.function_arguments and visible editor to validation model
     function sync_validation_model()
     {
-        const user_code = input_model.getValue()
+        const user_code = input_editor.getValue()
         const wrapped_code = wrap_user_code(function_arguments, user_code)
         validation_model.setValue(wrapped_code)
         on_update?.(user_code)
     }
-    const disposable_on_change_modal_content = input_model.onDidChangeModelContent(sync_validation_model)
+    const disposable_on_change_modal_content = input_editor.onDidChangeModelContent(sync_validation_model)
 
     let previous_input_model_markers: monaco.editor.IMarker[] | undefined = undefined
     let previous_validation_markers: monaco.editor.IMarker[] | undefined = undefined
 
     function respond_to_change_in_markers(force?: boolean)
     {
-        const new_input_model_markers = monaco.editor.getModelMarkers({ resource: input_model.getModel()!.uri })
-        const new_markers = monaco.editor.getModelMarkers({ resource: validation_model.uri })
+        const input_model = input_editor.getModel()
+        const new_input_model_markers = input_model ? monaco.editor.getModelMarkers({ resource: input_model.uri }) : undefined
+        const new_validation_markers = monaco.editor.getModelMarkers({ resource: validation_model.uri })
 
-        const changed_input_model_markers = markers_changed(previous_input_model_markers, new_markers)
-        const changed_validation_markers = markers_changed(previous_validation_markers, new_markers)
+        const changed_input_model_markers = markers_changed(previous_input_model_markers, new_input_model_markers)
+        const changed_validation_markers = markers_changed(previous_validation_markers, new_validation_markers)
 
         if (!changed_validation_markers && !changed_input_model_markers && !force) return
         previous_input_model_markers = new_input_model_markers
-        previous_validation_markers = new_markers
+        previous_validation_markers = new_validation_markers
 
-        const input_value_lines = input_model.getValue().trim().split("\n")
+        const input_value_lines = input_editor.getValue().trim().split("\n")
         const last_line = input_value_lines.last() ?? ""
         const last_line_starts_with_return = last_line.trim().startsWith("return ")
 
@@ -307,7 +308,7 @@ function upsert_change_and_sync_handler(
         // +4 because of the indentation
         const wrapper_column_offset = 4
 
-        const adjusted_markers = new_markers.map(marker =>
+        const adjusted_markers = new_validation_markers.map(marker =>
         {
             const remove_return_offset = (line_number: number) =>
             {
@@ -328,7 +329,7 @@ function upsert_change_and_sync_handler(
         }).filter(marker => marker.startLineNumber > 0)
 
         // Set markers on the visible editor
-        monaco.editor.setModelMarkers(input_model.getModel()!, "typescript", adjusted_markers)
+        monaco.editor.setModelMarkers(input_editor.getModel()!, "typescript", adjusted_markers)
     }
     // Listen for diagnostics on the validation model
     const disposable_on_change_markers = monaco.editor.onDidChangeMarkers(() => respond_to_change_in_markers())
@@ -344,9 +345,9 @@ function upsert_change_and_sync_handler(
     // This error is reproducible on local but only if you close the section and
     // reopen it: that should cause this element to be unmounted and remounted
     // and there must be some state somewhere.
-    setTimeout(() => respond_to_change_in_markers(true), 100)
-    setTimeout(() => respond_to_change_in_markers(true), 500)
-    setTimeout(() => respond_to_change_in_markers(true), 2000)
+    // setTimeout(() => respond_to_change_in_markers(true), 100)
+    // setTimeout(() => respond_to_change_in_markers(true), 500)
+    // setTimeout(() => respond_to_change_in_markers(true), 2000)
 
     function disposable_sync_fns()
     {
@@ -527,9 +528,11 @@ function wrap_user_code(function_arguments: FunctionArgument[] | undefined, user
 }
 
 
-function markers_changed(old_markers: monaco.editor.IMarker[] | undefined, new_markers: monaco.editor.IMarker[])
+function markers_changed(old_markers: monaco.editor.IMarker[] | undefined, new_markers: monaco.editor.IMarker[] | undefined)
 {
-    if (!old_markers) return true
+    if (!old_markers) return !!new_markers
+    else if (!new_markers) return true
+
     if (old_markers.length !== new_markers.length) return true
     for (let i = 0; i < old_markers.length; ++i)
     {
