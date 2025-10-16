@@ -282,7 +282,7 @@ function upsert_change_and_sync_handler(
     }
     const disposable_on_change_modal_content = input_model.onDidChangeModelContent(sync_validation_model)
 
-    let previous_markers: monaco.editor.IMarker[] = []
+    let previous_markers: monaco.editor.IMarker[] | undefined = undefined
 
     // Listen for diagnostics on the validation model
     const disposable_on_change_markers = monaco.editor.onDidChangeMarkers(() =>
@@ -507,8 +507,9 @@ function wrap_user_code(function_arguments: FunctionArgument[] | undefined, user
 }
 
 
-function markers_changed(old_markers: monaco.editor.IMarker[], new_markers: monaco.editor.IMarker[])
+function markers_changed(old_markers: monaco.editor.IMarker[] | undefined, new_markers: monaco.editor.IMarker[])
 {
+    if (!old_markers) return true
     if (old_markers.length !== new_markers.length) return true
     for (let i = 0; i < old_markers.length; ++i)
     {
