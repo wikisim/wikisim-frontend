@@ -61,9 +61,3 @@ export interface DataComponentsState
     insert_data_component: (data_component: NewDataComponent) => Promise<UpsertDataComponentResult>
     update_data_component: (data_component: DataComponent) => Promise<UpsertDataComponentResult>
 }
-
-
-export interface DataComponentsById
-{
-    [id: string]: DataComponent
-}

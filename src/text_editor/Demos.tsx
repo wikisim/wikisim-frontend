@@ -1,6 +1,6 @@
 import { useState } from "preact/hooks"
 
-import { tiptap_mention_chip } from "core/test/fixtures"
+import { tiptap_mention_chip } from "core/rich_text/tiptap_mention_chip"
 
 import { Button } from "@mantine/core"
 import { FunctionArgument } from "../../lib/core/src/data/interface"

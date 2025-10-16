@@ -7,7 +7,7 @@ import { hydrate_data_component_from_json } from "core/data/convert_between_json
 import { DataComponent, NewDataComponent } from "core/data/interface"
 import { init_data_component } from "core/data/modify"
 import { make_field_validators } from "core/data/validate_fields"
-import { tiptap_mention_chip } from "core/test/fixtures"
+import { tiptap_mention_chip } from "core/rich_text/tiptap_mention_chip"
 
 import { RootAppState } from "../../state/interface"
 import { load_referenced_data_components } from "./load_referenced_data_components"

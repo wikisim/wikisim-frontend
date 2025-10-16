@@ -1,7 +1,7 @@
 import { Editor } from "@tiptap/core"
 import { expect } from "chai"
 
-import { tiptap_mention_chip } from "core/test/fixtures"
+import { tiptap_mention_chip } from "core/rich_text/tiptap_mention_chip"
 
 import { get_tiptap_extensions } from "./tiptap_extensions"
 

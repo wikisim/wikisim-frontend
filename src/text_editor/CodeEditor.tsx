@@ -3,18 +3,17 @@ import { MutableRef, useEffect, useMemo, useRef, useState } from "preact/hooks"
 type MonacoEditor = monaco.editor.IStandaloneCodeEditor
 type ITextModel = monaco.editor.ITextModel
 
-import { DataComponent, FunctionArgument } from "core/data/interface"
+import { extract_ids_from_text } from "core/data/id"
+import { DataComponent, DataComponentsById, FunctionArgument } from "core/data/interface"
 import { to_javascript_identifier } from "core/data/to_javascript_identifier"
 import { format_function_input_value_string } from "core/evaluator/format_function"
+import { get_global_js_lines, upsert_js_component_const } from "core/rich_text/get_global_js_lines"
 
-import { extract_ids_from_text } from "../../lib/core/src/data/id"
 import pub_sub from "../pub_sub"
-import { DataComponentsById } from "../state/data_components/interface"
 import { RootAppState } from "../state/interface"
 import { app_store } from "../state/store"
 import { is_mobile_device } from "../utils/is_mobile_device"
 import "./CodeEditor.css"
-import { get_global_js_lines, upsert_js_component_const } from "./get_global_js_lines"
 import { omit_or_truncate_long_code_string } from "./omit_or_truncate_long_code_string"
 
 
