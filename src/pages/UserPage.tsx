@@ -47,25 +47,27 @@ export function UserPage(props: { user_id_or_name: string })
             </h2>
 
             <div className="user-page-row">
-                <s>Show list of edits by {user.name}</s><Button
-                    disabled={true}
+                <Button
                     component="a"
                     href={ROUTES.DATA_COMPONENT.SEARCH({ user_id: user.id })}
                     variant="primary-user"
                     size="md"
-                >Not implemented yet</Button>
+                >{user.name}'s pages</Button>
             </div>
 
             <div class="vertical-gap" />
 
             <div className="user-page-row">
-                Show list of {user.name}'s user space pages<Button
+                <Button
+                    disabled={true}
                     component="a"
                     href={ROUTES.DATA_COMPONENT.SEARCH({ user_id: user.id })}
                     variant="primary-user"
                     size="md"
-                >Search</Button>
+                >Edits by {user.name} (not implemented yet)</Button>
             </div>
+
+            <div class="vertical-gap" />
 
             {is_you && <NewDataComponentButtons button_size="md" />}
         </div>
