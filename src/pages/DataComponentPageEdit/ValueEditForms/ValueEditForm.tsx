@@ -86,7 +86,7 @@ export function ValueEditor(props: ValueEditorProps)
                 set_evaluation_error(response.error)
                 return
             }
-            console .debug("Calculated result value:", response.result, "\nInput value:", response.js_input_value)
+            // console .debug("Calculated result value:", response.result, "\nInput value:", response.js_input_value)
             const result_value = response.result || undefined
             on_change({ result_value })
             set_evaluation_error(undefined)

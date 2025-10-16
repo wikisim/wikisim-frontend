@@ -256,24 +256,6 @@ function set_up_monaco_editor(input_model_ref: React.RefObject<MonacoEditor | nu
         lineDecorationsWidth: 0, // removes extra gutter space
     })
 
-
-    // Disable TypeScript validation for this specific model, instead the
-    // validation_model will be used for getting diagnostics on errors in the
-    // code.
-    const model = input_model_ref.current.getModel()
-    if (model)
-    {
-        // Get the current diagnostics options
-        const currentOptions = monaco.languages.typescript.typescriptDefaults.getDiagnosticsOptions()
-
-        monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-            ...currentOptions,
-            // Ignore validation for this model
-            onlyVisible: false,
-        })
-    }
-
-
     return input_model_ref.current
 }
 
@@ -300,14 +282,20 @@ function upsert_change_and_sync_handler(
     }
     const disposable_on_change_modal_content = input_model.onDidChangeModelContent(sync_validation_model)
 
-    let previous_markers: monaco.editor.IMarker[] | undefined = undefined
+    let previous_input_model_markers: monaco.editor.IMarker[] | undefined = undefined
+    let previous_validation_markers: monaco.editor.IMarker[] | undefined = undefined
 
-    // Listen for diagnostics on the validation model
-    const disposable_on_change_markers = monaco.editor.onDidChangeMarkers(() =>
+    function respond_to_change_in_markers(force?: boolean)
     {
+        const new_input_model_markers = monaco.editor.getModelMarkers({ resource: input_model.getModel()!.uri })
         const new_markers = monaco.editor.getModelMarkers({ resource: validation_model.uri })
-        if (!markers_changed(previous_markers, new_markers)) return
-        previous_markers = new_markers
+
+        const changed_input_model_markers = markers_changed(previous_input_model_markers, new_markers)
+        const changed_validation_markers = markers_changed(previous_validation_markers, new_markers)
+
+        if (!changed_validation_markers && !changed_input_model_markers && !force) return
+        previous_input_model_markers = new_input_model_markers
+        previous_validation_markers = new_markers
 
         const input_value_lines = input_model.getValue().trim().split("\n")
         const last_line = input_value_lines.last() ?? ""
@@ -341,10 +329,24 @@ function upsert_change_and_sync_handler(
 
         // Set markers on the visible editor
         monaco.editor.setModelMarkers(input_model.getModel()!, "typescript", adjusted_markers)
-    })
+    }
+    // Listen for diagnostics on the validation model
+    const disposable_on_change_markers = monaco.editor.onDidChangeMarkers(() => respond_to_change_in_markers())
 
     // Now trigger an initial sync
     sync_validation_model()
+    // Total fudge to try to ensure stale markers from input_model are
+    // overwritten by correct markers from validation_model.  If these are not
+    // used and you go to https://wikisim.org/edit/1021 (of version6 as of
+    // writing this), then when you first view the input_value in this CodeEditor
+    // there may be 2 errors for the `return` statements saying
+    //      "A 'return' statement can only be used within a function body.(1108)"
+    // This error is reproducible on local but only if you close the section and
+    // reopen it: that should cause this element to be unmounted and remounted
+    // and there must be some state somewhere.
+    setTimeout(() => respond_to_change_in_markers(true), 100)
+    setTimeout(() => respond_to_change_in_markers(true), 500)
+    setTimeout(() => respond_to_change_in_markers(true), 2000)
 
     function disposable_sync_fns()
     {
