@@ -279,6 +279,11 @@ function upsert_change_and_sync_handler(
         const wrapped_code = wrap_user_code(function_arguments, user_code)
         validation_model.setValue(wrapped_code)
         on_update?.(user_code)
+
+        // Clear any markers on the input model immediately
+        // This prevents stale validation markers from showing.  Think there is
+        // otherwise some kind of race condition.
+        monaco.editor.setModelMarkers(input_model.getModel()!, "typescript", [])
     }
     const disposable_on_change_modal_content = input_model.onDidChangeModelContent(sync_validation_model)
 
