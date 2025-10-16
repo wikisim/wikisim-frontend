@@ -6,7 +6,7 @@ import "./NewDataComponentButtons.css"
 
 
 
-export function NewDataComponentButtons(props: { button_size?: "md" })
+export function NewDataComponentButtons(props: { button_size?: "sm" | "md" | "lg" } )
 {
     const { button_size = "lg" } = props
 
