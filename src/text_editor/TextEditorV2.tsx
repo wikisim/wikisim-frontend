@@ -4,6 +4,8 @@ import { Selection } from "@tiptap/pm/state"
 import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react"
 import { useEffect, useMemo, useRef, useState } from "preact/hooks"
 
+import { preserve_leading_spaces } from "core/rich_text/convert_text_type"
+
 import pub_sub from "../pub_sub"
 import "../ui_components/input_elements.shared.css"
 import { remove_p_tags } from "./sanitise_html"
@@ -385,39 +387,6 @@ export function TextEditorV2({
             </button>
         </div> */}
     </>
-}
-
-
-/**
- * function preserve_leading_spaces
- *
- * Will replace multiple spaces with a nbsp and a space.
- *
- * This code is necessary otherwise leading spaces will not be
- * preserved in text.  However it has very strange, hard to
- * predict behaviour:
- *          line1            ==>   line1
- *          {                ==>   {
- *              return {     ==>   return {    // <-- Wrong indentation
- *              }            ==>       }
- *          }                ==>   }
- *
- * Not yet happy with this implementation because:
- *   * No tests
- *   * Not easy to manually reproduce in browser
- *   * Converts all double spaces, not just leading ones
- *   * Have not test with mixed tabs and spaces, or mixed nbsp and spaces
- */
-function preserve_leading_spaces(input: string, type: "html" | "text"): string
-{
-    if (type === "html")
-    {
-        return input.replace(/ {2}/g, "&nbsp; ")
-    }
-    else
-    {
-        return input.replace(/ {2}/g, "\u00A0 ")
-    }
 }
 
 
