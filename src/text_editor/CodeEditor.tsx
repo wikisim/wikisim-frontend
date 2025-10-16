@@ -256,6 +256,24 @@ function set_up_monaco_editor(input_model_ref: React.RefObject<MonacoEditor | nu
         lineDecorationsWidth: 0, // removes extra gutter space
     })
 
+
+    // Disable TypeScript validation for this specific model, instead the
+    // validation_model will be used for getting diagnostics on errors in the
+    // code.
+    const model = input_model_ref.current.getModel()
+    if (model)
+    {
+        // Get the current diagnostics options
+        const currentOptions = monaco.languages.typescript.typescriptDefaults.getDiagnosticsOptions()
+
+        monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+            ...currentOptions,
+            // Ignore validation for this model
+            onlyVisible: false,
+        })
+    }
+
+
     return input_model_ref.current
 }
 
@@ -279,11 +297,6 @@ function upsert_change_and_sync_handler(
         const wrapped_code = wrap_user_code(function_arguments, user_code)
         validation_model.setValue(wrapped_code)
         on_update?.(user_code)
-
-        // Clear any markers on the input model immediately
-        // This prevents stale validation markers from showing.  Think there is
-        // otherwise some kind of race condition.
-        monaco.editor.setModelMarkers(input_model.getModel()!, "typescript", [])
     }
     const disposable_on_change_modal_content = input_model.onDidChangeModelContent(sync_validation_model)
 
