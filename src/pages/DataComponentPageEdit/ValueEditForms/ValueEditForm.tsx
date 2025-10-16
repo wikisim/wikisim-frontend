@@ -177,6 +177,7 @@ export function ValueEditor(props: ValueEditorProps)
                         label={active => active ? "Code Editor" : "Rich Text Editor"}
                         active={use_code_editor}
                         set_active={set_use_code_editor}
+                        style={{ padding: "4px 8px" }}
                     />}
 
                     {show_units && <TextEditorV1

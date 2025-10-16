@@ -13,6 +13,7 @@ interface ToggleTwoProps
     label: (v: boolean) => string | h.JSX.Element
     set_active: (v: boolean) => void
     labelPosition?: "left" | "right"
+    style?: h.JSX.CSSProperties
 }
 export function ToggleTwo(props: ToggleTwoProps)
 {
@@ -25,7 +26,7 @@ export function ToggleTwo(props: ToggleTwoProps)
         if (e.key === "Enter" && focused) set_active(!active)
     }), [focused, set_active, active])
 
-    return <div className="toggle-two">
+    return <div className="toggle-two" style={props.style}>
         <Switch
             disabled={props.disabled}
             checked={active}
