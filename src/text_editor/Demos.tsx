@@ -1,10 +1,10 @@
+import { Button } from "@mantine/core"
 import { useState } from "preact/hooks"
 
+import { FunctionArgument } from "core/data/interface"
 import { tiptap_mention_chip } from "core/rich_text/tiptap_mention_chip"
+import { deindent } from "core/utils/deindent"
 
-import { Button } from "@mantine/core"
-import { FunctionArgument } from "../../lib/core/src/data/interface"
-import { deindent } from "../../lib/core/src/utils/deindent"
 import EditOrSaveButton from "../buttons/EditOrSaveButton"
 import { CodeEditor } from "./CodeEditor"
 import { TextEditorV1 } from "./TextEditorV1"
