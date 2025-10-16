@@ -1,4 +1,4 @@
-import { useRef, useState } from "preact/hooks"
+import { useState } from "preact/hooks"
 
 import { tiptap_mention_chip } from "core/test/fixtures"
 
@@ -150,7 +150,6 @@ function CodeEditorDemo (props: { editing: boolean, invalid_value: false | strin
 
     // return add(param1, 2)  // change param1 to a_param to see error goes away
     // `))
-    const intial_input_value = useRef(input_value).current
     const [function_arguments, set_function_arguments] = useState<FunctionArgument[] | undefined>([{ name: "a_param", id: 0 }])
 
     const toggle_function_arguments = () =>
@@ -171,7 +170,6 @@ function CodeEditorDemo (props: { editing: boolean, invalid_value: false | strin
         <CodeEditor
             editable={false}
             initial_content={input_value}
-            value={input_value}
             function_arguments={function_arguments}
             label="Function Value"
             // invalid_value={props.invalid_value}
@@ -180,8 +178,7 @@ function CodeEditorDemo (props: { editing: boolean, invalid_value: false | strin
         <br />
         <CodeEditor
             editable={props.editing}
-            initial_content={intial_input_value}
-            value={input_value}
+            initial_content={input_value}
             function_arguments={function_arguments}
             // single_line={false}
             // auto_focus={false}

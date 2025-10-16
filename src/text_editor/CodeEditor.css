@@ -1,4 +1,14 @@
 
+.code-editor-container
+{
+    padding: 12px 0px 8px 12px;
+}
+
+.code-editor-container label
+{
+    top: 12px;
+}
+
 
 .code-editor-container.non-editable
 {
@@ -42,16 +52,4 @@
 .code-editor-container.non-editable:hover::-webkit-scrollbar
 {
     display: block;
-}
-
-
-
-.code-editor-container
-{
-    padding: 12px 0px 8px 12px;
-}
-
-.code-editor-container label
-{
-    top: 12px;
 }

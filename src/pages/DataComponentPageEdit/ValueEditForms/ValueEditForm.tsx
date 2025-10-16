@@ -17,6 +17,7 @@ import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandbox
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 
 import { app_store } from "../../../state/store"
+import { CodeEditor } from "../../../text_editor/CodeEditor"
 import { omit_or_truncate_long_code_string } from "../../../text_editor/omit_or_truncate_long_code_string"
 import { TextDisplayOnlyV1 } from "../../../text_editor/TextDisplayOnlyV1"
 import { TextEditorV1 } from "../../../text_editor/TextEditorV1"
@@ -107,6 +108,14 @@ export function ValueEditor(props: ValueEditorProps)
     const value_type_is_number = value_type === "number"
     const value_type_is_function = value_type === "function"
     // const value_type_is_interactable = value_type === "interactable"
+
+    // Explore allowing user to swap from TipTap editor to Monaco code editor
+    // They just have to clear the text and type "pce" and then replace that but
+    // ensure there is always some content.
+    const use_code_editor = draft_component.input_value && (
+        draft_component.input_value.match(/^<p>(prototype code editor|pce)/)
+        || !draft_component.input_value.startsWith("<p>")
+    )
     const show_units = value_type_is_number
 
     return <>
@@ -131,8 +140,16 @@ export function ValueEditor(props: ValueEditorProps)
                 <div class="vertical-gap" />
 
                 {opened && <>
-                    {/* <CodeEditor initial_content="" /> */}
-                    <TextEditorV2
+                    {use_code_editor
+                    ? <CodeEditor
+                        label={value_type_is_number ? "Input Value" : "Function"}
+                        initial_content={draft_component.input_value || ""}
+                        function_arguments={draft_component.function_arguments}
+                        on_update={debounced_handle_update_input_value}
+                        editable={true}
+                        auto_focus={true}
+                    />
+                    : <TextEditorV2
                         label={value_type_is_number ? "Input Value" : "Function"}
                         initial_content={draft_component.input_value ?? ""}
                         on_update={debounced_handle_update_input_value}
@@ -141,7 +158,7 @@ export function ValueEditor(props: ValueEditorProps)
                         auto_focus={true}
                         include_version_in_at_mention={true}
                         experimental_code_editor_features={true}
-                    />
+                    />}
                     {show_units && <TextEditorV1
                         label="Units"
                         initial_content={draft_component.units ?? ""}

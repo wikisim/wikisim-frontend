@@ -4,14 +4,17 @@ type MonacoEditor = monaco.editor.IStandaloneCodeEditor
 type ITextModel = monaco.editor.ITextModel
 
 import { DataComponent, FunctionArgument } from "core/data/interface"
-import { to_javascript_reference } from "core/data/to_javascript_reference"
+import { to_javascript_identifier } from "core/data/to_javascript_identifier"
 import { format_function_input_value_string } from "core/evaluator/format_function"
 
+import { extract_ids_from_text } from "../../lib/core/src/data/id"
 import pub_sub from "../pub_sub"
 import { DataComponentsById } from "../state/data_components/interface"
+import { RootAppState } from "../state/interface"
+import { app_store } from "../state/store"
 import { is_mobile_device } from "../utils/is_mobile_device"
 import "./CodeEditor.css"
-import { get_global_js_lines } from "./get_global_js_lines"
+import { get_global_js_lines, upsert_js_component_const } from "./get_global_js_lines"
 import { omit_or_truncate_long_code_string } from "./omit_or_truncate_long_code_string"
 
 
@@ -41,7 +44,6 @@ interface CodeEditorProps
 {
     editable: boolean
     initial_content: string
-    value: string
     function_arguments: FunctionArgument[] | undefined
     // single_line?: boolean
     auto_focus?: boolean
@@ -54,6 +56,13 @@ interface CodeEditorProps
 export function CodeEditor(props: CodeEditorProps)
 {
     const [is_focused, set_is_focused] = useState(props.auto_focus ?? false)
+    const [value, set_value] = useState(props.initial_content)
+
+    const on_update = useMemo(() => (value: string) =>
+    {
+        set_value(value)
+        props.on_update?.(value)
+    }, [props.on_update])
 
     if (!props.editable)
     {
@@ -77,22 +86,26 @@ export function CodeEditor(props: CodeEditorProps)
 
     return <div
         style={{
+            // Known issue where if the window width is increase, the Monaco editor
+            // will resize to fill it but when the window width is shrunk again
+            // then the Monaco editor will not shrink again.  Refreshing the page
+            // of the smaller window will make it fit again.  Won't fix this for now.
             maxWidth: "var(--max-column-width)",
-            padding: "0 var(--width-for-fixed-buttons) 0 var(--hgap-large)",
+            // padding: "0 var(--width-for-fixed-buttons) 0 var(--hgap-large)",
         }}
     >
         <div className={
             "code-editor-container"
             + (is_focused ? " is_focused" : "")
-            + (props.value && props.value.length > 0 ? " has_value" : "")
+            + (value && value.length > 0 ? " has_value" : "")
             // + (props.invalid_value ? " invalid_value" : "")
         }>
             <InnerCodeEditor
                 initial_content={props.initial_content}
                 function_arguments={props.function_arguments}
-                on_update={props.on_update}
+                on_update={on_update}
 
-                auto_focus={props.auto_focus}
+                // auto_focus={props.auto_focus}
                 set_is_focused={set_is_focused}
             />
             <label>{props.label}</label>
@@ -112,7 +125,7 @@ interface InnerCodeEditorProps
 }
 function InnerCodeEditor(props: InnerCodeEditorProps)
 {
-    const initial_content_ref = useRef(props.initial_content)
+    // const initial_content_ref = useRef(props.initial_content)
     const editor_el_ref = useRef<HTMLDivElement | null>(null)
     const input_model_ref = useRef<MonacoEditor | null>(null)
     const validation_model_ref = useRef<ITextModel | null>(null)
@@ -131,13 +144,11 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
     }, [])
 
 
-    if (initial_content_ref.current !== props.initial_content)
+    const app_state = app_store()
+    useEffect(() =>
     {
-        // Reset all the refs
-        initial_content_ref.current = props.initial_content
-        // update the input_model_ref with new value
-        input_model_ref.current?.setValue(props.initial_content)
-    }
+        load_dependencies(app_state, props.initial_content, add_data_component_dependency)
+    })
 
 
     useEffect(() =>
@@ -206,6 +217,19 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
 }
 
 
+function load_dependencies(app_state: RootAppState, initial_content: string, add_data_component_dependency: (data_component: DataComponent) => void)
+{
+    const ids = extract_ids_from_text(initial_content)
+
+    ids.forEach(id_and_version =>
+    {
+        const ref_component = app_state.data_components.data_component_by_id_and_maybe_version[id_and_version.to_str()]
+        if (!ref_component || !ref_component.component) return
+        add_data_component_dependency(ref_component.component)
+    })
+}
+
+
 function set_up_monaco_editor(input_model_ref: React.RefObject<MonacoEditor | null>, initial_content: string, editor_el: HTMLDivElement): MonacoEditor
 {
     // console .log("Setting up monaco editor")
@@ -216,7 +240,7 @@ function set_up_monaco_editor(input_model_ref: React.RefObject<MonacoEditor | nu
         language: "typescript",
         lineNumbers: "off",
         minimap: { enabled: false },
-        wordWrap: "off",
+        wordWrap: "on",
         rulers: get_rulers(),
         scrollBeyondLastLine: false,
         readOnly: false,
@@ -267,23 +291,35 @@ function upsert_change_and_sync_handler(
         if (!markers_changed(previous_markers, new_markers)) return
         previous_markers = new_markers
 
-        const value = input_model.getValue().split("\n").pop() ?? ""
+        const input_value_lines = input_model.getValue().trim().split("\n")
+        const last_line = input_value_lines.last() ?? ""
+        const last_line_starts_with_return = last_line.trim().startsWith("return ")
 
         // Map marker positions back to user's code (subtract wrapper lines and indentation)
         // `(...function_args) => {` is line 1
         const wrapper_line_offset = 1
         // +4 because of the indentation
-        // +7 if the last line doesn't start with "return " because it will be
-        // automatically added inside the wrapper
-        const wrapper_column_offset = 4 + ((value && !value.startsWith("return ")) ? 7 : 0)
+        const wrapper_column_offset = 4
 
-        const adjusted_markers = new_markers.map(marker => ({
-            ...marker,
-            startLineNumber: marker.startLineNumber - wrapper_line_offset,
-            endLineNumber: marker.endLineNumber - wrapper_line_offset,
-            startColumn: marker.startColumn - wrapper_column_offset,
-            endColumn: marker.endColumn - wrapper_column_offset,
-        })).filter(marker => marker.startLineNumber > 0)
+        const adjusted_markers = new_markers.map(marker =>
+        {
+            const remove_return_offset = (line_number: number) =>
+            {
+                // +7 if the last line doesn't start with "return " because it
+                // will be added automatically inside the format_function_input_value_string
+                return (!last_line_starts_with_return && line_number === input_value_lines.length) ? 7 : 0
+            }
+
+            const startLineNumber = marker.startLineNumber - wrapper_line_offset
+            const endLineNumber = marker.endLineNumber - wrapper_line_offset
+            return {
+                ...marker,
+                startLineNumber,
+                endLineNumber,
+                startColumn: marker.startColumn - wrapper_column_offset - remove_return_offset(startLineNumber),
+                endColumn: marker.endColumn - wrapper_column_offset - remove_return_offset(endLineNumber),
+            }
+        }).filter(marker => marker.startLineNumber > 0)
 
         // Set markers on the visible editor
         monaco.editor.setModelMarkers(input_model.getModel()!, "typescript", adjusted_markers)
@@ -357,7 +393,7 @@ function handle_search_modal_result(input_model: MonacoEditor, search_requester_
             position.column
         )
 
-        const safe_component_title_ref = to_javascript_reference(data.data_component)
+        const safe_component_title_ref = to_javascript_identifier(data.data_component)
 
         input_model.executeEdits("insert-ref-to-component", [{
             range,
@@ -372,6 +408,14 @@ function handle_search_modal_result(input_model: MonacoEditor, search_requester_
         }
         input_model.setPosition(new_position)
         input_model.focus()
+
+        // For now we add the data component as a dependency directly to the top
+        // of the code.  In future we could add this to another field to keep it
+        // out of the way and keep the experience cleaner and closer to what we
+        // currently have with the TipTap TextEditorV2
+        const current_value = input_model.getValue()
+        const new_value = upsert_js_component_const(data.data_component, current_value)
+        if (new_value !== current_value) input_model.setValue(new_value)
 
         add_data_component_dependency(data.data_component)
     })
