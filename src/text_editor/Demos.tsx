@@ -28,10 +28,10 @@ export const TextEditorDemos = () =>
         <h2>Code Editor Demo</h2>
         <CodeEditorDemo editing={editing} invalid_value={invalid_value} />
 
-        {/* <h2>Text Editor V1 Demo</h2>
+        <h2>Text Editor V1 Demo</h2>
         <TextEditorV1Demo editing={editing} invalid_value={invalid_value} />
         <h2>Text Editor V2 Demo</h2>
-        <TextEditorV2Demo editing={editing} invalid_value={invalid_value} /> */}
+        <TextEditorV2Demo editing={editing} invalid_value={invalid_value} />
 
     </div>
 }
@@ -88,7 +88,7 @@ const TextEditorV2Demo = (props: { editing: boolean, invalid_value: false | stri
             initial_content={title}
             single_line={true}
             label="Title"
-            on_change={e => {
+            on_change={() => {
                 // set_title(e.currentTarget.value)
             }}
             invalid_value={props.invalid_value}
