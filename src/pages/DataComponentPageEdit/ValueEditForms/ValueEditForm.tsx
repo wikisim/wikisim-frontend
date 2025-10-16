@@ -15,7 +15,10 @@ import { calc_function_arguments_errors } from "core/data/is_data_component_inva
 import { calculate_result_value } from "core/evaluator"
 import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
+import { convert_text_type } from "core/rich_text/convert_text_type"
+import { determine_input_value_text_type } from "core/rich_text/determine_text_type"
 
+import { local_storage } from "../../../state/local_storage"
 import { app_store } from "../../../state/store"
 import { CodeEditor } from "../../../text_editor/CodeEditor"
 import { omit_or_truncate_long_code_string } from "../../../text_editor/omit_or_truncate_long_code_string"
@@ -26,6 +29,7 @@ import { ValueTypeDropdown } from "../../../ui_components/data_component/ValueTy
 import { ErrorMessage } from "../../../ui_components/ErrorMessage"
 import OpenCloseSection from "../../../ui_components/OpenCloseSection"
 import { Select } from "../../../ui_components/Select"
+import { ToggleTwo } from "../../../ui_components/ToggleTwo"
 import { load_referenced_data_components } from "../../../ui_components/utils/load_referenced_data_components"
 import { debounce } from "../../../utils/debounce"
 import { FunctionInputsForm } from "../FunctionInputsForm"
@@ -108,15 +112,24 @@ export function ValueEditor(props: ValueEditorProps)
     const value_type_is_number = value_type === "number"
     const value_type_is_function = value_type === "function"
     // const value_type_is_interactable = value_type === "interactable"
-
-    // Explore allowing user to swap from TipTap editor to Monaco code editor
-    // They just have to clear the text and type "pce" and then replace that but
-    // ensure there is always some content.
-    const use_code_editor = draft_component.input_value && (
-        draft_component.input_value.match(/^<p>(prototype code editor|pce)/)
-        || !draft_component.input_value.startsWith("<p>")
-    )
     const show_units = value_type_is_number
+
+
+    // Allow user to swap from TipTap editor to Monaco code editor
+    const text_type = determine_input_value_text_type(draft_component.input_value || "")
+    const [use_code_editor, _set_use_code_editor] = useState(() => text_type === "typescript")
+    const set_use_code_editor = useMemo(() => (use: boolean) =>
+    {
+        debounced_handle_update_input_value.commit() // Commit any outstanding changes
+
+        on_change(({ input_value }) =>
+        {
+            _set_use_code_editor(use)
+            const converted_input_value = convert_text_type(input_value || "", use ? "typescript" : "tiptap")
+            return { input_value: converted_input_value }
+        })
+    }, [])
+
 
     return <>
         <div className={`value-editor-container column ${opened ? "opened" : ""}`}>
@@ -159,6 +172,13 @@ export function ValueEditor(props: ValueEditorProps)
                         include_version_in_at_mention={true}
                         experimental_code_editor_features={true}
                     />}
+
+                    {local_storage.get_show_option_for_code_editor() && <ToggleTwo
+                        label={active => active ? "Code Editor" : "Rich Text Editor"}
+                        active={use_code_editor}
+                        set_active={set_use_code_editor}
+                    />}
+
                     {show_units && <TextEditorV1
                         label="Units"
                         initial_content={draft_component.units ?? ""}
