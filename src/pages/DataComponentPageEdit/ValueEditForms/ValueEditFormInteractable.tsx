@@ -98,7 +98,7 @@ function UploadInteractableFolder(props: ValueEditorForInteractableProps)
             {error && <div className="generic-error-message">{error}</div>}
 
             <Button
-                variant="primary-user"
+                variant={button_colour(props.draft_component)}
                 component="label"
                 style={{ width: "fit-content"}}
             >
@@ -245,7 +245,7 @@ function UploadFilesButtonAndStatus(props: UploadFilesButtonAndStatusProps)
 
     return <div>
         {(!upload_result || typeof upload_result === "string") && <Button
-            variant="primary-user"
+            variant={button_colour(props.draft_component)}
             onClick={on_click_upload}
             disabled={is_uploading}
         >
@@ -284,7 +284,7 @@ function UploadFilesButtonAndStatus(props: UploadFilesButtonAndStatusProps)
                 <div className="vertical-gap" />
 
                 <Button
-                    variant="primary-user"
+                    variant={button_colour(props.draft_component)}
                     onClick={() => pub_sub.pub("open_save_modal_request_from_ValueEditorForInteractable", true)}
                 >
                     Save Page
@@ -292,4 +292,10 @@ function UploadFilesButtonAndStatus(props: UploadFilesButtonAndStatusProps)
             </>}
         </div>}
     </div>
+}
+
+
+function button_colour(data_component: DataComponent | NewDataComponent): string
+{
+    return data_component.owner_id ? "primary-user" : "primary"
 }
