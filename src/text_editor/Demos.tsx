@@ -158,10 +158,14 @@ function CodeEditorDemo (props: { editing: boolean, invalid_value: false | strin
         set_function_arguments(fa => fa?.length ? undefined : [{ name: "a_param", id: 0 }])
     }
 
-    return <>
-        <h3 style={{ marginTop: "30px" }}>Code Rich Editor</h3>
+    return <div style={{
+        // Min height to allow space to scroll on mobile if needed
+        minHeight: 1000
+    }}>
         <Button onClick={toggle_function_arguments}>Toggle function arguments</Button>
         Function Arguments: {(function_arguments || []).map(fa => fa.name).join(", ") || "None"}
+        <br/>
+        (CodeEditor does not support marking as {props.invalid_value ? "Invalid" : "Valid"} yet.)
         <br/>
         <br/>
         <CodeEditor
@@ -186,5 +190,5 @@ function CodeEditorDemo (props: { editing: boolean, invalid_value: false | strin
             on_update={set_input_value}
             // invalid_value={props.invalid_value}
         />
-    </>
+    </div>
 }
