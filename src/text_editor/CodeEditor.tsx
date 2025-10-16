@@ -11,6 +11,7 @@ import { get_global_js_lines, upsert_js_component_const } from "core/rich_text/g
 
 import pub_sub from "../pub_sub"
 import { RootAppState } from "../state/interface"
+import { local_storage } from "../state/local_storage"
 import { app_store } from "../state/store"
 import { is_mobile_device } from "../utils/is_mobile_device"
 import "./CodeEditor.css"
@@ -524,5 +525,5 @@ function get_rulers(): number[]
 {
     // [45, 80] works well for mobile and desktop
     // localStorage.setItem("preferred_editor_ruler_columns", "45,80")
-    return localStorage.getItem("preferred_editor_ruler_columns")?.split(",").map(s => parseInt(s)).filter(n => !isNaN(n)) ?? []
+    return local_storage.get_preferred_editor_ruler_columns()
 }

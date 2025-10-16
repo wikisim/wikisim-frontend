@@ -2,6 +2,7 @@ import { useLocation } from "preact-iso"
 import { useCallback, useEffect, useState } from "preact/hooks"
 
 import { ROUTES } from "../routes"
+import { local_storage } from "../state/local_storage"
 import { app_store } from "../state/store"
 import { TextEditorV1 } from "../text_editor/TextEditorV1"
 import Loading from "../ui_components/Loading"
@@ -26,10 +27,10 @@ export function DataComponentsSearchPage()
 
     const [filter_by_user_id, set_filter_by_user_id] = useState<string | undefined>(
         initial_user_id
-        || localStorage.getItem("data_components_search_page_filter_by_user_id")
+        || local_storage.get_search_filter_by_user_id()
         || undefined
     )
-    localStorage.setItem("data_components_search_page_filter_by_user_id", filter_by_user_id || "")
+    local_storage.set_search_filter_by_user_id(filter_by_user_id || "")
     // Update URL to reflect current state
     history.replaceState({}, "", ROUTES.DATA_COMPONENT.SEARCH({ search_query: search_term, user_id: filter_by_user_id }))
 

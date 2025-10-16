@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "preact/hooks"
 
 import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
+import { local_storage } from "../state/local_storage"
 import { app_store } from "../state/store"
 import { EditUserName } from "./EditUserName"
 import "./Header.css"
@@ -134,13 +135,13 @@ function LogInModal({ on_close }: { on_close: () => void })
 {
     const { user_auth_session } = app_store()
     const { status } = user_auth_session
-    const [email_address, set_email_address] = useState(localStorage.getItem("email_address") || "")
+    const [email_address, set_email_address] = useState(local_storage.get_account_email_address())
 
     useEffect(() =>
     {
         if (!email_address.trim()) return
         // Save email address to local storage so it can be pre-filled next time
-        localStorage.setItem("email_address", email_address.trim())
+        local_storage.set_account_email_address(email_address.trim())
     }, [email_address])
 
     const [link_requested, set_link_requested] = useState(false)
