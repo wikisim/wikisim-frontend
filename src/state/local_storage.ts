@@ -13,5 +13,5 @@ export const local_storage = {
     get_preferred_editor_ruler_columns: () =>
     {
         return localStorage.getItem("preferred_editor_ruler_columns")?.split(",").map(s => parseInt(s)).filter(n => !isNaN(n)) ?? []
-    }
+    },
 }

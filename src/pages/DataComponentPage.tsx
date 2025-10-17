@@ -226,7 +226,7 @@ function Scenarios(props: { component: DataComponent })
         // This will result in the component being reqeuested a second time
         // but as we're likely to load multiple dependent components then it
         // won't make much difference
-        request_dependencies_and_setup_sandbox(get_supabase, component.id)
+        request_dependencies_and_setup_sandbox(get_supabase, component.id, false)
         .then(response => set_sandbox_error(response.error || false))
     })
 
