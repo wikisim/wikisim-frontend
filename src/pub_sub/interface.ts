@@ -19,6 +19,10 @@ export interface PublishableEvents
         data_component_id: string
     }
     open_save_modal_request_from_ValueEditorForInteractable: true
+    log_debug: {
+        label: string
+        value: unknown
+    }
 }
 
 interface KeyDownUp
