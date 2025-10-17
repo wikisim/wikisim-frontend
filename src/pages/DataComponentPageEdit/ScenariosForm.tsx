@@ -11,7 +11,7 @@ import type {
 } from "core/data/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 
-import BinButton from "../../buttons/BinButton"
+import { ConfirmBinButton } from "../../buttons/BinButton"
 import { HelpToolTip } from "../../buttons/HelpText"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
@@ -126,6 +126,9 @@ function ScenarioRow(props: ScenarioRowProps)
     ])
 
 
+    const { is_draft_row, component, total_scenarios } = props
+
+
     const delete_entry = useMemo(() => () =>
     {
         props.on_change(current =>
@@ -135,10 +138,7 @@ function ScenarioRow(props: ScenarioRowProps)
             const updated_scenarios = (current.scenarios || []).filter(arg => arg.id !== scenario_id)
             return { scenarios: updated_scenarios }
         })
-    }, [])
-
-
-    const { is_draft_row, component, total_scenarios } = props
+    }, [is_draft_row])
 
 
     // Key choice keeps the DOM node stable across the draft->committed transition.
@@ -220,7 +220,7 @@ function ScenarioForm(props: ScenarioFormProps)
                         checked={props.debugging}
                     />
                 </HelpToolTip>
-                <BinButton
+                <ConfirmBinButton
                     on_click={props.delete_entry}
                     disabled={scenario_is_empty(scenario)}
                     label={`Delete scenario ${props.ordinal}`}
