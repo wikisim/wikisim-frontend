@@ -17,15 +17,15 @@
 }
 .text-editor-v1 textarea
 {
-    padding: 12px 12px 10px 12px;
+    padding: var(--padding-text-box);
 }
 .text-editor-v1 input
 {
-    padding: 12px 12px 8px 12px;
+    padding: var(--padding-text-box);
 }
 
 
 .text-editor-v1 label
 {
-    top: 12px;
+    top: 5px;
 }

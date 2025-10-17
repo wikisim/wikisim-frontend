@@ -1,13 +1,13 @@
-import { Tooltip } from "@mantine/core"
-import "@mantine/core/styles.css"
-import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle"
-import { JSX } from "preact"
-import { useMemo, useRef, useState } from "preact/hooks"
+import { Tooltip } from "@mantine/core";
+import "@mantine/core/styles.css"; // TODO: Why is this here and not in main.tsx?
+import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle";
+import { JSX } from "preact";
+import { useMemo, useRef, useState } from "preact/hooks";
 
-import "../monkey_patch"
-import pub_sub from "../pub_sub"
-import "../ui_components/input_elements.shared.css"
-import "./TextEditorV1.css"
+import "../monkey_patch";
+import pub_sub from "../pub_sub";
+import "../ui_components/input_elements.shared.css";
+import "./TextEditorV1.css";
 
 
 interface TextEditorV1Props
@@ -33,15 +33,18 @@ interface TextEditorV1Props
 }
 
 
+const textarea_initial_height_when_single_line_undefined = 35
+
 export function TextEditorV1(all_props: TextEditorV1Props)
 {
     const {
         editable = false,
         label,
-        single_line = false,
+        single_line,
         trigger_search_on_at_symbol = false,
         on_key_down,
         invalid_value = false,
+        initial_content,
         ...props
     } = all_props
     const allow_multiline = !single_line
@@ -49,7 +52,8 @@ export function TextEditorV1(all_props: TextEditorV1Props)
     // Handle bringing focus to the input on first render
     const first_render = useRef(Date.now())
     const cursor_position_on_blur_to_search = useRef<number | undefined>(undefined)
-    const handle_ref = useMemo(() => (el: HTMLTextAreaElement | HTMLInputElement | null) => {
+    const handle_ref = useMemo(() => (el: HTMLTextAreaElement | HTMLInputElement | null) =>
+    {
         if (!el) return
 
         // Handle if cursor_position_on_blur_to_search is set
@@ -63,8 +67,12 @@ export function TextEditorV1(all_props: TextEditorV1Props)
             }
         }
 
+        // This smells, there must be a better way to do this...
+        // Document why this is needed and not just a useEffect with empty deps.
+        const recent = first_render.current >= (Date.now() - 100)
+
         // Handle props.start_focused
-        if (props.start_focused && (first_render.current >= (Date.now() - 100)))
+        if (recent && props.start_focused)
         {
             // Sometimes when rendering the input it was not focused, but with
             // this Timeout it seemed to work.
@@ -76,11 +84,17 @@ export function TextEditorV1(all_props: TextEditorV1Props)
                 }
             }, 0)
         }
+
+        // Set initial height of textarea
+        if (recent && allow_multiline && el instanceof HTMLTextAreaElement)
+        {
+            set_textarea_height(el, single_line, initial_content)
+        }
     }, [props.start_focused, first_render])
 
 
     const [is_focused, set_focused] = useState(false)
-    const [value, set_value] = useState(props.initial_content)
+    const [value, set_value] = useState(initial_content)
 
     const handle_on_change = useMemo(() => (e: JSX.TargetedEvent<HTMLTextAreaElement | HTMLInputElement, Event>) =>
     {
@@ -106,9 +120,8 @@ export function TextEditorV1(all_props: TextEditorV1Props)
     {
         if (allow_multiline && e.target)
         {
-            e.target.style.height = "auto"
-            const fudge = 2 // Based on padding and border (requires -22 px) and mantine styles (+24px it seems?)
-            e.target.style.height = e.target.scrollHeight + fudge + "px"
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            set_textarea_height(e.target, single_line, e.target.value)
         }
     }
 
@@ -215,4 +228,23 @@ export function TextEditorV1(all_props: TextEditorV1Props)
             {invalid_value && <IconExclamationCircle className="error-icon" />}
         </div>
     </Tooltip>
+}
+
+
+function set_textarea_height(el: HTMLTextAreaElement, single_line: boolean | undefined, value: string)
+{
+    el.style.height = "auto" // Reset height to auto to measure scrollHeight correctly
+
+    // When `single_line` is undefined and the content does not yet
+    // contains newlines, then we show a vertically shorter input box to match
+    // the size of the single_line === true input element.
+    if (single_line === undefined && !value.includes("\n"))
+    {
+        el.style.height = textarea_initial_height_when_single_line_undefined + "px"
+    }
+    else
+    {
+        const fudge = 2 // Based on padding and border (requires -22 px) and mantine styles (+24px it seems?)
+        el.style.height = (el.scrollHeight + fudge) + "px"
+    }
 }

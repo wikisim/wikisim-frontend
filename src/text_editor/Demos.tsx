@@ -25,13 +25,12 @@ export const TextEditorDemos = () =>
             {invalid_value ? "Unset Invalid Value" : "Set Invalid Value"}
         </button>
 
-        <h2>Code Editor Demo</h2>
-        <CodeEditorDemo editing={editing} invalid_value={invalid_value} />
-
         <h2>Text Editor V1 Demo</h2>
         <TextEditorV1Demo editing={editing} invalid_value={invalid_value} />
         <h2>Text Editor V2 Demo</h2>
         <TextEditorV2Demo editing={editing} invalid_value={invalid_value} />
+        <h2>Code Editor Demo</h2>
+        <CodeEditorDemo editing={editing} invalid_value={invalid_value} />
 
     </div>
 }
