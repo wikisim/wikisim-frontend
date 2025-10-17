@@ -148,15 +148,12 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
     useEffect(() =>
     {
         load_dependencies(app_state, props.initial_content, add_data_component_dependency)
-    })
 
-
-    useEffect(() =>
-    {
         const editor_dom_node = editor_el_ref.current
         if (!editor_dom_node) return
 
         const input_model = set_up_monaco_editor(input_model_ref, props.initial_content, editor_dom_node)
+        const dispose_manage_scroll = enable_scroll_passthrough(input_model, editor_dom_node)
 
         // Create a hidden model for validation
         const validation_model = monaco.editor.createModel(
@@ -182,6 +179,7 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
 
         return () =>
         {
+            dispose_manage_scroll()
             input_model.dispose()
             validation_model.dispose()
             editor_dom_node.removeEventListener("keydown", keydown_handler)
@@ -227,6 +225,75 @@ function load_dependencies(app_state: RootAppState, initial_content: string, add
         if (!ref_component || !ref_component.component) return
         add_data_component_dependency(ref_component.component)
     })
+}
+
+
+function enable_scroll_passthrough(input_model: MonacoEditor, editor_dom_node: HTMLDivElement)
+{
+    let last_scroll_top = input_model.getScrollTop()
+
+    const handle_scroll = (_: monaco.IScrollEvent) =>
+    {
+        const editor_rect = editor_dom_node.getBoundingClientRect()
+        const scroll_top = input_model.getScrollTop()
+        const scroll_height = input_model.getScrollHeight()
+        const visible_height = editor_dom_node.clientHeight
+
+        // Determine scroll direction
+        const scroll_delta = scroll_top - last_scroll_top
+        last_scroll_top = scroll_top
+
+        const is_scrolling_down = scroll_delta > 0
+        const is_scrolling_up = scroll_delta < 0
+
+        // Check if editor top is within 20px of window top
+        const editor_near_top = editor_rect.top > 20
+        // Check if editor bottom is within 20px of window bottom
+        const editor_near_bottom = editor_rect.bottom < (window.innerHeight - 20)
+
+        // Check if at scroll boundaries
+        const at_scroll_top = scroll_top <= 0
+        const at_scroll_bottom = scroll_top + visible_height >= scroll_height - 1
+
+        let should_scroll_main_window = false
+
+        if (is_scrolling_down)
+        {
+            // Scroll main window (down) if scrolling down AND
+            // * editor top is not near main window top
+            //   OR
+            // * if at bottom of editor scroll (but see note below, this is not
+            //   working yet)
+            should_scroll_main_window = editor_near_top || at_scroll_bottom
+        }
+        else if (is_scrolling_up)
+        {
+            // Scroll main window (up) if scrolling up AND
+            // * editor bottom is not near main window bottom
+            //   OR
+            // * if at top of editor scroll (but see note below, this is not
+            //   working yet)
+            should_scroll_main_window = editor_near_bottom || at_scroll_top
+        }
+
+        if (should_scroll_main_window)
+        {
+            // Only the monaco editor's scroll emits events, the editor_dom_node's
+            // document do not emit scroll events.  When the scroll in the editor
+            // has reached the top or bottom no more scroll events are emitted,
+            // this function is not called, so it is not possible to
+            // apply the scroll to the main window to keep scrolling (and move
+            // the CodeEditor out of the main window view).
+            window.scrollBy(0, scroll_delta)
+            // A potential solution would be to put a transparent div over the
+            // editor that would capture scroll events and allow other pointer
+            // and mouse events to pass through to the editor below.
+        }
+    }
+
+    const disposable_scroll = input_model.onDidScrollChange(handle_scroll)
+
+    return () => disposable_scroll.dispose()
 }
 
 

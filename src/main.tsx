@@ -25,7 +25,6 @@ import { MentionsClickHandler } from "./text_editor/MentionsClickHandler"
 import Header from "./ui_components/Header"
 import { SearchModal } from "./ui_components/search/SearchModal"
 import { set_page_title } from "./ui_components/set_page_title"
-import { DebugInfo } from "./ui_components/utils/DebugInfo"
 
 
 function App() {
@@ -83,7 +82,7 @@ function App() {
 
         <WelcomeModal />
         <SearchModal />
-        <DebugInfo />
+        {/* <DebugInfo /> */}
 
         <LocationProvider>
             <Header />

@@ -1,17 +1,26 @@
 import GUI from "lil-gui"
 import { useEffect, useRef, useState } from "preact/hooks"
+import Sparkline from "sparklines"
 
 import pub_sub from "../../pub_sub"
 
 
+export function L<T>(value: T, label: string): T
+{
+    pub_sub.pub("log_debug", { label, value })
+    return value
+}
+
+
+const max_history = 100 // Keep last 100 values
+const canvas_height = 20
 
 export function DebugInfo()
 {
     const [_, set_debug_state] = useState<{ [key: string]: unknown }>({})
     const gui_ref = useRef<GUI | null>(null)
-    const history_ref = useRef<{ [key: string]: number[] }>({})
+    const history_ref = useRef<{ [key: string]: unknown[] }>({})
     const gui_update_folder_ref = useRef<{ [key: string]: () => void }>({})
-    const max_history = 100 // Keep last 100 values
 
     useEffect(() => {
         // Create GUI
@@ -30,8 +39,7 @@ export function DebugInfo()
         set_debug_state((prev) => {
             const updated = { ...prev, [data.label]: data.value }
 
-            // If value is a number, track it for graphing
-            if (typeof data.value !== "number" || !gui_ref.current) return updated
+            if (!gui_ref.current) return updated
 
             const history = history_ref.current[data.label] || []
             if (!history_ref.current[data.label])
@@ -40,33 +48,42 @@ export function DebugInfo()
                 const folder = gui_ref.current.addFolder(data.label)
                 const value_controller = folder.add({ value: data.value }, "value").listen().disable()
 
-                // Create a simple text-based sparkline in the GUI
-                const graph_obj = { graph: "" }
-                const graph_controller = folder.add(graph_obj, "graph").listen().disable()
-
-                // Save update_folder function for later use
-                gui_update_folder_ref.current[data.label] = () =>
+                if (typeof data.value === "number")
                 {
-                    const values = history_ref.current[data.label] || []
+                    // Create a sparkline graph.  Get an element from lil-gui to
+                    // attach the sparkline to
+                    const graph_obj = { graph: "" }
+                    const graph_controller = folder.add(graph_obj, "graph").listen(false).disable()
+                    const sparkline = new Sparkline(graph_controller.$widget, { width: max_history, height: canvas_height, lineColor: "#0074d9" })
 
-                    // Update folder with last value info
-                    const last_value = values.last() || 0
-                    value_controller.setValue(last_value)
+                    // Save update_folder function for later use
+                    gui_update_folder_ref.current[data.label] = () =>
+                    {
+                        const values = (history_ref.current[data.label] || []) as number[]
 
-                    // Update graph
-                    const min = Math.min(...values)
-                    const max = Math.max(...values)
-                    const range = max - min || 1
+                        // Update folder with last value info
+                        const last_value = values.last() || 0
+                        value_controller.setValue(last_value)
 
-                    // Create simple bar chart using Unicode blocks
-                    const bars = "▁▂▃▄▅▆▇█"
-                    graph_obj.graph = values.map(v => {
-                        const normalized = (v - min) / range
-                        const index = Math.floor(normalized * (bars.length - 1))
-                        return bars[index]
-                    }).join("")
+                        // Update graph
+                        const min = Math.min(...values)
+                        const max = Math.max(...values)
+                        const range = max - min || 1
+                        const normalized_values = values.map(v => (v - min) / range)
 
-                    graph_controller.updateDisplay()
+                        // Generate sparkline PNG
+                        sparkline.draw(normalized_values)
+                    }
+                }
+                else
+                {
+                    // For non-numeric values, just update the value display
+                    gui_update_folder_ref.current[data.label] = () =>
+                    {
+                        const values = history_ref.current[data.label] || []
+                        const last_value = values.last()
+                        value_controller.setValue(last_value)
+                    }
                 }
             }
 
