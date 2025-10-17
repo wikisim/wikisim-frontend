@@ -80,7 +80,7 @@ export function DataComponentPageVersionHistory(props: { data_component_id: stri
     return (
         <div className="page-container">
             <h2>Version History for
-                <a href={ROUTES.DATA_COMPONENT.VIEW(component)}>
+                <a href={ROUTES.DATA_COMPONENT.VIEW(component.id.as_IdOnly())}>
                     <ReadOnly html={component.title} single_line={true} />
                 </a>
             </h2>
