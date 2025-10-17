@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "preact/hooks"
 
 import { valid_value_type } from "core/data/field_values_with_defaults"
 import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
-import { DataComponent } from "core/data/interface"
+import { DataComponent, InlineScenario } from "core/data/interface"
 import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_javascript"
 import { request_dependencies_and_setup_sandbox } from "core/evaluation/request_dependencies_and_setup_sandbox"
 import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
@@ -264,7 +264,7 @@ function Scenarios(props: { component: DataComponent })
     return <div class="scenarios">
         <div
             className="data-component-form-column row"
-            style={{ alignItems: "center", justifyContent: "space-between" }}
+            style={{ alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}
             onPointerDown={() => set_opened(!opened)}
         >
             <div style={{ display: "flex", alignItems: "center", flexDirection: "row", gap: "0.5em" }}>
@@ -285,25 +285,49 @@ function Scenarios(props: { component: DataComponent })
         {
             const result = results[index]
 
-            return <div className="row_to_column scenario-divider" key={scenario.id}>
-                <div
-                    className="data-component-form-column column"
-                    style={{ gap: "var(--vgap-small)" }}
-                >
-                    <b>Scenario {index + 1} of {scenarios.length}</b>
-
-                    <ReadOnly html={scenario.description} />
-                </div>
-
-                <div className="data-component-form-column column">
-                    {result?.error && <ErrorMessage show={true} message={result.error} />}
-                    {result?.result && <ScenarioResultsDisplay
-                        result={result.result}
-                        expected_result={scenario.expected_result}
-                        expectation_met={scenario.expectation_met}
-                    />}
-                </div>
-            </div>
+            return <ScenarioRowReadOnly
+                scenario={scenario}
+                index={index}
+                scenarios_count={scenarios.length}
+                result={result}
+            />
         })}
+    </div>
+}
+
+
+interface ScenarioRowReadOnlyProps
+{
+    scenario: InlineScenario
+    index: number
+    scenarios_count: number
+    result: EvaluationResponse | undefined
+}
+function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
+{
+    const { scenario, index, scenarios_count, result } = props
+    const [scenario_row_opened, set_scenario_row_opened] = useState(false)
+
+    return <div className="row_to_column scenario-divider" key={scenario.id}>
+        <div
+            className="data-component-form-column column"
+            style={{ gap: "var(--vgap-small)", cursor: "pointer" }}
+            onClick={() => set_scenario_row_opened(!scenario_row_opened)}
+        >
+            <b>Scenario {index + 1} of {scenarios_count}</b>
+
+            <ReadOnly html={scenario.description} />
+        </div>
+
+        <div className="data-component-form-column column">
+            {result?.error && <ErrorMessage show={true} message={result.error} />}
+            {result?.result && <ScenarioResultsDisplay
+                result={result.result}
+                expected_result={scenario.expected_result}
+                expectation_met={scenario.expectation_met}
+                scenario_row_opened={scenario_row_opened}
+                set_scenario_row_opened={set_scenario_row_opened}
+            />}
+        </div>
     </div>
 }

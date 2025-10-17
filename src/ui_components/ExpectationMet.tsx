@@ -5,7 +5,7 @@ import { calculate_if_expectation_met } from "core/expectation/calculate_if_expe
 import { HelpToolTip } from "../buttons/HelpText"
 
 
-export function ExpectationMet(props: { met?: boolean })
+export function ExpectationMet(props: { met?: boolean, on_click?: () => void })
 {
     const { met } = props
     if (met === undefined) return null
@@ -13,14 +13,17 @@ export function ExpectationMet(props: { met?: boolean })
     return <HelpToolTip
         message={met ? "The results match the expectations" : "The results do not match the expectations"}
     >
-        <div style={{
-            textAlign: "center",
-            marginTop: "0.5em",
-            color: "white",
-            borderRadius: "var(--radius-border)",
-            padding: "0.2em 0.5em",
-            backgroundColor: met ? "var(--colour-success)" : "var(--colour-error)"
-        }}>
+        <div
+            onClick={props.on_click}
+            style={{
+                textAlign: "center",
+                marginTop: "0.5em",
+                color: "white",
+                borderRadius: "var(--radius-border)",
+                padding: "0.2em 0.5em",
+                backgroundColor: met ? "var(--colour-success)" : "var(--colour-error)"
+            }}
+        >
             {met ? "Pass" : "Fail"}
         </div>
     </HelpToolTip>

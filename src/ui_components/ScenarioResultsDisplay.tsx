@@ -21,6 +21,7 @@ import {
 import { compare_results_to_expectations } from "core/expectation/compare_results_to_expectations"
 import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
 
+import { useMemo } from "preact/hooks"
 import { ExpectationMet } from "./ExpectationMet"
 import "./ScenarioResultsDisplay.css"
 
@@ -46,18 +47,32 @@ interface ScenarioResultsDisplayProps
     result: string
     expected_result: string | undefined
     expectation_met: boolean | undefined
+    scenario_row_opened: boolean
+    set_scenario_row_opened: (opened: boolean | ((o: boolean) => boolean)) => void
 }
 
 export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
 {
     const parsed_json = result_string_to_json(props.result)
 
+    const on_click_header = useMemo(() => () =>
+    {
+        props.set_scenario_row_opened(scenario_row_opened => !scenario_row_opened)
+    }, [])
+
+    if (!props.scenario_row_opened)
+    {
+        return <div className="scenario-results-display">
+            <ExpectationMet met={props.expectation_met} on_click={on_click_header} />
+        </div>
+    }
+
     if (!parsed_json)
     {
         // Not sure if this will ever happen as the results should always be a
         // string of JSON
         return <div className="scenario-results-display">
-            <ExpectationMet met={props.expectation_met} />
+            <ExpectationMet met={props.expectation_met} on_click={on_click_header} />
             <pre>
                 Result = {props.result}<br/>
             </pre>
@@ -75,7 +90,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         const expected_result_str = expected_json ? stringify(expected_json.parsed, { maxLength: 60 }) : props.expected_result
 
         return <div className="scenario-results-display">
-            <ExpectationMet met={props.expectation_met} />
+            <ExpectationMet met={props.expectation_met} on_click={on_click_header} />
             <pre>
                 Result = {stringify(parsed_json.parsed, { maxLength: 60 })}<br/>
             </pre>
@@ -121,7 +136,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
     }
 
     return <div className="scenario-results-display">
-        <ExpectationMet met={props.expectation_met} />
+        <ExpectationMet met={props.expectation_met} on_click={on_click_header} />
         {/* {props.result} */}
         <Line data={graph_props} />
     </div>

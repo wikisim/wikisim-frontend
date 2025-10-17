@@ -15,6 +15,7 @@ import { ConfirmBinButton } from "../../buttons/BinButton"
 import { HelpToolTip } from "../../buttons/HelpText"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
+import { ReadOnly } from "../../text_editor/sanitise_html"
 import { WarningMessage } from "../../ui_components/ErrorMessage"
 import OpenCloseSection from "../../ui_components/OpenCloseSection"
 import { debounce } from "../../utils/debounce"
@@ -47,7 +48,7 @@ export function ScenariosForm(props: ScenariosFormProps)
     return <div className="scenarios">
         <div
             className="data-component-form-column row"
-            style={{ alignItems: "center", justifyContent: "space-between" }}
+            style={{ alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}
             onPointerDown={() => set_opened(!opened)}
         >
             <h4>Scenarios</h4>
@@ -58,7 +59,7 @@ export function ScenariosForm(props: ScenariosFormProps)
         {
             const is_draft_row = index === scenarios.length
 
-            return <ScenarioRow
+            return <ScenarioRowForm
                 key={scenario.id}
                 new_scenario_obj={new_scenario_obj}
                 scenario={scenario}
@@ -74,7 +75,7 @@ export function ScenariosForm(props: ScenariosFormProps)
 
 
 
-interface ScenarioRowProps
+interface ScenarioRowFormProps
 {
     new_scenario_obj: Scenario
     scenario: Scenario
@@ -84,9 +85,10 @@ interface ScenarioRowProps
     component: DataComponent | NewDataComponent
     on_change: (updated_component: UpdatesFnOrValue, compare_meta_fields?: boolean) => void
 }
-function ScenarioRow(props: ScenarioRowProps)
+function ScenarioRowForm(props: ScenarioRowFormProps)
 {
     const scenario_id = props.scenario.id
+    const [scenario_row_opened, set_scenario_row_opened] = useState(!props.is_draft_row)
     const [debugging, set_debugging] = useState(false)
 
     const on_change = useMemo(() => (updated_scenario: Partial<Scenario>) =>
@@ -161,6 +163,8 @@ function ScenarioRow(props: ScenarioRowProps)
                 debugging={debugging}
                 set_debugging={set_debugging}
                 is_draft_row={is_draft_row}
+                scenario_row_opened={scenario_row_opened}
+                set_scenario_row_opened={set_scenario_row_opened}
             />
         </div>
 
@@ -171,6 +175,8 @@ function ScenarioRow(props: ScenarioRowProps)
                 scenario={props.scenario}
                 debugging={debugging}
                 on_change={on_change}
+                scenario_row_opened={scenario_row_opened}
+                set_scenario_row_opened={set_scenario_row_opened}
             />
         </div>
     </div>
@@ -188,11 +194,13 @@ interface ScenarioFormProps
     debugging: boolean
     set_debugging: (debugging: boolean) => void
     is_draft_row: boolean
+    scenario_row_opened: boolean
+    set_scenario_row_opened: (opened: boolean) => void
 }
 
 function ScenarioForm(props: ScenarioFormProps)
 {
-    const { scenario, on_change, is_draft_row } = props
+    const { scenario, on_change, is_draft_row, scenario_row_opened: opened } = props
 
     const on_update_description = useMemo(() =>
         debounce((description: string) => on_change({ description }), 300)
@@ -203,11 +211,11 @@ function ScenarioForm(props: ScenarioFormProps)
 
     return <>
         <div className="scenario-form-header row" style={{ maxHeight: "35px" }}>
-            <div>
+            <div style={{ cursor: "pointer" }} onClick={() => props.set_scenario_row_opened(!opened)}>
                 {is_draft_row ? "New Scenario" : `Scenario ${props.ordinal} of ${props.total_scenarios}`}
             </div>
 
-            {!is_draft_row && <div className="scenario-options">
+            {opened && !is_draft_row && <div className="scenario-options">
                 <HelpToolTip
                     message={`When enabled, a debugger statement will be added to the start of the function code.  Open your developer terminal and enable "Pause on Debugger" to step through the code as it runs for this scenario.`}
                 >
@@ -228,7 +236,9 @@ function ScenarioForm(props: ScenarioFormProps)
             </div>}
         </div>
 
-        <div className="scenario-content">
+        {!opened && <ReadOnly html={scenario.description} />}
+
+        {opened && <div className="scenario-content">
             <TextEditorV2
                 label="Description"
                 initial_content={scenario.description || ""}
@@ -299,7 +309,7 @@ function ScenarioForm(props: ScenarioFormProps)
                     </div>
                 </div>
             })}
-        </div>
+        </div>}
 
         {/* <ErrorMessage show={!!error} message={error || ""} /> */}
     </>

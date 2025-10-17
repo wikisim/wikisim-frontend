@@ -19,6 +19,8 @@ interface ScenarioResultsAndExpectationsProps
     scenario: Scenario
     debugging: boolean
     on_change: (updated_scenario: Partial<Scenario>) => void
+    scenario_row_opened: boolean
+    set_scenario_row_opened: (opened: boolean | ((o: boolean) => boolean)) => void
 }
 export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectationsProps)
 {
@@ -70,11 +72,13 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
             result={result.result}
             expected_result={props.scenario.expected_result}
             expectation_met={props.scenario.expectation_met}
+            scenario_row_opened={props.scenario_row_opened}
+            set_scenario_row_opened={props.set_scenario_row_opened}
         />}
-        <ScenarioExpectations
+        {props.scenario_row_opened && <ScenarioExpectations
             scenario={props.scenario}
             latest_result={result?.result || undefined}
             on_change={props.on_change}
-        />
+        />}
     </>
 }
