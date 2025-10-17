@@ -196,7 +196,12 @@ function LastEditedBy({ component }: { component: DataComponent })
         <div className="last-edited-by">
             <img src={HistoryIcon} alt="History" width={20} height={20} style={{ verticalAlign: -5, margin: "0px 5px" }} />
 
-            v{component.id.version} last edited{" "}
+            <a href={ROUTES.DATA_COMPONENT.VIEW({
+                id: component.id.to_str(), // include version
+                owner_id: component.owner_id,
+            })}>
+                v{component.id.version}
+            </a> last edited{" "}
             <a href={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY(component.id.as_IdOnly())}>
                 {time_ago_or_date(created_at, true)}{" "}
                 {time_ago_or_date(created_at)}
