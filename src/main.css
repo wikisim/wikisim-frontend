@@ -10,10 +10,15 @@
     --colour-primary-blue: rgb(var(--requires-manual-sync-colour-primary-blue-rgb));
     --colour-secondary-blue: rgb(34, 139, 230);  /* #228be6 */
     --colour-tertiary-blue: rgb(95, 175, 255); /* #5fafff */
+
     /* --mantine-color-red-9/8 used for danger & danger:hover colours */
+    --colour-danger-background: var(--mantine-color-red-9);
+    --colour-danger-background-hover: var(--mantine-color-red-8);
+    --colour-danger-text: var(--mantine-color-white);
     --requires-manual-sync-colour-error: rgb(250, 82, 82); /* #fa5252 --mantine-color-red-6 */
     --colour-error: var(--requires-manual-sync-colour-error);
     --requires-manual-sync-colour-invalid: rgb(255, 168, 168); /* #ffa8a8 --mantine-color-red-3 */
+
     --colour-invalid: var(--requires-manual-sync-colour-invalid);
     --colour-invalid-fainter: rgb(255, 214, 214);  /* #ffd6d6 Half way between mantine-color-red-1 and -2 of ffe3e3 and ffc9c9 */
     --requires-manual-sync-colour-warning: rgb(255, 192, 120); /* #ffc078 --mantine-color-orange-3 */

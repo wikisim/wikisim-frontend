@@ -45,23 +45,16 @@ function App() {
                     },
                 },
                 Tooltip: {
+                    // These styles override the `color` prop and we can't use
+                    // defaultProps: { backgroundColor: "...", color: "..."}
+                    // because Mantine only uses the `color` for the background
+                    // and we can't set the color of the font.
                     styles: {
                         tooltip: {
                             // Light blue
                             backgroundColor: "#e7f3ff",
                             color: "var(--colour-primary-blue)",
-                            // Light grey
-                            // backgroundColor: "#f8f9fa",
-                            // color: "#495057",
-                            // Warm grey
-                            // backgroundColor: "#f1f3f4",
-                            // color: "#5f6368",
-                            // backgroundColor: "#ffffff",
-                            // color: "#374151",
-
                             border: "1px solid var(--colour-border)",
-                            // fontSize: "12px",
-                            // fontWeight: 500,
                         },
                         arrow: {
                             borderColor: "#dee2e6",
@@ -120,9 +113,9 @@ function variantColorResolver (input: VariantColorsResolverInput)
     if (input.variant === "danger")
     {
         return {
-            background: "var(--mantine-color-red-9)",
-            hover: "var(--mantine-color-red-8)",
-            color: "var(--mantine-color-white)",
+            background: "var(--colour-danger-background)",
+            hover: "var(--colour-danger-background-hover)",
+            color: "var(--colour-danger-text)",
             border: "none",
         }
     }
