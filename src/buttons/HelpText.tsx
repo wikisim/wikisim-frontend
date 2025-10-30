@@ -49,13 +49,14 @@ export default function HelpText(props: Props)
 interface HelpToolTipProps
 {
     delay?: number
+    close_delay?: number
     message: string | JSX.Element
     children?: JSX.Element
 }
 
 export function HelpToolTip(props: HelpToolTipProps)
 {
-    const { delay = 700 } = props
+    const { delay = 300, close_delay = 0 } = props
     const [active, set_active] = useState(false)
     const timeout_ref = useRef<NodeJS.Timeout>()
 
@@ -70,18 +71,27 @@ export function HelpToolTip(props: HelpToolTipProps)
         onPointerLeave={() =>
         {
             if (IS_MOBILE) return
-            set_active(false)
             clearTimeout(timeout_ref.current)
+            timeout_ref.current = setTimeout(() => set_active(false), close_delay)
         }}
         onPointerDown={() =>
         {
+            // NOT mobile
             if (!IS_MOBILE) return
             clearTimeout(timeout_ref.current)
-            timeout_ref.current = setTimeout(() => set_active(!active), active ? 0 : delay)
+
+            const new_active = !active
+            set_active(new_active)
+
+            if (!new_active) return
+            if (close_delay === 0) return
+            timeout_ref.current = setTimeout(() => set_active(false), close_delay)
         }}
     >
         <Tooltip
-            openDelay={delay}
+            // We handle delays ourselves to have different behaviour on mobile
+            // openDelay={delay}
+            // closeDelay={close_delay}
             label={message}
             position="bottom"
             opened={active}
