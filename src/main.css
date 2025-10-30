@@ -116,3 +116,10 @@ a
 {
     padding-inline-start: calc(var(--hgap-mid) - 2px);
 }
+.scenario-content .mantine-Checkbox-inner,
+.mantine-Checkbox-inner
+{
+    /* Ensure that the checkbox is positioned in middle of vertical */
+    margin-top: auto;
+    margin-bottom: auto;
+}
