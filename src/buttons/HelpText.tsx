@@ -97,7 +97,15 @@ export function HelpToolTip(props: HelpToolTipProps)
             opened={active}
             withArrow={true}
             multiline={true}
-            style={{ maxWidth: IS_MOBILE ? 300 : 600 }}
+            style={{
+                maxWidth: IS_MOBILE ? 300 : 600,
+                // Allow the user to select text inside the tooltip.  Might be
+                // useful for the tooltips containing code snippets but will
+                // need extra work to then keep it open (make it "sticky")
+                // whilst the user is interacting with it / copying from it.
+                // i.e. will need to add a "close" button or similar.
+                pointerEvents: "initial",
+            }}
         >
             {props.children}
         </Tooltip>
