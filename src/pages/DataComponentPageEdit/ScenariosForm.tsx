@@ -208,6 +208,7 @@ function ScenarioForm(props: ScenarioFormProps)
 
     // const error = props.is_draft_row ? null : calc_scenario_error(scenario, props.name_counts)
     const inputs_iterated_over = Object.values(scenario.values).filter(v => v.iterate_over).length
+    const inputs_using_previous_result = Object.values(scenario.values).filter(v => v.use_previous_result).length
 
     return <>
         <div className="scenario-form-header row" style={{ maxHeight: "35px" }}>
@@ -253,7 +254,12 @@ function ScenarioForm(props: ScenarioFormProps)
             {
                 const existing = scenario.values[input_name]
                 const enable_iterate_over = (
-                    existing?.iterate_over || (!!existing && inputs_iterated_over < 1)
+                    existing?.iterate_over || inputs_iterated_over < 1
+                )
+                const enable_use_previous_result = (
+                    !existing?.iterate_over && inputs_iterated_over > 0 && (
+                        existing?.use_previous_result || inputs_using_previous_result < 1
+                    )
                 )
 
                 return <div className="column" style={{ gap: "var(--vgap-small)" }} key={input_name}>
@@ -275,25 +281,29 @@ function ScenarioForm(props: ScenarioFormProps)
                                 if (value === "") delete updated_values[input_name]
                                 on_change({ values: updated_values })
                             }}
-                            single_line={true}
+                            single_line={undefined}
                             editable={true}
                         />
 
                         <div className="row" style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}>
                             <HelpToolTip
                                 message={<>
-                                    If this input value is an array or range of values that can be iterated over,
-                                    then use this "Iterate" option to run this scenario over those values.
+                                    Use this "Repeat" option to run this scenario multiple times.
                                     <br/>
                                     <br/>
-                                    For example using <code>[1, 2, 3]</code> or <code>range(1, 4)</code>
-                                    with this "Iterate" option on will run the scenario 3 times,
-                                    once with each value, whereas with this option off it will run only once
-                                    and use the array <code>[1, 2, 3]</code> as the input value.
+                                    For example set the input value to <code>[3, 4, 5]</code> or <code>range(3, 6)</code>
+                                    and use this "Repeat" option to run the scenario 3 times:
+                                    first with a value of <code>3</code>, a second time with <code>4</code> and a final time with <code>5</code>.
+                                    <br/>
+                                    <br/>
+                                    With this Repeat option off it will run only once
+                                    and use the array <code>[3, 4, 5]</code> as the input value.
                                 </>}
+                                delay={700}
+                                close_delay={1500}
                             >
                                 <Checkbox
-                                    label="Iterate"
+                                    label="Repeat"
                                     onChange={(e: TargetedEvent<HTMLInputElement, Event>) =>
                                     {
                                         const value = existing?.value || ""
@@ -303,6 +313,43 @@ function ScenarioForm(props: ScenarioFormProps)
                                     }}
                                     checked={existing?.iterate_over || false}
                                     disabled={!enable_iterate_over}
+                                />
+                            </HelpToolTip>
+                        </div>
+
+                        <div className="row" style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}>
+                            <HelpToolTip
+                                message={<>
+                                    The "Use Previous Result" option will take the result
+                                    from the function and use it as the next value for this input, the same as
+                                    when a spreadsheet cell uses the value from the previous row.
+                                    <br/>
+                                    <br/>
+                                    For example if we model plant growth,
+                                    we might have a function defined like this:
+                                    <pre>{`(time, plants = 1) => {\n   return plants * 4\n}`}</pre>
+                                    With <code>time</code> set to <code>[1, 2, 3]</code>
+                                    and its "Repeat" option enabled,
+                                    and the "Use Previous Result" option for <code>plants</code> enabled,
+                                    you would get the results <code>[4, 16, 64]</code>.
+                                    <br/>
+                                    If the "Use Previous Result" option was not enabled,
+                                    you would get <code>[4, 4, 4]</code>.
+                                </>}
+                                delay={700}
+                                close_delay={1500}
+                            >
+                                <Checkbox
+                                    label="Use Previous Result"
+                                    onChange={(e: TargetedEvent<HTMLInputElement, Event>) =>
+                                    {
+                                        const value = existing?.value || ""
+                                        const use_previous_result = e.currentTarget.checked || undefined
+                                        const updated_values = { ...scenario.values, [input_name]: { value, use_previous_result } }
+                                        on_change({ values: updated_values })
+                                    }}
+                                    checked={existing?.use_previous_result || false}
+                                    disabled={!enable_use_previous_result}
                                 />
                             </HelpToolTip>
                         </div>
