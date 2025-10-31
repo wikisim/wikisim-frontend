@@ -23,6 +23,7 @@ import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
 
 import { useMemo } from "preact/hooks"
 import { ExpectationMet } from "./ExpectationMet"
+import { JSONViewer } from "./JSONViewer"
 import "./ScenarioResultsDisplay.css"
 
 
@@ -92,7 +93,9 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         return <div className="scenario-results-display">
             <ExpectationMet met={props.expectation_met} on_click={on_click_header} />
             <pre>
-                Result = {stringify(parsed_json.parsed, { maxLength: 60 })}<br/>
+                Result =
+                {/* {stringify(parsed_json.parsed, { maxLength: 60 })}<br/> */}
+                <JSONViewer data={parsed_json.parsed} initial_collapsed_to_level={4} />
             </pre>
             <pre>
                 {props.expectation_met && `Result matched expected result` }
