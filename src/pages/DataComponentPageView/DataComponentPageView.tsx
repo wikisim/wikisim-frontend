@@ -11,33 +11,39 @@ import { EvaluationResponse } from "core/evaluator/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase/browser"
 
-import HistoryIcon from "../assets/history.svg"
-import EditOrSaveButton from "../buttons/EditOrSaveButton"
-import pub_sub from "../pub_sub"
-import { ROUTES } from "../routes"
-import { get_async_data_component } from "../state/data_components/accessor"
-import { CheckIfIdIsLatestResponse } from "../state/data_components/interface"
-import { app_store } from "../state/store"
-import { ReadOnly } from "../text_editor/sanitise_html"
-import { BannerWarningOfUserOwnedPage } from "../ui_components/BannerWarningOfUserOwnedPage"
-import { PlayInteractable } from "../ui_components/data_component/PlayInteractable"
-import { ErrorMessage } from "../ui_components/ErrorMessage"
-import { ExpectationsMet } from "../ui_components/ExpectationMet"
-import Loading from "../ui_components/Loading"
-import OpenCloseSection from "../ui_components/OpenCloseSection"
-import { ScenarioResultsDisplay } from "../ui_components/ScenarioResultsDisplay"
-import { set_page_title } from "../ui_components/set_page_title"
+import EditOrSaveButton from "../../buttons/EditOrSaveButton"
+import pub_sub from "../../pub_sub"
+import { ROUTES } from "../../routes"
+import { get_async_data_component } from "../../state/data_components/accessor"
+import { CheckIfIdIsLatestResponse } from "../../state/data_components/interface"
+import { app_store } from "../../state/store"
+import { ReadOnly } from "../../text_editor/sanitise_html"
+import { BannerWarningOfUserOwnedPage } from "../../ui_components/BannerWarningOfUserOwnedPage"
+import { PlayInteractable } from "../../ui_components/data_component/PlayInteractable"
+import { ErrorMessage } from "../../ui_components/ErrorMessage"
+import { ExpectationsMet } from "../../ui_components/ExpectationMet"
+import Loading from "../../ui_components/Loading"
+import OpenCloseSection from "../../ui_components/OpenCloseSection"
+import { ScenarioResultsDisplay } from "../../ui_components/ScenarioResultsDisplay"
+import { set_page_title } from "../../ui_components/set_page_title"
 import {
     ensure_owner_id_or_name_is_in_url,
     ensure_owner_is_loaded,
     ensure_owner_name_matches_in_url,
-} from "../ui_components/utils/managing_url_for_user_components"
-import { is_pure_number } from "../utils/is_pure_number"
-import { time_ago_or_date } from "../utils/time_ago_or_date"
-import "./DataComponentPage.css"
+} from "../../ui_components/utils/managing_url_for_user_components"
+import { is_pure_number } from "../../utils/is_pure_number"
+import { time_ago_or_date } from "../../utils/time_ago_or_date"
+import HistoryIcon from "../assets/history.svg"
+import "./DataComponentPageView.css"
 
 
-export function DataComponentPage(props: { user_id_or_name?: string, data_component_id: string, query: Record<string, string> })
+interface DataComponentPageViewProps
+{
+    user_id_or_name?: string
+    data_component_id: string
+    query: Record<string, string>
+}
+export function DataComponentPageView(props: DataComponentPageViewProps)
 {
     const location = useLocation()
     const state = app_store()

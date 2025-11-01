@@ -4,16 +4,16 @@ import { Notifications } from "@mantine/notifications"
 import "@mantine/notifications/styles.css"
 import { render } from "preact"
 import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso"
+import { useEffect } from "preact/hooks"
 
 import { Evaluator } from "core/evaluator/browser_sandboxed_javascript"
 
-import { useEffect } from "preact/hooks"
 import "./main.css"
 import "./monkey_patch"
-import { DataComponentPage } from "./pages/DataComponentPage"
 import { DataComponentPageEdit } from "./pages/DataComponentPageEdit"
 import { DataComponentPageNew } from "./pages/DataComponentPageNew"
 import { DataComponentPageVersionHistory } from "./pages/DataComponentPageVersionHistory"
+import { DataComponentPageView } from "./pages/DataComponentPageView/DataComponentPageView"
 import { DataComponentsSearchPage } from "./pages/DataComponentsSearchPage"
 import { HomePage } from "./pages/HomePage"
 import { UserPage } from "./pages/UserPage"
@@ -88,8 +88,8 @@ function App() {
                         <Route path={ROUTES.DATA_COMPONENT.NEW()} component={DataComponentPageNew} />
                         <Route path={ROUTES.DATA_COMPONENT.SEARCH()} component={DataComponentsSearchPage} />
                         <Route path={ROUTES.DATA_COMPONENT.EDIT()} component={DataComponentPageEdit} />
-                        <Route path={ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT()} component={DataComponentPage} />
-                        <Route path={ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT()} component={DataComponentPage} />
+                        <Route path={ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT()} component={DataComponentPageView} />
+                        <Route path={ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT()} component={DataComponentPageView} />
                         <Route path={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY()} component={DataComponentPageVersionHistory} />
                         {/* <Route path="/demo/text_editor_demos" component={TextEditorDemos} /> */}
                         {/* <Route path="/demo/json_viewer" component={JsonViewerDemo} /> */}
