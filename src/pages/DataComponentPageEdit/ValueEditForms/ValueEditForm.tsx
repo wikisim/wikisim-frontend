@@ -38,12 +38,12 @@ import { ScenariosForm } from "../ScenariosForm"
 import "./ValueEditForm.css"
 
 
-interface ValueEditorProps
+interface ValueEditorFormProps
 {
     draft_component: DataComponent | NewDataComponent
     on_change: (updated_component: UpdatesFnOrValue, compare_meta_fields?: boolean) => void
 }
-export function ValueEditor(props: ValueEditorProps)
+export function ValueEditorForm(props: ValueEditorFormProps)
 {
     const { draft_component, on_change } = props
 

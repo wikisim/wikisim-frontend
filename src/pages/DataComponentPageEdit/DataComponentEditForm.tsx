@@ -25,7 +25,7 @@ import Loading from "../../ui_components/Loading"
 import { load_referenced_data_components } from "../../ui_components/utils/load_referenced_data_components"
 import "./DataComponentEditForm.css"
 import { SaveModal } from "./SaveModal"
-import { ValueEditor } from "./ValueEditForms/ValueEditForm"
+import { ValueEditorForm } from "./ValueEditForms/ValueEditForm"
 import { ValueEditorForInteractable } from "./ValueEditForms/ValueEditFormInteractable"
 import { UpdatesFnOrValue } from "./interface"
 
@@ -264,7 +264,7 @@ function DataComponentEditFormInner(props: {
             </div>
         </div>
 
-        <ValueEditor
+        <ValueEditorForm
             draft_component={draft_component}
             on_change={set_draft_component}
         />
