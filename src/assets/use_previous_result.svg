@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+    <title>Use previous result</title>
+    <g fill="none" stroke="#54595d" stroke-width="2">
+        <!-- Two stacked cells -->
+        <!-- <path d="M 14 4.5 L 14 3 L 6 3 L 6 8 L 14 8 L 14 6.5"/>
+        <path d="M 9 12 L 6 12 L 6 17 L 14 17 L 14 12 L 11 12"/> -->
+
+        <!-- Arrow and head -->
+        <!-- <path d="M 12 5.5 L 17 5.5 L 17 10 L 10 10 L 10 14"/>
+        <path d="M 9.2 14 l 1.4 0 l -0.7 0.7 Z" /> -->
+
+        <!-- Two stacked cells -->
+        <path d="M 7 10 L 1 10 L 1 1 L 19 1 L 19 10 L 13 10"/>
+        <path d="M 7 10 L 1 10 L 1 19 L 19 19 L 19 10 L 13 10"/>
+
+        <!-- Arrow and head -->
+        <path d="M 10 3.5 L 10 14" stroke-width="3"/>
+        <path d="M 9.2 13.5 l 1.4 0 l -0.7 0.7 Z" stroke-width="3" />
+    </g>
+</svg>

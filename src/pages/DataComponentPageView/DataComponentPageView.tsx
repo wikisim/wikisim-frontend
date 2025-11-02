@@ -11,6 +11,7 @@ import { EvaluationResponse } from "core/evaluator/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase/browser"
 
+import { HistoryIcon, IterateOverIcon, UsePreviousResultIcon } from "../../assets/icons"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
 import { ROUTES } from "../../routes"
@@ -33,7 +34,6 @@ import {
 } from "../../ui_components/utils/managing_url_for_user_components"
 import { is_pure_number } from "../../utils/is_pure_number"
 import { time_ago_or_date } from "../../utils/time_ago_or_date"
-import HistoryIcon from "../assets/history.svg"
 import "./DataComponentPageView.css"
 
 
@@ -200,7 +200,7 @@ function LastEditedBy({ component }: { component: DataComponent })
 
     return (
         <div className="last-edited-by">
-            <img src={HistoryIcon} alt="History" width={20} height={20} style={{ verticalAlign: -5, margin: "0px 5px" }} />
+            <HistoryIcon />
 
             <a href={ROUTES.DATA_COMPONENT.VIEW({
                 id: component.id.to_str(), // include version
@@ -314,6 +314,8 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
     const { scenario, index, scenarios_count, result } = props
     const [scenario_row_opened, set_scenario_row_opened] = useState(false)
 
+    const input_values = Object.entries(scenario.values)
+
     return <div className="row_to_column scenario-divider" key={scenario.id}>
         <div
             className="data-component-form-column column"
@@ -323,6 +325,23 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
             <b>Scenario {index + 1} of {scenarios_count}</b>
 
             <ReadOnly html={scenario.description} />
+
+            {scenario_row_opened && input_values.length > 0 && <>
+                <h4 style={{ marginBottom: "0px" }}>
+                    Input Values
+                </h4>
+                <pre style={{ marginTop: "0px" }}>
+                    {input_values.map(([key, val]) =>
+                    {
+                        return <>
+                            {key} = {val.value} &nbsp;
+                            {val.iterate_over && <IterateOverIcon />}
+                            {val.use_previous_result && <UsePreviousResultIcon />}
+                            <br/>
+                        </>
+                    })}
+                </pre>
+            </>}
         </div>
 
         <div className="data-component-form-column column">
