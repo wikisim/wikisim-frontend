@@ -23,7 +23,7 @@ export function extract_data_at_path(data: unknown, path_components: JSONPath, m
                 // If last element or  in path then return the entire array
                 if (is_last || max_wildcards <= 0)
                 {
-                    current_data = JSON.stringify(current_data)
+                    // pass through current_data (which is an array) as-is.
                 }
                 else
                 {

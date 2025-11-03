@@ -31,7 +31,7 @@ describe("extract_data_at_path", () =>
         expect(result).equals("Example")
     })
 
-    it("extracts top-level property from array", () =>
+    it("extracts top-level index from array", () =>
     {
         const path: JSONPath = [{ index: 1 }]
         const data_array = [10, 20, 30, 40, 50]
@@ -67,40 +67,51 @@ describe("extract_data_at_path", () =>
         expect(result).equals("undefined")
     })
 
-    it("returns entire array for wildcard index", () =>
+    describe("wildcard", () =>
     {
-        const path: JSONPath = [{ key: "items" }, { index: "*" }]
-        const result = extract_data_at_path(data_obj, path)
-        expect(result).equals(JSON.stringify(data_obj.items))
-    })
+        it("extracts top-level wildcard from array", () =>
+        {
+            const path: JSONPath = [{ index: "*" }]
+            const data_array = [10, 20, 30, 40, 50]
+            const result = extract_data_at_path(data_array, path)
+            expect(result).deep.equals([10, 20, 30, 40, 50])
+        })
 
-    it("returns nested property with nested wildcard index", () =>
-    {
-        const path: JSONPath = [{ key: "items" }, { index: "*" }, { key: "id" }]
-        const result = extract_data_at_path(data_obj, path)
-        expect(result).to.deep.equal([1, 2, 3])
-    })
+        it("returns entire array for wildcard index", () =>
+        {
+            const path: JSONPath = [{ key: "items" }, { index: "*" }]
+            const result = extract_data_at_path(data_obj, path)
+            expect(result).deep.equals(data_obj.items.map(item => JSON.stringify(item)))
+        })
 
-    it("returns nested property with nested wildcard index finishing with wildcard", () =>
-    {
-        const path: JSONPath = [{ key: "items" }, { index: "*" }, { key: "details" }, { key: "tags" }, { index: "*" }]
-        const result = extract_data_at_path(data_obj, path, 2)
-        expect(result).to.deep.equal([
-            "undefined",
-            // Could return as an array but no use case for this yet
-            `["tag1","tag2"]`,
-            "undefined",
-        ])
-    })
+        it("returns nested property with nested wildcard index", () =>
+        {
+            const path: JSONPath = [{ key: "items" }, { index: "*" }, { key: "id" }]
+            const result = extract_data_at_path(data_obj, path)
+            expect(result).to.deep.equal([1, 2, 3])
+        })
 
-    it("returns limits nested wildcards", () =>
-    {
-        const path: JSONPath = [{ key: "items" }, { index: "*" }, { key: "details" }, { key: "tags" }, { index: "*" }]
-        const result = extract_data_at_path(data_obj, path)
-        expect(result).to.deep.equal([
-            "undefined",
-            `["tag1","tag2"]`,
-            "undefined",
-        ])
+        it("returns nested property with nested wildcard index finishing with wildcard", () =>
+        {
+            const path: JSONPath = [{ key: "items" }, { index: "*" }, { key: "details" }, { key: "tags" }, { index: "*" }]
+            const result = extract_data_at_path(data_obj, path, 2)
+            expect(result).to.deep.equal([
+                "undefined",
+                // Could return as an array but no use case for this yet
+                `["tag1","tag2"]`,
+                "undefined",
+            ])
+        })
+
+        it("returns limits nested wildcards", () =>
+        {
+            const path: JSONPath = [{ key: "items" }, { index: "*" }, { key: "details" }, { key: "tags" }, { index: "*" }]
+            const result = extract_data_at_path(data_obj, path)
+            expect(result).to.deep.equal([
+                "undefined",
+                `["tag1","tag2"]`,
+                "undefined",
+            ])
+        })
     })
 })

@@ -25,6 +25,7 @@ export function DemoJSONWranglingDemo()
             { id: 2, value: "Item 2", details: { description: "This is item 2", tags: ["tag1", "tag2"] } },
             { id: 3, value: "Item 3" },
         ],
+        numbers: [10, 20, 30, 40, 50],
         metadata: {
             created: "2024-01-01T12:00:00Z",
             modified: null,
@@ -60,7 +61,16 @@ export function DemoJSONWranglingDemo()
             if (paths.length === initial_path_count)
             {
                 const path_element = path[path.length - 1]!
-                const alias = ("key" in path_element ? path_element.key : path_element.index).toString()
+                const parent_path_element = path[path.length - 2]
+                const alias = (
+                    "key" in path_element
+                    ? path_element.key
+                    : (
+                        (parent_path_element && "key" in parent_path_element)
+                        ? parent_path_element.key
+                        : "index"
+                    )
+                ).toString()
                 paths = [...paths, { path, alias }]
             }
 
@@ -89,6 +99,7 @@ export function DemoJSONWranglingDemo()
             data={sample_data}
             hovering_path={handle_hovering_path}
             selected_path={selected_path}
+            selected_paths={selected_paths}
         />
 
         <TableViewer

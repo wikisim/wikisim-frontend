@@ -34,3 +34,8 @@
 {
     cursor: default;
 }
+
+.json-viewer .is_selected
+{
+    background-color: #d0e7ff;
+}
