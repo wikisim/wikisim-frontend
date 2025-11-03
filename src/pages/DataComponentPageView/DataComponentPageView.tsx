@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "preact/hooks"
 
 import { valid_value_type } from "core/data/field_values_with_defaults"
 import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
-import { DataComponent, InlineScenario } from "core/data/interface"
+import { DataComponent, Scenario } from "core/data/interface"
 import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_javascript"
 import { request_dependencies_and_setup_sandbox } from "core/evaluation/request_dependencies_and_setup_sandbox"
 import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
@@ -304,7 +304,7 @@ function ScenariosReadOnly(props: { component: DataComponent })
 
 interface ScenarioRowReadOnlyProps
 {
-    scenario: InlineScenario
+    scenario: Scenario
     index: number
     scenarios_count: number
     result: EvaluationResponse | undefined
