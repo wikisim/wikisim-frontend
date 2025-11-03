@@ -22,6 +22,7 @@ import { compare_results_to_expectations } from "core/expectation/compare_result
 import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
 
 import { useMemo } from "preact/hooks"
+import { JSONViewerEventAndStateHandlers } from "./data_wrangling/event_and_state_handlers"
 import { JSONViewer } from "./data_wrangling/JSONViewer"
 import { ExpectationMet } from "./ExpectationMet"
 import "./ScenarioResultsDisplay.css"
@@ -50,6 +51,7 @@ interface ScenarioResultsDisplayProps
     expectation_met: boolean | undefined
     scenario_row_opened: boolean
     set_scenario_row_opened: (opened: boolean | ((o: boolean) => boolean)) => void
+    json_viewer_event_and_state_handlers?: JSONViewerEventAndStateHandlers
 }
 
 export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
@@ -95,7 +97,11 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
             <pre>
                 Result =
                 {/* {stringify(parsed_json.parsed, { maxLength: 60 })}<br/> */}
-                <JSONViewer data={parsed_json.parsed} initial_collapsed_to_level={4} />
+                <JSONViewer
+                    data={parsed_json.parsed}
+                    initial_collapsed_to_level={2}
+                    {...props.json_viewer_event_and_state_handlers}
+                />
             </pre>
             <pre>
                 {props.expectation_met && `Result matched expected result` }

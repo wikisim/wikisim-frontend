@@ -6,6 +6,7 @@ import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandbox
 import { EvaluationResponse } from "core/evaluator/interface"
 import { calculate_if_expectation_met } from "core/expectation/calculate_if_expectation_met"
 
+import { event_and_state_handlers } from "../../ui_components/data_wrangling/event_and_state_handlers"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
 import { ScenarioResultsDisplay } from "../../ui_components/ScenarioResultsDisplay"
 import { ScenarioExpectations } from "./ScenarioExpectations"
@@ -66,6 +67,9 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
     }, [result?.result, props.scenario.expected_result])
 
 
+    const json_viewer_event_and_state_handlers = event_and_state_handlers()
+
+
     return <>
         {result?.error && <ErrorMessage show={true} message={result.error} />}
         {result?.result && <ScenarioResultsDisplay
@@ -74,6 +78,7 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
             expectation_met={props.scenario.expectation_met}
             scenario_row_opened={props.scenario_row_opened}
             set_scenario_row_opened={props.set_scenario_row_opened}
+            json_viewer_event_and_state_handlers={json_viewer_event_and_state_handlers}
         />}
         {props.scenario_row_opened && <ScenarioExpectations
             scenario={props.scenario}
