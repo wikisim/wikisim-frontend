@@ -57,12 +57,17 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
 
     useEffect(() =>
     {
-        const { expected_result } = props.scenario
+        const { expected_result, expectation_met } = props.scenario
         if (result?.result && expected_result)
         {
             const expectation_met = calculate_if_expectation_met(result, expected_result)
             // console .log("Expectation met?", expectation_met, { result, expected_result, data, expected_data })
             props.on_change({ expectation_met })
+        }
+        // Ensure that if the expected_result is removed, we also clear expectation_met
+        else if (expectation_met !== undefined)
+        {
+            props.on_change({ expectation_met: undefined })
         }
     }, [result?.result, props.scenario.expected_result])
 
