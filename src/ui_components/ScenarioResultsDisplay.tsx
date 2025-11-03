@@ -21,7 +21,7 @@ import {
 import { compare_results_to_expectations } from "core/expectation/compare_results_to_expectations"
 import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
 
-import { useMemo } from "preact/hooks"
+import { useCallback } from "preact/hooks"
 import { JSONViewerEventAndStateHandlers } from "./data_wrangling/event_and_state_handlers"
 import { JSONViewer } from "./data_wrangling/JSONViewer"
 import { ExpectationMet } from "./ExpectationMet"
@@ -56,26 +56,44 @@ interface ScenarioResultsDisplayProps
 
 export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
 {
-    const parsed_json = result_string_to_json(props.result)
-
-    const on_click_header = useMemo(() => () =>
+    const on_click_header = useCallback(() =>
     {
         props.set_scenario_row_opened(scenario_row_opened => !scenario_row_opened)
-    }, [])
+    }, [props.set_scenario_row_opened])
 
-    if (!props.scenario_row_opened)
-    {
-        return <div className="scenario-results-display">
-            <ExpectationMet met={props.expectation_met} on_click={on_click_header} />
-        </div>
-    }
+    return <div className="scenario-results-display">
+
+        <ExpectationMet
+            met={props.expectation_met}
+            on_click={on_click_header}
+        />
+
+        {props.scenario_row_opened && <ScenarioResultsDisplayInner
+            result={props.result}
+            expected_result={props.expected_result}
+            expectation_met={props.expectation_met}
+            json_viewer_event_and_state_handlers={props.json_viewer_event_and_state_handlers}
+        />}
+    </div>
+}
+
+
+interface ScenarioResultsDisplayInnerProps
+{
+    result: string
+    expected_result: string | undefined
+    expectation_met: boolean | undefined
+    json_viewer_event_and_state_handlers?: JSONViewerEventAndStateHandlers
+}
+function ScenarioResultsDisplayInner(props: ScenarioResultsDisplayInnerProps)
+{
+    const parsed_json = result_string_to_json(props.result)
 
     if (!parsed_json)
     {
         // Not sure if this will ever happen as the results should always be a
         // string of JSON
-        return <div className="scenario-results-display">
-            <ExpectationMet met={props.expectation_met} on_click={on_click_header} />
+        return <>
             <pre className="wrap-pre-text">
                 Result = {props.result}<br/>
             </pre>
@@ -83,7 +101,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
                 {props.expectation_met && `Result matched expected result` }
                 {!props.expectation_met && props.expected_result && `Expected = ${props.expected_result}`}<br/>
             </pre>
-        </div>
+        </>
     }
 
     const data = assert_result_json_is_graphable(parsed_json.parsed)
@@ -92,8 +110,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         const expected_json = result_string_to_json(props.expected_result || "")
         const expected_result_str = expected_json ? stringify(expected_json.parsed, { maxLength: 60 }) : props.expected_result
 
-        return <div className="scenario-results-display">
-            <ExpectationMet met={props.expectation_met} on_click={on_click_header} />
+        return <>
             <pre>
                 Result =
                 {/* {stringify(parsed_json.parsed, { maxLength: 60 })}<br/> */}
@@ -107,7 +124,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
                 {props.expectation_met && `Result matched expected result` }
                 {!props.expectation_met && expected_result_str && `Expected = ${expected_result_str}`}<br/>
             </pre>
-        </div>
+        </>
     }
 
     const expected_data = result_string_to_graphable(props.expected_result)
@@ -144,11 +161,10 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         })
     }
 
-    return <div className="scenario-results-display">
-        <ExpectationMet met={props.expectation_met} on_click={on_click_header} />
+    return <>
         {/* {props.result} */}
         <Line data={graph_props} />
-    </div>
+    </>
 }
 
 

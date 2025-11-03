@@ -9,7 +9,6 @@ import { ExpectationMetMessage } from "../../ui_components/ExpectationMet"
 
 
 
-
 interface ScenarioGraphProps
 {
     scenario: Scenario
