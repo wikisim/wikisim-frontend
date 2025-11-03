@@ -5,6 +5,7 @@ import { Scenario } from "core/data/interface"
 
 import BinButton from "../../buttons/BinButton"
 import HelpText from "../../buttons/HelpText"
+import { ExpectationMetMessage } from "../../ui_components/ExpectationMet"
 
 
 
@@ -50,8 +51,10 @@ export function ScenarioExpectations(props: ScenarioGraphProps)
             When set, if the function is edited later,
             the scenario will be re-evaluated and the results compared to
             these expectations.
-            If the results differ, the scenario will be marked as failing
-            and you will be alerted when editing the function.
+            If the results are the same, the scenario will be shown as passing with
+            a <ExpectationMetMessage met={true} />
+            If the results differ, the scenario will been shown as failing with
+            a <ExpectationMetMessage met={false} />
         </>} />
 
         {has_expectation && <BinButton

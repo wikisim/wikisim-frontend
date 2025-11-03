@@ -3,6 +3,20 @@ import { EvaluationResponse } from "core/evaluator/interface"
 import { calculate_if_expectation_met } from "core/expectation/calculate_if_expectation_met"
 
 import { HelpToolTip } from "../buttons/HelpText"
+import "./ExpectationMet.css"
+
+
+export function ExpectationMetMessage(props: { met: boolean, on_click?: () => void })
+{
+    const { met } = props
+
+    return <div
+        onClick={props.on_click}
+        className={"expectation-met-message" + (met ? " expectation-met" : " expectation-failed")}
+    >
+        {met ? "Pass" : "Fail"}
+    </div>
+}
 
 
 export function ExpectationMet(props: { met?: boolean, on_click?: () => void })
@@ -13,19 +27,10 @@ export function ExpectationMet(props: { met?: boolean, on_click?: () => void })
     return <HelpToolTip
         message={met ? "The results match the expectations" : "The results do not match the expectations"}
     >
-        <div
-            onClick={props.on_click}
-            style={{
-                textAlign: "center",
-                marginTop: "0.5em",
-                color: "white",
-                borderRadius: "var(--radius-border)",
-                padding: "0.2em 0.5em",
-                backgroundColor: met ? "var(--colour-success)" : "var(--colour-error)"
-            }}
-        >
-            {met ? "Pass" : "Fail"}
-        </div>
+        <ExpectationMetMessage
+            on_click={props.on_click}
+            met={met}
+        />
     </HelpToolTip>
 }
 

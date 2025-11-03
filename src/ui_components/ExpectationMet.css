@@ -1,0 +1,20 @@
+
+
+.expectation-met-message
+{
+    text-align: center;
+    margin-top: 0.5em;
+    color: white;
+    border-radius: var(--radius-border);
+    padding: 0.2em 0.5em;
+}
+
+.expectation-met-message.expectation-met
+{
+    background-color: var(--colour-success);
+}
+
+.expectation-met-message.expectation-failed
+{
+    background-color: var(--colour-error);
+}
