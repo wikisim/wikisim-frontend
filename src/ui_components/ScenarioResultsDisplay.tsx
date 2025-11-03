@@ -76,10 +76,10 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         // string of JSON
         return <div className="scenario-results-display">
             <ExpectationMet met={props.expectation_met} on_click={on_click_header} />
-            <pre>
+            <pre className="wrap-pre-text">
                 Result = {props.result}<br/>
             </pre>
-            <pre>
+            <pre className="wrap-pre-text">
                 {props.expectation_met && `Result matched expected result` }
                 {!props.expectation_met && props.expected_result && `Expected = ${props.expected_result}`}<br/>
             </pre>
@@ -103,7 +103,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
                     {...props.json_viewer_event_and_state_handlers}
                 />
             </pre>
-            <pre>
+            <pre className="wrap-pre-text">
                 {props.expectation_met && `Result matched expected result` }
                 {!props.expectation_met && expected_result_str && `Expected = ${expected_result_str}`}<br/>
             </pre>

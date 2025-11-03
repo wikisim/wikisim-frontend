@@ -125,3 +125,9 @@ a
     margin-top: auto;
     margin-bottom: auto;
 }
+
+.wrap-pre-text
+{
+    white-space: pre-wrap;
+    word-break: break-word;
+}

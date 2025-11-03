@@ -330,11 +330,7 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
                 <h4 style={{ marginBottom: "0px" }}>
                     Input Values
                 </h4>
-                <pre style={{
-                    marginTop: "0px",
-                    whiteSpace: "pre-wrap",
-                    wordBreak: "break-word",
-                }}>
+                <pre style={{ marginTop: "0px" }} className="wrap-pre-text">
                     {input_values.map(([key, val]) =>
                     {
                         return <>
