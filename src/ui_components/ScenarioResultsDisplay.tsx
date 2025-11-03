@@ -22,8 +22,8 @@ import { compare_results_to_expectations } from "core/expectation/compare_result
 import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
 
 import { useMemo } from "preact/hooks"
+import { JSONViewer } from "./data_wrangling/JSONViewer"
 import { ExpectationMet } from "./ExpectationMet"
-import { JSONViewer } from "./JSONViewer"
 import "./ScenarioResultsDisplay.css"
 
 

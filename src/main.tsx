@@ -92,7 +92,7 @@ function App() {
                         <Route path={ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT()} component={DataComponentPageView} />
                         <Route path={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY()} component={DataComponentPageVersionHistory} />
                         {/* <Route path="/demo/text_editor_demos" component={TextEditorDemos} /> */}
-                        {/* <Route path="/demo/json_viewer" component={JsonViewerDemo} /> */}
+                        {/* <Route path="/demo/json_wrangling" component={DemoJSONWranglingDemo} /> */}
                         <Route default component={NotFound} />
                     </Router>
                 </ErrorBoundary>

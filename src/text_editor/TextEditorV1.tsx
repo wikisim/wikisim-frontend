@@ -1,13 +1,13 @@
-import { Tooltip } from "@mantine/core";
+import { Tooltip } from "@mantine/core"
 import "@mantine/core/styles.css"; // TODO: Why is this here and not in main.tsx?
-import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle";
-import { JSX } from "preact";
-import { useMemo, useRef, useState } from "preact/hooks";
+import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle"
+import { JSX } from "preact"
+import { useMemo, useRef, useState } from "preact/hooks"
 
-import "../monkey_patch";
-import pub_sub from "../pub_sub";
-import "../ui_components/input_elements.shared.css";
-import "./TextEditorV1.css";
+import "../monkey_patch"
+import pub_sub from "../pub_sub"
+import "../ui_components/input_elements.shared.css"
+import "./TextEditorV1.css"
 
 
 interface TextEditorV1Props
