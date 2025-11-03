@@ -8,7 +8,7 @@ import { calculate_if_expectation_met } from "core/expectation/calculate_if_expe
 
 import { event_and_state_handlers } from "../../ui_components/data_wrangling/event_and_state_handlers"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
-import { ScenarioResultsDisplay } from "../../ui_components/ScenarioResultsDisplay"
+import { ScenarioResultsDisplay } from "../../ui_components/results_display/ScenarioResultsDisplay"
 import { ScenarioExpectations } from "./ScenarioExpectations"
 
 

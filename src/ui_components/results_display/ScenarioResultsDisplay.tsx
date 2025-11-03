@@ -22,9 +22,9 @@ import { compare_results_to_expectations } from "core/expectation/compare_result
 import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
 
 import { useCallback } from "preact/hooks"
-import { JSONViewerEventAndStateHandlers } from "./data_wrangling/event_and_state_handlers"
-import { JSONViewer } from "./data_wrangling/JSONViewer"
-import { ExpectationMet } from "./ExpectationMet"
+import { JSONViewerEventAndStateHandlers } from "../data_wrangling/event_and_state_handlers"
+import { JSONViewer } from "../data_wrangling/JSONViewer"
+import { ExpectationMet } from "../ExpectationMet"
 import "./ScenarioResultsDisplay.css"
 
 

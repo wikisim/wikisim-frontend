@@ -25,7 +25,7 @@ import { ErrorMessage } from "../../ui_components/ErrorMessage"
 import { ExpectationsMet } from "../../ui_components/ExpectationMet"
 import Loading from "../../ui_components/Loading"
 import OpenCloseSection from "../../ui_components/OpenCloseSection"
-import { ScenarioResultsDisplay } from "../../ui_components/ScenarioResultsDisplay"
+import { ScenarioResultsDisplay } from "../../ui_components/results_display/ScenarioResultsDisplay"
 import { set_page_title } from "../../ui_components/set_page_title"
 import {
     ensure_owner_id_or_name_is_in_url,
