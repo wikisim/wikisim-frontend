@@ -134,7 +134,7 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
                 </div>}
             </div>}
 
-            {is_function && <Scenarios component={component} />}
+            {is_function && <ScenariosReadOnly component={component} />}
 
         </div>
         <LastEditedBy component={component} />
@@ -218,7 +218,7 @@ function LastEditedBy({ component }: { component: DataComponent })
 }
 
 
-function Scenarios(props: { component: DataComponent })
+function ScenariosReadOnly(props: { component: DataComponent })
 {
     const [opened, set_opened] = useState(false)
 
