@@ -40,13 +40,13 @@ export function DemoJSONWranglingDemo()
     const [selected_paths, set_selected_paths] = useState<SelectedJSONPath[]>([])
 
 
-    const handle_hovering_path = useCallback((path: JSONPath, is_leaf_value: boolean) =>
+    const on_hovering_path = useCallback((path: JSONPath, is_leaf_value: boolean) =>
     {
         path = convert_array_paths_to_wildcards(path)
         set_hovering_path({ path, is_leaf_value })
     }, [])
 
-    const selected_path = useCallback((path: JSONPath, is_leaf_value: boolean) =>
+    const on_selected_path = useCallback((path: JSONPath, is_leaf_value: boolean) =>
     {
         if (!is_leaf_value) return
         path = convert_array_paths_to_wildcards(path)
@@ -90,16 +90,16 @@ export function DemoJSONWranglingDemo()
             {selected_paths.map(p => <div
                 key={JSON.stringify(p.path)}
                 style={{ cursor: "pointer" }}
-                onClick={() => selected_path(p.path, true)}
+                onClick={() => on_selected_path(p.path, true)}
             >
                 {p.alias} ({humanised_path(p.path)})
             </div>)}
         </p>
         <JSONViewer
             data={sample_data}
-            hovering_path={handle_hovering_path}
+            on_hovering_path={on_hovering_path}
             hovered_path={hovering_path?.path}
-            selected_path={selected_path}
+            on_selected_path={on_selected_path}
             selected_paths={selected_paths}
         />
 

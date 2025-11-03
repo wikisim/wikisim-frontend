@@ -12,9 +12,9 @@ interface JSONViewerProps
 {
     data: unknown
     initial_collapsed_to_level?: number
-    hovering_path?: (path: JSONPath, is_leaf_value: boolean) => void
+    on_hovering_path?: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path?: JSONPath
-    selected_path?: (path: JSONPath, is_leaf_value: boolean) => void
+    on_selected_path?: (path: JSONPath, is_leaf_value: boolean) => void
     selected_paths?: SelectedJSONPath[]
 }
 export function JSONViewer(props: JSONViewerProps)
@@ -38,9 +38,9 @@ export function JSONViewer(props: JSONViewerProps)
             current_path={[]}
             initial_collapsed_to_level={props.initial_collapsed_to_level || 1}
             trailing_comma={false}
-            hovering_path={props.hovering_path || (() => {})}
+            on_hovering_path={props.on_hovering_path || (() => {})}
             hovered_path_str={hovered_path_str}
-            selected_path={props.selected_path || (() => {})}
+            on_selected_path={props.on_selected_path || (() => {})}
             selected_path_strs={selected_path_strs}
         />
     </div>
@@ -53,9 +53,9 @@ interface RecursiveJSONViewerProps
     current_path: JSONPath
     initial_collapsed_to_level: number
     trailing_comma: boolean
-    hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
+    on_hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path_str: string
-    selected_path: (path: JSONPath, is_leaf_value: boolean) => void
+    on_selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
 function RecursiveJSONViewer(props: RecursiveJSONViewerProps)
@@ -85,9 +85,9 @@ function RecursiveJSONViewer(props: RecursiveJSONViewerProps)
             current_path={current_path}
             initial_collapsed_to_level={initial_collapsed_to_level}
             trailing_comma={props.trailing_comma}
-            hovering_path={props.hovering_path}
+            on_hovering_path={props.on_hovering_path}
             hovered_path_str={props.hovered_path_str}
-            selected_path={props.selected_path}
+            on_selected_path={props.on_selected_path}
             selected_path_strs={props.selected_path_strs}
         />
     }
@@ -98,9 +98,9 @@ function RecursiveJSONViewer(props: RecursiveJSONViewerProps)
             current_path={current_path}
             initial_collapsed_to_level={initial_collapsed_to_level}
             trailing_comma={props.trailing_comma}
-            hovering_path={props.hovering_path}
+            on_hovering_path={props.on_hovering_path}
             hovered_path_str={props.hovered_path_str}
-            selected_path={props.selected_path}
+            on_selected_path={props.on_selected_path}
             selected_path_strs={props.selected_path_strs}
         />
     }
@@ -117,9 +117,9 @@ interface JSONObjectViewerProps
     current_path: JSONPath
     initial_collapsed_to_level: number
     trailing_comma: boolean
-    hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
+    on_hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path_str: string
-    selected_path: (path: JSONPath, is_leaf_value: boolean) => void
+    on_selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
 function JSONObjectViewer(props: JSONObjectViewerProps)
@@ -138,8 +138,8 @@ function JSONObjectViewer(props: JSONObjectViewerProps)
     {
         e.stopPropagation()
         set_is_hovered(true)
-        props.hovering_path(current_path, false)
-    }, [props.hovering_path, JSON.stringify(current_path)])
+        props.on_hovering_path(current_path, false)
+    }, [props.on_hovering_path, JSON.stringify(current_path)])
 
     const on_pointer_leave = useCallback((e: PointerEvent) =>
     {
@@ -177,9 +177,9 @@ function JSONObjectViewer(props: JSONObjectViewerProps)
                     value={data[key]}
                     current_path={[...current_path, { key }]}
                     initial_collapsed_to_level={initial_collapsed_to_level}
-                    hovering_path={props.hovering_path}
+                    on_hovering_path={props.on_hovering_path}
                     hovered_path_str={props.hovered_path_str}
-                    selected_path={props.selected_path}
+                    on_selected_path={props.on_selected_path}
                     selected_path_strs={props.selected_path_strs}
                 />)}
             </div>
@@ -201,9 +201,9 @@ interface JSONArrayViewerProps
     current_path: JSONPath
     initial_collapsed_to_level: number
     trailing_comma: boolean
-    hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
+    on_hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path_str: string
-    selected_path: (path: JSONPath, is_leaf_value: boolean) => void
+    on_selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
 function JSONArrayViewer(props: JSONArrayViewerProps)
@@ -220,9 +220,9 @@ function JSONArrayViewer(props: JSONArrayViewerProps)
     const on_pointer_over = useCallback((e: PointerEvent) =>
     {
         e.stopPropagation()
-        props.hovering_path(current_path, false)
+        props.on_hovering_path(current_path, false)
         // set_is_hovered(true)
-    }, [props.hovering_path, JSON.stringify(current_path)])
+    }, [props.on_hovering_path, JSON.stringify(current_path)])
 
     const path_element = current_path[current_path.length - 1]
     const key_name = path_element && "key" in path_element ? path_element.key : ""
@@ -245,9 +245,9 @@ function JSONArrayViewer(props: JSONArrayViewerProps)
                     item={item}
                     current_path={[...current_path, { index }]}
                     initial_collapsed_to_level={initial_collapsed_to_level}
-                    hovering_path={props.hovering_path}
+                    on_hovering_path={props.on_hovering_path}
                     hovered_path_str={props.hovered_path_str}
-                    selected_path={props.selected_path}
+                    on_selected_path={props.on_selected_path}
                     selected_path_strs={props.selected_path_strs}
                 />)}
             </div>
@@ -266,9 +266,9 @@ interface JSONObjectItemProps
     value: unknown
     current_path: JSONPath
     initial_collapsed_to_level: number
-    hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
+    on_hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path_str: string
-    selected_path: (path: JSONPath, is_leaf_value: boolean) => void
+    on_selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
 function JSONObjectItem(props: JSONObjectItemProps)
@@ -282,14 +282,14 @@ function JSONObjectItem(props: JSONObjectItemProps)
     const on_pointer_over = useCallback((e: PointerEvent) =>
     {
         e.stopPropagation()
-        props.hovering_path(current_path, is_leaf_value)
-    }, [props.hovering_path, current_path, is_leaf_value])
+        props.on_hovering_path(current_path, is_leaf_value)
+    }, [props.on_hovering_path, current_path, is_leaf_value])
 
     const on_pointer_down = useCallback((e: PointerEvent) =>
     {
         e.stopPropagation()
-        props.selected_path(current_path, is_leaf_value)
-    }, [props.selected_path, current_path, is_leaf_value])
+        props.on_selected_path(current_path, is_leaf_value)
+    }, [props.on_selected_path, current_path, is_leaf_value])
 
     const paths_match = useMemo(() => factory_paths_match(current_path), [current_path])
     const is_hovered = paths_match(props.hovered_path_str)
@@ -314,9 +314,9 @@ function JSONObjectItem(props: JSONObjectItemProps)
             current_path={current_path}
             initial_collapsed_to_level={initial_collapsed_to_level}
             trailing_comma={index < keys.length - 1}
-            hovering_path={props.hovering_path}
+            on_hovering_path={props.on_hovering_path}
             hovered_path_str={props.hovered_path_str}
-            selected_path={props.selected_path}
+            on_selected_path={props.on_selected_path}
             selected_path_strs={props.selected_path_strs}
         />
     </div>
@@ -330,9 +330,9 @@ interface JSONArrayItemProps
     item: unknown
     current_path: JSONPath
     initial_collapsed_to_level: number
-    hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
+    on_hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path_str: string
-    selected_path: (path: JSONPath, is_leaf_value: boolean) => void
+    on_selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
 function JSONArrayItem(props: JSONArrayItemProps)
@@ -345,14 +345,14 @@ function JSONArrayItem(props: JSONArrayItemProps)
     const on_pointer_over = useCallback((e: PointerEvent) =>
     {
         e.stopPropagation()
-        props.hovering_path(current_path, is_leaf_value)
-    }, [props.hovering_path, current_path, is_leaf_value])
+        props.on_hovering_path(current_path, is_leaf_value)
+    }, [props.on_hovering_path, current_path, is_leaf_value])
 
     const on_pointer_down = useCallback((e: PointerEvent) =>
     {
         e.stopPropagation()
-        props.selected_path(current_path, is_leaf_value)
-    }, [props.selected_path, current_path, is_leaf_value])
+        props.on_selected_path(current_path, is_leaf_value)
+    }, [props.on_selected_path, current_path, is_leaf_value])
 
     const paths_match = useMemo(() => factory_paths_match(current_path), [current_path])
     const is_hovered = paths_match(props.hovered_path_str)
@@ -373,9 +373,9 @@ function JSONArrayItem(props: JSONArrayItemProps)
             current_path={current_path}
             initial_collapsed_to_level={initial_collapsed_to_level}
             trailing_comma={index < (array_length - 1)}
-            hovering_path={props.hovering_path}
+            on_hovering_path={props.on_hovering_path}
             hovered_path_str={props.hovered_path_str}
-            selected_path={props.selected_path}
+            on_selected_path={props.on_selected_path}
             selected_path_strs={props.selected_path_strs}
         />
     </div>
