@@ -16,10 +16,9 @@
 {
     cursor: default;
 }
-.json-viewer .json-collapsible.is_hovered
+.json-viewer .json-collapsible
 {
     /* outline: thin solid grey; */
-    background-color: initial;
 }
 
 .json-object-viewer,
