@@ -16,9 +16,10 @@
 {
     cursor: default;
 }
-.json-collapsible.is_hovered
+.json-viewer .json-collapsible.is_hovered
 {
     /* outline: thin solid grey; */
+    background-color: initial;
 }
 
 .json-object-viewer,
@@ -35,7 +36,18 @@
     cursor: default;
 }
 
+.json-viewer .is_leaf_value.is_hovered
+{
+    background-color: var(--colour-quaternary-green);
+}
+
+.json-viewer .is_leaf_value.is_hovered.is_selected
+{
+    /* Indicate that clicking now will deselect the item that is being hovered */
+    /* background-color: var(--colour-warning-fainter); */
+}
+
 .json-viewer .is_selected
 {
-    background-color: #d0e7ff;
+    background-color: var(--colour-quaternary-blue);
 }

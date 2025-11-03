@@ -1,8 +1,9 @@
 import { useCallback, useMemo, useState } from "preact/hooks"
 
 import "./JSONViewer.css"
+import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildcards"
+import { factory_paths_match } from "./factory_paths_match"
 import { JSONPath, SelectedJSONPath } from "./interface"
-import { factory_is_path_selected } from "./is_path_selected"
 
 
 const indent_size = 4 * 3
@@ -12,11 +13,19 @@ interface JSONViewerProps
     data: unknown
     initial_collapsed_to_level?: number
     hovering_path?: (path: JSONPath, is_leaf_value: boolean) => void
+    hovered_path?: JSONPath
     selected_path?: (path: JSONPath, is_leaf_value: boolean) => void
     selected_paths?: SelectedJSONPath[]
 }
 export function JSONViewer(props: JSONViewerProps)
 {
+    const hovered_path_str = useMemo(() =>
+    {
+        if (!props.hovered_path) return ""
+        const hovered_path_with_wildcards = convert_array_paths_to_wildcards(props.hovered_path)
+        return JSON.stringify(hovered_path_with_wildcards)
+    }, [props.hovered_path])
+
     const selected_path_strs = useMemo(() =>
     {
         const strings = props.selected_paths?.map(sp => JSON.stringify(sp.path)) || []
@@ -30,6 +39,7 @@ export function JSONViewer(props: JSONViewerProps)
             initial_collapsed_to_level={props.initial_collapsed_to_level || 1}
             trailing_comma={false}
             hovering_path={props.hovering_path || (() => {})}
+            hovered_path_str={hovered_path_str}
             selected_path={props.selected_path || (() => {})}
             selected_path_strs={selected_path_strs}
         />
@@ -44,6 +54,7 @@ interface RecursiveJSONViewerProps
     initial_collapsed_to_level: number
     trailing_comma: boolean
     hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
+    hovered_path_str: string
     selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
@@ -75,6 +86,7 @@ function RecursiveJSONViewer(props: RecursiveJSONViewerProps)
             initial_collapsed_to_level={initial_collapsed_to_level}
             trailing_comma={props.trailing_comma}
             hovering_path={props.hovering_path}
+            hovered_path_str={props.hovered_path_str}
             selected_path={props.selected_path}
             selected_path_strs={props.selected_path_strs}
         />
@@ -87,6 +99,7 @@ function RecursiveJSONViewer(props: RecursiveJSONViewerProps)
             initial_collapsed_to_level={initial_collapsed_to_level}
             trailing_comma={props.trailing_comma}
             hovering_path={props.hovering_path}
+            hovered_path_str={props.hovered_path_str}
             selected_path={props.selected_path}
             selected_path_strs={props.selected_path_strs}
         />
@@ -105,6 +118,7 @@ interface JSONObjectViewerProps
     initial_collapsed_to_level: number
     trailing_comma: boolean
     hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
+    hovered_path_str: string
     selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
@@ -164,6 +178,7 @@ function JSONObjectViewer(props: JSONObjectViewerProps)
                     current_path={[...current_path, { key }]}
                     initial_collapsed_to_level={initial_collapsed_to_level}
                     hovering_path={props.hovering_path}
+                    hovered_path_str={props.hovered_path_str}
                     selected_path={props.selected_path}
                     selected_path_strs={props.selected_path_strs}
                 />)}
@@ -187,6 +202,7 @@ interface JSONArrayViewerProps
     initial_collapsed_to_level: number
     trailing_comma: boolean
     hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
+    hovered_path_str: string
     selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
@@ -230,6 +246,7 @@ function JSONArrayViewer(props: JSONArrayViewerProps)
                     current_path={[...current_path, { index }]}
                     initial_collapsed_to_level={initial_collapsed_to_level}
                     hovering_path={props.hovering_path}
+                    hovered_path_str={props.hovered_path_str}
                     selected_path={props.selected_path}
                     selected_path_strs={props.selected_path_strs}
                 />)}
@@ -250,6 +267,7 @@ interface JSONObjectItemProps
     current_path: JSONPath
     initial_collapsed_to_level: number
     hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
+    hovered_path_str: string
     selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
@@ -273,8 +291,12 @@ function JSONObjectItem(props: JSONObjectItemProps)
         props.selected_path(current_path, is_leaf_value)
     }, [props.selected_path, current_path, is_leaf_value])
 
-    const is_path_selected = useMemo(() => factory_is_path_selected(current_path), [current_path])
-    const is_selected = useMemo(() => is_path_selected(props.selected_path_strs), [is_path_selected, props.selected_path_strs])
+    const paths_match = useMemo(() => factory_paths_match(current_path), [current_path])
+    const is_hovered = paths_match(props.hovered_path_str)
+    const is_selected = paths_match(props.selected_path_strs)
+
+    const is_leaf_value_class = is_leaf_value ? " is_leaf_value" : ""
+    const is_hovered_class = is_hovered ? " is_hovered" : ""
     const is_selected_class = is_selected ? " is_selected" : ""
 
     return <div
@@ -283,7 +305,7 @@ function JSONObjectItem(props: JSONObjectItemProps)
         onPointerDown={on_pointer_down}
     >
         {!is_collapsible && <>
-            <span className={"json-object-key" + is_selected_class}>
+            <span className={"json-object-key" + is_leaf_value_class + is_hovered_class + is_selected_class}>
                 "{key}"
             </span>:&nbsp;
         </>}
@@ -293,6 +315,7 @@ function JSONObjectItem(props: JSONObjectItemProps)
             initial_collapsed_to_level={initial_collapsed_to_level}
             trailing_comma={index < keys.length - 1}
             hovering_path={props.hovering_path}
+            hovered_path_str={props.hovered_path_str}
             selected_path={props.selected_path}
             selected_path_strs={props.selected_path_strs}
         />
@@ -308,6 +331,7 @@ interface JSONArrayItemProps
     current_path: JSONPath
     initial_collapsed_to_level: number
     hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
+    hovered_path_str: string
     selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
@@ -330,13 +354,17 @@ function JSONArrayItem(props: JSONArrayItemProps)
         props.selected_path(current_path, is_leaf_value)
     }, [props.selected_path, current_path, is_leaf_value])
 
-    const is_path_selected = useMemo(() => factory_is_path_selected(current_path), [current_path])
-    const is_selected = useMemo(() => is_path_selected(props.selected_path_strs), [is_path_selected, props.selected_path_strs])
+    const paths_match = useMemo(() => factory_paths_match(current_path), [current_path])
+    const is_hovered = paths_match(props.hovered_path_str)
+    const is_selected = paths_match(props.selected_path_strs)
+
+    const is_leaf_value_class = is_leaf_value ? " is_leaf_value" : ""
+    const is_hovered_class = is_hovered ? " is_hovered" : ""
     const is_selected_class = is_selected ? " is_selected" : ""
 
     return <div
         key={index}
-        className={"json-array-item" + is_selected_class}
+        className={"json-array-item" + is_leaf_value_class + is_hovered_class + is_selected_class}
         onPointerOver={on_pointer_over}
         onPointerDown={on_pointer_down}
     >
@@ -346,6 +374,7 @@ function JSONArrayItem(props: JSONArrayItemProps)
             initial_collapsed_to_level={initial_collapsed_to_level}
             trailing_comma={index < (array_length - 1)}
             hovering_path={props.hovering_path}
+            hovered_path_str={props.hovered_path_str}
             selected_path={props.selected_path}
             selected_path_strs={props.selected_path_strs}
         />

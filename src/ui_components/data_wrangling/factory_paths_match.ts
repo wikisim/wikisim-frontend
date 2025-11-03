@@ -2,10 +2,14 @@ import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildc
 import { JSONPath } from "./interface"
 
 
-export function factory_is_path_selected(current_path: JSONPath)
+export function factory_paths_match(current_path: JSONPath)
 {
     const converted_path = convert_array_paths_to_wildcards(current_path)
     const converted_path_str = JSON.stringify(converted_path)
 
-    return (selected_path_strs: Set<string>) => selected_path_strs.has(converted_path_str)
+    return (path_strs: Set<string> | string) =>
+    {
+        if (typeof path_strs === "string") return converted_path_str === path_strs
+        return path_strs.has(converted_path_str)
+    }
 }

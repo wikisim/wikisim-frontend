@@ -98,6 +98,7 @@ export function DemoJSONWranglingDemo()
         <JSONViewer
             data={sample_data}
             hovering_path={handle_hovering_path}
+            hovered_path={hovering_path?.path}
             selected_path={selected_path}
             selected_paths={selected_paths}
         />
