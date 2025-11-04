@@ -34,7 +34,7 @@ import { load_referenced_data_components } from "../../../ui_components/utils/lo
 import { debounce } from "../../../utils/debounce"
 import { FunctionInputsForm } from "../FunctionInputsForm"
 import { UpdatesFnOrValue } from "../interface"
-import { ScenariosForm } from "../ScenariosForm"
+import { ScenariosForm } from "../ScenariosForm/ScenariosForm"
 import "./ValueEditForm.css"
 
 
