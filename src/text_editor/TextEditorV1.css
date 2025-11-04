@@ -18,6 +18,9 @@
 .text-editor-v1 textarea
 {
     padding: var(--padding-text-box);
+    /* When the max_height parameter is provided and applied to textarea then
+       scroll the overflow */
+    overflow-y: scroll;
 }
 .text-editor-v1 input
 {

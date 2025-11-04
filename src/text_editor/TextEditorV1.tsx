@@ -1,10 +1,8 @@
 import { Tooltip } from "@mantine/core"
-import "@mantine/core/styles.css"; // TODO: Why is this here and not in main.tsx?
 import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle"
 import { JSX } from "preact"
 import { useMemo, useRef, useState } from "preact/hooks"
 
-import "../monkey_patch"
 import pub_sub from "../pub_sub"
 import "../ui_components/input_elements.shared.css"
 import "./TextEditorV1.css"
@@ -30,6 +28,7 @@ interface TextEditorV1Props
     placeholder?: undefined
     invalid_value?: false | string
     className?: string
+    max_height?: number
 }
 
 
@@ -45,6 +44,7 @@ export function TextEditorV1(all_props: TextEditorV1Props)
         on_key_down,
         invalid_value = false,
         initial_content,
+        max_height,
         ...props
     } = all_props
     const allow_multiline = !single_line
@@ -88,7 +88,7 @@ export function TextEditorV1(all_props: TextEditorV1Props)
         // Set initial height of textarea
         if (recent && allow_multiline && el instanceof HTMLTextAreaElement)
         {
-            set_textarea_height(el, single_line, initial_content)
+            set_textarea_height(el, single_line, initial_content, max_height)
         }
     }, [props.start_focused, first_render])
 
@@ -231,20 +231,28 @@ export function TextEditorV1(all_props: TextEditorV1Props)
 }
 
 
-function set_textarea_height(el: HTMLTextAreaElement, single_line: boolean | undefined, value: string)
+function set_textarea_height(el: HTMLTextAreaElement, single_line: boolean | undefined, value: string, max_height?: number)
 {
     el.style.height = "auto" // Reset height to auto to measure scrollHeight correctly
 
+    let height_to_set: number
     // When `single_line` is undefined and the content does not yet
     // contains newlines, then we show a vertically shorter input box to match
     // the size of the single_line === true input element.
     if (single_line === undefined && !value.includes("\n"))
     {
-        el.style.height = textarea_initial_height_when_single_line_undefined + "px"
+        height_to_set = textarea_initial_height_when_single_line_undefined
     }
     else
     {
         const fudge = 2 // Based on padding and border (requires -22 px) and mantine styles (+24px it seems?)
-        el.style.height = (el.scrollHeight + fudge) + "px"
+        height_to_set = (el.scrollHeight + fudge)
     }
+
+    if (max_height !== undefined)
+    {
+        height_to_set = Math.min(height_to_set, max_height)
+    }
+
+    el.style.height = height_to_set + "px"
 }

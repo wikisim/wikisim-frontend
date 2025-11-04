@@ -1,9 +1,7 @@
 import { Tooltip } from "@mantine/core"
-import "@mantine/core/styles.css"
 import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle"
-
 import { useEffect, useRef } from "preact/hooks"
-import "../monkey_patch"
+
 import "../ui_components/input_elements.shared.css"
 import "./TextEditorV1.css"
 

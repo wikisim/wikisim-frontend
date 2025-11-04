@@ -286,6 +286,10 @@ function ScenarioForm(props: ScenarioFormProps)
                             }}
                             single_line={undefined}
                             editable={true}
+                            // Using 500 now as a quick fix for large (long /
+                            // many line) input values, revisit and change freely
+                            // later as needed.
+                            max_height={500}
                         />
 
                         <div className="row" style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}>

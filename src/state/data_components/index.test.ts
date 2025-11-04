@@ -12,6 +12,7 @@ import { create_mocked_supabase, MockedSupabase } from "core/test/mock_supabase_
 import { deep_equals } from "core/utils/deep_equals"
 
 import { mutate_store_state_with_loaded_data_components } from "."
+// Importing monkey_patch required for this individual test file to run properly
 import "../../monkey_patch"
 import { wait_for } from "../../utils/wait_for"
 import { AppStore, get_new_app_store } from "../store"

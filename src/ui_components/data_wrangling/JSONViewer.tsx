@@ -32,17 +32,22 @@ export function JSONViewer(props: JSONViewerProps)
         return new Set(strings)
     }, [props.selected_paths])
 
-    return <div className="json-viewer">
-        <RecursiveJSONViewer
-            data={props.data}
-            current_path={[]}
-            initial_collapsed_to_level={props.initial_collapsed_to_level || 1}
-            trailing_comma={false}
-            on_hovering_path={props.on_hovering_path || (() => {})}
-            hovered_path_str={hovered_path_str}
-            on_selected_path={props.on_selected_path || (() => {})}
-            selected_path_strs={selected_path_strs}
-        />
+    return <div className="json-viewer-container">
+        <div className="json-viewer">
+            <RecursiveJSONViewer
+                data={props.data}
+                current_path={[]}
+                initial_collapsed_to_level={props.initial_collapsed_to_level || 1}
+                trailing_comma={false}
+                on_hovering_path={props.on_hovering_path || (() => {})}
+                hovered_path_str={hovered_path_str}
+                on_selected_path={props.on_selected_path || (() => {})}
+                selected_path_strs={selected_path_strs}
+            />
+            <div className="overflow-gap" />
+        </div>
+
+        <div className="overflow-fade-out" />
     </div>
 }
 
