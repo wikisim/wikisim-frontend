@@ -149,11 +149,11 @@ function CodeEditorDemo (props: { editing: boolean, invalid_value: false | strin
 
     // return add(param1, 2)  // change param1 to a_param to see error goes away
     // `))
-    const [function_arguments, set_function_arguments] = useState<FunctionArgument[] | undefined>([{ name: "a_param", id: 0 }])
+    const [function_arguments, set_function_arguments] = useState<FunctionArgument[] | undefined>([{ name: "a_param", local_temp_id: "0" }])
 
     const toggle_function_arguments = () =>
     {
-        set_function_arguments(fa => fa?.length ? undefined : [{ name: "a_param", id: 0 }])
+        set_function_arguments(fa => fa?.length ? undefined : [{ name: "a_param", local_temp_id: "0" }])
     }
 
     return <div style={{

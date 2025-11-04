@@ -1,5 +1,5 @@
 import { useLocation } from "preact-iso"
-import { useEffect, useRef, useState } from "preact/hooks"
+import { useEffect, useMemo, useRef, useState } from "preact/hooks"
 
 import { valid_value_type } from "core/data/field_values_with_defaults"
 import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
@@ -267,6 +267,26 @@ function ScenariosReadOnly(props: { component: DataComponent })
     }, [sandbox_error, scenarios, component.result_value, component.function_arguments])
 
 
+    const input_temp_id_to_arg_name = useMemo(() =>
+    {
+        const function_arg_temp_id_to_name: {[temp_id: string]: string} = {}
+        ;(component.function_arguments || []).forEach(arg =>
+        {
+            function_arg_temp_id_to_name[arg.local_temp_id] = arg.name
+        })
+
+        return (temp_id: string) => {
+
+            const arg_name = function_arg_temp_id_to_name[temp_id]
+            if (arg_name === undefined)
+            {
+                console.error("missing function_argument_name for temp_id:", temp_id, function_arg_temp_id_to_name)
+            }
+            return arg_name
+        }
+    }, [component.function_arguments])
+
+
     return <div class="scenarios">
         <div
             className="data-component-form-column row"
@@ -292,6 +312,7 @@ function ScenariosReadOnly(props: { component: DataComponent })
             const result = results[index]
 
             return <ScenarioRowReadOnly
+                input_temp_id_to_arg_name={input_temp_id_to_arg_name}
                 scenario={scenario}
                 index={index}
                 scenarios_count={scenarios.length}
@@ -304,6 +325,7 @@ function ScenariosReadOnly(props: { component: DataComponent })
 
 interface ScenarioRowReadOnlyProps
 {
+    input_temp_id_to_arg_name: (temp_id: string) => string | undefined
     scenario: Scenario
     index: number
     scenarios_count: number
@@ -314,9 +336,9 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
     const { scenario, index, scenarios_count, result } = props
     const [scenario_row_opened, set_scenario_row_opened] = useState(false)
 
-    const input_values = Object.entries(scenario.values)
+    const input_values = Object.entries(scenario.values_by_temp_id)
 
-    return <div className="row_to_column scenario-divider" key={scenario.id}>
+    return <div className="row_to_column scenario-divider" key={scenario.local_temp_id}>
         <div
             className="data-component-form-column column"
             style={{ gap: "var(--vgap-small)", cursor: "pointer" }}
@@ -331,10 +353,10 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
                     Input Values
                 </h4>
                 <pre style={{ marginTop: "0px" }} className="make-pre-text-wrap">
-                    {input_values.map(([key, val]) =>
+                    {input_values.map(([local_temp_id, val]) =>
                     {
                         return <>
-                            {key} = {val.value} &nbsp;
+                            {props.input_temp_id_to_arg_name(local_temp_id)} = {val.value} &nbsp;
                             {val.iterate_over && <IterateOverIcon />}
                             {val.use_previous_result && <UsePreviousResultIcon />}
                             <br/>

@@ -7,7 +7,7 @@ import type {
     FunctionArgument,
     NewDataComponent,
     Scenario,
-    ScenarioValues,
+    TempScenarioValues,
 } from "core/data/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 
@@ -36,9 +36,9 @@ export function ScenariosForm(props: ScenariosFormProps)
     const scenarios = props.component.scenarios || []
 
     const new_scenario_obj: Scenario = useMemo(() => ({
-        id: Date.now(), // temporary id until committed
+        local_temp_id: Date.now().toString(), // temporary id until committed
         description: "<p></p>", // tiptap empty document
-        values: {},
+        values_by_temp_id: {},
     }), [scenarios.length])
 
     // Important: render the "new" row inside the same mapped list as existing rows
@@ -60,7 +60,7 @@ export function ScenariosForm(props: ScenariosFormProps)
             const is_draft_row = index === scenarios.length
 
             return <ScenarioRowForm
-                key={scenario.id}
+                key={scenario.local_temp_id}
                 new_scenario_obj={new_scenario_obj}
                 scenario={scenario}
                 index={index}
@@ -87,7 +87,7 @@ interface ScenarioRowFormProps
 }
 function ScenarioRowForm(props: ScenarioRowFormProps)
 {
-    const scenario_id = props.scenario.id
+    const scenario_id = props.scenario.local_temp_id
     const [scenario_row_opened, set_scenario_row_opened] = useState(!props.is_draft_row)
     const [debugging, set_debugging] = useState(false)
 
@@ -112,7 +112,7 @@ function ScenarioRowForm(props: ScenarioRowFormProps)
                 // Edit of existing row: update in place
                 const updated_scenarios = scenarios.map(arg =>
                 {
-                    if (arg.id === scenario_id)
+                    if (arg.local_temp_id === scenario_id)
                     {
                         const modified = { ...arg, ...updated_scenario }
                         return scenario_is_empty(modified) ? null : modified
@@ -137,7 +137,7 @@ function ScenarioRowForm(props: ScenarioRowFormProps)
         {
             if (is_draft_row) return current // no need to do anything
 
-            const updated_scenarios = (current.scenarios || []).filter(arg => arg.id !== scenario_id)
+            const updated_scenarios = (current.scenarios || []).filter(arg => arg.local_temp_id !== scenario_id)
             return { scenarios: updated_scenarios }
         })
     }, [is_draft_row])
@@ -260,7 +260,7 @@ function ScenarioForm(props: ScenarioFormProps)
                 is_draft_row={is_draft_row}
                 scenario={scenario}
                 function_arguments={props.function_arguments}
-                on_change={(updated_values: ScenarioValues) => on_change({ values: updated_values })}
+                on_change={(updated_values: TempScenarioValues) => on_change({ values_by_temp_id: updated_values })}
             />
         </div>}
 
@@ -272,7 +272,7 @@ function ScenarioForm(props: ScenarioFormProps)
 function scenario_is_empty(arg: Scenario): boolean
 {
     return (!arg.description || browser_convert_tiptap_to_plain(arg.description).trim() === "")
-        && Object.values(arg.values).every(v => v.value.trim() === "")
+        && Object.values(arg.values_by_temp_id).every(v => v.value.trim() === "")
 }
 
 function is_scenario(arg: Scenario | null): arg is Scenario
@@ -285,20 +285,20 @@ function InputValuesForm(props: {
     is_draft_row: boolean
     scenario: Scenario
     function_arguments: FunctionArgument[]
-    on_change: (updated_values: ScenarioValues) => void
+    on_change: (updated_values: TempScenarioValues) => void
 })
 {
     const { is_draft_row, scenario, function_arguments, on_change } = props
 
-    const inputs_iterated_over = Object.values(scenario.values).filter(v => v.iterate_over).length
-    const inputs_using_previous_result = Object.values(scenario.values).filter(v => v.use_previous_result).length
+    const inputs_iterated_over = Object.values(scenario.values_by_temp_id).filter(v => v.iterate_over).length
+    const inputs_using_previous_result = Object.values(scenario.values_by_temp_id).filter(v => v.use_previous_result).length
 
     return <>
         <div>Input values</div>
 
-        {function_arguments.map(({ id, name: input_name, default_value }) =>
+        {function_arguments.map(({ local_temp_id, name: input_name, default_value }) =>
         {
-            const existing = scenario.values[input_name]
+            const existing = scenario.values_by_temp_id[local_temp_id]
             const enable_iterate_over = (
                 existing?.iterate_over || inputs_iterated_over < 1
             )
@@ -323,7 +323,7 @@ function InputValuesForm(props: {
                         {
                             const value = e.currentTarget.value.trim()
                             const iterate_over = existing?.iterate_over
-                            const updated_values: ScenarioValues = { ...scenario.values, [input_name]: { value, iterate_over } }
+                            const updated_values: TempScenarioValues = { ...scenario.values_by_temp_id, [input_name]: { value, iterate_over } }
                             if (value === "") delete updated_values[input_name]
                             on_change(updated_values)
                         }}
@@ -358,7 +358,7 @@ function InputValuesForm(props: {
                                 {
                                     const value = existing?.value || ""
                                     const iterate_over = e.currentTarget.checked || undefined
-                                    const updated_values: ScenarioValues = { ...scenario.values, [input_name]: { value, iterate_over } }
+                                    const updated_values: TempScenarioValues = { ...scenario.values_by_temp_id, [input_name]: { value, iterate_over } }
                                     on_change(updated_values)
                                 }}
                                 checked={existing?.iterate_over || false}
@@ -395,7 +395,7 @@ function InputValuesForm(props: {
                                 {
                                     const value = existing?.value || ""
                                     const use_previous_result = e.currentTarget.checked || undefined
-                                    const updated_values: ScenarioValues = { ...scenario.values, [input_name]: { value, use_previous_result } }
+                                    const updated_values: TempScenarioValues = { ...scenario.values_by_temp_id, [input_name]: { value, use_previous_result } }
                                     on_change(updated_values)
                                 }}
                                 checked={existing?.use_previous_result || false}

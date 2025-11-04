@@ -31,7 +31,7 @@ export function FunctionInputsForm(props: FunctionInputsFormProps)
     const { name_counts } = calc_function_arguments_errors(function_arguments)
 
     const new_input_obj: FunctionArgument = {
-        id: Date.now(), // temporary id until committed
+        local_temp_id: Date.now().toString(), // temporary id until committed
         name: "",
     }
 
@@ -70,7 +70,7 @@ export function FunctionInputsForm(props: FunctionInputsFormProps)
                     // Edit of existing row: update in place
                     const updated_function_arguments = function_arguments.map(arg =>
                     {
-                        if (arg.id === input.id)
+                        if (arg.local_temp_id === input.local_temp_id)
                         {
                             const modified = { ...arg, ...updated_input }
                             return function_argument_is_empty(modified) ? null : modified
@@ -85,14 +85,14 @@ export function FunctionInputsForm(props: FunctionInputsFormProps)
             {
                 if (is_draft_row) return
 
-                const updated_function_arguments = function_arguments.filter(arg => arg.id !== input.id)
+                const updated_function_arguments = function_arguments.filter(arg => arg.local_temp_id !== input.local_temp_id)
                 props.on_change({ function_arguments: updated_function_arguments })
             }
 
             // Key choice keeps the DOM node stable across the draft->committed transition.
             // We use the numeric id (new_input_obj.id) for the draft, which becomes the same id
             // when committed on first edit.
-            const key = input.id
+            const key = input.local_temp_id
 
             return <FunctionInputForm
                 key={key}
