@@ -1,5 +1,7 @@
 import { useCallback, useMemo, useState } from "preact/hooks"
 
+import { Json } from "core/supabase/interface"
+
 import "./JSONViewer.css"
 import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildcards"
 import { factory_paths_match } from "./factory_paths_match"
@@ -10,7 +12,7 @@ const indent_size = 4 * 3
 
 interface JSONViewerProps
 {
-    data: unknown
+    data: Json
     initial_collapsed_to_level?: number
     on_hovering_path?: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path?: JSONPath

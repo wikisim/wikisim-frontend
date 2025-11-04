@@ -112,7 +112,7 @@ interface ScenarioResultsDisplayPlainJSONProps
     expected_result: string | undefined
     expectation_met: boolean | undefined
     json_viewer_event_and_state_handlers?: JSONViewerEventAndStateHandlers
-    parsed_json: Json
+    parsed_json: Json | undefined
 }
 function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONProps)
 {
@@ -120,14 +120,14 @@ function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONP
     const expected_result_str = expected_json ? stringify(expected_json.parsed, { maxLength: 60 }) : props.expected_result
 
     return <>
-        <div>Result</div>
+        <div>Result:</div>
         <pre style={{ marginTop: 0 }}>
             {/* {stringify(props.parsed_json, { maxLength: 60 })}<br/> */}
-            <JSONViewer
+            {props.parsed_json ? <JSONViewer
                 data={props.parsed_json}
                 initial_collapsed_to_level={2}
                 {...props.json_viewer_event_and_state_handlers}
-            />
+            /> : "undefined"}
         </pre>
         {props.expectation_met !== undefined && <pre className="make-pre-text-wrap">
             {props.expectation_met && `Result matched expected result` }
