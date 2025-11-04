@@ -22,6 +22,7 @@ import { compare_results_to_expectations } from "core/expectation/compare_result
 import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
 
 import { useCallback } from "preact/hooks"
+import { Json } from "../../../lib/core/src/supabase/interface"
 import { JSONViewerEventAndStateHandlers } from "../data_wrangling/event_and_state_handlers"
 import { JSONViewer } from "../data_wrangling/JSONViewer"
 import { ExpectationMet } from "../ExpectationMet"
@@ -91,44 +92,62 @@ function ScenarioResultsDisplayInner(props: ScenarioResultsDisplayInnerProps)
 
     if (!parsed_json)
     {
-        // Not sure if this will ever happen as the results should always be a
-        // string of JSON
-        return <>
-            <pre className="wrap-pre-text">
-                Result = {props.result}<br/>
-            </pre>
-            <pre className="wrap-pre-text">
-                {props.expectation_met && `Result matched expected result` }
-                {!props.expectation_met && props.expected_result && `Expected = ${props.expected_result}`}<br/>
-            </pre>
-        </>
+        return <pre className="wrap-pre-text generic-error-message">
+            Error: Unabled to parse JSON from result: {props.result}<br/>
+        </pre>
     }
 
     const data = assert_result_json_is_graphable(parsed_json.parsed)
     if (!data)
     {
-        const expected_json = result_string_to_json(props.expected_result || "")
-        const expected_result_str = expected_json ? stringify(expected_json.parsed, { maxLength: 60 }) : props.expected_result
-
-        return <>
-            <pre>
-                Result =
-                {/* {stringify(parsed_json.parsed, { maxLength: 60 })}<br/> */}
-                <JSONViewer
-                    data={parsed_json.parsed}
-                    initial_collapsed_to_level={2}
-                    {...props.json_viewer_event_and_state_handlers}
-                />
-            </pre>
-            <pre className="wrap-pre-text">
-                {props.expectation_met && `Result matched expected result` }
-                {!props.expectation_met && expected_result_str && `Expected = ${expected_result_str}`}<br/>
-            </pre>
-        </>
+        return <ScenarioResultsDisplayPlainJSON {...props} parsed_json={parsed_json.parsed} />
     }
 
+    return <ScenarioResultsDisplayGraphical {...props} data={data} />
+}
+
+
+interface ScenarioResultsDisplayPlainJSONProps
+{
+    expected_result: string | undefined
+    expectation_met: boolean | undefined
+    json_viewer_event_and_state_handlers?: JSONViewerEventAndStateHandlers
+    parsed_json: Json
+}
+function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONProps)
+{
+    const expected_json = result_string_to_json(props.expected_result || "")
+    const expected_result_str = expected_json ? stringify(expected_json.parsed, { maxLength: 60 }) : props.expected_result
+
+    return <>
+        <pre>
+            Result =
+            {/* {stringify(props.parsed_json, { maxLength: 60 })}<br/> */}
+            <JSONViewer
+                data={props.parsed_json}
+                initial_collapsed_to_level={2}
+                {...props.json_viewer_event_and_state_handlers}
+            />
+        </pre>
+        <pre className="wrap-pre-text">
+            {props.expectation_met && `Result matched expected result` }
+            {!props.expectation_met && expected_result_str && `Expected = ${expected_result_str}`}<br/>
+        </pre>
+    </>
+}
+
+
+interface ScenarioResultsDisplayGraphicalProps
+{
+    expected_result: string | undefined
+    expectation_met: boolean | undefined
+    json_viewer_event_and_state_handlers?: JSONViewerEventAndStateHandlers
+    data: LabelsAndResults
+}
+function ScenarioResultsDisplayGraphical(props: ScenarioResultsDisplayGraphicalProps)
+{
     const expected_data = result_string_to_graphable(props.expected_result)
-    const merged_data = merge_data(data, expected_data)
+    const merged_data = merge_data(props.data, expected_data)
 
     const graph_props: ChartData<"line", ResultPoint[], unknown> =
     {
