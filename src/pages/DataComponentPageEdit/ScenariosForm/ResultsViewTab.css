@@ -1,0 +1,9 @@
+
+
+.results-view-tabs
+{
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: flex-end; /* Add this line */
+}

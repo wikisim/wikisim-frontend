@@ -11,7 +11,7 @@ import { EvaluationResponse } from "core/evaluator/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase/browser"
 
-import { HistoryIcon, RepeatIcon, UsePreviousResultIcon } from "../../assets/icons"
+import { IconHistory, IconRepeat, IconUsePreviousResult } from "../../assets/icons"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
 import { ROUTES } from "../../routes"
@@ -200,7 +200,7 @@ function LastEditedBy({ component }: { component: DataComponent })
 
     return (
         <div className="last-edited-by">
-            <HistoryIcon />
+            <IconHistory />
 
             <a href={ROUTES.DATA_COMPONENT.VIEW({
                 id: component.id.to_str(), // include version
@@ -357,8 +357,8 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
                     {
                         return <>
                             {props.input_temp_id_to_arg_name(local_temp_id)} = {val.value} &nbsp;
-                            {val.iterate_over && <RepeatIcon />}
-                            {val.use_previous_result && <UsePreviousResultIcon />}
+                            {val.iterate_over && <IconRepeat />}
+                            {val.use_previous_result && <IconUsePreviousResult />}
                             <br/>
                         </>
                     })}

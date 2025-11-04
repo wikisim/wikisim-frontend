@@ -61,21 +61,25 @@ export function HelpToolTip(props: HelpToolTipProps)
     const timeout_ref = useRef<NodeJS.Timeout>()
 
     const message = props.message
+    const disabled = !message
 
     return <div
         onPointerEnter={() =>
         {
+            if (disabled) return
             if (IS_MOBILE) return
             timeout_ref.current = setTimeout(() => set_active(true), delay)
         }}
         onPointerLeave={() =>
         {
+            if (disabled) return
             if (IS_MOBILE) return
             clearTimeout(timeout_ref.current)
             timeout_ref.current = setTimeout(() => set_active(false), close_delay)
         }}
         onPointerDown={() =>
         {
+            if (disabled) return
             // NOT mobile
             if (!IS_MOBILE) return
             clearTimeout(timeout_ref.current)

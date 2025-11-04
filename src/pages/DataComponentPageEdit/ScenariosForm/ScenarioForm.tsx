@@ -8,7 +8,7 @@ import type {
     TempScenarioValues
 } from "core/data/interface"
 
-import { RepeatIcon, UsePreviousResultIcon } from "../../../assets/icons"
+import { IconRepeat, IconUsePreviousResult } from "../../../assets/icons"
 import { ConfirmBinButton } from "../../../buttons/BinButton"
 import { HelpToolTip } from "../../../buttons/HelpText"
 import { TextEditorV1 } from "../../../text_editor/TextEditorV1"
@@ -224,7 +224,7 @@ function LabelRepeatJsx(props: { disabled: boolean })
         close_delay={700}
     >
         <div>
-            <RepeatIcon disabled={props.disabled} no_title={true} />
+            <IconRepeat disabled={props.disabled} no_title={true} />
         </div>
     </HelpToolTip>
 }
@@ -256,7 +256,7 @@ function LabelUsePreviousResultJsx(props: { disabled: boolean } ) //false | "oth
         close_delay={700}
     >
         <div>
-            <UsePreviousResultIcon disabled={!!props.disabled} no_title={true} />
+            <IconUsePreviousResult disabled={!!props.disabled} no_title={true} />
         </div>
     </HelpToolTip>
 }
