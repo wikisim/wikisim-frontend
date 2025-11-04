@@ -212,18 +212,18 @@ function ScenarioForm(props: ScenarioFormProps)
 
     return <>
         <div className="scenario-form-header row" style={{ maxHeight: "35px" }}>
-            {is_draft_row && <Button
+            {is_draft_row && !opened && <Button
                 variant={"outline"}
                 onClick={() => props.set_scenario_row_opened(!opened)}
             >
                 New Scenario
             </Button>}
 
-            {!is_draft_row && <div
+            {(!is_draft_row || opened) && <div
                 style={{ cursor: "pointer", flexGrow: 1 }}
                 onClick={() => props.set_scenario_row_opened(!opened)}
             >
-                Scenario {props.ordinal} of {props.total_scenarios}
+                {is_draft_row ? "New Scenario" : `Scenario ${props.ordinal} of ${props.total_scenarios}`}
             </div>}
 
             {opened && !is_draft_row && <div className="scenario-options">
