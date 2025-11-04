@@ -92,7 +92,7 @@ function ScenarioResultsDisplayInner(props: ScenarioResultsDisplayInnerProps)
 
     if (!parsed_json)
     {
-        return <pre className="wrap-pre-text generic-error-message">
+        return <pre className="make-pre-text-wrap generic-error-message">
             Error: Unabled to parse JSON from result: {props.result}<br/>
         </pre>
     }
@@ -120,8 +120,8 @@ function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONP
     const expected_result_str = expected_json ? stringify(expected_json.parsed, { maxLength: 60 }) : props.expected_result
 
     return <>
-        <pre>
-            Result =
+        <div>Result</div>
+        <pre style={{ marginTop: 0 }}>
             {/* {stringify(props.parsed_json, { maxLength: 60 })}<br/> */}
             <JSONViewer
                 data={props.parsed_json}
@@ -129,10 +129,10 @@ function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONP
                 {...props.json_viewer_event_and_state_handlers}
             />
         </pre>
-        <pre className="wrap-pre-text">
+        {props.expectation_met !== undefined && <pre className="make-pre-text-wrap">
             {props.expectation_met && `Result matched expected result` }
             {!props.expectation_met && expected_result_str && `Expected = ${expected_result_str}`}<br/>
-        </pre>
+        </pre>}
     </>
 }
 

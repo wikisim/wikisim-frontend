@@ -8,7 +8,7 @@
     cursor: pointer;
 }
 
-.scenario-results-display pre
+.scenario-results-display > *
 {
     padding: 0px 30px;
 }
