@@ -308,7 +308,7 @@ function InputValuesForm(props: {
                 )
             )
 
-            return <div className="column" style={{ gap: "var(--vgap-small)" }} key={input_name}>
+            return <div className="column" style={{ gap: "var(--vgap-small)" }} key={local_temp_id}>
                 {!is_draft_row && <WarningMessage
                     show={!default_value && (!existing || !existing.value)}
                     message={`Please set a value for "${input_name}" as it has no default.`}
@@ -316,15 +316,19 @@ function InputValuesForm(props: {
 
                 <div className="row">
                     <TextEditorV1
-                        key={input_name}
+                        key={local_temp_id}
                         label={input_name}
                         initial_content={existing?.value || ""}
                         on_change={e =>
                         {
                             const value = e.currentTarget.value.trim()
                             const iterate_over = existing?.iterate_over
-                            const updated_values: TempScenarioValues = { ...scenario.values_by_temp_id, [input_name]: { value, iterate_over } }
-                            if (value === "") delete updated_values[input_name]
+                            const updated_values: TempScenarioValues = {
+                                ...scenario.values_by_temp_id,
+                                [local_temp_id]: { value, iterate_over }
+                            }
+
+                            if (value === "") delete updated_values[local_temp_id]
                             on_change(updated_values)
                         }}
                         single_line={undefined}
@@ -358,7 +362,10 @@ function InputValuesForm(props: {
                                 {
                                     const value = existing?.value || ""
                                     const iterate_over = e.currentTarget.checked || undefined
-                                    const updated_values: TempScenarioValues = { ...scenario.values_by_temp_id, [input_name]: { value, iterate_over } }
+                                    const updated_values: TempScenarioValues = {
+                                        ...scenario.values_by_temp_id,
+                                        [local_temp_id]: { value, iterate_over }
+                                    }
                                     on_change(updated_values)
                                 }}
                                 checked={existing?.iterate_over || false}
@@ -395,7 +402,10 @@ function InputValuesForm(props: {
                                 {
                                     const value = existing?.value || ""
                                     const use_previous_result = e.currentTarget.checked || undefined
-                                    const updated_values: TempScenarioValues = { ...scenario.values_by_temp_id, [input_name]: { value, use_previous_result } }
+                                    const updated_values: TempScenarioValues = {
+                                        ...scenario.values_by_temp_id,
+                                        [local_temp_id]: { value, use_previous_result }
+                                    }
                                     on_change(updated_values)
                                 }}
                                 checked={existing?.use_previous_result || false}
