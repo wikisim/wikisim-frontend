@@ -1,4 +1,5 @@
 import { IdOnly, parse_id } from "core/data/id"
+import { ERRORS } from "core/errors"
 
 import { RootAppState } from "../interface"
 import { AsyncDataComponent } from "./interface"
@@ -14,7 +15,7 @@ export function get_async_data_component(state: RootAppState, data_component_id:
     {
         const error = e instanceof Error ? e : String(e)
         const error_str = error.toString()
-        if (error_str.includes("id must be a valid number but got"))
+        if (error_str.includes(ERRORS.ERR47.message) || error_str.includes(ERRORS.ERR48.message))
         {
             return {
                 id: new IdOnly(0),

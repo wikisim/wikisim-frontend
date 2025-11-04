@@ -10,6 +10,7 @@ import {
     Tooltip
 } from "chart.js"
 import stringify from "json-stringify-pretty-compact"
+import { useCallback } from "preact/hooks"
 import { Line } from "react-chartjs-2"
 
 import { LabelsAndResults } from "core/evaluation/interface"
@@ -20,9 +21,8 @@ import {
 } from "core/evaluation/parse_result"
 import { compare_results_to_expectations } from "core/expectation/compare_results_to_expectations"
 import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
+import { Json } from "core/supabase/interface"
 
-import { useCallback } from "preact/hooks"
-import { Json } from "../../../lib/core/src/supabase/interface"
 import { JSONViewerEventAndStateHandlers } from "../data_wrangling/event_and_state_handlers"
 import { JSONViewer } from "../data_wrangling/JSONViewer"
 import { ExpectationMet } from "../ExpectationMet"
