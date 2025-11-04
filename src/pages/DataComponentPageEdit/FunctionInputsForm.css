@@ -37,7 +37,7 @@
 
 .function-argument-delete-button
 {
-    margin-top: 12px;
+    display: flex;
 }
 
 @media (max-width: 800px)
@@ -50,9 +50,5 @@
     {
         flex-direction: column;
         gap: var(--vgap-small);
-    }
-    .function-argument-delete-button
-    {
-        margin-top: var(--vgap-small);
     }
 }
