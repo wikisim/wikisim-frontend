@@ -11,7 +11,7 @@ import { EvaluationResponse } from "core/evaluator/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase/browser"
 
-import { HistoryIcon, IterateOverIcon, UsePreviousResultIcon } from "../../assets/icons"
+import { HistoryIcon, RepeatIcon, UsePreviousResultIcon } from "../../assets/icons"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
 import { ROUTES } from "../../routes"
@@ -357,7 +357,7 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
                     {
                         return <>
                             {props.input_temp_id_to_arg_name(local_temp_id)} = {val.value} &nbsp;
-                            {val.iterate_over && <IterateOverIcon />}
+                            {val.iterate_over && <RepeatIcon />}
                             {val.use_previous_result && <UsePreviousResultIcon />}
                             <br/>
                         </>
