@@ -9,7 +9,7 @@ import { calculate_if_expectation_met } from "core/expectation/calculate_if_expe
 import { event_and_state_handlers } from "../../ui_components/data_wrangling/event_and_state_handlers"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
 import { ScenarioResultsDisplay } from "../../ui_components/results_display/ScenarioResultsDisplay"
-import { ScenarioExpectations } from "./ScenarioExpectations"
+import { ScenarioExpectationsForm } from "./ScenarioExpectationsForm"
 
 
 
@@ -85,7 +85,7 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
             set_scenario_row_opened={props.set_scenario_row_opened}
             json_viewer_event_and_state_handlers={json_viewer_event_and_state_handlers}
         />}
-        {props.scenario_row_opened && <ScenarioExpectations
+        {props.scenario_row_opened && <ScenarioExpectationsForm
             scenario={props.scenario}
             latest_result={result?.result || undefined}
             on_change={props.on_change}

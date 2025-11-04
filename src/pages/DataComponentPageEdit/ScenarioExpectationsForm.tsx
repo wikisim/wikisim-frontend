@@ -15,7 +15,7 @@ interface ScenarioGraphProps
     latest_result: string | undefined
     on_change: (updated_scenario: Partial<Scenario>) => void
 }
-export function ScenarioExpectations(props: ScenarioGraphProps)
+export function ScenarioExpectationsForm(props: ScenarioGraphProps)
 {
     const has_expectation = !!props.scenario.expected_result
 
