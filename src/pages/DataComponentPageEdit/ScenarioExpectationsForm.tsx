@@ -40,7 +40,7 @@ export function ScenarioExpectationsForm(props: ScenarioGraphProps)
                     props.on_change({ expected_result: props.latest_result })
                 }}
             >
-                {!has_expectation ? "Use results as expectations" : "Update expectations"}
+                {!has_expectation ? "Use result as expectation" : "Update expectation"}
             </Button>
         {/* </HelpToolTip> */}
 
