@@ -263,13 +263,11 @@ function LabelUsePreviousResultJsx(props: { disabled: boolean } ) //false | "oth
             <br/>
             <br/>
             For example, with this function to model plant growth:
-            <pre>{`(time, plants = 1) => {\n   return plants * 4\n}`}</pre>
-            If <code>time</code> is set to <code>[1, 2, 3]</code>
-            and has "Repeat" option enabled then
-            with the "Use Previous Result" option not enabled for <code>plants</code>,
-            the result is <code>[4, 4, 4]</code>.
-            With "Use Previous Result" option enabled for <code>plants</code>
-            the result would instead be <code>[4, 16, 64]</code>.
+            <pre>{`(time, plants = 0) => {\n   return time + plants * 2\n}`}</pre>
+            If <code>time</code> is set to <code>[1, 2, 3]</code> and
+            has "Repeat" option enabled then the result is <code>[1, 2, 3]</code>.
+            Instead, with the "Use Previous Result" option enabled for <code>plants</code> the
+            result would be <code>[1, 4, 11]</code>.
         </>}
         delay={700}
         close_delay={700}
