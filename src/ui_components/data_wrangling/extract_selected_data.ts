@@ -25,16 +25,16 @@ export function extract_selected_data(data: unknown, selected_paths: SelectedJSO
         const { path, alias } = selected_path
         const { extracted_data, all_missing } = extract_data_at_path(data, path)
 
-        const values: (string | number)[] = (
-            Array.isArray(extracted_data)
+        if (all_missing) missing_paths.push(selected_path)
+        else
+        {
+            const values: (string | number)[] = Array.isArray(extracted_data)
                 ? extracted_data
                 : [extracted_data]
-        )
+            columns.push({ header: alias, path, values })
 
-        columns.push({ header: alias, path, values })
-
-        if (all_missing) missing_paths.push(selected_path)
-        else used_paths.push(selected_path)
+            used_paths.push(selected_path)
+        }
     }
 
     return { columns, used_paths, missing_paths }

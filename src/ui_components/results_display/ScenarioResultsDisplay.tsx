@@ -46,7 +46,6 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
     const extracted_data = useMemo(() =>
     {
         const data = result_string_to_json(props.result)?.parsed
-
         return extract_selected_data(data, json_viewer_event_and_state_handlers.selected_paths)
     }, [props.result, json_viewer_event_and_state_handlers.selected_paths])
 
