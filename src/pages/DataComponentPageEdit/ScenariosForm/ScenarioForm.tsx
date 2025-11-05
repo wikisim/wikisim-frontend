@@ -227,7 +227,8 @@ function LabelRepeatJsx(props: { disabled: boolean })
 {
     return <HelpToolTip
         message={props.disabled ? <></> : <>
-            Use this "Repeat" option to run this scenario multiple times.
+            Use this "Repeat" option to run this scenario multiple times; this is
+            the same as having multiple rows in a spreadsheet for this input.
             <br/>
             <br/>
             For example set the input value to <code>range(3, 6)</code> (which produces the array <code>[3, 4, 5]</code>)
@@ -256,19 +257,19 @@ function LabelUsePreviousResultJsx(props: { disabled: boolean } ) //false | "oth
         // : props.disabled === "other input active"
         // ? <>Only one input can use the previous result</>
         message={props.disabled ? <>"Use Previous Result" option disabled</> : <>
-            The "Use Previous Result" option will take the result
-            from the function and use it as the next value for this input, the same as
-            when a spreadsheet cell uses the value from the previous row.
+            The "Use Previous Result" option will take the previous result
+            from the function and use it as the next value for this input; this is the same as
+            when the cells in a spreadsheet row use values from the previous row.
             <br/>
             <br/>
-            For example you might have a function like this to model plant growth:
+            For example, with this function to model plant growth:
             <pre>{`(time, plants = 1) => {\n   return plants * 4\n}`}</pre>
-            If you set <code>time</code> to <code>[1, 2, 3]</code>
-            and enabled its "Repeat" option then
-            with the "Use Previous Result" option not enabled,
-            you would just get <code>[4, 4, 4]</code>.
-            Enabling "Use Previous Result" option for <code>plants</code>
-            would instead result in <code>[4, 16, 64]</code>.
+            If <code>time</code> is set to <code>[1, 2, 3]</code>
+            and has "Repeat" option enabled then
+            with the "Use Previous Result" option not enabled for <code>plants</code>,
+            the result is <code>[4, 4, 4]</code>.
+            With "Use Previous Result" option enabled for <code>plants</code>
+            the result would instead be <code>[4, 16, 64]</code>.
         </>}
         delay={700}
         close_delay={700}
