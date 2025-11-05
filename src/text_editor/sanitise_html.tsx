@@ -1,6 +1,10 @@
 import { Editor } from "@tiptap/core"
 import { EditorContent } from "@tiptap/react"
 
+import { DataComponent, NewDataComponent } from "core/data/interface"
+
+import { useMemo } from "preact/hooks"
+import { get_function_signature } from "../../lib/core/src/evaluator/format_function"
 import { get_tiptap_extensions } from "./tiptap_extensions"
 
 
@@ -38,43 +42,26 @@ export function remove_p_tags(html_string: string): string
 }
 
 
-// Singleton editors for sanitization
-let singleton_single_line_editor: Editor | undefined = undefined
-let singleton_editor: Editor | undefined = undefined
-
-/**
- * Function to sanitize HTML using TipTap.
- * @deprecated Use the ReadOnly component instead.
- * TODO: Remove this function once we're confident everything can be handled
- *       by ReadOnly.
- */
-export function sanitize_with_TipTap(html: string, single_line: boolean, is_code = false): string
+export function ReadOnlyFunction(props: { component: DataComponent | NewDataComponent })
 {
-    if (!singleton_single_line_editor)
+    const { component: { value_type, input_value = "", function_arguments } } = props
+
+    if (value_type !== "function")
     {
-        singleton_single_line_editor = new Editor({
-            extensions: get_tiptap_extensions(true, is_code),
-            editable: false,
-            content: "",
-        })
-    }
-    if (!singleton_editor)
-    {
-        singleton_editor = new Editor({
-            extensions: get_tiptap_extensions(false, is_code),
-            editable: false,
-            content: "",
-        })
+        return <></>
     }
 
-    const editor = single_line ? singleton_single_line_editor : singleton_editor
-    editor.commands.setContent(html)
-    let html_string = editor.getHTML()
-
-    if (single_line)
+    const function_as_tiptap_html = useMemo(() =>
     {
-        html_string = remove_p_tags(html_string)
-    }
+        const function_signature = get_function_signature(function_arguments || [])
+        const function_signature_tiptap = `<p>${function_signature} => {</p>`
 
-    return html_string
+        const indented_input_value = input_value
+            .replaceAll("<p>", "<p> &nbsp; &nbsp;")
+            .replaceAll("<br>", "<br>&nbsp; &nbsp;")
+
+        return function_signature_tiptap + indented_input_value + "<p>}</p>"
+    }, [function_arguments, input_value])
+
+    return <ReadOnly html={function_as_tiptap_html} is_code={true} />
 }

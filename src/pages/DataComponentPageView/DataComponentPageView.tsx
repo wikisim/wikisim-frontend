@@ -18,7 +18,7 @@ import { ROUTES } from "../../routes"
 import { get_async_data_component } from "../../state/data_components/accessor"
 import { CheckIfIdIsLatestResponse } from "../../state/data_components/interface"
 import { app_store } from "../../state/store"
-import { ReadOnly } from "../../text_editor/sanitise_html"
+import { ReadOnly, ReadOnlyFunction } from "../../text_editor/sanitise_html"
 import { BannerWarningOfUserOwnedPage } from "../../ui_components/BannerWarningOfUserOwnedPage"
 import { PlayInteractable } from "../../ui_components/data_component/PlayInteractable"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
@@ -95,7 +95,6 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
     const value_is_pure_number = is_pure_number(browser_convert_tiptap_to_plain(component.input_value || ""))
     const show_calculation = is_number_type && !value_is_pure_number
 
-
     return <div id="data-component">
 
         <BannerWarningOfUserOwnedPage component={component} />
@@ -126,7 +125,7 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
                     {is_function ? "" : value_as_string}
                 </div>
 
-                {is_function && <ReadOnly html={component.input_value} is_code={true}/>}
+                {is_function && <ReadOnlyFunction component={component} />}
 
                 {show_calculation && <div className="row">
                     <b>Calculation: </b>
