@@ -126,6 +126,7 @@ function InputValuesForm(props: {
 
     const inputs_iterated_over = Object.values(scenario.values_by_temp_id).filter(v => v.iterate_over).length
     const inputs_using_previous_result = Object.values(scenario.values_by_temp_id).filter(v => v.use_previous_result).length
+    const any_inputs_iterated_over = inputs_iterated_over > 0
 
     return <>
         <div>Input values</div>
@@ -174,7 +175,10 @@ function InputValuesForm(props: {
                         className="input-value-textarea"
                     />
 
-                    <div className="row" style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}>
+                    {enable_iterate_over && <div
+                        className="row"
+                        style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}
+                    >
                         <Checkbox
                             label={<LabelRepeatJsx disabled={!enable_iterate_over } />}
                             onChange={(e: TargetedEvent<HTMLInputElement, Event>) =>
@@ -190,9 +194,12 @@ function InputValuesForm(props: {
                             checked={existing?.iterate_over || false}
                             disabled={!enable_iterate_over}
                         />
-                    </div>
+                    </div>}
 
-                    <div className="row" style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}>
+                    {!existing?.iterate_over && any_inputs_iterated_over && <div
+                        className="row"
+                        style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}
+                    >
                         <Checkbox
                             label={<LabelUsePreviousResultJsx disabled={!enable_use_previous_result } />}
                             onChange={(e: TargetedEvent<HTMLInputElement, Event>) =>
@@ -208,7 +215,7 @@ function InputValuesForm(props: {
                             checked={existing?.use_previous_result || false}
                             disabled={!enable_use_previous_result}
                         />
-                    </div>
+                    </div>}
                 </div>
             </div>
         })}
