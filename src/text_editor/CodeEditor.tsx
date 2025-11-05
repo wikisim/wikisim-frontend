@@ -23,6 +23,8 @@ monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
     noSyntaxValidation: false,
     // Suppress specific diagnostic code
     diagnosticCodesToIgnore: [
+        2353,  // Object literal may only specify known properties, and 'xyz' does not exist in type '{ ... }'.
+        2339,  // Property 'xyz' does not exist on type '{ ... }'.
         6133,  // 'some_name' is declared but its value is never read.(6133)
         7043,  // Variable 'some_name' implicitly has an 'any' type, but a better type may be inferred from usage.(7043)
         7044,  // Parameter 'some_name' implicitly has an 'any' type, but a better type may be inferred from usage.(7044)
