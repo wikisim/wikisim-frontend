@@ -8,7 +8,7 @@ import { factory_paths_match } from "./factory_paths_match"
 import { JSONPath, SelectedJSONPath } from "./interface"
 
 
-const indent_size = 4 * 3
+const indent_spaces = 2
 
 interface JSONViewerProps
 {
@@ -156,6 +156,7 @@ function JSONObjectViewer(props: JSONObjectViewerProps)
 
     const keys = useMemo(() => Object.keys(data), [data])
 
+    const indent = " ".repeat(current_path.length * indent_spaces)
     const path_element = current_path[current_path.length - 1]
     const key_name = path_element && "key" in path_element ? path_element.key : ""
     const key_str = typeof key_name === "string" && key_name && `"${key_name}": `
@@ -169,12 +170,11 @@ function JSONObjectViewer(props: JSONObjectViewerProps)
             className="json-brace"
             onClick={toggle_initial_collapsed_to_level}
         >
-            {key_str}{is_collapsed ? ("{ ... }" + (props.trailing_comma ? "," : "")) : "{"}
+            {indent}{key_str}{is_collapsed ? ("{ ... }" + (props.trailing_comma ? "," : "")) : "{"}
         </div>
         {!is_collapsed && <>
             <div
                 className="json-object-contents"
-                style={css_indent(1)}
                 onClick={e => e.stopPropagation()}
             >
                 {keys.map((key, index) => <JSONObjectItem
@@ -195,7 +195,7 @@ function JSONObjectViewer(props: JSONObjectViewerProps)
                 onClick={toggle_initial_collapsed_to_level}
                 onPointerOver={on_pointer_over}
             >
-                {"}" + (props.trailing_comma ? "," : "")}
+                {indent}{"}" + (props.trailing_comma ? "," : "")}
             </div>
         </>}
     </div>
@@ -231,6 +231,7 @@ function JSONArrayViewer(props: JSONArrayViewerProps)
         // set_is_hovered(true)
     }, [props.on_hovering_path, JSON.stringify(current_path)])
 
+    const indent = " ".repeat(current_path.length * indent_spaces)
     const path_element = current_path[current_path.length - 1]
     const key_name = path_element && "key" in path_element ? path_element.key : ""
     const key_str = key_name && `"${key_name}": `
@@ -241,10 +242,10 @@ function JSONArrayViewer(props: JSONArrayViewerProps)
             onClick={toggle_initial_collapsed_to_level}
             onPointerOver={on_pointer_over}
         >
-            {key_str}{is_collapsed ? ("[ ... ]" + (props.trailing_comma ? "," : "")) : "["}
+            {indent}{key_str}{is_collapsed ? ("[ ... ]" + (props.trailing_comma ? "," : "")) : "["}
         </div>
         { !is_collapsed && <>
-            <div className="json-array-contents" style={css_indent(1)}>
+            <div className="json-array-contents">
                 {data.map((item, index) => <JSONArrayItem
                     key={index}
                     index={index}
@@ -282,6 +283,7 @@ function JSONObjectItem(props: JSONObjectItemProps)
 {
     const { keys, value, current_path, initial_collapsed_to_level, index } = props
     const key = keys[index]!
+    const indent = " ".repeat(current_path.length * indent_spaces)
 
     const is_collapsible = value_is_nested(value)
     const is_leaf_value = !is_collapsible
@@ -313,7 +315,7 @@ function JSONObjectItem(props: JSONObjectItemProps)
     >
         {!is_collapsible && <>
             <span className={"json-object-key" + is_leaf_value_class + is_hovered_class + is_selected_class}>
-                "{key}"
+                {indent}"{key}"
             </span>:&nbsp;
         </>}
         <RecursiveJSONViewer
@@ -349,6 +351,8 @@ function JSONArrayItem(props: JSONArrayItemProps)
     const is_collapsible = value_is_nested(item)
     const is_leaf_value = !is_collapsible
 
+    const indent = " ".repeat(is_leaf_value ? (current_path.length * indent_spaces) : 0)
+
     const on_pointer_over = useCallback((e: PointerEvent) =>
     {
         e.stopPropagation()
@@ -375,7 +379,7 @@ function JSONArrayItem(props: JSONArrayItemProps)
         onPointerOver={on_pointer_over}
         onPointerDown={on_pointer_down}
     >
-        <RecursiveJSONViewer
+        {indent}<RecursiveJSONViewer
             data={item}
             current_path={current_path}
             initial_collapsed_to_level={initial_collapsed_to_level}
@@ -394,12 +398,4 @@ function value_is_nested(value: unknown): boolean
     if (value === null) return false
     if (Array.isArray(value)) return true
     return typeof value === "object" && (Object.getPrototypeOf(value) === Object.prototype)
-}
-
-
-function css_indent(level: number): Record<string, string>
-{
-    return {
-        paddingLeft: `${(level + 1) * indent_size}px`
-    }
 }
