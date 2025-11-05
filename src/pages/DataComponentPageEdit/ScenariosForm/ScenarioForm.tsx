@@ -1,6 +1,6 @@
 import { Button, Checkbox } from "@mantine/core"
 import { TargetedEvent } from "preact/compat"
-import { useMemo } from "preact/hooks"
+import { useCallback, useMemo } from "preact/hooks"
 
 import type {
     FunctionArgument,
@@ -41,6 +41,13 @@ export function ScenarioForm(props: ScenarioFormProps)
     const on_update_description = useMemo(() =>
         debounce((description: string) => on_change({ description }), 300)
     , [on_change])
+
+    const on_update_values = useCallback((updated_values: TempScenarioValues) =>
+    {
+        return on_change({ values_by_temp_id: updated_values })
+    }, [on_change])
+
+    const debounced_on_update_values = useMemo(() => debounce(on_update_values, 600), [on_update_values])
 
     // const error = props.is_draft_row ? null : calc_scenario_error(scenario, props.name_counts)
 
@@ -96,7 +103,8 @@ export function ScenarioForm(props: ScenarioFormProps)
                 is_draft_row={is_draft_row}
                 scenario={scenario}
                 function_arguments={props.function_arguments}
-                on_change={(updated_values: TempScenarioValues) => on_change({ values_by_temp_id: updated_values })}
+                on_change={on_update_values}
+                debounced_on_change={debounced_on_update_values}
             />
         </div>}
 
@@ -110,9 +118,10 @@ function InputValuesForm(props: {
     scenario: Scenario
     function_arguments: FunctionArgument[]
     on_change: (updated_values: TempScenarioValues) => void
+    debounced_on_change: (updated_values: TempScenarioValues) => void
 })
 {
-    const { is_draft_row, scenario, function_arguments, on_change } = props
+    const { is_draft_row, scenario, function_arguments, on_change, debounced_on_change } = props
 
     const inputs_iterated_over = Object.values(scenario.values_by_temp_id).filter(v => v.iterate_over).length
     const inputs_using_previous_result = Object.values(scenario.values_by_temp_id).filter(v => v.use_previous_result).length
@@ -153,7 +162,7 @@ function InputValuesForm(props: {
                             }
 
                             if (value === "") delete updated_values[local_temp_id]
-                            on_change(updated_values)
+                            debounced_on_change(updated_values)
                         }}
                         single_line={undefined}
                         editable={true}
