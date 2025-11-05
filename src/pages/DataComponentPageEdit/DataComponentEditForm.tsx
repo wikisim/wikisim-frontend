@@ -13,7 +13,8 @@ import { is_data_component_invalid } from "core/data/is_data_component_invalid"
 import { changes_made } from "core/data/modify"
 import { make_field_validators } from "core/data/validate_fields"
 
-import BinChangesButton from "../../buttons/BinChangesButton"
+import { ConfirmBinButton } from "../../buttons/BinButton"
+import CloseButton from "../../buttons/CloseButton"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
 import { ROUTES } from "../../routes"
@@ -119,8 +120,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
         invalid_data_component ? invalid_data_component : false
     )
     const disabled_bin_changes = (
-        saving_in_progress ? "Saving..." :
-        no_changes_made ? "No changes made" : false
+        saving_in_progress ? "Saving..." : false
     )
     const editable = !version_mismatch && !saving_in_progress
 
@@ -204,11 +204,19 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
                     editing={true}
                     set_editing={() => set_show_saving_modal(true)}
                 />
-                <BinChangesButton
+                {no_changes_made
+                ? <CloseButton
+                    label="Close editor"
+                    disabled={disabled_bin_changes}
+                    on_click={discard_previously_saved_draft}
+                />
+                : <ConfirmBinButton
+                    label="Discard changes"
+                    confirmation_label="Press again to confirm discarding changes"
                     disabled={disabled_bin_changes}
                     highlighted={version_mismatch}
                     on_click={discard_previously_saved_draft}
-                />
+                />}
             </div>
         </div>
 

@@ -38,7 +38,11 @@ export default function BinButton(props: Props)
 }
 
 
-export function ConfirmBinButton(props: Props)
+interface ConfirmBinButtonProps extends Props
+{
+    confirmation_label?: string
+}
+export function ConfirmBinButton(props: ConfirmBinButtonProps)
 {
     const [confirming, set_confirming] = useState(false)
 
@@ -56,7 +60,7 @@ export function ConfirmBinButton(props: Props)
         return <BinButton
             highlighted={true}
             disabled={props.disabled}
-            label="Click again to confirm delete"
+            label={props.confirmation_label ?? "Click again to confirm delete"}
             style={{
                 backgroundColor: "var(--colour-danger-background)",
                 color: "var(--colour-danger-text)",
