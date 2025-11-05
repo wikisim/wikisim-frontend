@@ -12,12 +12,12 @@ interface ResultsViewTabsProps
 {
     selected_tab: ResultsViewType
     on_select_tab: (tab: ResultsViewType) => void
-    selected_paths: SelectedJSONPath[]
+    valid_selected_paths: SelectedJSONPath[]
 }
 export function ResultsViewTabs(props: ResultsViewTabsProps)
 {
     const { selected_tab, on_select_tab } = props
-    const disabled = props.selected_paths.length === 0
+    const disabled = props.valid_selected_paths.length === 0
     const table_label = disabled ? "Select some attributes from the result to enable table and graph views." : ""
 
     return <div className="results-view-tabs">

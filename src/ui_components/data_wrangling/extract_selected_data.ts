@@ -11,11 +11,13 @@ export interface ColumnData
 export interface ExtractSelectedDataReturn
 {
     columns: ColumnData[]
+    used_paths: SelectedJSONPath[]
     missing_paths: SelectedJSONPath[]
 }
 export function extract_selected_data(data: unknown, selected_paths: SelectedJSONPath[]): ExtractSelectedDataReturn
 {
     const columns: ColumnData[] = []
+    const used_paths: SelectedJSONPath[] = []
     const missing_paths: SelectedJSONPath[] = []
 
     for (const selected_path of selected_paths)
@@ -32,7 +34,8 @@ export function extract_selected_data(data: unknown, selected_paths: SelectedJSO
         columns.push({ header: alias, path, values })
 
         if (all_missing) missing_paths.push(selected_path)
+        else used_paths.push(selected_path)
     }
 
-    return { columns, missing_paths }
+    return { columns, used_paths, missing_paths }
 }

@@ -42,12 +42,14 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
     const [selected_tab, set_selected_tab] = useState<ResultsViewType>("json")
     const json_viewer_event_and_state_handlers = event_and_state_handlers()
 
+
     const extracted_data = useMemo(() =>
     {
         const data = result_string_to_json(props.result)?.parsed
 
         return extract_selected_data(data, json_viewer_event_and_state_handlers.selected_paths)
     }, [props.result, json_viewer_event_and_state_handlers.selected_paths])
+
 
     return <div className="scenario-results-display">
 
@@ -59,7 +61,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         {props.scenario_row_opened && <ResultsViewTabs
             selected_tab={selected_tab}
             on_select_tab={set_selected_tab}
-            selected_paths={json_viewer_event_and_state_handlers.selected_paths}
+            valid_selected_paths={extracted_data.used_paths}
         />}
 
         <ScenarioResultsDisplayInner
