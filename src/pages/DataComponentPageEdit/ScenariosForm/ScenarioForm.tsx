@@ -158,9 +158,10 @@ function InputValuesForm(props: {
                         {
                             const value = e.currentTarget.value.trim()
                             const iterate_over = existing?.iterate_over
+                            const use_previous_result = existing?.use_previous_result
                             const updated_values: TempScenarioValues = {
                                 ...scenario.values_by_temp_id,
-                                [local_temp_id]: { value, iterate_over }
+                                [local_temp_id]: { value, iterate_over, use_previous_result }
                             }
 
                             if (value === "") delete updated_values[local_temp_id]
