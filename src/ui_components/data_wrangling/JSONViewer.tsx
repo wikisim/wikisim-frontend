@@ -184,7 +184,7 @@ function JSONObjectViewer(props: JSONObjectViewerProps)
             className="json-brace"
             onClick={toggle_initial_collapsed_to_level}
         >
-            {indent}{key_str}{is_collapsed ? ("{ ... }" + (props.trailing_comma ? "," : "")) : "{"}
+            {indent}{key_str}{is_collapsed ? ((keys.length ? "{ ... }" : "{}") + (props.trailing_comma ? "," : "")) : "{"}
         </div>
         {!is_collapsed && <>
             <div
@@ -256,7 +256,7 @@ function JSONArrayViewer(props: JSONArrayViewerProps)
             onClick={toggle_initial_collapsed_to_level}
             onPointerOver={on_pointer_over}
         >
-            {indent}{key_str}{is_collapsed ? ("[ ... ]" + (props.trailing_comma ? "," : "")) : "["}
+            {indent}{key_str}{is_collapsed ? ((data.length ? "[ ... ]" : "[]") + (props.trailing_comma ? "," : "")) : "["}
         </div>
         { !is_collapsed && <>
             <div className="json-array-contents">
