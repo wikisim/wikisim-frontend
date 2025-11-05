@@ -36,19 +36,12 @@ function on_selected_handler()
             // remove it, otherwise add it
             const initial_path_count = paths.length
             paths = paths.filter(p => JSON.stringify(p.path) !== path_str)
+
+            // If paths.length not changed then it means path was not already
+            // selected so we add it
             if (paths.length === initial_path_count)
             {
-                const path_element = path[path.length - 1]!
-                const parent_path_element = path[path.length - 2]
-                const alias = (
-                    "key" in path_element
-                    ? path_element.key
-                    : (
-                        (parent_path_element && "key" in parent_path_element)
-                        ? parent_path_element.key
-                        : "index"
-                    )
-                ).toString()
+                const alias = make_alias(path, paths)
                 paths = [...paths, { path, alias }]
             }
 
@@ -71,3 +64,33 @@ export function event_and_state_handlers()
     }
 }
 export type JSONViewerEventAndStateHandlers = ReturnType<typeof event_and_state_handlers>
+
+
+export function make_alias(path: JSONPath, existing_paths: SelectedJSONPath[])
+{
+    const existing_aliases = new Set(existing_paths.map(p => p.alias))
+
+    let path_position = path.length - 1
+    let canditate_alias = get_alias_path(path, path_position)
+    while (existing_aliases.has(canditate_alias) && path_position > 0)
+    {
+        path_position -= 1
+        canditate_alias = get_alias_path(path, path_position) + "_" + canditate_alias
+    }
+
+    return canditate_alias
+}
+
+function get_alias_path(path: JSONPath, position: number): string
+{
+    const path_element = path[position]!
+    const parent_path_element = path[position - 1]
+
+    if ("key" in path_element) return path_element.key
+
+    if (!parent_path_element) return "index_" + path_element.index.toString()
+
+    if ("key" in parent_path_element) return parent_path_element.key + "_" + path_element.index
+
+    return `${parent_path_element.index}_index_${path_element.index}`
+}
