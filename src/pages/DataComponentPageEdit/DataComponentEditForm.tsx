@@ -65,7 +65,10 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 
 
     // Ensure that once this draft_component has been saved that we clear it
-    // from local storage and don't try to save it to local again.
+    // from local storage and don't try to save it to local again... however this
+    // implementation does not seem to work as perhaps the page is immediately
+    // unmounted after saving.  Leaving this in for now as a belt-and-braces
+    // approach but could probably be removed.
     const [have_saved_changes, set_have_saved_changes] = useState(false)
     if (have_saved_changes)
     {
@@ -218,7 +221,11 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
                 return props.handle_save(draft_data_component)
                     .then(({ error }) =>
                     {
-                        if (!error) set_have_saved_changes(true)
+                        if (!error)
+                        {
+                            set_have_saved_changes(true)
+                            clear_previously_saved_draft(draft_data_component)
+                        }
                         return { error }
                     })
             }}
@@ -289,6 +296,8 @@ function store_draft_component_to_local(draft_component: DataComponent | NewData
     const draft_key = `draft_component_${id_str}`
     const flattened = flatten_new_or_data_component_to_json(draft_component)
 
+    // console .debug("Storing draft component to local storage:", draft_key, draft_component)
+
     localStorage.setItem(draft_key, JSON.stringify({
         draft_component: flattened,
         timestamp: new Date().toISOString()
@@ -300,6 +309,7 @@ function load_previously_saved_draft(data_component: DataComponent | NewDataComp
 {
     const id_str = get_id_str_of_data_component(data_component, true)
     const draft_key = `draft_component_${id_str}`
+    // console .debug("Loading draft component from local storage:", draft_key)
     const draft_json = localStorage.getItem(draft_key)
     if (!draft_json) return undefined
 
@@ -325,6 +335,7 @@ function clear_previously_saved_draft(data_component: DataComponent | NewDataCom
 {
     const id_str = get_id_str_of_data_component(data_component, true)
     const draft_key = `draft_component_${id_str}`
+    // console .debug("Clearing draft component from local storage:", draft_key)
     localStorage.removeItem(draft_key)
 }
 
