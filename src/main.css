@@ -59,6 +59,8 @@
     --max-column-width: 700px;
 
     --common-indent-size: 20px;
+
+    --font-family-monospace: Menlo, Monaco, 'Courier New', monospace;
 }
 
 a

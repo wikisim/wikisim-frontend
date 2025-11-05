@@ -317,7 +317,7 @@ function set_up_monaco_editor(input_model_ref: React.RefObject<MonacoEditor | nu
         fontSize: 14,
         // Failed attempt to prevent warning from when failing to load
         // "Hiragino Kaku Gothic ProN"
-        fontFamily: "Menlo, Monaco, 'Courier New', monospace",
+        fontFamily: "var(--font-family-monospace)",
         glyphMargin: false, // hides the gutter icons
         folding: false,     // hides the folding controls
         lineDecorationsWidth: 0, // removes extra gutter space

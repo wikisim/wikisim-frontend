@@ -16,6 +16,7 @@ import { TextEditorV2 } from "../../../text_editor/TextEditorV2"
 import { ReadOnly } from "../../../text_editor/sanitise_html"
 import { WarningMessage } from "../../../ui_components/ErrorMessage"
 import { debounce } from "../../../utils/debounce"
+import "./ScenarioForm.css"
 import { scenario_is_empty } from "./utils"
 
 
@@ -170,6 +171,7 @@ function InputValuesForm(props: {
                         // many line) input values, revisit and change freely
                         // later as needed.
                         max_height={500}
+                        className="input-value-textarea"
                     />
 
                     <div className="row" style={{ alignItems: "center", gap: "4px", flexGrow: 0 }}>
