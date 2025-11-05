@@ -64,26 +64,40 @@ interface RecursiveJSONViewerProps
     hovered_path_str: string
     on_selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
+
+    // Convenience props, could calculate from selected_path_strs but we already
+    // have the logic in parent components
+    is_selected?: boolean
 }
 function RecursiveJSONViewer(props: RecursiveJSONViewerProps)
 {
     const { data, current_path, initial_collapsed_to_level } = props
 
+    const is_selected_class = props.is_selected ? " is_selected" : ""
+
     if (data === null)
     {
-        return <><span className="json-null">null</span>{props.trailing_comma ? "," : ""}</>
+        return <><span className={"json-null" + is_selected_class}>
+            null
+        </span>{props.trailing_comma ? "," : ""}</>
     }
     else if (typeof data === "string")
     {
-        return <><span className="json-string">"{data}"</span>{props.trailing_comma ? "," : ""}</>
+        return <><span className={"json-string" + is_selected_class}>
+            "{data}"
+        </span>{props.trailing_comma ? "," : ""}</>
     }
     else if (typeof data === "number")
     {
-        return <><span className="json-number">{data}</span>{props.trailing_comma ? "," : ""}</>
+        return <><span className={"json-number" + is_selected_class}>
+            {data}
+        </span>{props.trailing_comma ? "," : ""}</>
     }
     else if (typeof data === "boolean")
     {
-        return <><span className="json-boolean">{data.toString()}</span>{props.trailing_comma ? "," : ""}</>
+        return <><span className={"json-boolean" + is_selected_class}>
+            {data.toString()}
+        </span>{props.trailing_comma ? "," : ""}</>
     }
     else if (Array.isArray(data))
     {
@@ -314,9 +328,9 @@ function JSONObjectItem(props: JSONObjectItemProps)
         onPointerDown={on_pointer_down}
     >
         {!is_collapsible && <>
-            <span className={"json-object-key" + is_leaf_value_class + is_hovered_class + is_selected_class}>
-                {indent}"{key}"
-            </span>:&nbsp;
+            {indent}<span className={"json-object-key" + is_leaf_value_class + is_hovered_class + is_selected_class}>
+                "{key}"
+            </span><span className={is_selected_class}>:&nbsp;</span>
         </>}
         <RecursiveJSONViewer
             data={value}
@@ -327,6 +341,8 @@ function JSONObjectItem(props: JSONObjectItemProps)
             hovered_path_str={props.hovered_path_str}
             on_selected_path={props.on_selected_path}
             selected_path_strs={props.selected_path_strs}
+
+            is_selected={is_selected}
         />
     </div>
 }
@@ -388,6 +404,8 @@ function JSONArrayItem(props: JSONArrayItemProps)
             hovered_path_str={props.hovered_path_str}
             on_selected_path={props.on_selected_path}
             selected_path_strs={props.selected_path_strs}
+
+            is_selected={is_selected}
         />
     </div>
 }
