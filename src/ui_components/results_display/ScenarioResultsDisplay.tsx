@@ -23,6 +23,7 @@ import { compare_results_to_expectations } from "core/expectation/compare_result
 import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
 import { Json } from "core/supabase/interface"
 
+import { ResultsViewTabs } from "../../pages/DataComponentPageEdit/ScenariosForm/ResultsViewTabs"
 import { JSONViewerEventAndStateHandlers } from "../data_wrangling/event_and_state_handlers"
 import { JSONViewer } from "../data_wrangling/JSONViewer"
 import { ExpectationMet } from "../ExpectationMet"
@@ -69,12 +70,16 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
             on_click={on_click_header}
         />
 
-        {props.scenario_row_opened && <ScenarioResultsDisplayInner
-            result={props.result}
-            expected_result={props.expected_result}
-            expectation_met={props.expectation_met}
-            json_viewer_event_and_state_handlers={props.json_viewer_event_and_state_handlers}
-        />}
+        {props.scenario_row_opened && <>
+            <ResultsViewTabs disabled={true} />
+
+            <ScenarioResultsDisplayInner
+                result={props.result}
+                expected_result={props.expected_result}
+                expectation_met={props.expectation_met}
+                json_viewer_event_and_state_handlers={props.json_viewer_event_and_state_handlers}
+            />
+        </>}
     </div>
 }
 

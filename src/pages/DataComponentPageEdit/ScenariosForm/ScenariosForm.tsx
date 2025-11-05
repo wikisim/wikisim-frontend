@@ -9,7 +9,6 @@ import type {
 import OpenCloseSection from "../../../ui_components/OpenCloseSection"
 import { ScenarioResultsAndExpectations } from "../ScenarioResultsAndExpectations"
 import { UpdatesFnOrValue } from "../interface"
-import { ResultsViewTabs } from "./ResultsViewTabs"
 import { ScenarioForm } from "./ScenarioForm"
 import "./ScenariosForm.css"
 import { scenario_is_empty } from "./utils"
@@ -160,7 +159,6 @@ function ScenarioRowForm(props: ScenarioRowFormProps)
         </div>
 
         <div className="data-component-form-column column">
-            <ResultsViewTabs disabled={true} />
             <ScenarioResultsAndExpectations
                 is_draft_row={is_draft_row}
                 component={component}
