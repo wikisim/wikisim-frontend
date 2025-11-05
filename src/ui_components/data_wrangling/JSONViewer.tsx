@@ -274,7 +274,7 @@ function JSONArrayViewer(props: JSONArrayViewerProps)
                 />)}
             </div>
             <div className="json-bracket">
-                {"]" + (props.trailing_comma ? "," : "")}
+                {indent}{"]" + (props.trailing_comma ? "," : "")}
             </div>
         </>}
     </div>
