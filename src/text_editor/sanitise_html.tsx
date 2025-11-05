@@ -1,10 +1,10 @@
 import { Editor } from "@tiptap/core"
 import { EditorContent } from "@tiptap/react"
+import { useMemo } from "preact/hooks"
 
 import { DataComponent, NewDataComponent } from "core/data/interface"
+import { get_function_signature } from "core/evaluator/format_function"
 
-import { useMemo } from "preact/hooks"
-import { get_function_signature } from "../../lib/core/src/evaluator/format_function"
 import { get_tiptap_extensions } from "./tiptap_extensions"
 
 
