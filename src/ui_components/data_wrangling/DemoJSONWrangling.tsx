@@ -1,5 +1,6 @@
 
 import { event_and_state_handlers } from "./event_and_state_handlers"
+import { extract_selected_data } from "./extract_selected_data"
 import { JSONPath } from "./interface"
 import { JSONViewer } from "./JSONViewer"
 import { TableViewer } from "./TableViewer"
@@ -43,6 +44,8 @@ export function DemoJSONWranglingDemo()
     } = event_and_state_handlers()
 
 
+    const extracted_data = extract_selected_data(sample_data, selected_paths)
+
     return <div style={{ padding: "20px" }}>
         <h2>JSON Viewer Demo Object</h2>
         <p style={{ color: hovering_path?.is_leaf_value === false ? "red" : "inherit" }}>
@@ -68,8 +71,7 @@ export function DemoJSONWranglingDemo()
         />
 
         <TableViewer
-            data={sample_data}
-            selected_paths={selected_paths}
+            extracted_data={extracted_data}
         />
 
         <hr />

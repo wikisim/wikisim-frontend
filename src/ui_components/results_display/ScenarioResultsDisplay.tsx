@@ -1,50 +1,27 @@
-import {
-    CategoryScale,
-    ChartData,
-    Chart as ChartJS,
-    Legend,
-    LinearScale,
-    LineElement,
-    PointElement,
-    Title,
-    Tooltip
-} from "chart.js"
 import stringify from "json-stringify-pretty-compact"
-import { useCallback } from "preact/hooks"
-import { Line } from "react-chartjs-2"
+import { useCallback, useMemo, useState } from "preact/hooks"
 
-import { LabelsAndResults } from "core/evaluation/interface"
 import {
     assert_result_json_is_graphable,
-    result_string_to_graphable,
-    result_string_to_json,
+    result_string_to_json
 } from "core/evaluation/parse_result"
-import { compare_results_to_expectations } from "core/expectation/compare_results_to_expectations"
-import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
 import { Json } from "core/supabase/interface"
 
-import { ResultsViewTabs } from "../../pages/DataComponentPageEdit/ScenariosForm/ResultsViewTabs"
-import { JSONViewerEventAndStateHandlers } from "../data_wrangling/event_and_state_handlers"
+import {
+    event_and_state_handlers,
+    JSONViewerEventAndStateHandlers
+} from "../data_wrangling/event_and_state_handlers"
+import { extract_selected_data } from "../data_wrangling/extract_selected_data"
+import { GraphViewer } from "../data_wrangling/GraphViewer"
 import { JSONViewer } from "../data_wrangling/JSONViewer"
+import { TableViewer } from "../data_wrangling/TableViewer"
 import { ExpectationMet } from "../ExpectationMet"
+import { ResultsViewType } from "./interface"
+import { ResultsViewTabs } from "./ResultsViewTabs"
 import "./ScenarioResultsDisplay.css"
+import { ScenarioResultsDisplayGraphical } from "./ScenarioResultsDisplayGraphical"
 
 
-const colour_actual = "rgb(28, 126, 214)" // --requires-manual-sync-colour-primary-blue-rgb
-const colour_expected = "rgb(255, 192, 120)" // --requires-manual-sync-colour-warning
-const colour_mismatch = "rgb(250, 82, 82)" // --requires-manual-sync-colour-error
-const colour_mismatch_line = "rgb(255, 168, 168)" // --requires-manual-sync-colour-invalid
-
-
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-)
 
 interface ScenarioResultsDisplayProps
 {
@@ -53,7 +30,6 @@ interface ScenarioResultsDisplayProps
     expectation_met: boolean | undefined
     scenario_row_opened: boolean
     set_scenario_row_opened: (opened: boolean | ((o: boolean) => boolean)) => void
-    json_viewer_event_and_state_handlers?: JSONViewerEventAndStateHandlers
 }
 
 export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
@@ -63,6 +39,16 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         props.set_scenario_row_opened(scenario_row_opened => !scenario_row_opened)
     }, [props.set_scenario_row_opened])
 
+    const [selected_tab, set_selected_tab] = useState<ResultsViewType>("json")
+    const json_viewer_event_and_state_handlers = event_and_state_handlers()
+
+    const extracted_data = useMemo(() =>
+    {
+        const data = result_string_to_json(props.result)?.parsed
+
+        return extract_selected_data(data, json_viewer_event_and_state_handlers.selected_paths)
+    }, [props.result, json_viewer_event_and_state_handlers.selected_paths])
+
     return <div className="scenario-results-display">
 
         <ExpectationMet
@@ -70,22 +56,34 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
             on_click={on_click_header}
         />
 
-        {props.scenario_row_opened && <>
-            <ResultsViewTabs disabled={true} />
+        {props.scenario_row_opened && <ResultsViewTabs
+            selected_tab={selected_tab}
+            on_select_tab={set_selected_tab}
+            selected_paths={json_viewer_event_and_state_handlers.selected_paths}
+        />}
 
-            <ScenarioResultsDisplayInner
-                result={props.result}
-                expected_result={props.expected_result}
-                expectation_met={props.expectation_met}
-                json_viewer_event_and_state_handlers={props.json_viewer_event_and_state_handlers}
-            />
-        </>}
+        <ScenarioResultsDisplayInner
+            show={props.scenario_row_opened && selected_tab === "json"}
+            result={props.result}
+            expected_result={props.expected_result}
+            expectation_met={props.expectation_met}
+            json_viewer_event_and_state_handlers={json_viewer_event_and_state_handlers}
+        />
+
+        {props.scenario_row_opened && selected_tab === "table" && <TableViewer
+            extracted_data={extracted_data}
+        />}
+
+        {props.scenario_row_opened && selected_tab === "graph" && <GraphViewer
+            data_columns={extracted_data.columns}
+        />}
     </div>
 }
 
 
 interface ScenarioResultsDisplayInnerProps
 {
+    show: boolean
     result: string
     expected_result: string | undefined
     expectation_met: boolean | undefined
@@ -97,6 +95,8 @@ function ScenarioResultsDisplayInner(props: ScenarioResultsDisplayInnerProps)
 
     if (!parsed_json)
     {
+        if (!props.show) return null
+
         return <pre className="make-pre-text-wrap generic-error-message">
             Error: Unabled to parse JSON from result: {props.result}<br/>
         </pre>
@@ -108,12 +108,15 @@ function ScenarioResultsDisplayInner(props: ScenarioResultsDisplayInnerProps)
         return <ScenarioResultsDisplayPlainJSON {...props} parsed_json={parsed_json.parsed} />
     }
 
+    if (!props.show) return null
+
     return <ScenarioResultsDisplayGraphical {...props} data={data} />
 }
 
 
 interface ScenarioResultsDisplayPlainJSONProps
 {
+    show: boolean
     expected_result: string | undefined
     expectation_met: boolean | undefined
     json_viewer_event_and_state_handlers?: JSONViewerEventAndStateHandlers
@@ -124,7 +127,7 @@ function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONP
     const expected_json = result_string_to_json(props.expected_result || "")
     const expected_result_str = expected_json ? stringify(expected_json.parsed, { maxLength: 60 }) : props.expected_result
 
-    return <>
+    return <div style={{ display: props.show ? "" : "none"}}>
         <div>Result:</div>
         <pre style={{ marginTop: 0 }}>
             {/* {stringify(props.parsed_json, { maxLength: 60 })}<br/> */}
@@ -138,70 +141,5 @@ function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONP
             {props.expectation_met && `Result matched expected result` }
             {!props.expectation_met && expected_result_str && `Expected = ${expected_result_str}`}<br/>
         </pre>}
-    </>
-}
-
-
-interface ScenarioResultsDisplayGraphicalProps
-{
-    expected_result: string | undefined
-    expectation_met: boolean | undefined
-    json_viewer_event_and_state_handlers?: JSONViewerEventAndStateHandlers
-    data: LabelsAndResults
-}
-function ScenarioResultsDisplayGraphical(props: ScenarioResultsDisplayGraphicalProps)
-{
-    const expected_data = result_string_to_graphable(props.expected_result)
-    const merged_data = merge_data(props.data, expected_data)
-
-    const graph_props: ChartData<"line", ResultPoint[], unknown> =
-    {
-        labels: merged_data.labels,
-        datasets: [
-            {
-                type: "line",
-                label: "Scenario Result",
-                data: merged_data.results,
-                borderColor: props.expectation_met === false ? colour_mismatch_line : colour_actual,
-                backgroundColor: merged_data.result_colours ?? colour_actual,
-                yAxisID: "y",
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                // fill: true,
-            }
-        ],
-    }
-
-    if (merged_data.expected)
-    {
-        graph_props.datasets.push({
-            type: "line",
-            label: "Expected Result",
-            data: merged_data.expected.results,
-            borderColor: colour_expected,
-            backgroundColor: "white",
-            borderDash: [5, 5],
-            yAxisID: "y",
-        })
-    }
-
-    return <>
-        {/* {props.result} */}
-        <Line data={graph_props} />
-    </>
-}
-
-
-function merge_data(data: LabelsAndResults, expected_data: LabelsAndResults | false): MergedLabelsAndResults & { result_colours?: string[] }
-{
-    const merged = compare_results_to_expectations(data, expected_data)
-
-    if (!merged.expected) return merged
-
-    const result_colours: string[] = merged.expected.matched.map(matched =>
-    {
-        return matched ? colour_actual : colour_mismatch
-    })
-
-    return { ...merged, result_colours }
+    </div>
 }

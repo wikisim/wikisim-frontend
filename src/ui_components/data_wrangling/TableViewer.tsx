@@ -1,72 +1,54 @@
+import { Table } from "@mantine/core"
 import { useMemo } from "preact/hooks"
-import { extract_data_at_path } from "./extract_data_at_path"
-import { SelectedJSONPath } from "./interface"
+
+import { ExtractSelectedDataReturn } from "./extract_selected_data"
 
 
 interface TableViewerProps
 {
-    data: unknown
-    selected_paths: SelectedJSONPath[]
+    extracted_data: ExtractSelectedDataReturn
 }
 export function TableViewer(props: TableViewerProps)
 {
-    const { data, selected_paths } = props
+    const { extracted_data } = props
 
-    const table_data = useMemo(() =>
+    const { table_header, table_rows } = useMemo(() =>
     {
-        return extract_table_data(data, selected_paths)
-    }, [data, selected_paths])
+        const { columns, missing_paths } = extracted_data
+        const missing_paths_set = new Set(missing_paths.map(mp => JSON.stringify(mp.path)))
 
-    return <div>
-        <h2>Table Viewer</h2>
-        <table cellPadding={5} cellSpacing={0}>
-            <thead>
-                <tr>
-                    {table_data.map(col => <th key={col.header}>{col.header}</th>)}
-                </tr>
-            </thead>
-            <tbody>
-                {Array.from(
-                    { length: Math.max(...table_data.map(col => col.values.length)) },
-                    (_, row_index) => (
-                        <tr key={row_index}>
-                            {table_data.map(col => (
-                                <td key={col.header}>
-                                    {col.values[row_index] ?? ""}
-                                </td>
-                            ))}
-                        </tr>
-                    )
-                )}
-            </tbody>
-        </table>
-    </div>
-}
+        const columns_existing = columns.filter(col => !missing_paths_set.has(JSON.stringify(col.path)))
+        const table_header: string[] = columns_existing.map(col => col.header)
 
+        // All the columns should have the same number of rows
+        const max_rows = columns_existing[0]?.values.length || 0
 
-interface ColumnData
-{
-    header: string
-    values: (string | number)[]
-}
-function extract_table_data(data: unknown, selected_paths: SelectedJSONPath[]): ColumnData[]
-{
-    const columns: ColumnData[] = []
+        const table_rows = []
+        for (let row_index = 0; row_index < max_rows; row_index++)
+        {
+            const row: (string | number)[] = []
+            for (const col of columns_existing)
+            {
+                row.push(col.values[row_index] ?? "")
+            }
+            table_rows.push(row)
+        }
+        return { table_header, table_rows }
+    }, [extracted_data])
 
-    for (const selected_path of selected_paths)
-    {
-        const { path, alias } = selected_path
-
-        const extracted_data = extract_data_at_path(data, path)
-
-        const values: (string | number)[] = (
-            Array.isArray(extracted_data)
-                ? extracted_data
-                : [extracted_data]
-        )
-
-        columns.push({ header: alias, values })
-    }
-
-    return columns
+    return <Table withColumnBorders withRowBorders highlightOnHover>
+        <Table.Thead>
+            <Table.Tr>
+                {table_header.map(header => (
+                    <Table.Th key={header}>{header}</Table.Th>
+                ))}
+            </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+            {table_rows.map((row, row_index) =>
+            <Table.Tr key={row_index}>
+                {row.map((cell, index) => <Table.Td key={index}>{cell}</Table.Td>)}
+            </Table.Tr>)}
+        </Table.Tbody>
+    </Table>
 }
