@@ -351,17 +351,15 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
                 <h4 style={{ marginBottom: "0px" }}>
                     Input Values
                 </h4>
-                <pre style={{ marginTop: "0px" }} className="make-pre-text-wrap">
-                    {input_values.map(([local_temp_id, val]) =>
-                    {
-                        return <>
+                {input_values.map(([local_temp_id, val]) =>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "0.5em" }}>
+                        <pre style={{ marginTop: 0, marginBottom: 0 }} className="make-pre-text-wrap">
                             {props.input_temp_id_to_arg_name(local_temp_id)} = {val.value} &nbsp;
-                            {val.iterate_over && <IconRepeat />}
-                            {val.use_previous_result && <IconUsePreviousResult />}
-                            <br/>
-                        </>
-                    })}
-                </pre>
+                        </pre>
+                        {val.iterate_over && <IconRepeat />}
+                        {val.use_previous_result && <IconUsePreviousResult />}
+                    </div>
+                )}
             </>}
         </div>
 

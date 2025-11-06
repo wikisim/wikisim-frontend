@@ -8,7 +8,10 @@ export const IconHistory = () => <img
     title="History"
     width={20}
     height={20}
-    style={{ verticalAlign: -5, margin: "0px 5px" }}
+    style={{
+        // verticalAlign: -5,
+        margin: "0px 5px"
+    }}
 />
 
 export const IconRepeat = (props: { disabled?: boolean, no_title?: boolean }) => <img
@@ -18,7 +21,7 @@ export const IconRepeat = (props: { disabled?: boolean, no_title?: boolean }) =>
     width={20}
     height={20}
     style={{
-        verticalAlign: -5,
+        // verticalAlign: -5,
         margin: "0px 5px",
         filter: props.disabled ? "brightness(5) contrast(0.7)" : undefined,
     }}
@@ -31,7 +34,7 @@ export const IconUsePreviousResult = (props: { disabled?: boolean, no_title?: bo
     width={20}
     height={20}
     style={{
-        verticalAlign: -5,
+        // verticalAlign: -5,
         margin: "0px 5px",
         filter: props.disabled ? "brightness(5) contrast(0.7)" : undefined,
     }}
