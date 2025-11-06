@@ -14,8 +14,11 @@ interface JSONViewerProps
 {
     data: Json
     initial_collapsed_to_level?: number
+
     on_hovering_path?: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path?: JSONPath
+
+    max_wildcards?: number
     on_selected_path?: (path: JSONPath, is_leaf_value: boolean) => void
     selected_paths?: SelectedJSONPath[]
 }
@@ -43,6 +46,7 @@ export function JSONViewer(props: JSONViewerProps)
                 trailing_comma={false}
                 on_hovering_path={props.on_hovering_path || (() => {})}
                 hovered_path_str={hovered_path_str}
+                max_wildcards={props.max_wildcards}
                 on_selected_path={props.on_selected_path || (() => {})}
                 selected_path_strs={selected_path_strs}
             />
@@ -62,6 +66,7 @@ interface RecursiveJSONViewerProps
     trailing_comma: boolean
     on_hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path_str: string
+    max_wildcards: number | undefined
     on_selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 
@@ -108,6 +113,7 @@ function RecursiveJSONViewer(props: RecursiveJSONViewerProps)
             trailing_comma={props.trailing_comma}
             on_hovering_path={props.on_hovering_path}
             hovered_path_str={props.hovered_path_str}
+            max_wildcards={props.max_wildcards}
             on_selected_path={props.on_selected_path}
             selected_path_strs={props.selected_path_strs}
         />
@@ -121,6 +127,7 @@ function RecursiveJSONViewer(props: RecursiveJSONViewerProps)
             trailing_comma={props.trailing_comma}
             on_hovering_path={props.on_hovering_path}
             hovered_path_str={props.hovered_path_str}
+            max_wildcards={props.max_wildcards}
             on_selected_path={props.on_selected_path}
             selected_path_strs={props.selected_path_strs}
         />
@@ -140,6 +147,7 @@ interface JSONObjectViewerProps
     trailing_comma: boolean
     on_hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path_str: string
+    max_wildcards: number | undefined
     on_selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
@@ -200,6 +208,7 @@ function JSONObjectViewer(props: JSONObjectViewerProps)
                     initial_collapsed_to_level={initial_collapsed_to_level}
                     on_hovering_path={props.on_hovering_path}
                     hovered_path_str={props.hovered_path_str}
+                    max_wildcards={props.max_wildcards}
                     on_selected_path={props.on_selected_path}
                     selected_path_strs={props.selected_path_strs}
                 />)}
@@ -224,6 +233,7 @@ interface JSONArrayViewerProps
     trailing_comma: boolean
     on_hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path_str: string
+    max_wildcards: number | undefined
     on_selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
@@ -269,6 +279,7 @@ function JSONArrayViewer(props: JSONArrayViewerProps)
                     initial_collapsed_to_level={initial_collapsed_to_level}
                     on_hovering_path={props.on_hovering_path}
                     hovered_path_str={props.hovered_path_str}
+                    max_wildcards={props.max_wildcards}
                     on_selected_path={props.on_selected_path}
                     selected_path_strs={props.selected_path_strs}
                 />)}
@@ -290,6 +301,7 @@ interface JSONObjectItemProps
     initial_collapsed_to_level: number
     on_hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path_str: string
+    max_wildcards: number | undefined
     on_selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
@@ -314,7 +326,7 @@ function JSONObjectItem(props: JSONObjectItemProps)
         props.on_selected_path(current_path, is_leaf_value)
     }, [props.on_selected_path, current_path, is_leaf_value])
 
-    const paths_match = useMemo(() => factory_paths_match(current_path), [current_path])
+    const paths_match = useMemo(() => factory_paths_match(current_path, props.max_wildcards), [current_path, props.max_wildcards])
     const is_hovered = paths_match(props.hovered_path_str)
     const is_selected = paths_match(props.selected_path_strs)
 
@@ -339,6 +351,7 @@ function JSONObjectItem(props: JSONObjectItemProps)
             trailing_comma={index < keys.length - 1}
             on_hovering_path={props.on_hovering_path}
             hovered_path_str={props.hovered_path_str}
+            max_wildcards={props.max_wildcards}
             on_selected_path={props.on_selected_path}
             selected_path_strs={props.selected_path_strs}
 
@@ -357,6 +370,7 @@ interface JSONArrayItemProps
     initial_collapsed_to_level: number
     on_hovering_path: (path: JSONPath, is_leaf_value: boolean) => void
     hovered_path_str: string
+    max_wildcards: number | undefined
     on_selected_path: (path: JSONPath, is_leaf_value: boolean) => void
     selected_path_strs: Set<string>
 }
@@ -381,7 +395,7 @@ function JSONArrayItem(props: JSONArrayItemProps)
         props.on_selected_path(current_path, is_leaf_value)
     }, [props.on_selected_path, current_path, is_leaf_value])
 
-    const paths_match = useMemo(() => factory_paths_match(current_path), [current_path])
+    const paths_match = useMemo(() => factory_paths_match(current_path, props.max_wildcards), [current_path, props.max_wildcards])
     const is_hovered = paths_match(props.hovered_path_str)
     const is_selected = paths_match(props.selected_path_strs)
 
@@ -402,6 +416,7 @@ function JSONArrayItem(props: JSONArrayItemProps)
             trailing_comma={index < (array_length - 1)}
             on_hovering_path={props.on_hovering_path}
             hovered_path_str={props.hovered_path_str}
+            max_wildcards={props.max_wildcards}
             on_selected_path={props.on_selected_path}
             selected_path_strs={props.selected_path_strs}
 

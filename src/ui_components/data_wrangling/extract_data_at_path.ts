@@ -31,6 +31,7 @@ export function extract_data_at_path(data: unknown, path_components: JSONPath, m
                 {
                     // pass through current_data (which is an array) as-is.
                     all_missing = false
+                    break
                 }
                 else
                 {

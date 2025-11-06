@@ -128,7 +128,7 @@ describe("extract_data_at_path", () =>
             expect(all_missing).equals(false)
         })
 
-        it("returns limits nested wildcards", () =>
+        it("returns limited nested wildcards", () =>
         {
             const path: JSONPath = [{ key: "items" }, { index: "*" }, { key: "details" }, { key: "tags" }, { index: "*" }]
             const { extracted_data, all_missing } = extract_data_at_path(data_obj, path)
@@ -138,6 +138,28 @@ describe("extract_data_at_path", () =>
                 "undefined",
             ])
             expect(all_missing).equals(false)
+        })
+
+        it("returns limited nested wildcards, with objects", () =>
+        {
+            const data_obj = {
+                results: [
+                    { orders: [ { retail: 1 } ] },
+                    { orders: [ { retail: 2 } ] },
+                ]
+            }
+            const path1: JSONPath = [{ key: "results" }, { index: "*" }, { key: "orders" }, { index: "*" }, { key: "retail" }]
+            const result1 = extract_data_at_path(data_obj, path1)
+            expect(result1.extracted_data).to.deep.equal([
+                `["{\\"retail\\":1}"]`,
+                `["{\\"retail\\":2}"]`,
+            ])
+            expect(result1.all_missing).equals(false)
+
+            const path2: JSONPath = [{ key: "results" }, { index: "*" }, { key: "orders" }, { index: 0 }, { key: "retail" }]
+            const result2 = extract_data_at_path(data_obj, path2)
+            expect(result2.extracted_data).to.deep.equal([ 1, 2 ])
+            expect(result2.all_missing).equals(false)
         })
 
         it("warns if no values present anywhere", () =>

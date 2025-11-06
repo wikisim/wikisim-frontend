@@ -20,6 +20,7 @@ function on_hovering_handler()
 }
 
 
+const max_wildcards = 1
 function on_selected_handler()
 {
     const [selected_paths, set_selected_paths] = useState<SelectedJSONPath[]>([])
@@ -27,7 +28,7 @@ function on_selected_handler()
     const on_selected_path = useCallback((path: JSONPath, is_leaf_value: boolean) =>
     {
         if (!is_leaf_value) return
-        path = convert_array_paths_to_wildcards(path)
+        path = convert_array_paths_to_wildcards(path, max_wildcards)
 
         const path_str = JSON.stringify(path)
         set_selected_paths(paths =>
@@ -52,6 +53,7 @@ function on_selected_handler()
     return {
         selected_paths,
         on_selected_path,
+        max_wildcards,
     }
 }
 
