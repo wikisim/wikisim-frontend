@@ -132,7 +132,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
         // Go back to original component
         if (is_data_component(props.data_component))
         {
-            const new_route = ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(props.data_component.id)
+            const new_route = ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(props.data_component.id.as_IdOnly())
             location.route(new_route)
         }
         else
