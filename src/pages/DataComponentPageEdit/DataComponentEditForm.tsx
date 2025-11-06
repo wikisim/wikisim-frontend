@@ -24,6 +24,7 @@ import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import Countdown, { CountdownTimer } from "../../ui_components/Countdown"
 import Loading from "../../ui_components/Loading"
 import { load_referenced_data_components } from "../../ui_components/utils/load_referenced_data_components"
+import { debounce } from "../../utils/debounce"
 import "./DataComponentEditForm.css"
 import { SaveModal } from "./SaveModal"
 import { ValueEditorForm } from "./ValueEditForms/ValueEditForm"
@@ -91,7 +92,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
         </div>
     }
 
-    const set_draft_component = useMemo(() => (updates: UpdatesFnOrValue, compare_meta_fields?: boolean) =>
+    const set_draft_component = useMemo(() => debounce((updates: UpdatesFnOrValue, compare_meta_fields?: boolean) =>
     {
         _set_draft_component(draft_component =>
         {
@@ -105,7 +106,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
             props.on_component_change?.(new_draft)
             return new_draft
         })
-    }, [props.on_component_change])
+    }, 500), [props.on_component_change])
 
 
     const version_mismatch = get_version_of_data_component(props.data_component) !== get_version_of_data_component(draft_component)
