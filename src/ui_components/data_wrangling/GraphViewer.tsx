@@ -33,7 +33,7 @@ export function GraphViewer(props: GraphViewerProps)
             const data: ResultPoint[] = col.values.map(v => (typeof v === "number" ? v : Number(v)))
             datasets.push({
                 type: "line",
-                label: props.selected_path_names[JSON.stringify(col)],
+                label: props.selected_path_names[JSON.stringify(col.path)],
                 data,
                 borderColor: get_line_graph_colour(index),
                 backgroundColor: get_line_graph_colour(index, 0.4),
