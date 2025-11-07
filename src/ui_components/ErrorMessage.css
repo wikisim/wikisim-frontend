@@ -1,4 +1,8 @@
 
+.generic-error-message + .generic-error-message {
+    margin-top: 0;
+}
+
 .generic-error-message
 {
     margin-top: var(--vgap-large);
