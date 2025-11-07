@@ -2,8 +2,9 @@ import { ActionIcon, Tooltip } from "@mantine/core"
 import IconJson from "@tabler/icons-react/dist/esm/icons/IconJson"
 import IconTable from "@tabler/icons-react/dist/esm/icons/IconTable"
 
+import { JSONPath } from "core/data/interface"
+
 import { IconGraph } from "../../assets/icons"
-import { SelectedJSONPath } from "../data_wrangling/interface"
 import "./ResultsViewTab.css"
 import { ResultsViewType } from "./interface"
 
@@ -12,7 +13,7 @@ interface ResultsViewTabsProps
 {
     selected_tab: ResultsViewType
     on_select_tab: (tab: ResultsViewType) => void
-    valid_selected_paths: SelectedJSONPath[]
+    valid_selected_paths: JSONPath[]
 }
 export function ResultsViewTabs(props: ResultsViewTabsProps)
 {

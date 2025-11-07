@@ -1,6 +1,8 @@
 import { expect } from "chai"
+
+import { JSONPath } from "core/data/interface"
+
 import { extract_data_at_path } from "./extract_data_at_path"
-import { JSONPath } from "./interface"
 
 
 describe("extract_data_at_path", () =>

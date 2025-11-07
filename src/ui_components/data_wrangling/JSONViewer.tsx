@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from "preact/hooks"
 
+import { JSONPath } from "core/data/interface"
 import { Json } from "core/supabase/interface"
 
 import "./JSONViewer.css"
 import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildcards"
 import { factory_paths_match } from "./factory_paths_match"
-import { JSONPath } from "./interface"
 
 
 const indent_spaces = 2

@@ -1,7 +1,8 @@
 import { expect } from "chai"
 
+import { JSONPath } from "core/data/interface"
+
 import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildcards"
-import { JSONPath } from "./interface"
 
 
 describe("convert_array_paths_to_wildcards", () =>

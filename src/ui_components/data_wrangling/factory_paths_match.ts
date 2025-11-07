@@ -1,5 +1,6 @@
+import { JSONPath } from "core/data/interface"
+
 import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildcards"
-import { JSONPath } from "./interface"
 
 
 export function factory_paths_match(current_path: JSONPath, max_wildcards: number | undefined)

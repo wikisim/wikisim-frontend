@@ -1,4 +1,4 @@
-import { JSONPath } from "./interface"
+import { JSONPath } from "core/data/interface"
 
 
 interface ExtractDataAtPathReturn

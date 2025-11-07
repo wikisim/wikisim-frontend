@@ -1,5 +1,6 @@
+import { JSONPath } from "core/data/interface"
+
 import { extract_data_at_path } from "./extract_data_at_path"
-import { JSONPath } from "./interface"
 
 
 export interface ColumnData

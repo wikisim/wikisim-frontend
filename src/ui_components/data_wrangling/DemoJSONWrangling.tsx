@@ -1,7 +1,7 @@
+import { JSONPath } from "core/data/interface"
 
 import { event_and_state_handlers } from "./event_and_state_handlers"
 import { extract_selected_data } from "./extract_selected_data"
-import { JSONPath } from "./interface"
 import { JSONViewer } from "./JSONViewer"
 import { TableViewer } from "./TableViewer"
 
@@ -38,9 +38,12 @@ export function DemoJSONWranglingDemo()
 
     const {
         hovering_path,
-        selected_paths,
         on_hovering_path,
+
+        selected_paths,
         on_selected_path,
+        selected_path_names,
+        upsert_selected_path_name,
     } = event_and_state_handlers()
 
 
@@ -55,11 +58,11 @@ export function DemoJSONWranglingDemo()
         <p>
             Selected paths: {selected_paths.length === 0 ? "none" : ""}
             {selected_paths.map(p => <div
-                key={JSON.stringify(p.path)}
+                key={JSON.stringify(p)}
                 style={{ cursor: "pointer" }}
-                onClick={() => on_selected_path(p.path, true)}
+                onClick={() => on_selected_path(p, true)}
             >
-                {p.alias} ({humanised_path(p.path)})
+                {p} ({humanised_path(p)})
             </div>)}
         </p>
         <JSONViewer
@@ -72,6 +75,9 @@ export function DemoJSONWranglingDemo()
 
         <TableViewer
             extracted_data={extracted_data}
+            selected_paths={selected_paths}
+            selected_path_names={selected_path_names}
+            upsert_path_name={upsert_selected_path_name}
         />
 
         <hr />
