@@ -23,23 +23,32 @@ import { ScenarioResultsDisplayGraphical } from "./ScenarioResultsDisplayGraphic
 
 
 
-interface ScenarioResultsDisplayProps
+type ScenarioResultsDisplayProps =
 {
     result: string
     expected_result: string | undefined
     expectation_met: boolean | undefined
     scenario_row_opened: boolean
     set_scenario_row_opened: (opened: boolean | ((o: boolean) => boolean)) => void
-}
+} & ({
+    selected_tab: ResultsViewType
+    set_selected_tab: (tab: ResultsViewType) => void
+} | {
+    selected_tab?: undefined
+    set_selected_tab?: undefined
+})
 
 export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
 {
+    const [selected_tab, set_selected_tab] = props.selected_tab !== undefined
+        ? [props.selected_tab, props.set_selected_tab]
+        : useState<ResultsViewType>("json")
+
     const on_click_header = useCallback(() =>
     {
         props.set_scenario_row_opened(scenario_row_opened => !scenario_row_opened)
     }, [props.set_scenario_row_opened])
 
-    const [selected_tab, set_selected_tab] = useState<ResultsViewType>("json")
     const json_viewer_event_and_state_handlers = event_and_state_handlers()
 
 

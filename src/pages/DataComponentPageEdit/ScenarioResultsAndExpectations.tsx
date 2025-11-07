@@ -7,6 +7,7 @@ import { EvaluationResponse } from "core/evaluator/interface"
 import { calculate_if_expectation_met } from "core/expectation/calculate_if_expectation_met"
 
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
+import { ResultsViewType } from "../../ui_components/results_display/interface"
 import { ScenarioResultsDisplay } from "../../ui_components/results_display/ScenarioResultsDisplay"
 import { ScenarioExpectationsForm } from "./ScenarioExpectationsForm"
 
@@ -37,6 +38,7 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
     })
 
     const [result, set_result] = useState<EvaluationResponse>()
+    const [selected_results_view_tab, set_selected_results_view_tab] = useState<ResultsViewType>("json")
 
 
     useEffect(() =>
@@ -79,11 +81,14 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
             expectation_met={props.scenario.expectation_met}
             scenario_row_opened={props.scenario_row_opened}
             set_scenario_row_opened={props.set_scenario_row_opened}
+            selected_tab={selected_results_view_tab}
+            set_selected_tab={set_selected_results_view_tab}
         />}
         {props.scenario_row_opened && <ScenarioExpectationsForm
             scenario={props.scenario}
             latest_result={result?.result || undefined}
             on_change={props.on_change}
+            selected_results_view_tab={selected_results_view_tab}
         />}
     </>
 }

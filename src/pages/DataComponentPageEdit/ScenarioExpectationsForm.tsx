@@ -6,6 +6,7 @@ import { Scenario } from "core/data/interface"
 import BinButton from "../../buttons/BinButton"
 import HelpText from "../../buttons/HelpText"
 import { ExpectationMetMessage } from "../../ui_components/ExpectationMet"
+import { ResultsViewType } from "../../ui_components/results_display/interface"
 
 
 
@@ -14,6 +15,7 @@ interface ScenarioGraphProps
     scenario: Scenario
     latest_result: string | undefined
     on_change: (updated_scenario: Partial<Scenario>) => void
+    selected_results_view_tab: ResultsViewType
 }
 export function ScenarioExpectationsForm(props: ScenarioGraphProps)
 {
@@ -32,7 +34,8 @@ export function ScenarioExpectationsForm(props: ScenarioGraphProps)
             </>}
         > */}
             <Button
-                disabled={!props.latest_result}
+                disabled={!props.latest_result || props.selected_results_view_tab !== "json"}
+                title={props.selected_results_view_tab !== "json" ? "Switch to JSON view to use result as expectation" : undefined}
                 size="xs"
                 style={{ marginLeft: "0.5em", marginRight: "0.5em" }}
                 onClick={() =>
