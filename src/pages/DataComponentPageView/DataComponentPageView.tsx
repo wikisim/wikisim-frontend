@@ -333,7 +333,7 @@ interface ScenarioRowReadOnlyProps
 }
 function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
 {
-    const { scenario, index, scenarios_count, result } = props
+    const { scenario, index, result } = props
     const [scenario_row_opened, set_scenario_row_opened] = useState(false)
 
     const input_values = Object.entries(scenario.values_by_temp_id)
@@ -344,7 +344,7 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
             style={{ gap: "var(--vgap-small)", cursor: "pointer" }}
             onClick={() => set_scenario_row_opened(!scenario_row_opened)}
         >
-            <b>Scenario {index + 1} of {scenarios_count}</b>
+            <b>Scenario {index + 1}</b> {/* of {props.scenarios_count} */}
 
             <ReadOnly html={scenario.description} />
 

@@ -60,6 +60,8 @@ export function ScenarioForm(props: ScenarioFormProps)
 
     // const error = props.is_draft_row ? null : calc_scenario_error(scenario, props.name_counts)
 
+    const scenario_title = is_draft_row ? "New Scenario" : `Scenario ${props.ordinal}` // of ${props.total_scenarios}`
+
     return <>
         <div className="scenario-form-header row" style={{ maxHeight: "35px" }}>
             {is_draft_row && !opened && <Button
@@ -73,7 +75,7 @@ export function ScenarioForm(props: ScenarioFormProps)
                 style={{ cursor: "pointer", flexGrow: 1 }}
                 onClick={() => props.set_scenario_row_opened(!opened)}
             >
-                {is_draft_row ? "New Scenario" : `Scenario ${props.ordinal} of ${props.total_scenarios}`}
+                {scenario_title}
             </div>}
 
             {opened && !is_draft_row && <div className="scenario-options">
