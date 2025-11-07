@@ -1,6 +1,7 @@
 import { useLocation } from "preact-iso"
-import { useEffect, useState } from "preact/hooks"
+import { useCallback, useEffect, useState } from "preact/hooks"
 
+import { NewDataComponent } from "core/data/interface"
 import { init_new_data_component } from "core/data/modify"
 
 import { ROUTES } from "../routes"
@@ -18,6 +19,10 @@ export function DataComponentPageNew(_props: { query: Record<string, string> })
     const location = useLocation()
 
     const [is_user_owned, set_is_user_owned] = useState(false)
+    const on_component_change = useCallback((data_component: NewDataComponent) =>
+    {
+        set_is_user_owned(!!data_component.owner_id)
+    }, [])
 
     const { id } = state.user_auth_session.session?.user || {}
     if (!id)
@@ -37,7 +42,7 @@ export function DataComponentPageNew(_props: { query: Record<string, string> })
             <DataComponentEditForm
                 async_status="loaded"
                 data_component={data_component}
-                on_component_change={dc => set_is_user_owned(!!dc.owner_id)}
+                on_component_change={on_component_change}
                 handle_save={draft_data_component =>
                 {
                     return state.data_components.insert_data_component(draft_data_component)
