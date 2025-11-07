@@ -1,8 +1,9 @@
 
 
-.results-view-tabs
+.scenario-results-display .results-view-tabs
 {
     padding-top: var(--vgap-large);
+    padding-bottom: var(--vgap-small);
 
     display: flex;
     flex-direction: row;
