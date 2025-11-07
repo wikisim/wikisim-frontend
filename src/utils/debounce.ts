@@ -1,6 +1,6 @@
 
 
-export function debounce<T extends (...args: any[]) => void>(func: T, wait: number): T & { commit: () => void }
+export function debounce<T extends (...args: any[]) => void>(func: T, wait: number, throttle=false): T & { commit: () => void }
 {
     let last_call_time: number | null = null
     let timeout_id: ReturnType<typeof setTimeout> | null = null
@@ -9,7 +9,7 @@ export function debounce<T extends (...args: any[]) => void>(func: T, wait: numb
     const debounced = function (...args: Parameters<T>)
     {
         if (timeout_id) clearTimeout(timeout_id)
-        if (last_call_time === null) last_call_time = Date.now()
+        if (last_call_time === null || !throttle) last_call_time = Date.now()
 
         outstanding_args.args = null
 
