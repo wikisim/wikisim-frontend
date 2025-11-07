@@ -1,4 +1,4 @@
-import { JSONPath } from "./interface"
+import { JSONPath } from "core/data/interface"
 
 
 export function convert_array_paths_to_wildcards(path: JSONPath, limit_wildcards?: number): JSONPath

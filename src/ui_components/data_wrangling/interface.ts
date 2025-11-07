@@ -1,10 +1,7 @@
-
-export type JSONPath = ({ key: string } | { index: number | "*" })[]
+import { JSONPath } from "core/data/interface"
 
 export interface HoveringJSONPath
 {
     path: JSONPath
     is_leaf_value: boolean
 }
-
-export type MapSelectedPathToName = { [path_str: string]: string }

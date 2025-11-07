@@ -2,11 +2,11 @@ import { ChartData, ChartDataset } from "chart.js"
 import { useMemo } from "preact/hooks"
 import { Line } from "react-chartjs-2"
 
+import { MapSelectedPathToName } from "core/data/interface"
 import { ResultPoint } from "core/expectation/interface"
 
 import { get_line_graph_colour } from "../../constants"
 import { ColumnData } from "./extract_selected_data"
-import { MapSelectedPathToName } from "./interface"
 
 
 interface GraphViewerProps
@@ -33,7 +33,7 @@ export function GraphViewer(props: GraphViewerProps)
             const data: ResultPoint[] = col.values.map(v => (typeof v === "number" ? v : Number(v)))
             datasets.push({
                 type: "line",
-                label: props.selected_path_names[JSON.stringify(col.path)],
+                label: props.selected_path_names[JSON.stringify(col)],
                 data,
                 borderColor: get_line_graph_colour(index),
                 backgroundColor: get_line_graph_colour(index, 0.4),

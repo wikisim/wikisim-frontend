@@ -2,9 +2,10 @@ import { Table } from "@mantine/core"
 import { TargetedEvent } from "preact/compat"
 import { useCallback, useMemo } from "preact/hooks"
 
+import { JSONPath, MapSelectedPathToName } from "core/data/interface"
+
 import { debounce } from "../../utils/debounce"
 import { ExtractSelectedDataReturn } from "./extract_selected_data"
-import { JSONPath, MapSelectedPathToName } from "./interface"
 import "./TableViewer.css"
 
 
@@ -74,12 +75,13 @@ function EditableHeader(props: {
 })
 {
     const { path, selected_path_names, upsert_path_name } = props
+    const value = selected_path_names[JSON.stringify(path)] || ""
 
-    return <Table.Th>
+    return <Table.Th title={value}>
         <input
             className="header"
             type="text"
-            value={selected_path_names[JSON.stringify(path)] || ""}
+            value={value}
             onChange={(e: TargetedEvent<HTMLInputElement>) =>
             {
                 const new_name = e.currentTarget.value

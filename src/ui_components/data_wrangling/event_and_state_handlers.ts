@@ -1,6 +1,9 @@
 import { useCallback, useState } from "preact/hooks"
+
+import { JSONPath, MapSelectedPathToName } from "core/data/interface"
+
 import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildcards"
-import { HoveringJSONPath, JSONPath, MapSelectedPathToName } from "./interface"
+import { HoveringJSONPath } from "./interface"
 
 
 function on_hovering_handler()
