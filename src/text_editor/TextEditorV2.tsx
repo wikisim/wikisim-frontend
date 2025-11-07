@@ -4,7 +4,7 @@ import { Selection } from "@tiptap/pm/state"
 import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react"
 import { useEffect, useMemo, useRef, useState } from "preact/hooks"
 
-import { preserve_leading_spaces } from "core/rich_text/convert_text_type"
+import { preserve_spaces } from "core/rich_text/convert_text_type"
 
 import pub_sub from "../pub_sub"
 import "../ui_components/input_elements.shared.css"
@@ -96,7 +96,7 @@ export function TextEditorV2({
                         .replace(/\s+/g, " ")
                         .trim()
                 }
-                return preserve_leading_spaces(html, "html")
+                return preserve_spaces(html, "html")
             },
             transformPastedText: (text) =>
             {
@@ -105,7 +105,7 @@ export function TextEditorV2({
                     // Strip newlines from plain text for single-line fields
                     return text.replace(/\n/g, " ").replace(/\s+/g, " ").trim()
                 }
-                return preserve_leading_spaces(text, "text")
+                return preserve_spaces(text, "text")
             },
             handleDOMEvents:
             {
