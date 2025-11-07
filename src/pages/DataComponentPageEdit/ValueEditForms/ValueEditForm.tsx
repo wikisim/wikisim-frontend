@@ -106,6 +106,11 @@ export function ValueEditorForm(props: ValueEditorFormProps)
     }, 1000)
     , [on_change])
 
+    useEffect(() => () =>
+    {
+        debounced_handle_update_input_value.commit()
+    }, [debounced_handle_update_input_value])
+
     const value_type = draft_component.value_type || DEFAULTS.value_type
     const value_type_is_number = value_type === "number"
     const value_type_is_function = value_type === "function"

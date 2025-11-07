@@ -1,6 +1,6 @@
 import { Button, Checkbox } from "@mantine/core"
 import { TargetedEvent } from "preact/compat"
-import { useCallback } from "preact/hooks"
+import { useCallback, useEffect } from "preact/hooks"
 
 import type {
     FunctionArgument,
@@ -51,6 +51,12 @@ export function ScenarioForm(props: ScenarioFormProps)
     }, [on_upsert_scenario])
 
     const debounced_on_update_values = useCallback(debounce(on_update_values, 600), [on_update_values])
+
+    useEffect(() => () =>
+    {
+        on_update_description.commit()
+        debounced_on_update_values.commit()
+    }, [on_update_description, debounced_on_update_values])
 
     // const error = props.is_draft_row ? null : calc_scenario_error(scenario, props.name_counts)
 

@@ -1,6 +1,6 @@
 import { Table } from "@mantine/core"
 import { TargetedEvent } from "preact/compat"
-import { useCallback, useMemo } from "preact/hooks"
+import { useCallback, useEffect, useMemo } from "preact/hooks"
 
 import { JSONPath, MapSelectedPathToName } from "core/data/interface"
 
@@ -44,6 +44,11 @@ export function TableViewer(props: TableViewerProps)
     }, [extracted_data])
 
     const debounced_upsert_path_name = useCallback(debounce(props.upsert_path_name, 500), [props.upsert_path_name])
+    useEffect(() => () =>
+    {
+        debounced_upsert_path_name.commit()
+    }, [debounced_upsert_path_name])
+
 
     return <Table withColumnBorders withRowBorders highlightOnHover className="json-table-viewer">
         <Table.Thead>
