@@ -1,5 +1,5 @@
 import stringify from "json-stringify-pretty-compact"
-import { useCallback, useMemo, useState } from "preact/hooks"
+import { useCallback, useEffect, useMemo, useState } from "preact/hooks"
 
 import { Scenario } from "core/data/interface"
 import {
@@ -57,14 +57,24 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         return extract_selected_data(data, json_viewer_event_and_state_handlers.selected_paths)
     }, [props.result, json_viewer_event_and_state_handlers.selected_paths])
 
-
-    const default_tab: ResultsViewType = json_viewer_event_and_state_handlers.selected_paths.length === 0
-        ? "json"
-        : (extracted_data.has_graphable_data ? "graph" : "table")
-
     const [selected_tab, set_selected_tab] = props.selected_tab !== undefined
         ? [props.selected_tab, props.set_selected_tab]
-        : useState<ResultsViewType>(default_tab)
+        : useState<ResultsViewType>("json")
+
+    useEffect(() =>
+    {
+        if (json_viewer_event_and_state_handlers.selected_paths.length === 0) return
+
+        // When component first mounts, if there is graphable data, default to
+        // showing this and opening this scenario.  Otherwise if no graphable data,
+        // but there are data paths selected, then show the table view but don't
+        // open the scenario automatically.
+        if (extracted_data.has_graphable_data)
+        {
+            props.set_scenario_row_opened(() => true)
+            set_selected_tab("graph")
+        } else set_selected_tab("table")
+    })
 
 
     return <div className="scenario-results-display">
