@@ -7,8 +7,4 @@ export interface HoveringJSONPath
     is_leaf_value: boolean
 }
 
-export interface SelectedJSONPath
-{
-    path: JSONPath
-    alias: string
-}
+export type MapSelectedPathToName = { [path_str: string]: string }

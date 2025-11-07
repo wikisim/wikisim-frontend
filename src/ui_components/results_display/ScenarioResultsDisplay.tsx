@@ -72,11 +72,15 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         />
 
         {props.scenario_row_opened && selected_tab === "table" && <TableViewer
+            selected_paths={json_viewer_event_and_state_handlers.selected_paths}
+            selected_path_names={json_viewer_event_and_state_handlers.selected_path_names}
+            upsert_path_name={json_viewer_event_and_state_handlers.upsert_selected_path_name}
             extracted_data={extracted_data}
         />}
 
         {props.scenario_row_opened && selected_tab === "graph" && <GraphViewer
             data_columns={extracted_data.columns}
+            selected_path_names={json_viewer_event_and_state_handlers.selected_path_names}
         />}
     </div>
 }

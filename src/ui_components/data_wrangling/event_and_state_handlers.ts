@@ -1,6 +1,6 @@
 import { useCallback, useState } from "preact/hooks"
 import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildcards"
-import { HoveringJSONPath, JSONPath, SelectedJSONPath } from "./interface"
+import { HoveringJSONPath, JSONPath, MapSelectedPathToName } from "./interface"
 
 
 function on_hovering_handler()
@@ -23,7 +23,23 @@ function on_hovering_handler()
 const max_wildcards = 1
 function on_selected_handler()
 {
-    const [selected_paths, set_selected_paths] = useState<SelectedJSONPath[]>([])
+    const [selected_paths, set_selected_paths] = useState<JSONPath[]>([])
+    const [selected_path_names, set_selected_path_names] = useState<MapSelectedPathToName>({})
+
+
+    const upsert_selected_path_name = useCallback((path: JSONPath, name?: string) =>
+    {
+        const path_str = JSON.stringify(path)
+        set_selected_path_names(names =>
+        {
+            name = name ?? make_name_from_path(path, names)
+
+            if (names[path_str] === name) return names
+
+            return { ...names, [path_str]: name }
+        })
+    }, [])
+
 
     const on_selected_path = useCallback((path: JSONPath, is_leaf_value: boolean) =>
     {
@@ -36,21 +52,36 @@ function on_selected_handler()
             // Check if path is already selected, if already selected then
             // remove it, otherwise add it
             const initial_path_count = paths.length
-            paths = paths.filter(p => JSON.stringify(p.path) !== path_str)
+            paths = paths.filter(p => JSON.stringify(p) !== path_str)
 
             // If paths.length not changed then it means path was not already
             // selected so we add it
             if (paths.length === initial_path_count)
             {
-                const alias = make_alias(path, paths)
-                paths = [...paths, { path, alias }]
+                paths = [...paths, path]
+
+                upsert_selected_path_name(path)
+            }
+            else
+            {
+                // Remove the path name mapping as well
+                set_selected_path_names(names =>
+                {
+                    const new_names = { ...names }
+                    delete new_names[path_str]
+                    return new_names
+                })
             }
 
             return paths
         })
     }, [])
 
+
     return {
+        selected_path_names,
+        upsert_selected_path_name,
+
         selected_paths,
         on_selected_path,
         max_wildcards,
@@ -68,22 +99,22 @@ export function event_and_state_handlers()
 export type JSONViewerEventAndStateHandlers = ReturnType<typeof event_and_state_handlers>
 
 
-export function make_alias(path: JSONPath, existing_paths: SelectedJSONPath[])
+export function make_name_from_path(path: JSONPath, existing_names: MapSelectedPathToName): string
 {
-    const existing_aliases = new Set(existing_paths.map(p => p.alias))
+    const existing_names_set = new Set(Object.values(existing_names))
 
     let path_position = path.length - 1
-    let canditate_alias = get_alias_path(path, path_position)
-    while (existing_aliases.has(canditate_alias) && path_position > 0)
+    let canditate_name = candidate_name_from_path(path, path_position)
+    while (existing_names_set.has(canditate_name) && path_position > 0)
     {
         path_position -= 1
-        canditate_alias = get_alias_path(path, path_position) + "_" + canditate_alias
+        canditate_name = candidate_name_from_path(path, path_position) + "_" + canditate_name
     }
 
-    return canditate_alias
+    return canditate_name
 }
 
-function get_alias_path(path: JSONPath, position: number): string
+function candidate_name_from_path(path: JSONPath, position: number): string
 {
     const path_element = path[position]!
     const parent_path_element = path[position - 1]

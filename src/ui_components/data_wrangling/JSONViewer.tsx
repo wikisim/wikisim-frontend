@@ -5,7 +5,7 @@ import { Json } from "core/supabase/interface"
 import "./JSONViewer.css"
 import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildcards"
 import { factory_paths_match } from "./factory_paths_match"
-import { JSONPath, SelectedJSONPath } from "./interface"
+import { JSONPath } from "./interface"
 
 
 const indent_spaces = 2
@@ -20,7 +20,7 @@ interface JSONViewerProps
 
     max_wildcards?: number
     on_selected_path?: (path: JSONPath, is_leaf_value: boolean) => void
-    selected_paths?: SelectedJSONPath[]
+    selected_paths?: JSONPath[]
 }
 export function JSONViewer(props: JSONViewerProps)
 {
@@ -33,7 +33,7 @@ export function JSONViewer(props: JSONViewerProps)
 
     const selected_path_strs = useMemo(() =>
     {
-        const strings = props.selected_paths?.map(sp => JSON.stringify(sp.path)) || []
+        const strings = props.selected_paths?.map(sp => JSON.stringify(sp)) || []
         return new Set(strings)
     }, [props.selected_paths])
 

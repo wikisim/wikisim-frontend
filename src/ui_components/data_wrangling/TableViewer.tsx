@@ -1,24 +1,30 @@
 import { Table } from "@mantine/core"
-import { useMemo } from "preact/hooks"
+import { TargetedEvent } from "preact/compat"
+import { useCallback, useMemo } from "preact/hooks"
 
+import { debounce } from "../../utils/debounce"
 import { ExtractSelectedDataReturn } from "./extract_selected_data"
+import { JSONPath, MapSelectedPathToName } from "./interface"
+import "./TableViewer.css"
 
 
 interface TableViewerProps
 {
+    selected_paths: JSONPath[]
+    selected_path_names: MapSelectedPathToName
+    upsert_path_name: (path: JSONPath, name?: string) => void
     extracted_data: ExtractSelectedDataReturn
 }
 export function TableViewer(props: TableViewerProps)
 {
     const { extracted_data } = props
 
-    const { table_header, table_rows } = useMemo(() =>
+    const table_rows = useMemo(() =>
     {
         const { columns, missing_paths } = extracted_data
-        const missing_paths_set = new Set(missing_paths.map(mp => JSON.stringify(mp.path)))
+        const missing_paths_set = new Set(missing_paths.map(mp => JSON.stringify(mp)))
 
         const columns_existing = columns.filter(col => !missing_paths_set.has(JSON.stringify(col.path)))
-        const table_header: string[] = columns_existing.map(col => col.header)
 
         // All the columns should have the same number of rows
         const max_rows = columns_existing[0]?.values.length || 0
@@ -33,14 +39,21 @@ export function TableViewer(props: TableViewerProps)
             }
             table_rows.push(row)
         }
-        return { table_header, table_rows }
+        return table_rows
     }, [extracted_data])
 
-    return <Table withColumnBorders withRowBorders highlightOnHover>
+    const debounced_upsert_path_name = useCallback(debounce(props.upsert_path_name, 500), [props.upsert_path_name])
+
+    return <Table withColumnBorders withRowBorders highlightOnHover className="json-table-viewer">
         <Table.Thead>
             <Table.Tr>
-                {table_header.map(header => (
-                    <Table.Th key={header}>{header}</Table.Th>
+                {props.selected_paths.map(path => (
+                    <EditableHeader
+                        key={JSON.stringify(path)}
+                        path={path}
+                        selected_path_names={props.selected_path_names}
+                        upsert_path_name={debounced_upsert_path_name}
+                    />
                 ))}
             </Table.Tr>
         </Table.Thead>
@@ -51,4 +64,27 @@ export function TableViewer(props: TableViewerProps)
             </Table.Tr>)}
         </Table.Tbody>
     </Table>
+}
+
+
+function EditableHeader(props: {
+    path: JSONPath
+    selected_path_names: MapSelectedPathToName
+    upsert_path_name: (path: JSONPath, name: string) => void
+})
+{
+    const { path, selected_path_names, upsert_path_name } = props
+
+    return <Table.Th>
+        <input
+            className="header"
+            type="text"
+            value={selected_path_names[JSON.stringify(path)] || ""}
+            onChange={(e: TargetedEvent<HTMLInputElement>) =>
+            {
+                const new_name = e.currentTarget.value
+                upsert_path_name(path, new_name)
+            }}
+        />
+    </Table.Th>
 }

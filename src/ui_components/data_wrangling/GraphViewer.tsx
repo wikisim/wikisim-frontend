@@ -6,11 +6,13 @@ import { ResultPoint } from "core/expectation/interface"
 
 import { get_line_graph_colour } from "../../constants"
 import { ColumnData } from "./extract_selected_data"
+import { MapSelectedPathToName } from "./interface"
 
 
 interface GraphViewerProps
 {
     data_columns: ColumnData[]
+    selected_path_names: MapSelectedPathToName
 }
 export function GraphViewer(props: GraphViewerProps)
 {
@@ -31,7 +33,7 @@ export function GraphViewer(props: GraphViewerProps)
             const data: ResultPoint[] = col.values.map(v => (typeof v === "number" ? v : Number(v)))
             datasets.push({
                 type: "line",
-                label: col.header,
+                label: props.selected_path_names[JSON.stringify(col.path)],
                 data,
                 borderColor: get_line_graph_colour(index),
                 backgroundColor: get_line_graph_colour(index, 0.4),

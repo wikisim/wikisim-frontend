@@ -1,0 +1,10 @@
+
+
+.json-table-viewer .header
+{
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    background: transparent;
+    font-weight: bold
+}
