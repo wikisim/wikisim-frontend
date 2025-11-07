@@ -63,7 +63,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
 
     useEffect(() =>
     {
-        if (json_viewer_event_and_state_handlers.selected_paths.length === 0) return
+        if (extracted_data.used_paths.length === 0) return
 
         // When component first mounts, if there is graphable data, default to
         // showing this and opening this scenario.  Otherwise if no graphable data,
@@ -74,7 +74,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
             props.set_scenario_row_opened(() => true)
             set_selected_tab("graph")
         } else set_selected_tab("table")
-    })
+    }, [])
 
 
     return <div className="scenario-results-display">
@@ -88,6 +88,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
             selected_tab={selected_tab}
             on_select_tab={set_selected_tab}
             valid_selected_paths={extracted_data.used_paths}
+            has_graphable_data={extracted_data.has_graphable_data}
         />}
 
         <ScenarioResultsDisplayInner
