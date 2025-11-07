@@ -1,5 +1,5 @@
 import { Button, Modal } from "@mantine/core"
-import { useState } from "preact/hooks"
+import { useCallback, useEffect, useState } from "preact/hooks"
 
 import { DataComponent, is_data_component, NewDataComponent } from "core/data/interface"
 
@@ -8,6 +8,7 @@ import { TextEditorV1 } from "../../text_editor/TextEditorV1"
 import { WARNING_TEXT_OWNED_PAGE } from "../../ui_components/BannerWarningOfUserOwnedPage"
 import Loading from "../../ui_components/Loading"
 import { ToggleTwo } from "../../ui_components/ToggleTwo"
+import { debounce } from "../../utils/debounce"
 import "./SaveModal.css"
 
 
@@ -36,12 +37,29 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
     const saving_existing = is_data_component(props.draft_data_component)
     const creating_new = !saving_existing
 
+
+    const debounced_update_draft_data_component = useCallback(debounce((partial: Partial<DataComponent | NewDataComponent>, compare_meta_fields?: boolean) =>
+    {
+        props.update_draft_data_component(partial, compare_meta_fields)
+    }, 300), [props.update_draft_data_component])
+
+
     const handle_save = () =>
     {
         if (is_saving || error_is_unrecoverable) return
+        debounced_update_draft_data_component.commit()
         set_error_is_unrecoverable(false)
         set_error_message("")
         set_is_saving(true)
+    }
+
+
+    useEffect(() =>
+    {
+        if (!is_saving) return
+
+        // Moved into this useEffect to ensure state updates from `handle_comment_change.commit()`
+        // propagate before save occurs
         props.handle_save(props.draft_data_component)
         .then(({ error }) =>
         {
@@ -63,7 +81,8 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                 props.hide_saving_modal()
             }
         })
-    }
+    }, [is_saving])
+
 
     return (
         <Modal
@@ -82,7 +101,7 @@ export function SaveModal<V extends (DataComponent | NewDataComponent)>(props: S
                     on_change={e =>
                     {
                         const comment = e.currentTarget.value
-                        props.update_draft_data_component({ comment }, true)
+                        debounced_update_draft_data_component({ comment }, true)
                     }}
                     label="Comment (optional)"
                     start_focused="focused"
