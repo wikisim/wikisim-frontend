@@ -24,16 +24,16 @@ function on_hovering_handler()
 
 
 const max_wildcards = 1
-function on_selected_handler(current_scenario: Scenario, on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void)
+function on_selected_handler(current_scenario?: Scenario, on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void)
 {
-    const selected_paths = current_scenario.selected_paths || []
-    const selected_path_names = current_scenario.selected_path_names || {}
+    const selected_paths = current_scenario?.selected_paths || []
+    const selected_path_names = current_scenario?.selected_path_names || {}
 
 
     const upsert_selected_path_name = useCallback((path: JSONPath, name?: string, delete_path=false) =>
     {
         // Type guard
-        if (!current_scenario.selected_path_names || !on_upsert_scenario) return
+        if (!current_scenario?.selected_path_names || !on_upsert_scenario) return
         const names = { ...current_scenario.selected_path_names }
 
         const path_str = JSON.stringify(path)
@@ -45,13 +45,13 @@ function on_selected_handler(current_scenario: Scenario, on_upsert_scenario?: (u
         if (delete_path) delete names[path_str]
 
         on_upsert_scenario({ selected_path_names: names })
-    }, [current_scenario.selected_path_names, on_upsert_scenario])
+    }, [current_scenario?.selected_path_names, on_upsert_scenario])
 
 
     const on_selected_path = useCallback((path: JSONPath, is_leaf_value: boolean) =>
     {
         if (!is_leaf_value) return
-        let paths = current_scenario.selected_paths
+        let paths = current_scenario?.selected_paths
         // Type guard
         if (!paths || !on_upsert_scenario) return
 
@@ -76,7 +76,7 @@ function on_selected_handler(current_scenario: Scenario, on_upsert_scenario?: (u
         }
 
         on_upsert_scenario({ selected_paths: paths })
-    }, [current_scenario.selected_paths, on_upsert_scenario, upsert_selected_path_name])
+    }, [current_scenario?.selected_paths, on_upsert_scenario, upsert_selected_path_name])
 
 
     return {
@@ -90,7 +90,7 @@ function on_selected_handler(current_scenario: Scenario, on_upsert_scenario?: (u
 }
 
 
-export function event_and_state_handlers(scenario: Scenario, on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void)
+export function event_and_state_handlers(scenario?: Scenario, on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void)
 {
     return {
         ...on_hovering_handler(),
