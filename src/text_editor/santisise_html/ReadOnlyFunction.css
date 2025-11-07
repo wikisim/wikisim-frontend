@@ -1,0 +1,27 @@
+
+
+.read-only-function
+{
+    position: relative;
+}
+
+.read-only-function .end-fade-and-button
+{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(transparent, white);
+    display: flex;
+    justify-content: center;
+}
+
+.read-only-function .end-fade-and-button button
+{
+    background-color: white;
+}
+
+.read-only-function .end-fade-and-button button:hover
+{
+    background-color: var(--colour-background-light);
+    border: thin solid var(--colour-border-blue);
+}

@@ -4,7 +4,7 @@ import { format_data_component_value_to_string } from "core/data/format/format_d
 import { DataComponent } from "core/data/interface"
 
 import { ROUTES } from "../routes"
-import { ReadOnly } from "../text_editor/sanitise_html"
+import { ReadOnly } from "../text_editor/santisise_html/sanitise_html"
 import "./DataComponentCard.css"
 
 

@@ -18,7 +18,8 @@ import { ROUTES } from "../../routes"
 import { get_async_data_component } from "../../state/data_components/accessor"
 import { CheckIfIdIsLatestResponse } from "../../state/data_components/interface"
 import { app_store } from "../../state/store"
-import { ReadOnly, ReadOnlyFunction } from "../../text_editor/sanitise_html"
+import { ReadOnlyFunction } from "../../text_editor/santisise_html/ReadOnlyFunction"
+import { ReadOnly } from "../../text_editor/santisise_html/sanitise_html"
 import { BannerWarningOfUserOwnedPage } from "../../ui_components/BannerWarningOfUserOwnedPage"
 import { PlayInteractable } from "../../ui_components/data_component/PlayInteractable"
 import { ErrorMessage } from "../../ui_components/ErrorMessage"
@@ -121,11 +122,11 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
 
             {value_as_string && <div className="section">
                 <div className="row">
-                    <b>{is_function ? "Function" : "Value"}: </b>
+                    <b>{is_function ? "Function:" : "Value:"} </b>
                     {is_function ? "" : value_as_string}
                 </div>
 
-                {is_function && <ReadOnlyFunction component={component} />}
+                {is_function && <ReadOnlyFunction component={component} max_height={500} />}
 
                 {show_calculation && <div className="row">
                     <b>Calculation: </b>

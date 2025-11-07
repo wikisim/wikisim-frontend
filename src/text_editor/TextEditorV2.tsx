@@ -8,7 +8,7 @@ import { preserve_spaces } from "core/rich_text/convert_text_type"
 
 import pub_sub from "../pub_sub"
 import "../ui_components/input_elements.shared.css"
-import { remove_p_tags } from "./sanitise_html"
+import { remove_p_tags } from "./santisise_html/sanitise_html"
 import "./TextEditorV2.css"
 import { get_tiptap_extensions } from "./tiptap_extensions"
 import { URLEditor } from "./URLEditor"

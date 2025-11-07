@@ -8,6 +8,7 @@
     --requires-manual-sync-colour-primary-blue-rgb: 28, 126, 214;  /* #1c7ed6 */
     --colour-primary-blue-rgb: var(--requires-manual-sync-colour-primary-blue-rgb);
     --colour-primary-blue: rgb(var(--requires-manual-sync-colour-primary-blue-rgb));
+    --colour-border-blue: var(--mantine-color-blue-6);
     --colour-secondary-blue: rgb(34, 139, 230);  /* #228be6 */
     --colour-tertiary-blue: rgb(95, 175, 255); /* #5fafff */
     --colour-quaternary-blue: var(--mantine-color-blue-1);
@@ -29,6 +30,9 @@
     --colour-border-fainter: #e6e6e6;
     --colour-success: rgb(47, 158, 68); /* #2f9e44 --mantine-color-green-8 */
     --colour-quaternary-green: var(--mantine-color-green-1);
+
+    /** TODO: match this to the "Browse" button background on hover colour */
+    --colour-background-light: #f8f9fa;
 
     --colour-link: rgb(25, 118, 210); /* #1976d2 */
 

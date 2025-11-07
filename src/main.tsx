@@ -136,6 +136,8 @@ function variantColorResolver (input: VariantColorsResolverInput)
         return {
             background: "rgba(255, 255, 255, 0.4)",
             hover: "var(--mantine-color-grey-0)",
+            // Can't use blue --colour-border-blue here as on hover whole
+            // button turns blue and text can't be read
             color: "black",
             border: "none",
         }
