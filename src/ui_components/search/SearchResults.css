@@ -7,13 +7,20 @@
 
 .result-row
 {
-    padding: 10px;
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
     cursor: pointer;
     background-color: transparent;
     transition: background-color 0.15s, border-color 0.15s;
+}
+
+.result-row a
+{
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    padding: 8px 12px;
 }
 
 .result-row + .result-row

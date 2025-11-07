@@ -7,6 +7,7 @@ import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_
 import { get_supabase } from "core/supabase/browser"
 
 import pub_sub from "../../pub_sub"
+import { ROUTES } from "../../routes"
 import Loading from "../../ui_components/Loading"
 import "./SearchResults.css"
 
@@ -120,10 +121,18 @@ export function SearchResults(props: SearchResultsProps)
                             }}
                             onPointerMove={() => set_selected_result_index(index)}
                         >
-                            {browser_convert_tiptap_to_plain(row.title)}
-                            <span style={{ color: "#ccc", fontSize: 13, padding: "4.5px 0 0 5px" }}>
-                                id {row.id.id}
-                            </span>
+                            <a
+                                href={ROUTES.DATA_COMPONENT.VIEW({
+                                    id: row.id.as_IdOnly(),
+                                    owner_id: row.owner_id,
+                                })}
+                                onClick={e => e.preventDefault()}
+                            >
+                                {browser_convert_tiptap_to_plain(row.title)}
+                                <span style={{ color: "#ccc", fontSize: 13, padding: "4.5px 0 0 5px" }}>
+                                    id {row.id.id}
+                                </span>
+                            </a>
                         </div>
                     )}
                 </div>
