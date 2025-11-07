@@ -27,14 +27,12 @@ export function GraphViewer(props: GraphViewerProps)
 
         extracted_data.forEach((col, index) =>
         {
-            // As long as one value is a number, treat the whole column as numbers
-            const is_numeric_column = col.values.some(v => typeof v === "number")
-            if (!is_numeric_column) return
-            const data: ResultPoint[] = col.values.map(v => (typeof v === "number" ? v : Number(v)))
+            if (!col.numeric_values) return
+
             datasets.push({
                 type: "line",
                 label: props.selected_path_names[JSON.stringify(col.path)],
-                data,
+                data: col.numeric_values,
                 borderColor: get_line_graph_colour(index),
                 backgroundColor: get_line_graph_colour(index, 0.4),
                 yAxisID: "y",

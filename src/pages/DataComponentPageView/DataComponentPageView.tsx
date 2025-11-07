@@ -370,7 +370,6 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
                 scenario={scenario}
                 scenario_row_opened={scenario_row_opened}
                 set_scenario_row_opened={set_scenario_row_opened}
-
             />}
         </div>
     </div>

@@ -43,10 +43,6 @@ type ScenarioResultsDisplayProps =
 
 export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
 {
-    const [selected_tab, set_selected_tab] = props.selected_tab !== undefined
-        ? [props.selected_tab, props.set_selected_tab]
-        : useState<ResultsViewType>("json")
-
     const on_click_scenario_header = useCallback(() =>
     {
         props.set_scenario_row_opened(scenario_row_opened => !scenario_row_opened)
@@ -60,6 +56,15 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         const data = result_string_to_json(props.result)?.parsed
         return extract_selected_data(data, json_viewer_event_and_state_handlers.selected_paths)
     }, [props.result, json_viewer_event_and_state_handlers.selected_paths])
+
+
+    const default_tab: ResultsViewType = json_viewer_event_and_state_handlers.selected_paths.length === 0
+        ? "json"
+        : (extracted_data.has_graphable_data ? "graph" : "table")
+
+    const [selected_tab, set_selected_tab] = props.selected_tab !== undefined
+        ? [props.selected_tab, props.set_selected_tab]
+        : useState<ResultsViewType>(default_tab)
 
 
     return <div className="scenario-results-display">
