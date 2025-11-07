@@ -5,37 +5,46 @@ import { make_name_from_path } from "./event_and_state_handlers"
 
 describe("make_name_from_path", function ()
 {
-    it("creates alias from key", function ()
+    it("creates name from key", function ()
     {
-        const alias = make_name_from_path([{ key: "name" }], {})
-        expect(alias).equals("name")
+        const name = make_name_from_path([{ key: "name" }], {})
+        expect(name).equals("name")
     })
 
-    it("creates alias from nested key", function ()
+    it("creates name from nested key", function ()
     {
-        const alias = make_name_from_path([{ key: "user" }, { key: "name" }], {})
-        expect(alias).equals("name")
+        const name = make_name_from_path([{ key: "user" }, { key: "name" }], {})
+        expect(name).equals("name")
     })
 
-    it("creates alias from index", function ()
+    it("creates name from index", function ()
     {
-        const alias = make_name_from_path([{ index: 0 }], {})
-        expect(alias).equals("index_0")
+        const name = make_name_from_path([{ index: 0 }], {})
+        expect(name).equals("index-0")
     })
 
-    it("prefers to create alias from key", function ()
+    it("creates name from nested index", function ()
     {
-        const alias = make_name_from_path([{ key: "user" }, { index: 0 }], {})
-        expect(alias).equals("user_0")
+        const existing_names = {
+            '[{"index":"0"}, {"index":"1"}]': "index-1",
+        }
+        const name = make_name_from_path([{ index: 2 }, { index: 1 }], existing_names)
+        expect(name).equals("index-2 index-1")
     })
 
-    it("creates unique alias when there is a conflict", function ()
+    it("prefers to create name for index from parent key", function ()
+    {
+        const name = make_name_from_path([{ key: "user" }, { index: 0 }], {})
+        expect(name).equals("user-0")
+    })
+
+    it("creates unique name when there is a conflict", function ()
     {
         const existing_names = {
             '[{"key":"name"}]': "name",
-            '[{"key":"user_name"}]': "user_name",
+            '[{"key":"user_name"}]': "user name",
         }
-        const alias = make_name_from_path([{ key: "second" }, { key: "user" }, { key: "name" }], existing_names)
-        expect(alias).equals("second_user_name")
+        const name = make_name_from_path([{ key: "second" }, { key: "user" }, { key: "name" }], existing_names)
+        expect(name).equals("second user name")
     })
 })

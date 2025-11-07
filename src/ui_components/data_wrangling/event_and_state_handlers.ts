@@ -111,7 +111,7 @@ export function make_name_from_path(path: JSONPath, existing_names: MapSelectedP
     while (existing_names_set.has(canditate_name) && path_position > 0)
     {
         path_position -= 1
-        canditate_name = candidate_name_from_path(path, path_position) + "_" + canditate_name
+        canditate_name = candidate_name_from_path(path, path_position) + " " + canditate_name
     }
 
     return canditate_name
@@ -124,9 +124,7 @@ function candidate_name_from_path(path: JSONPath, position: number): string
 
     if ("key" in path_element) return path_element.key
 
-    if (!parent_path_element) return "index_" + path_element.index.toString()
+    if (!parent_path_element || !("key" in parent_path_element)) return "index-" + path_element.index.toString()
 
-    if ("key" in parent_path_element) return parent_path_element.key + "_" + path_element.index
-
-    return `${parent_path_element.index}_index_${path_element.index}`
+    return parent_path_element.key + "-" + path_element.index
 }
