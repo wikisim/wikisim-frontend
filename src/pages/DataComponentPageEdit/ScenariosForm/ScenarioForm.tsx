@@ -1,6 +1,6 @@
 import { Button, Checkbox } from "@mantine/core"
 import { TargetedEvent } from "preact/compat"
-import { useCallback, useMemo } from "preact/hooks"
+import { useCallback } from "preact/hooks"
 
 import type {
     FunctionArgument,
@@ -26,7 +26,7 @@ interface ScenarioFormProps
     total_scenarios: number
     scenario: Scenario
     function_arguments: FunctionArgument[]
-    on_change: (updated_scenario: Partial<Scenario>) => void
+    on_upsert_scenario: (updated_scenario: Partial<Scenario>) => void
     delete_entry: () => void
     debugging: boolean
     set_debugging: (debugging: boolean) => void
@@ -37,18 +37,20 @@ interface ScenarioFormProps
 
 export function ScenarioForm(props: ScenarioFormProps)
 {
-    const { scenario, on_change, is_draft_row, scenario_row_opened: opened } = props
+    const { scenario, on_upsert_scenario, is_draft_row, scenario_row_opened: opened } = props
 
-    const on_update_description = useMemo(() =>
-        debounce((description: string) => on_change({ description }), 300)
-    , [on_change])
+    const on_update_description = useCallback(debounce((description: string) =>
+    {
+        on_upsert_scenario({ description })
+    }, 500)
+    , [on_upsert_scenario])
 
     const on_update_values = useCallback((updated_values: TempScenarioValues) =>
     {
-        return on_change({ values_by_temp_id: updated_values })
-    }, [on_change])
+        return on_upsert_scenario({ values_by_temp_id: updated_values })
+    }, [on_upsert_scenario])
 
-    const debounced_on_update_values = useMemo(() => debounce(on_update_values, 600), [on_update_values])
+    const debounced_on_update_values = useCallback(debounce(on_update_values, 600), [on_update_values])
 
     // const error = props.is_draft_row ? null : calc_scenario_error(scenario, props.name_counts)
 

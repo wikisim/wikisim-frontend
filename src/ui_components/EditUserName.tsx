@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "preact/hooks"
+import { useCallback, useEffect, useRef, useState } from "preact/hooks"
 
 import { ERRORS } from "core/errors"
 
@@ -13,7 +13,7 @@ export function EditUserName()
     const state = app_store()
     const [user_name, _set_user_name] = useState(state.user_auth_session.user_name ?? "")
 
-    const set_user_name = useMemo(() => debounce(_set_user_name, 400), [])
+    const set_user_name = useCallback(debounce(_set_user_name, 400), [])
 
     return <div style={{ maxWidth: "250px" }}>
         <TextEditorV1

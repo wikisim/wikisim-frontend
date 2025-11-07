@@ -14,7 +14,7 @@ interface ScenarioGraphProps
 {
     scenario: Scenario
     latest_result: string | undefined
-    on_change: (updated_scenario: Partial<Scenario>) => void
+    on_upsert_scenario: (updated_scenario: Partial<Scenario>) => void
     selected_results_view_tab: ResultsViewType
 }
 export function ScenarioExpectationsForm(props: ScenarioGraphProps)
@@ -40,7 +40,7 @@ export function ScenarioExpectationsForm(props: ScenarioGraphProps)
                 style={{ marginLeft: "0.5em", marginRight: "0.5em" }}
                 onClick={() =>
                 {
-                    props.on_change({ expected_result: props.latest_result })
+                    props.on_upsert_scenario({ expected_result: props.latest_result })
                 }}
             >
                 {!has_expectation ? "Use result as expectation" : "Update expectation"}
@@ -60,7 +60,7 @@ export function ScenarioExpectationsForm(props: ScenarioGraphProps)
         </>} />
 
         {has_expectation && <BinButton
-            on_click={() => props.on_change({ expected_result: undefined })}
+            on_click={() => props.on_upsert_scenario({ expected_result: undefined })}
             label="Clear expectations"
         />}
     </div>

@@ -1,5 +1,5 @@
 import { Modal } from "@mantine/core"
-import { useEffect, useMemo, useState } from "preact/hooks"
+import { useCallback, useEffect, useState } from "preact/hooks"
 
 
 import pub_sub from "../../pub_sub"
@@ -38,7 +38,7 @@ export function SearchModal()
     }, [])
 
 
-    const debounce_set_search_term = useMemo(() => debounce(set_search_term, 300), [])
+    const debounce_set_search_term = useCallback(debounce(set_search_term, 300), [])
 
 
     const on_mobile = is_mobile_device()

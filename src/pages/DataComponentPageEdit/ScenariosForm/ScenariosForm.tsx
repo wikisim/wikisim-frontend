@@ -1,4 +1,4 @@
-import { useMemo, useState } from "preact/hooks"
+import { useCallback, useMemo, useState } from "preact/hooks"
 
 import type {
     DataComponent,
@@ -81,7 +81,7 @@ function ScenarioRowForm(props: ScenarioRowFormProps)
     const [scenario_row_opened, set_scenario_row_opened] = useState(!props.is_draft_row)
     const [debugging, set_debugging] = useState(false)
 
-    const on_change = useMemo(() => (updated_scenario: Partial<Scenario>) =>
+    const on_upsert_scenario = useCallback((updated_scenario: Partial<Scenario>) =>
     {
         props.on_change(current =>
         {
@@ -100,14 +100,14 @@ function ScenarioRowForm(props: ScenarioRowFormProps)
             else
             {
                 // Edit of existing row: update in place
-                const updated_scenarios = scenarios.map(arg =>
+                const updated_scenarios = scenarios.map(current_scenario =>
                 {
-                    if (arg.local_temp_id === scenario_id)
+                    if (current_scenario.local_temp_id === scenario_id)
                     {
-                        const modified = { ...arg, ...updated_scenario }
+                        const modified = { ...current_scenario, ...updated_scenario }
                         return scenario_is_empty(modified) ? null : modified
                     }
-                    return arg
+                    return current_scenario
                 }).filter(is_scenario)
                 return { scenarios: updated_scenarios }
             }
@@ -116,7 +116,6 @@ function ScenarioRowForm(props: ScenarioRowFormProps)
         props.is_draft_row, props.new_scenario_obj,
         props.on_change, scenario_id,
     ])
-
 
     const { is_draft_row, component, total_scenarios } = props
 
@@ -148,7 +147,7 @@ function ScenarioRowForm(props: ScenarioRowFormProps)
                 total_scenarios={total_scenarios}
                 function_arguments={component.function_arguments || []}
                 scenario={props.scenario}
-                on_change={on_change}
+                on_upsert_scenario={on_upsert_scenario}
                 delete_entry={delete_entry}
                 debugging={debugging}
                 set_debugging={set_debugging}
@@ -164,7 +163,7 @@ function ScenarioRowForm(props: ScenarioRowFormProps)
                 component={component}
                 scenario={props.scenario}
                 debugging={debugging}
-                on_change={on_change}
+                on_upsert_scenario={on_upsert_scenario}
                 scenario_row_opened={scenario_row_opened}
                 set_scenario_row_opened={set_scenario_row_opened}
             />

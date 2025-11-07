@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "preact/hooks"
+import { useCallback, useEffect, useMemo, useState } from "preact/hooks"
 
 import { DEFAULTS } from "core/data/defaults"
 import { valid_value_number_display_type } from "core/data/field_values_with_defaults"
@@ -99,14 +99,12 @@ export function ValueEditorForm(props: ValueEditorFormProps)
 
     const formatted_value = format_data_component_value_to_string(draft_component)
 
-    const debounced_handle_update_input_value = useMemo(() =>
+    const debounced_handle_update_input_value = useCallback(debounce((value: string) =>
     {
-        return debounce((value: string) =>
-        {
-            const input_value = value.trim() || undefined
-            on_change({ input_value })
-        }, 1000)
-    }, [on_change])
+        const input_value = value.trim() || undefined
+        on_change({ input_value })
+    }, 1000)
+    , [on_change])
 
     const value_type = draft_component.value_type || DEFAULTS.value_type
     const value_type_is_number = value_type === "number"

@@ -367,10 +367,10 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
             {result?.error && <ErrorMessage show={true} message={result.error} />}
             {result?.result && <ScenarioResultsDisplay
                 result={result.result}
-                expected_result={scenario.expected_result}
-                expectation_met={scenario.expectation_met}
+                scenario={scenario}
                 scenario_row_opened={scenario_row_opened}
                 set_scenario_row_opened={set_scenario_row_opened}
+
             />}
         </div>
     </div>

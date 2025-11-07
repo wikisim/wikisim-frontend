@@ -1,6 +1,6 @@
 import { useCallback, useState } from "preact/hooks"
 
-import { JSONPath, MapSelectedPathToName } from "core/data/interface"
+import { JSONPath, MapSelectedPathToName, Scenario } from "core/data/interface"
 
 import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildcards"
 import { HoveringJSONPath } from "./interface"
@@ -24,61 +24,59 @@ function on_hovering_handler()
 
 
 const max_wildcards = 1
-function on_selected_handler()
+function on_selected_handler(current_scenario: Scenario, on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void)
 {
-    const [selected_paths, set_selected_paths] = useState<JSONPath[]>([])
-    const [selected_path_names, set_selected_path_names] = useState<MapSelectedPathToName>({})
+    const selected_paths = current_scenario.selected_paths || []
+    const selected_path_names = current_scenario.selected_path_names || {}
 
 
-    const upsert_selected_path_name = useCallback((path: JSONPath, name?: string) =>
+    const upsert_selected_path_name = useCallback((path: JSONPath, name?: string, delete_path=false) =>
     {
+        // Type guard
+        if (!current_scenario.selected_path_names || !on_upsert_scenario) return
+        const names = { ...current_scenario.selected_path_names }
+
         const path_str = JSON.stringify(path)
-        set_selected_path_names(names =>
-        {
-            name = name ?? make_name_from_path(path, names)
+        name = name ?? make_name_from_path(path, names)
 
-            if (names[path_str] === name) return names
+        if (names[path_str] === name) return
+        else names[path_str] = name
 
-            return { ...names, [path_str]: name }
-        })
-    }, [])
+        if (delete_path) delete names[path_str]
+
+        on_upsert_scenario({ selected_path_names: names })
+    }, [current_scenario.selected_path_names, on_upsert_scenario])
 
 
     const on_selected_path = useCallback((path: JSONPath, is_leaf_value: boolean) =>
     {
         if (!is_leaf_value) return
+        let paths = current_scenario.selected_paths
+        // Type guard
+        if (!paths || !on_upsert_scenario) return
+
         path = convert_array_paths_to_wildcards(path, max_wildcards)
 
         const path_str = JSON.stringify(path)
-        set_selected_paths(paths =>
+        // Check if path is already selected, if already selected then
+        // remove it, otherwise add it
+        const initial_path_count = paths.length
+        paths = paths.filter(p => JSON.stringify(p) !== path_str)
+
+        // If paths.length not changed then it means path was not already
+        // selected so we add it
+        if (paths.length === initial_path_count)
         {
-            // Check if path is already selected, if already selected then
-            // remove it, otherwise add it
-            const initial_path_count = paths.length
-            paths = paths.filter(p => JSON.stringify(p) !== path_str)
+            paths = [...paths, path]
+            upsert_selected_path_name(path)
+        }
+        else
+        {
+            upsert_selected_path_name(path, undefined, true)
+        }
 
-            // If paths.length not changed then it means path was not already
-            // selected so we add it
-            if (paths.length === initial_path_count)
-            {
-                paths = [...paths, path]
-
-                upsert_selected_path_name(path)
-            }
-            else
-            {
-                // Remove the path name mapping as well
-                set_selected_path_names(names =>
-                {
-                    const new_names = { ...names }
-                    delete new_names[path_str]
-                    return new_names
-                })
-            }
-
-            return paths
-        })
-    }, [])
+        on_upsert_scenario({ selected_paths: paths })
+    }, [current_scenario.selected_paths, on_upsert_scenario, upsert_selected_path_name])
 
 
     return {
@@ -92,11 +90,11 @@ function on_selected_handler()
 }
 
 
-export function event_and_state_handlers()
+export function event_and_state_handlers(scenario: Scenario, on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void)
 {
     return {
         ...on_hovering_handler(),
-        ...on_selected_handler(),
+        ...on_selected_handler(scenario, on_upsert_scenario),
     }
 }
 export type JSONViewerEventAndStateHandlers = ReturnType<typeof event_and_state_handlers>

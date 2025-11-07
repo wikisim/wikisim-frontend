@@ -3,7 +3,7 @@ import { notifications } from "@mantine/notifications"
 import IconDeviceFloppy from "@tabler/icons-react/dist/esm/icons/IconDeviceFloppy"
 import IconTrashX from "@tabler/icons-react/dist/esm/icons/IconTrashX"
 import { useLocation } from "preact-iso"
-import { useEffect, useMemo, useState } from "preact/hooks"
+import { useCallback, useEffect, useState } from "preact/hooks"
 import { z } from "zod"
 
 import { get_id_str_of_data_component, get_version_of_data_component } from "core/data/accessor"
@@ -24,7 +24,6 @@ import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import Countdown, { CountdownTimer } from "../../ui_components/Countdown"
 import Loading from "../../ui_components/Loading"
 import { load_referenced_data_components } from "../../ui_components/utils/load_referenced_data_components"
-import { debounce } from "../../utils/debounce"
 import "./DataComponentEditForm.css"
 import { SaveModal } from "./SaveModal"
 import { ValueEditorForm } from "./ValueEditForms/ValueEditForm"
@@ -92,7 +91,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
         </div>
     }
 
-    const set_draft_component = useMemo(() => debounce((updates: UpdatesFnOrValue, compare_meta_fields?: boolean) =>
+    const set_draft_component = useCallback((updates: UpdatesFnOrValue, compare_meta_fields?: boolean) =>
     {
         _set_draft_component(draft_component =>
         {
@@ -106,7 +105,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
             props.on_component_change?.(new_draft)
             return new_draft
         })
-    }, 500), [props.on_component_change])
+    }, [props.on_component_change])
 
 
     const version_mismatch = get_version_of_data_component(props.data_component) !== get_version_of_data_component(draft_component)

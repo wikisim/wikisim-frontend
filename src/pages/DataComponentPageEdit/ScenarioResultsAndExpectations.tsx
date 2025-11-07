@@ -19,7 +19,7 @@ interface ScenarioResultsAndExpectationsProps
     component: DataComponent | NewDataComponent
     scenario: Scenario
     debugging: boolean
-    on_change: (updated_scenario: Partial<Scenario>) => void
+    on_upsert_scenario: (updated_scenario: Partial<Scenario>) => void
     scenario_row_opened: boolean
     set_scenario_row_opened: (opened: boolean | ((o: boolean) => boolean)) => void
 }
@@ -48,6 +48,8 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
             const result = await evaluate_code_in_browser_sandbox({
                 js_input_value: javascript,
                 requested_at: performance.now(),
+                debugging: false,
+                logging: true,
             })
             set_result(result)
         }
@@ -63,12 +65,12 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
         {
             const expectation_met = calculate_if_expectation_met(result, expected_result)
             // console .log("Expectation met?", expectation_met, { result, expected_result, data, expected_data })
-            props.on_change({ expectation_met })
+            props.on_upsert_scenario({ expectation_met })
         }
         // Ensure that if the expected_result is removed, we also clear expectation_met
         else if (expectation_met !== undefined)
         {
-            props.on_change({ expectation_met: undefined })
+            props.on_upsert_scenario({ expectation_met: undefined })
         }
     }, [result?.result, props.scenario.expected_result])
 
@@ -77,17 +79,19 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
         {result?.error && <ErrorMessage show={true} message={result.error} />}
         {result?.result && <ScenarioResultsDisplay
             result={result.result}
-            expected_result={props.scenario.expected_result}
-            expectation_met={props.scenario.expectation_met}
             scenario_row_opened={props.scenario_row_opened}
             set_scenario_row_opened={props.set_scenario_row_opened}
+
+            scenario={props.scenario}
+            on_upsert_scenario={props.on_upsert_scenario}
+
             selected_tab={selected_results_view_tab}
             set_selected_tab={set_selected_results_view_tab}
         />}
         {props.scenario_row_opened && <ScenarioExpectationsForm
             scenario={props.scenario}
             latest_result={result?.result || undefined}
-            on_change={props.on_change}
+            on_upsert_scenario={props.on_upsert_scenario}
             selected_results_view_tab={selected_results_view_tab}
         />}
     </>

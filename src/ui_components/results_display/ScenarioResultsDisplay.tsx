@@ -1,6 +1,7 @@
 import stringify from "json-stringify-pretty-compact"
 import { useCallback, useMemo, useState } from "preact/hooks"
 
+import { Scenario } from "core/data/interface"
 import {
     assert_result_json_is_graphable,
     result_string_to_json
@@ -26,10 +27,12 @@ import { ScenarioResultsDisplayGraphical } from "./ScenarioResultsDisplayGraphic
 type ScenarioResultsDisplayProps =
 {
     result: string
-    expected_result: string | undefined
-    expectation_met: boolean | undefined
     scenario_row_opened: boolean
     set_scenario_row_opened: (opened: boolean | ((o: boolean) => boolean)) => void
+
+    scenario: Scenario
+    on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void
+    // on_change_scenario?: (scenario_updater: (current_scenario: Scenario) => Scenario) => void
 } & ({
     selected_tab: ResultsViewType
     set_selected_tab: (tab: ResultsViewType) => void
@@ -44,12 +47,12 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         ? [props.selected_tab, props.set_selected_tab]
         : useState<ResultsViewType>("json")
 
-    const on_click_header = useCallback(() =>
+    const on_click_scenario_header = useCallback(() =>
     {
         props.set_scenario_row_opened(scenario_row_opened => !scenario_row_opened)
     }, [props.set_scenario_row_opened])
 
-    const json_viewer_event_and_state_handlers = event_and_state_handlers()
+    const json_viewer_event_and_state_handlers = event_and_state_handlers(props.scenario, props.on_upsert_scenario)
 
 
     const extracted_data = useMemo(() =>
@@ -62,8 +65,8 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
     return <div className="scenario-results-display">
 
         <ExpectationMet
-            met={props.expectation_met}
-            on_click={on_click_header}
+            met={props.scenario.expectation_met}
+            on_click={on_click_scenario_header}
         />
 
         {props.scenario_row_opened && <ResultsViewTabs
@@ -75,8 +78,8 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         <ScenarioResultsDisplayInner
             show={props.scenario_row_opened && selected_tab === "json"}
             result={props.result}
-            expected_result={props.expected_result}
-            expectation_met={props.expectation_met}
+            expected_result={props.scenario.expected_result}
+            expectation_met={props.scenario.expectation_met}
             json_viewer_event_and_state_handlers={json_viewer_event_and_state_handlers}
         />
 
