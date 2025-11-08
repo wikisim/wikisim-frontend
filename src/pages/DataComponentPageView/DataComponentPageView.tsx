@@ -29,7 +29,6 @@ import OpenCloseSection from "../../ui_components/OpenCloseSection"
 import { ScenarioResultsDisplay } from "../../ui_components/results_display/ScenarioResultsDisplay"
 import { set_page_title } from "../../ui_components/set_page_title"
 import {
-    ensure_owner_id_or_name_is_in_url,
     ensure_owner_is_loaded,
     ensure_owner_name_matches_in_url,
 } from "../../ui_components/utils/managing_url_for_user_components"
@@ -71,7 +70,8 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
     }
 
 
-    ensure_owner_id_or_name_is_in_url(props.data_component_id, component, props.user_id_or_name)
+    // Don't seem to need this now, seems that `ensure_owner_name_matches_in_url` is sufficient
+    // ensure_owner_id_or_name_is_in_url(props.data_component_id, component, props.user_id_or_name)
     const { async_user, loading_user_jsx } = ensure_owner_is_loaded(state, component)
     if (loading_user_jsx) return loading_user_jsx
 

@@ -15,22 +15,22 @@ import Loading from "../Loading"
  * was provided in the props, if not, then redirect the page from this wiki
  * page to the user spaces page
  */
-export function ensure_owner_id_or_name_is_in_url(component_id: string, component: DataComponent, user_id_or_name: string | undefined)
-{
-    const location = useLocation()
+// export function ensure_owner_id_or_name_is_in_url(component_id: string, component: DataComponent, user_id_or_name: string | undefined)
+// {
+//     const location = useLocation()
 
-    useEffect(() =>
-    {
-        if (component.owner_id && user_id_or_name === undefined)
-        {
-            const new_user_space_route = ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT({
-                user_id_or_name: component.owner_id,
-                id: component_id,
-            })
-            location.route(new_user_space_route)
-        }
-    }, [component_id, component.owner_id, user_id_or_name])
-}
+//     useEffect(() =>
+//     {
+//         if (component.owner_id && user_id_or_name === undefined)
+//         {
+//             // const new_user_space_route = ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT({
+//             //     user_id_or_name: component.owner_id,
+//             //     id: component_id,
+//             // })
+//             // location.route(new_user_space_route, true)
+//         }
+//     }, [component_id, component.owner_id, user_id_or_name])
+// }
 
 
 export function ensure_owner_is_loaded(state: ReturnType<typeof app_store>, component: DataComponent)
@@ -68,7 +68,7 @@ export function ensure_owner_name_matches_in_url(component_id: string, component
                     user_id_or_name: user_name,
                     id: component_id,
                 })
-                location.route(new_user_space_route )
+                location.route(new_user_space_route, true)
             }
         }
     }, [component_id, component.owner_id, async_user, user_id_or_name])

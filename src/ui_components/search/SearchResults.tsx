@@ -109,31 +109,30 @@ export function SearchResults(props: SearchResultsProps)
             (results.data_components.length > 0 ? (
                 <div className="search-results-table">
                     {results.data_components.slice(0, page_size).map((row, index) =>
-                        <div
+                        <a
                             key={index}
-                            className={"result-row " + (selected_result_index === index ? "selected" : "")}
-                            onClick={() =>
+                            href={ROUTES.DATA_COMPONENT.VIEW({
+                                id: row.id.as_IdOnly(),
+                                owner_id: row.owner_id,
+                            })}
+                            onPointerDown={e =>
                             {
+                                e.preventDefault()
+                                e.stopImmediatePropagation()
                                 props.on_chosen_search_result({
                                     search_requester_id: results.search_requester_id,
                                     data_component: row,
                                 })
                             }}
+
+                            className={"result-row " + (selected_result_index === index ? "selected" : "")}
                             onPointerMove={() => set_selected_result_index(index)}
                         >
-                            <a
-                                href={ROUTES.DATA_COMPONENT.VIEW({
-                                    id: row.id.as_IdOnly(),
-                                    owner_id: row.owner_id,
-                                })}
-                                onClick={e => e.preventDefault()}
-                            >
-                                {browser_convert_tiptap_to_plain(row.title)}
-                                <span style={{ color: "#ccc", fontSize: 13, padding: "4.5px 0 0 5px" }}>
-                                    id {row.id.id}
-                                </span>
-                            </a>
-                        </div>
+                            {browser_convert_tiptap_to_plain(row.title)}
+                            <span style={{ color: "#ccc", fontSize: 13, padding: "4.5px 0 0 5px" }}>
+                                id {row.id.id}
+                            </span>
+                        </a>
                     )}
                 </div>
             ) : (

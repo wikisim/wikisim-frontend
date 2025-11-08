@@ -3,23 +3,21 @@
 {
     max-width: 50%;
     min-width: 400px;
+    display: flex;
+    flex-direction: column;
 }
 
-.result-row
+.search-results-table .result-row
 {
+    text-decoration: none;
+    color: inherit;
+
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
     cursor: pointer;
     background-color: transparent;
     transition: background-color 0.15s, border-color 0.15s;
-}
-
-.result-row a
-{
-    text-decoration: none;
-    color: inherit;
-    display: block;
     padding: 8px 12px;
 }
 

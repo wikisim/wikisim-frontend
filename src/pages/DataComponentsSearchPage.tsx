@@ -40,7 +40,7 @@ export function DataComponentsSearchPage()
         _set_search_term(search_query)
         // Update the URL query parameter
         history.pushState({}, "", ROUTES.DATA_COMPONENT.SEARCH({ search_query }))
-    }, 500), [_set_search_term, location])
+    }, 500), [_set_search_term])
 
 
     return (
@@ -72,7 +72,7 @@ export function DataComponentsSearchPage()
                 search_requester_id={search_requester_id}
                 on_chosen_search_result={data =>
                 {
-                    location.route(ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(data.data_component.id))
+                    location.route(ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(data.data_component.id.as_IdOnly()))
                 }}
             />
         </div>
