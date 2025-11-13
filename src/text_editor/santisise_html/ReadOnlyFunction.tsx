@@ -62,7 +62,7 @@ export function ReadOnlyFunction(props: { component: DataComponent | NewDataComp
     }, [max_height, function_as_tiptap_html, show_all])
 
 
-    return <div className="read-only-function" ref={container_ref}>
+    return <div className="row read-only-function" ref={container_ref}>
         <ReadOnly html={function_as_tiptap_html} is_code={true} max_height={show_all ? undefined : max_height} />
         {max_height !== undefined && has_overflow &&
             <div className="end-fade-and-button">

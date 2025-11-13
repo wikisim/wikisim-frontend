@@ -7,8 +7,10 @@
     justify-content: center;
     cursor: pointer;
 }
-
+/* TODO: remove once we are sure this works for other content & screen sizes.
+Removing this style rule works better for http://localhost:5173/u/ajp2/1020 on
+mobile (and on desktop)
 .scenario-results-display > *
 {
     padding: 0px 30px;
-}
+} */

@@ -38,6 +38,10 @@
     outline: none;
 }
 
+.tiptap-content-parent
+{
+    width: 100%;
+}
 .tiptap-content {
     /** Set lower so that the vertical spaces between lines was less otherwise
      *  when rendering the code for wikisim.org/wiki/1021v3 it was harder to read.
@@ -125,8 +129,13 @@
     margin: 0;
 }
 
-.tiptap-content.is-code {
+.tiptap-content.is_code {
     font-family: monospace;
+    overflow-x: auto;
+    /** prevent line breaks on long lines of code */
+    white-space: pre;
+    display: block;
+    width: 100%;
 }
 
 .editor-link {

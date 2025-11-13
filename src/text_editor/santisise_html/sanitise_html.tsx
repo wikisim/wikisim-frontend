@@ -18,13 +18,13 @@ export function ReadOnly(props: { html: string | undefined, single_line?: boolea
         {
             attributes:
             {
-                class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""} ${is_code ? "is-code" : ""}`,
+                class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""} ${is_code ? "is_code" : ""}`,
                 style: props.max_height ? `max-height: ${props.max_height}px; overflow-y: scroll;` : "",
             }
         }
     })
 
-    return <EditorContent editor={editor} />
+    return <EditorContent editor={editor} className="tiptap-content-parent" />
 }
 
 
