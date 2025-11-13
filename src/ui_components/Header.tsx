@@ -115,7 +115,7 @@ function UserSession(props: { toggle_show_user_options_dropdown: () => void })
                 else console.warn("User session is not in a valid state for login/logout:", status)
             }}
         >
-            <div>
+            <div className="user-session-status">
                 {status === "logged_in" ? <>{user_auth_session.user_name ? user_auth_session.user_name : <Loading />}</>
                 : status === "logged_out" ? "Log in"
                 : status === "logged_out__requesting_OTP_sign_in" ? <>Requesting login<Loading /></>

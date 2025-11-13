@@ -58,3 +58,16 @@
     gap: 5px;
     cursor: pointer;
 }
+
+@media (max-width: 800px)
+{
+    .header-bar .right-user-and-dropdown
+    {
+        flex-grow: 0;
+    }
+
+    .user-session-status
+    {
+        display: none;
+    }
+}
