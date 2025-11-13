@@ -170,7 +170,7 @@ function JSONObjectViewer(props: JSONObjectViewerProps)
         props.on_hovering_path(current_path, false)
     }, [props.on_hovering_path, JSON.stringify(current_path)])
 
-    const on_pointer_leave = useCallback((e: PointerEvent) =>
+    const on_pointer_out = useCallback((e: PointerEvent) =>
     {
         e.stopImmediatePropagation()
         set_is_hovered(false)
@@ -183,10 +183,12 @@ function JSONObjectViewer(props: JSONObjectViewerProps)
     const key_name = path_element && "key" in path_element ? path_element.key : ""
     const key_str = typeof key_name === "string" && key_name && `"${key_name}": `
 
+    const is_hovered_class = is_hovered ? " is_hovered" : ""
+
     return <div
-        className={"json-object-viewer json-collapsible" + (is_hovered ? " is_hovered" : "")}
+        className={"json-object-viewer json-collapsible" + is_hovered_class}
         onPointerOver={on_pointer_over}
-        onPointerLeave={on_pointer_leave}
+        onPointerOut={on_pointer_out}
     >
         <div
             className="json-brace"
