@@ -6,12 +6,19 @@ import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildc
 import { HoveringJSONPath } from "./interface"
 
 
+function log_debug(..._args: unknown[])
+{
+    // console .debug("[json_data_handlers]", ..._args)
+}
+
+
 function get_on_hovering_handler()
 {
     const [hovering_path, set_hovering_path] = useState<HoveringJSONPath>()
 
     const on_hovering_path = useCallback((path: JSONPath, is_leaf_value: boolean) =>
     {
+        log_debug("Hovering path:", path, is_leaf_value)
         path = convert_array_paths_to_wildcards(path)
         set_hovering_path({ path, is_leaf_value })
     }, [])
@@ -50,28 +57,31 @@ function get_on_selected_handler(current_scenario?: Scenario, on_upsert_scenario
 
     const on_selected_path = useCallback((path: JSONPath, is_leaf_value: boolean) =>
     {
+        log_debug("Selected path:", path, is_leaf_value)
         if (!is_leaf_value) return
         let paths = current_scenario?.selected_paths
         // Type guard
-        if (!paths || !on_upsert_scenario) return
+        if (!on_upsert_scenario) return
 
         path = convert_array_paths_to_wildcards(path, max_wildcards)
 
         const path_str = JSON.stringify(path)
         // Check if path is already selected, if already selected then
         // remove it, otherwise add it
-        const initial_path_count = paths.length
-        paths = paths.filter(p => JSON.stringify(p) !== path_str)
+        const initial_path_count = paths?.length ?? 0
+        paths = paths?.filter(p => JSON.stringify(p) !== path_str) ?? []
 
         // If paths.length not changed then it means path was not already
         // selected so we add it
         if (paths.length === initial_path_count)
         {
+            log_debug("Adding selected path:", path)
             paths = [...paths, path]
             upsert_selected_path_name(path)
         }
         else
         {
+            log_debug("Removing selected path:", path)
             upsert_selected_path_name(path, undefined, true)
         }
 
