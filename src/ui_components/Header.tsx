@@ -1,5 +1,6 @@
 import { Button, Menu, Modal, TextInput } from "@mantine/core"
 import IconLogout from "@tabler/icons-react/dist/esm/icons/IconLogout"
+import IconNewSection from "@tabler/icons-react/dist/esm/icons/IconNewSection"
 import IconNotebook from "@tabler/icons-react/dist/esm/icons/IconNotebook"
 import IconUser from "@tabler/icons-react/dist/esm/icons/IconUser"
 import IconUserEdit from "@tabler/icons-react/dist/esm/icons/IconUserEdit"
@@ -207,6 +208,12 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
     const [opened_edit_user_name, set_opened_edit_user_name] = useState(false)
 
 
+    const create_a_new_wiki_page = user_auth_session.session ? () =>
+    {
+        // Navigate to new data component page
+        location.route(ROUTES.DATA_COMPONENT.NEW())
+    } : undefined
+
     const go_to_users_pages = user_auth_session.session ? () =>
     {
         const user_id = user_auth_session.session!.user.id
@@ -236,6 +243,13 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
         </Menu.Target>
 
         <Menu.Dropdown>
+            {create_a_new_wiki_page && <Menu.Item
+                leftSection={<IconNewSection size={14} />}
+                onClick={create_a_new_wiki_page}
+            >
+                Create a new page
+            </Menu.Item>}
+
             {go_to_users_pages && <Menu.Item
                 leftSection={<IconNotebook size={14} />}
                 onClick={go_to_users_pages}
