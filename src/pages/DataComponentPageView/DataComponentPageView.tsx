@@ -338,6 +338,8 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
 
     const input_values = Object.entries(scenario.values_by_temp_id)
 
+    const any_modifiers = input_values.some(([_, val]) => val.iterate_over || val.use_previous_result)
+
     return <div className="row_to_column scenario-divider" key={scenario.local_temp_id}>
         <div
             className="data-component-form-column column scenario-row"
@@ -356,12 +358,14 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
                     Input Values
                 </h4>
                 {input_values.map(([local_temp_id, val]) =>
-                    <div style={{ display: "flex", alignItems: "baseline", gap: "0.5em" }}>
-                        <pre style={{ marginTop: 0, marginBottom: 0 }} className="make-pre-text-wrap">
+                    <div style={{ display: "flex", gap: "0.5em", margin: "var(--vgap-mid) 0px" }}>
+                        {any_modifiers && <div style={{ width: 20, marginRight: 5 }}>
+                            {val.iterate_over && <IconRepeat />}
+                            {val.use_previous_result && <IconUsePreviousResult />}
+                        </div>}
+                        <pre style={{ margin: "-2px 0px 0px 0px" }} className="make-pre-text-wrap">
                             {props.input_temp_id_to_arg_name(local_temp_id)} = {val.value} &nbsp;
                         </pre>
-                        {val.iterate_over && <IconRepeat />}
-                        {val.use_previous_result && <IconUsePreviousResult />}
                     </div>
                 )}
             </div>}

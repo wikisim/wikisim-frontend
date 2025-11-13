@@ -21,7 +21,7 @@ export function ScenarioExpectationsForm(props: ScenarioGraphProps)
 {
     const has_expectation = !!props.scenario.expected_result
 
-    return <div className="row" style={{ justifyContent: "center", alignItems: "center", gap: "var(--gap-close)" }}>
+    return <div className="row" style={{ justifyContent: "center", alignItems: "center", gap: "var(--vgap-small)" }}>
         {/* <HelpToolTip
             message={<>
                 You can save these results as expectations of how function should
