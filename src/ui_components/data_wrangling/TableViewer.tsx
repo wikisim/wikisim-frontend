@@ -11,7 +11,7 @@ import "./TableViewer.css"
 
 interface TableViewerProps
 {
-    selected_paths: JSONPath[]
+    valid_selected_paths: JSONPath[]
     selected_path_names: MapSelectedPathToName
     upsert_path_name: (path: JSONPath, name?: string) => void
     extracted_data: ExtractSelectedDataReturn
@@ -53,7 +53,7 @@ export function TableViewer(props: TableViewerProps)
     return <Table withColumnBorders withRowBorders highlightOnHover className="json-table-viewer">
         <Table.Thead>
             <Table.Tr>
-                {props.selected_paths.map(path => (
+                {props.valid_selected_paths.map(path => (
                     <EditableHeader
                         key={JSON.stringify(path)}
                         path={path}

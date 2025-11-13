@@ -100,7 +100,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         />
 
         {props.scenario_row_opened && selected_tab === "table" && <TableViewer
-            selected_paths={json_data_handlers.selected_paths}
+            valid_selected_paths={extracted_data.used_paths}
             selected_path_names={json_data_handlers.selected_path_names}
             upsert_path_name={json_data_handlers.upsert_selected_path_name}
             extracted_data={extracted_data}

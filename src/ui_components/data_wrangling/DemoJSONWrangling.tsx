@@ -75,7 +75,7 @@ export function DemoJSONWranglingDemo()
 
         <TableViewer
             extracted_data={extracted_data}
-            selected_paths={selected_paths}
+            valid_selected_paths={selected_paths}
             selected_path_names={selected_path_names}
             upsert_path_name={upsert_selected_path_name}
         />
