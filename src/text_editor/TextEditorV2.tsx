@@ -1,5 +1,6 @@
 import { Tooltip } from "@mantine/core"
 import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle"
+import { Node as TipTapNode } from "@tiptap/pm/model"
 import { Selection } from "@tiptap/pm/state"
 import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react"
 import { useEffect, useMemo, useRef, useState } from "preact/hooks"
@@ -409,7 +410,7 @@ export function TextEditorV2({
  *      line3
  *
  * After adding this function, we have also taken the opportunity to
- * convert nbsp back into spaces.
+ * convert nbsp back into spaces and properly serialize custom mention nodes.
  *
  * Note this function is not working 100% correctly as it removes newlines from
  * the copied text.  However, fortutiously, it seems something in the editor is
@@ -417,6 +418,32 @@ export function TextEditorV2({
  */
 function factory_handle_copy(editor: Editor, editor_unique_id: string)
 {
+    function node_to_text(node: TipTapNode, content_childCount: number, index: number): string
+    {
+        // Default to textContent for other node types
+        let text = node.textContent
+
+        if (node.type.name === "customMention")
+        {
+            // If this node is a customMention node then use the label attribute
+            text = (node.attrs.label as string || "")
+        }
+        else if (node.isText) text = node.text || ""
+        else if (node.isBlock)
+        {
+            text = ""
+            // For block nodes, recursively get their content
+            node.content.forEach(child_node =>
+            {
+                text += node_to_text(child_node, node.content.childCount, index)
+            })
+            // Add newline after blocks (except the last one)
+            if (index < content_childCount - 1) text += "\n"
+        }
+
+        return text
+    }
+
     function handle_copy(event: ClipboardEvent)
     {
         const selection = window.getSelection()
@@ -429,7 +456,17 @@ function factory_handle_copy(editor: Editor, editor_unique_id: string)
             // Get TipTap selection and doc
             const { state } = editor.view
             const { from, to } = state.selection
-            const text = state.doc.textBetween(from, to, "\n")
+
+            // Create a fragment from the selection to properly serialize nodes
+            const slice = state.doc.slice(from, to)
+            let text = ""
+
+            // Walk through the fragment and build text, respecting node types
+            slice.content.forEach((node, _offset, index) =>
+            {
+                text += node_to_text(node, slice.content.childCount, index)
+            })
+
             const cleaned = text.replaceAll("\u00A0", " ")
             event.preventDefault()
             event.clipboardData?.setData("text/plain", cleaned)
