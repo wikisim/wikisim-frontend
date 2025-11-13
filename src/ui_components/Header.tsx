@@ -1,7 +1,6 @@
 import { Button, Menu, Modal, TextInput } from "@mantine/core"
 import IconLogout from "@tabler/icons-react/dist/esm/icons/IconLogout"
 import IconNewSection from "@tabler/icons-react/dist/esm/icons/IconNewSection"
-import IconNotebook from "@tabler/icons-react/dist/esm/icons/IconNotebook"
 import IconUser from "@tabler/icons-react/dist/esm/icons/IconUser"
 import IconUserEdit from "@tabler/icons-react/dist/esm/icons/IconUserEdit"
 import IconUserFilled from "@tabler/icons-react/dist/esm/icons/IconUserFilled"
@@ -214,12 +213,12 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
         location.route(ROUTES.DATA_COMPONENT.NEW())
     } : undefined
 
-    const go_to_users_pages = user_auth_session.session ? () =>
-    {
-        const user_id = user_auth_session.session!.user.id
-        // Navigate to search page filterd by user's pages
-        location.route(ROUTES.DATA_COMPONENT.SEARCH({ user_id }))
-    } : undefined
+    // const go_to_users_pages = user_auth_session.session ? () =>
+    // {
+    //     const user_id = user_auth_session.session!.user.id
+    //     // Navigate to search page filterd by user's pages
+    //     location.route(ROUTES.DATA_COMPONENT.SEARCH({ user_id }))
+    // } : undefined
 
     const go_to_user_page = user_auth_session.session ? () =>
     {
@@ -250,12 +249,12 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
                 Create a new page
             </Menu.Item>}
 
-            {go_to_users_pages && <Menu.Item
+            {/* {go_to_users_pages && <Menu.Item
                 leftSection={<IconNotebook size={14} />}
                 onClick={go_to_users_pages}
             >
                 Your pages (public)
-            </Menu.Item>}
+            </Menu.Item>} */}
 
             {go_to_user_page && <Menu.Item
                 leftSection={<IconUserFilled size={14} />}
