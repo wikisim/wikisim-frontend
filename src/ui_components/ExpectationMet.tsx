@@ -45,14 +45,18 @@ export function ExpectationsMet(props: ExpectationsMetProps)
     const { all_scenario_results, scenarios } = props
 
     const running_scenarios = Object.keys(all_scenario_results).length < scenarios.length
+    let have_expectations = 0
     let failures = 0
     scenarios.forEach((scenario, index) =>
     {
-        if (scenario.expected_result === undefined) return true
+        if (scenario.expected_result === undefined) return
+        have_expectations++
         const result = all_scenario_results[index]
-        if (result === undefined) return true // not run yet
+        if (result === undefined) return // not run yet
         if (!calculate_if_expectation_met(result, scenario.expected_result)) failures++
     })
+    const no_expectations = have_expectations === 0
+    if (no_expectations) return null
 
     const status = failures ? "failures" : (running_scenarios ? "running" : "passed")
 
