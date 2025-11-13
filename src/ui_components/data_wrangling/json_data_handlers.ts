@@ -40,8 +40,8 @@ function get_on_selected_handler(current_scenario?: Scenario, on_upsert_scenario
     const upsert_selected_path_name = useCallback((path: JSONPath, name?: string, delete_path=false) =>
     {
         // Type guard
-        if (!current_scenario?.selected_path_names || !on_upsert_scenario) return
-        const names = { ...current_scenario.selected_path_names }
+        if (!on_upsert_scenario) return
+        const names = { ...current_scenario?.selected_path_names }
 
         const path_str = JSON.stringify(path)
         name = name ?? make_name_from_path(path, names)
