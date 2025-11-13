@@ -8,12 +8,12 @@ import {
 } from "core/evaluation/parse_result"
 import { Json } from "core/supabase/interface"
 
+import { extract_selected_data } from "../data_wrangling/extract_selected_data"
+import { GraphViewer } from "../data_wrangling/GraphViewer"
 import {
     get_json_data_handlers,
     JSONViewerEventAndStateHandlers
-} from "../data_wrangling/event_and_state_handlers"
-import { extract_selected_data } from "../data_wrangling/extract_selected_data"
-import { GraphViewer } from "../data_wrangling/GraphViewer"
+} from "../data_wrangling/json_data_handlers"
 import { JSONViewer } from "../data_wrangling/JSONViewer"
 import { TableViewer } from "../data_wrangling/TableViewer"
 import { ExpectationMet } from "../ExpectationMet"
@@ -48,14 +48,14 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         props.set_scenario_row_opened(scenario_row_opened => !scenario_row_opened)
     }, [props.set_scenario_row_opened])
 
-    const json_viewer_event_and_state_handlers = get_json_data_handlers(props.scenario, props.on_upsert_scenario)
+    const json_data_handlers = get_json_data_handlers(props.scenario, props.on_upsert_scenario)
 
 
     const extracted_data = useMemo(() =>
     {
         const data = result_string_to_json(props.result)?.parsed
-        return extract_selected_data(data, json_viewer_event_and_state_handlers.selected_paths)
-    }, [props.result, json_viewer_event_and_state_handlers.selected_paths])
+        return extract_selected_data(data, json_data_handlers.selected_paths)
+    }, [props.result, json_data_handlers.selected_paths])
 
     const [selected_tab, set_selected_tab] = props.selected_tab !== undefined
         ? [props.selected_tab, props.set_selected_tab]
@@ -96,19 +96,19 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
             result={props.result}
             expected_result={props.scenario.expected_result}
             expectation_met={props.scenario.expectation_met}
-            json_viewer_event_and_state_handlers={json_viewer_event_and_state_handlers}
+            json_data_handlers={json_data_handlers}
         />
 
         {props.scenario_row_opened && selected_tab === "table" && <TableViewer
-            selected_paths={json_viewer_event_and_state_handlers.selected_paths}
-            selected_path_names={json_viewer_event_and_state_handlers.selected_path_names}
-            upsert_path_name={json_viewer_event_and_state_handlers.upsert_selected_path_name}
+            selected_paths={json_data_handlers.selected_paths}
+            selected_path_names={json_data_handlers.selected_path_names}
+            upsert_path_name={json_data_handlers.upsert_selected_path_name}
             extracted_data={extracted_data}
         />}
 
         {props.scenario_row_opened && selected_tab === "graph" && <GraphViewer
             data_columns={extracted_data.columns}
-            selected_path_names={json_viewer_event_and_state_handlers.selected_path_names}
+            selected_path_names={json_data_handlers.selected_path_names}
         />}
     </div>
 }
@@ -120,7 +120,7 @@ interface ScenarioResultsDisplayInnerProps
     result: string
     expected_result: string | undefined
     expectation_met: boolean | undefined
-    json_viewer_event_and_state_handlers?: JSONViewerEventAndStateHandlers
+    json_data_handlers?: JSONViewerEventAndStateHandlers
 }
 function ScenarioResultsDisplayInner(props: ScenarioResultsDisplayInnerProps)
 {
@@ -152,7 +152,7 @@ interface ScenarioResultsDisplayPlainJSONProps
     show: boolean
     expected_result: string | undefined
     expectation_met: boolean | undefined
-    json_viewer_event_and_state_handlers?: JSONViewerEventAndStateHandlers
+    json_data_handlers?: JSONViewerEventAndStateHandlers
     parsed_json: Json | undefined
 }
 function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONProps)
@@ -167,7 +167,7 @@ function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONP
             {props.parsed_json ? <JSONViewer
                 data={props.parsed_json}
                 initial_collapsed_to_level={2}
-                {...props.json_viewer_event_and_state_handlers}
+                {...props.json_data_handlers}
             /> : "undefined"}
         </pre>
         {props.expectation_met !== undefined && <pre className="make-pre-text-wrap">

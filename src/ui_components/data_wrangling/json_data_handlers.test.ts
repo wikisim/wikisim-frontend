@@ -1,6 +1,6 @@
 import { expect } from "chai"
 
-import { make_name_from_path } from "./event_and_state_handlers"
+import { make_name_from_path } from "./json_data_handlers"
 
 
 describe("make_name_from_path", function ()

@@ -1,7 +1,7 @@
 import { JSONPath } from "core/data/interface"
 
-import { get_json_data_handlers } from "./event_and_state_handlers"
 import { extract_selected_data } from "./extract_selected_data"
+import { get_json_data_handlers } from "./json_data_handlers"
 import { JSONViewer } from "./JSONViewer"
 import { TableViewer } from "./TableViewer"
 
