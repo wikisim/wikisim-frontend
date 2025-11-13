@@ -120,7 +120,7 @@ interface ScenarioResultsDisplayInnerProps
     result: string
     expected_result: string | undefined
     expectation_met: boolean | undefined
-    json_data_handlers?: JSONViewerEventAndStateHandlers
+    json_data_handlers: JSONViewerEventAndStateHandlers | undefined
 }
 function ScenarioResultsDisplayInner(props: ScenarioResultsDisplayInnerProps)
 {
@@ -152,7 +152,7 @@ interface ScenarioResultsDisplayPlainJSONProps
     show: boolean
     expected_result: string | undefined
     expectation_met: boolean | undefined
-    json_data_handlers?: JSONViewerEventAndStateHandlers
+    json_data_handlers: JSONViewerEventAndStateHandlers | undefined
     parsed_json: Json | undefined
 }
 function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONProps)
