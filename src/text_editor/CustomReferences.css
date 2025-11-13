@@ -8,7 +8,7 @@
     font-size: 0.9em;
     cursor: pointer;
     /* border: 1px solid var(--colour-link); */
-    display: inline-block;
+    /* display: inline-block; */
     margin: 0 2px;
 }
 .mention-chip.alternative-value

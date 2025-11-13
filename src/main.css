@@ -93,8 +93,17 @@ a
 {
     display: flex;
     flex-direction: row;
+    max-width: 100%;
+    flex-wrap: wrap;
     flex: 1 1;
-    gap: var(--hgap-large);
+    /* Using column-gap here instead of gap so that the space is only inserted
+     * horizontally between elements and not vertically.
+     * e.g. on https://wikisim.org/wiki/1018v1 the space is only needed between
+     * "Calculation:" and "number_of_homes_needing_retrofit = ..." when they are
+     * on the same line but when these wrap onto new lines on smaller screens,
+     * then we don't want a large vertical gap between them.
+     */
+    column-gap: var(--hgap-large);
 }
 .column
 {
