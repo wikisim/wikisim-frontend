@@ -9,7 +9,7 @@ import {
 import { Json } from "core/supabase/interface"
 
 import {
-    event_and_state_handlers,
+    get_json_data_handlers,
     JSONViewerEventAndStateHandlers
 } from "../data_wrangling/event_and_state_handlers"
 import { extract_selected_data } from "../data_wrangling/extract_selected_data"
@@ -48,7 +48,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
         props.set_scenario_row_opened(scenario_row_opened => !scenario_row_opened)
     }, [props.set_scenario_row_opened])
 
-    const json_viewer_event_and_state_handlers = event_and_state_handlers(props.scenario, props.on_upsert_scenario)
+    const json_viewer_event_and_state_handlers = get_json_data_handlers(props.scenario, props.on_upsert_scenario)
 
 
     const extracted_data = useMemo(() =>

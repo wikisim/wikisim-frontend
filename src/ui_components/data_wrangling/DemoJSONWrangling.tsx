@@ -1,6 +1,6 @@
 import { JSONPath } from "core/data/interface"
 
-import { event_and_state_handlers } from "./event_and_state_handlers"
+import { get_json_data_handlers } from "./event_and_state_handlers"
 import { extract_selected_data } from "./extract_selected_data"
 import { JSONViewer } from "./JSONViewer"
 import { TableViewer } from "./TableViewer"
@@ -44,7 +44,7 @@ export function DemoJSONWranglingDemo()
         on_selected_path,
         selected_path_names,
         upsert_selected_path_name,
-    } = event_and_state_handlers()
+    } = get_json_data_handlers()
 
 
     const extracted_data = extract_selected_data(sample_data, selected_paths)

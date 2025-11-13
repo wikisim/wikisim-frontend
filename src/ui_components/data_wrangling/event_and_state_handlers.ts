@@ -1,4 +1,4 @@
-import { useCallback, useState } from "preact/hooks"
+import { useCallback, useMemo, useState } from "preact/hooks"
 
 import { JSONPath, MapSelectedPathToName, Scenario } from "core/data/interface"
 
@@ -6,7 +6,7 @@ import { convert_array_paths_to_wildcards } from "./convert_array_paths_to_wildc
 import { HoveringJSONPath } from "./interface"
 
 
-function on_hovering_handler()
+function get_on_hovering_handler()
 {
     const [hovering_path, set_hovering_path] = useState<HoveringJSONPath>()
 
@@ -16,15 +16,15 @@ function on_hovering_handler()
         set_hovering_path({ path, is_leaf_value })
     }, [])
 
-    return {
+    return useMemo(() => ({
         hovering_path,
         on_hovering_path,
-    }
+    }), [hovering_path, on_hovering_path])
 }
 
 
 const max_wildcards = 1
-function on_selected_handler(current_scenario?: Scenario, on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void)
+function get_on_selected_handler(current_scenario?: Scenario, on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void)
 {
     const selected_paths = current_scenario?.selected_paths || []
     const selected_path_names = current_scenario?.selected_path_names || {}
@@ -79,25 +79,37 @@ function on_selected_handler(current_scenario?: Scenario, on_upsert_scenario?: (
     }, [current_scenario?.selected_paths, on_upsert_scenario, upsert_selected_path_name])
 
 
-    return {
+    return useMemo(() => ({
         selected_path_names,
         upsert_selected_path_name,
 
         selected_paths,
         on_selected_path,
         max_wildcards,
-    }
+    }), [
+        selected_path_names,
+        upsert_selected_path_name,
+        selected_paths,
+        on_selected_path,
+        max_wildcards,
+    ])
 }
 
 
-export function event_and_state_handlers(scenario?: Scenario, on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void)
+export function get_json_data_handlers(scenario?: Scenario, on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void)
 {
-    return {
-        ...on_hovering_handler(),
-        ...on_selected_handler(scenario, on_upsert_scenario),
-    }
+    const on_hovering_handler = get_on_hovering_handler()
+    const on_selected_handler = get_on_selected_handler(scenario, on_upsert_scenario)
+
+    return useMemo(() => ({
+        ...on_hovering_handler,
+        ...on_selected_handler,
+    }), [
+        on_hovering_handler,
+        on_selected_handler,
+    ])
 }
-export type JSONViewerEventAndStateHandlers = ReturnType<typeof event_and_state_handlers>
+export type JSONViewerEventAndStateHandlers = ReturnType<typeof get_json_data_handlers>
 
 
 export function make_name_from_path(path: JSONPath, existing_names: MapSelectedPathToName): string
