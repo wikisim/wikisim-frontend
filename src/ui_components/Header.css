@@ -13,6 +13,9 @@
 
     display: flex;
     flex-direction: row;
+    /* Ensure that login/user info is on the right side on search screen when
+     * search bar and button is not present */
+    justify-content: space-between;
     border-bottom: 1px solid #d8d8d8;
 }
 
