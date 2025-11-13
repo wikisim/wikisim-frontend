@@ -27,3 +27,21 @@
     align-items: flex-start;
     white-space-collapse: preserve;
 }
+
+#data-component .scenario-row
+{
+    gap: var(--vgap-small);
+}
+
+#data-component .scenario-header
+{
+    display: flex;
+    flex-direction: column;
+    gap: var(--vgap-small);
+    cursor: pointer;
+}
+
+#data-component .scenario-input-values
+{
+    cursor: default;
+}

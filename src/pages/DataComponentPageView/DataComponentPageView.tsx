@@ -340,15 +340,18 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
 
     return <div className="row_to_column scenario-divider" key={scenario.local_temp_id}>
         <div
-            className="data-component-form-column column"
-            style={{ gap: "var(--vgap-small)", cursor: "pointer" }}
-            onClick={() => set_scenario_row_opened(!scenario_row_opened)}
+            className="data-component-form-column column scenario-row"
         >
-            <b>Scenario {index + 1}</b> {/* of {props.scenarios_count} */}
+            <div
+                className="scenario-header"
+                onClick={() => set_scenario_row_opened(!scenario_row_opened)}
+            >
+                <b>Scenario {index + 1}</b> {/* of {props.scenarios_count} */}
 
-            <ReadOnly html={scenario.description} />
+                <ReadOnly html={scenario.description} />
+            </div>
 
-            {scenario_row_opened && input_values.length > 0 && <>
+            {scenario_row_opened && input_values.length > 0 && <div className="scenario-input-values">
                 <h4 style={{ marginBottom: "0px" }}>
                     Input Values
                 </h4>
@@ -361,7 +364,7 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
                         {val.use_previous_result && <IconUsePreviousResult />}
                     </div>
                 )}
-            </>}
+            </div>}
         </div>
 
         <div className="data-component-form-column column">
