@@ -399,7 +399,7 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
                             {val.use_previous_result && <IconUsePreviousResult />}
                         </div>}
                         <pre style={{ margin: "-2px 0px 0px 0px" }} className="make-pre-text-wrap">
-                            {props.input_temp_id_to_arg_name(local_temp_id)} = {val.value} &nbsp;
+                            {props.input_temp_id_to_arg_name(local_temp_id)}{val.value ? ` = ${val.value}` : ""} &nbsp;
                         </pre>
                     </div>
                 )}
