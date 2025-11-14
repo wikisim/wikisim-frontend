@@ -1,5 +1,5 @@
 import { useLocation } from "preact-iso"
-import { useEffect, useMemo, useRef, useState } from "preact/hooks"
+import { useCallback, useEffect, useMemo, useRef, useState } from "preact/hooks"
 
 import { valid_value_type } from "core/data/field_values_with_defaults"
 import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
@@ -32,6 +32,7 @@ import {
     ensure_owner_is_loaded,
     ensure_owner_name_matches_in_url,
 } from "../../ui_components/utils/managing_url_for_user_components"
+import { is_small_screen } from "../../utils/is_mobile_device"
 import { is_pure_number } from "../../utils/is_pure_number"
 import { time_ago_or_date } from "../../utils/time_ago_or_date"
 import "./DataComponentPageView.css"
@@ -221,6 +222,11 @@ function LastEditedBy({ component }: { component: DataComponent })
 function ScenariosReadOnly(props: { component: DataComponent })
 {
     const [opened, set_opened] = useState(false)
+    const toggle_opened = useCallback((e: PointerEvent) =>
+    {
+        e.stopImmediatePropagation()
+        set_opened(opened => !opened)
+    }, [set_opened])
 
     const { component } = props
     const { scenarios = [] } = component
@@ -287,20 +293,33 @@ function ScenariosReadOnly(props: { component: DataComponent })
     }, [component.function_arguments])
 
 
-    return <div class="scenarios">
+    return <div className="scenarios">
         <div
             className="data-component-form-column row"
-            style={{ alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}
-            onPointerDown={() => set_opened(!opened)}
+            style={{
+                alignItems: "center",
+                justifyContent: "space-between",
+                cursor: is_small_screen() ? "default" : "pointer",
+            }}
+            onPointerDown={e => (!is_small_screen() && toggle_opened(e))}
         >
-            <div style={{ display: "flex", alignItems: "center", flexDirection: "row", gap: "0.5em" }}>
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "row",
+                    gap: "0.5em",
+                    cursor: "pointer",
+                }}
+                onPointerDown={toggle_opened}
+            >
                 <h4>Scenarios</h4>
                 <ExpectationsMet
                     scenarios={scenarios}
                     all_scenario_results={results}
                 />
             </div>
-            <OpenCloseSection opened={opened} />
+            <OpenCloseSection opened={opened} on_pointer_down={toggle_opened} />
         </div>
 
         {sandbox_error && <div className="data-component-form-column">
