@@ -129,13 +129,17 @@
     margin: 0;
 }
 
-.tiptap-content.is_code {
+.ProseMirror.tiptap-content.is_code {
     font-family: monospace;
     overflow-x: auto;
     /** prevent line breaks on long lines of code */
     white-space: pre;
     display: block;
     width: 100%;
+}
+.ProseMirror.tiptap-content.is_code [contenteditable="false"]
+{
+    white-space: nowrap;
 }
 
 .editor-link {
