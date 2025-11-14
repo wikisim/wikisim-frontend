@@ -359,15 +359,22 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
 
     const any_modifiers = input_values.some(([_, val]) => val.iterate_over || val.use_previous_result)
 
+    const header_openable_class = is_small_screen() ? " header_not_openable" : " header_openable"
+
     return <div className="row_to_column scenario-divider" key={scenario.local_temp_id}>
         <div
             className="data-component-form-column column scenario-row"
         >
             <div
-                className="scenario-header"
-                onClick={() => set_scenario_row_opened(!scenario_row_opened)}
+                className={"scenario-header" + header_openable_class}
+                onClick={() => !is_small_screen() && set_scenario_row_opened(!scenario_row_opened)}
             >
-                <b>Scenario {index + 1}</b> {/* of {props.scenarios_count} */}
+                <b
+                    className="scenario-title"
+                    onClick={() => is_small_screen() && set_scenario_row_opened(!scenario_row_opened)}
+                >
+                    Scenario {index + 1}
+                </b> {/* of {props.scenarios_count} */}
 
                 <ReadOnly html={scenario.description} />
             </div>
