@@ -390,7 +390,7 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
 
             {scenario_row_opened && input_values.length > 0 && <div className="scenario-input-values">
                 <h4 style={{ marginBottom: "0px" }}>
-                    Input Values
+                    Input values
                 </h4>
                 {input_values.map(([local_temp_id, val]) =>
                     <div style={{ display: "flex", gap: "0.5em", margin: "var(--vgap-mid) 0px" }}>
