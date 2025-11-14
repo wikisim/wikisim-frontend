@@ -221,7 +221,7 @@ function LastEditedBy({ component }: { component: DataComponent })
 
 function ScenariosReadOnly(props: { component: DataComponent })
 {
-    const [opened, set_opened] = useState(false)
+    const [opened, set_opened] = useState(true)
     const toggle_opened = useCallback((e: PointerEvent) =>
     {
         e.stopImmediatePropagation()
