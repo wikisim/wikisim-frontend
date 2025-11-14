@@ -352,8 +352,17 @@ interface ScenarioRowReadOnlyProps
 }
 function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
 {
-    const { scenario, index, result } = props
+    const { index, result } = props
+    const [scenario, set_scenario] = useState(props.scenario)
     const [scenario_row_opened, set_scenario_row_opened] = useState(false)
+
+    // We allow updating of the scenario so that people can select different
+    // data from a model to view in the table and graph views, without having to
+    // swap to editing mode.
+    const on_upsert_scenario = useCallback((updates: Partial<Scenario>) =>
+    {
+        set_scenario(scenario => ({ ...scenario, ...updates }))
+    }, [set_scenario])
 
     const input_values = Object.entries(scenario.values_by_temp_id)
 
@@ -404,6 +413,7 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
                 scenario={scenario}
                 scenario_row_opened={scenario_row_opened}
                 set_scenario_row_opened={set_scenario_row_opened}
+                on_upsert_scenario={on_upsert_scenario}
             />}
         </div>
     </div>
