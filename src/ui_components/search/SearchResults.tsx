@@ -19,6 +19,7 @@ interface SearchResultsProps
     filter_by_owner_id?: string
     search_requester_id: string
     on_chosen_search_result: (data: { search_requester_id: string, data_component: DataComponent }) => void
+    search_type: "search_page" | "search_modal"
 }
 export function SearchResults(props: SearchResultsProps)
 {
@@ -26,6 +27,7 @@ export function SearchResults(props: SearchResultsProps)
         search_requester_id,
         use_empty_search_term = false,
         filter_by_owner_id,
+        search_type,
     } = props
     const search_term = props.search_term.trim()
 
@@ -94,8 +96,9 @@ export function SearchResults(props: SearchResultsProps)
         })
     }), [data_components, selected_result_index])
 
+    const main_classname = search_type === "search_page" ? "search-results-page" : "search-results-modal"
 
-    return <div>
+    return <div className={main_classname}>
         {(search_term || props.use_empty_search_term) && (search_term !== results?.search_term
             ? <SearchingFor search_term={search_term} />
             : ("Search results " + (search_term ? `for "${results.search_term}"` : "")))

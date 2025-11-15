@@ -6,7 +6,7 @@
 }
 @media (min-width: 800px)
 {
-    .search-results-table
+    .search-results-page .search-results-table
     {
         max-width: 50%;
     }

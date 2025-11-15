@@ -74,6 +74,7 @@ export function DataComponentsSearchPage()
                 {
                     location.route(ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(data.data_component.id.as_IdOnly()))
                 }}
+                search_type="search_page"
             />
         </div>
     )

@@ -84,6 +84,7 @@ export function SearchModal()
                     set_search_window_is_open(false)
                     set_search_requester_id("")
                 }}
+                search_type="search_modal"
             />
         </div>}
 
