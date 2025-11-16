@@ -24,6 +24,7 @@ import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import Countdown, { CountdownTimer } from "../../ui_components/Countdown"
 import Loading from "../../ui_components/Loading"
 import { load_referenced_data_components } from "../../ui_components/utils/load_referenced_data_components"
+import { debounce } from "../../utils/debounce"
 import "./DataComponentEditForm.css"
 import { SaveModal } from "./SaveModal"
 import { ValueEditorForm } from "./ValueEditForms/ValueEditForm"
@@ -262,6 +263,8 @@ function DataComponentEditFormInner(props: {
         saving_in_progress,
     } = props
 
+    const debounced_set_draft_component = useCallback(debounce(set_draft_component, 500), [set_draft_component])
+
     return <div className={"data-component-form column " + (editable ? "editable" : "view-only")}>
         <div className="data-component-form-row row">
             <div className="data-component-form-column column">
@@ -269,7 +272,7 @@ function DataComponentEditFormInner(props: {
                     editable={editable}
                     initial_content={initial_component.title}
                     single_line={true}
-                    on_update={title => set_draft_component({ title })}
+                    on_update={title => debounced_set_draft_component({ title })}
                     label={"Title" + (saving_in_progress ? " saving..." : "")}
                 />
 
@@ -277,7 +280,7 @@ function DataComponentEditFormInner(props: {
                     editable={editable}
                     initial_content={initial_component.description}
                     single_line={false}
-                    on_update={description => set_draft_component({ description })}
+                    on_update={description => debounced_set_draft_component({ description })}
                     label={"Description" + (saving_in_progress ? " saving..." : "")}
                 />
             </div>
