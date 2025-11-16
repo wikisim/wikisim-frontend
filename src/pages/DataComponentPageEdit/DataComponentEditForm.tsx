@@ -134,6 +134,10 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
             const new_route = ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(props.data_component.id.as_IdOnly())
             location.route(new_route)
         }
+        else if (no_changes_made)
+        {
+            location.route(ROUTES.HOME)
+        }
         else
         {
             // Or reload the page
