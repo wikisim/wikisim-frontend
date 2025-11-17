@@ -56,7 +56,12 @@ export const get_new_app_store = (dependencies?: AppStoreDependencies) =>
     {
         // Don't run this in a non-browser environment
         if (typeof window === "undefined") return
-        (window as any).debug_state = deep_freeze(deep_copy(state))
+        const debug_state = deep_copy(state)
+        const all_debug_state = {
+            ...debug_state,
+            by_id: debug_state.data_components.data_component_by_id_and_maybe_version,
+        }
+        ;(window as any).debug_state = deep_freeze(all_debug_state)
     })
 
     return app_store

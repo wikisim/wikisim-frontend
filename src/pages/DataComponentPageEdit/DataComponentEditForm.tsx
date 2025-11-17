@@ -317,6 +317,10 @@ function store_draft_component_to_local(draft_component: DataComponent | NewData
         draft_component: flattened,
         timestamp: new Date().toISOString()
     }))
+    // Also save to a convenience global debug variable
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    ;(window as any).draft_components = (window as any).draft_components || {}
+    ;(window as any).draft_components[draft_key] = flattened
 }
 
 
