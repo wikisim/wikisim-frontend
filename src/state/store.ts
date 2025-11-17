@@ -57,10 +57,14 @@ export const get_new_app_store = (dependencies?: AppStoreDependencies) =>
         // Don't run this in a non-browser environment
         if (typeof window === "undefined") return
         const debug_state = deep_copy(state)
-        const all_debug_state = {
-            ...debug_state,
-            by_id: debug_state.data_components.data_component_by_id_and_maybe_version,
-        }
+        const by_id = Object.values(debug_state.data_components.data_component_by_id_and_maybe_version)
+            .reduce((acc, value) =>
+            {
+                acc["d" + value.id.to_str()] = value.component
+                return acc
+            }, {} as Record<string, any>)
+
+        const all_debug_state = { ...debug_state, ...by_id }
         ;(window as any).debug_state = deep_freeze(all_debug_state)
     })
 
