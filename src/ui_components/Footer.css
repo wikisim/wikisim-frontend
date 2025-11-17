@@ -10,3 +10,16 @@
     flex-direction: row;
     justify-content: space-between;
 }
+
+#app-footer .footer-links
+{
+    display: flex;
+    gap: var(--hgap-mid);
+}
+
+#app-footer .footer-links a
+{
+    display: flex;
+    gap: 3px;
+    align-items: center;
+}

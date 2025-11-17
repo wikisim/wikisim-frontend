@@ -19,14 +19,16 @@ export function Footer()
         <footer id="app-footer">
             {jsx}
             <div />
-            <a href="https://bsky.app/profile/wikisim.bsky.social" target="_blank" rel="noopener noreferrer">
-                <IconBrandBluesky size={18} />
-                WikiSim on BlueSky
-            </a>
-            <a href="https://github.com/wikisim/wikisim-frontend" target="_blank" rel="noopener noreferrer">
-                <IconBrandGithub size={18} />
-                WikiSim on GitHub
-            </a>
+            <div className="footer-links">
+                <a href="https://bsky.app/profile/wikisim.bsky.social" target="_blank" rel="noopener noreferrer">
+                    <IconBrandBluesky size={18} />
+                    BlueSky
+                </a>
+                <a href="https://github.com/wikisim/wikisim-frontend" target="_blank" rel="noopener noreferrer">
+                    <IconBrandGithub size={18} />
+                    GitHub
+                </a>
+            </div>
         </footer>
     );
 }
