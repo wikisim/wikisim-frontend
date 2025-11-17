@@ -6,3 +6,11 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 350px;
 }
+
+.metadata
+{
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    color: var(--colour-tertiary-blue);
+}
