@@ -298,7 +298,12 @@ async function request_data_components_for_home_page(
         }
     })
 
-    const response = await request_data_components(get_supabase, { page: 0, size: 10 })
+    // const manually_curated_home_page_ids: IdOnly[] = [
+    //     new IdOnly(),
+    //     new IdOnly(1008),
+    // ]
+    // const response_curated = await request_data_components(get_supabase, { page: 0, size: 10, ids: manually_curated_home_page_ids })
+    const response_latest_modified = await request_data_components(get_supabase, { page: 0, size: 12, order_by: "latest_modified" })
 
     set_state(state =>
     {
@@ -314,10 +319,10 @@ async function request_data_components_for_home_page(
             }
         }
 
-        if (response.error)
+        if (response_latest_modified.error)
         {
             data_component_ids_for_home_page.status = "error"
-            data_component_ids_for_home_page.error = response.error
+            data_component_ids_for_home_page.error = response_latest_modified.error
         }
         else
         {
@@ -326,9 +331,9 @@ async function request_data_components_for_home_page(
                 fetched: data_component_ids_for_home_page.fetched,
                 status: "loaded",
                 error: undefined,
-                ids: response.data.map(component => component.id),
+                ids: response_latest_modified.data.map(component => component.id),
             }
-            mutate_store_state_with_loaded_data_components(response.data, state)
+            mutate_store_state_with_loaded_data_components(response_latest_modified.data, state)
         }
 
         state.data_components.data_component_ids_for_home_page = data_component_ids_for_home_page
