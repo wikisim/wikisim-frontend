@@ -118,7 +118,7 @@ export function SearchResults(props: SearchResultsProps)
                                 id: row.id.as_IdOnly(),
                                 owner_id: row.owner_id,
                             })}
-                            onPointerDown={e =>
+                            onClick={e =>
                             {
                                 e.preventDefault()
                                 e.stopImmediatePropagation()
