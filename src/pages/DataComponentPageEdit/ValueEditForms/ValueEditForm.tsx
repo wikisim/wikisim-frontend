@@ -189,7 +189,10 @@ export function ValueEditorForm(props: ValueEditorFormProps)
                         on_change={e =>
                         {
                             let units = e.currentTarget.value.trim() || undefined
-                            units = units?.replace(" ", "_") // Replace spaces with underscores
+                            // This was a convenience feature but it behaves very poorly in practice
+                            // as users might want to enter "£ per item" or "$ / year" etc.
+                            // And these would be incorrectly modified to "£_per_item" or "$_/_year".
+                            // units = units?.replaceAll(" ", "_") // Replace spaces with underscores
                             on_change({ units })
                         }}
                         single_line={true}
