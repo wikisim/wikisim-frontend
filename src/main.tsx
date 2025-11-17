@@ -22,6 +22,7 @@ import "./pub_sub/publish_key_down_events"
 import "./remove_supabase_hash"
 import { ROUTES } from "./routes"
 import { MentionsClickHandler } from "./text_editor/MentionsClickHandler"
+import { Footer } from "./ui_components/Footer"
 import Header from "./ui_components/Header"
 import { SearchModal } from "./ui_components/search/SearchModal"
 import { set_page_title } from "./ui_components/set_page_title"
@@ -97,6 +98,7 @@ function App() {
                     </Router>
                 </ErrorBoundary>
             </div>
+            <Footer />
             <MentionsClickHandler />
         </LocationProvider>
 

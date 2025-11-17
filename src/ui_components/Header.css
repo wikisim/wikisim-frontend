@@ -74,3 +74,17 @@
         display: none;
     }
 }
+
+.wikisim-alpha-label
+{
+    font-size: 0.35em;
+    font-weight: bold;
+    color: #ff5733;
+    /* background-color: #ff5733; */
+    border-radius: 3px;
+    padding: 2px 4px;
+
+    position: relative;
+    top: -20px;
+    right: 10px;
+}

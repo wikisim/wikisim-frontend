@@ -1,4 +1,5 @@
 import { DataComponent } from "core/data/interface"
+import { VNode } from "preact"
 
 
 export interface PublishableEvents
@@ -22,6 +23,11 @@ export interface PublishableEvents
     log_debug: {
         label: string
         value: unknown
+    }
+
+    set_page_footer: {
+        jsx: VNode<unknown> | null
+        request_id: number
     }
 }
 

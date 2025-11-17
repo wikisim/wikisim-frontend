@@ -1,4 +1,4 @@
-import { Button, Menu, Modal, TextInput } from "@mantine/core"
+import { Button, Menu, Modal, TextInput, Tooltip } from "@mantine/core"
 import IconLogout from "@tabler/icons-react/dist/esm/icons/IconLogout"
 import IconNewSection from "@tabler/icons-react/dist/esm/icons/IconNewSection"
 import IconUser from "@tabler/icons-react/dist/esm/icons/IconUser"
@@ -28,6 +28,9 @@ export default function Header()
             <a href="/" style={{ textDecoration: "none", color: "inherit" }}>
                 <h1 style={{ lineHeight: 0, padding: "0 10px" }}>
                     WikiSim
+                    <Tooltip label={<>WikiSim is currently in alpha.<br/>Please report any bugs or issues you encounter, and share suggestions via the<br/>GitHub repo or BlueSky linked at the bottom of the page.</>} position="bottom">
+                        <span class="wikisim-alpha-label">alpha</span>
+                    </Tooltip>
                 </h1>
             </a>
 

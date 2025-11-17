@@ -199,8 +199,9 @@ function LastEditedBy({ component }: { component: DataComponent })
         }
     }, [async_user])
 
-    return (
-        <div className="last-edited-by">
+    useEffect(() =>
+    {
+        const jsx = <div className="last-edited-by">
             <IconHistory />
 
             <a href={ROUTES.DATA_COMPONENT.VIEW({
@@ -215,7 +216,14 @@ function LastEditedBy({ component }: { component: DataComponent })
             </a>{" "}
             by <a href={user_link}>{user_name || <Loading />}</a>
         </div>
-    )
+
+        const request_id = Date.now()
+        pub_sub.pub("set_page_footer", { jsx, request_id })
+        return () => pub_sub.pub("set_page_footer", { jsx: null, request_id})
+
+    }, [component, user_link, user_name, created_at])
+
+    return null
 }
 
 
