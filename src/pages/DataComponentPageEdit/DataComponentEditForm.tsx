@@ -94,6 +94,7 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 
     const set_draft_component = useCallback((updates: UpdatesFnOrValue, compare_meta_fields?: boolean) =>
     {
+        // console .trace("set_draft_component...")
         _set_draft_component(draft_component =>
         {
             if (typeof updates === "function") updates = updates(draft_component)
@@ -236,6 +237,14 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
                     {
                         if (!error)
                         {
+                            // Current implementation to clear saved draft from
+                            // local storage and prevent further saves to local
+                            // storage are buggy.
+                            // TODO: replace this with a state machine to ensure
+                            // that once a save is in progress it is not longer
+                            // possible to store drafts to local storage, and once
+                            // it has been saved successfully, we clear the draft from
+                            // local storage and do not store any further drafts.
                             set_have_saved_changes(true)
                             clear_previously_saved_draft(draft_data_component)
                         }
@@ -264,6 +273,8 @@ function DataComponentEditFormInner(props: {
     } = props
 
     const debounced_set_draft_component = useCallback(debounce(set_draft_component, 500), [set_draft_component])
+    const debounced_update_title = useCallback((title: string) => debounced_set_draft_component({ title }), [debounced_set_draft_component])
+    const debounced_update_description = useCallback((description: string) => debounced_set_draft_component({ description }), [debounced_set_draft_component])
 
     return <div className={"data-component-form column " + (editable ? "editable" : "view-only")}>
         <div className="data-component-form-row row">
@@ -272,7 +283,7 @@ function DataComponentEditFormInner(props: {
                     editable={editable}
                     initial_content={initial_component.title}
                     single_line={true}
-                    on_update={title => debounced_set_draft_component({ title })}
+                    on_update={debounced_update_title}
                     label={"Title" + (saving_in_progress ? " saving..." : "")}
                 />
 
@@ -280,7 +291,7 @@ function DataComponentEditFormInner(props: {
                     editable={editable}
                     initial_content={initial_component.description}
                     single_line={false}
-                    on_update={description => debounced_set_draft_component({ description })}
+                    on_update={debounced_update_description}
                     label={"Description" + (saving_in_progress ? " saving..." : "")}
                 />
             </div>
@@ -312,6 +323,7 @@ function store_draft_component_to_local(draft_component: DataComponent | NewData
     const flattened = flatten_new_or_data_component_to_json(draft_component)
 
     // console .debug("Storing draft component to local storage:", draft_key, draft_component)
+    // console .trace("TRACE: Storing draft component to local storage")
 
     localStorage.setItem(draft_key, JSON.stringify({
         draft_component: flattened,
