@@ -103,9 +103,7 @@ const TextEditorV2Demo = (props: { editing: boolean, invalid_value: false | stri
             single_line={true}
             auto_focus={false}
             label="Title"
-            on_update={(html, _json) => {
-                set_title(html)
-            }}
+            on_update={set_title}
             invalid_value={props.invalid_value}
         />
 
@@ -119,9 +117,7 @@ const TextEditorV2Demo = (props: { editing: boolean, invalid_value: false | stri
             single_line={false}
             auto_focus={false}
             label="Description"
-            on_update={(html, _json) => {
-                set_description(html)
-            }}
+            on_update={set_description}
         />
 
         <div style={{ marginTop: "20px", padding: "10px", background: "#f5f5f5", borderRadius: "4px" }}>

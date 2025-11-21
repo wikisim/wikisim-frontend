@@ -21,7 +21,7 @@ interface TextEditorV2Props
     initial_content?: string
     single_line?: boolean
     auto_focus?: boolean
-    on_update?: (html: string, json: any) => void
+    on_update?: (html: string) => void
     label?: string
     invalid_value?: false | string
     include_version_in_at_mention?: boolean
@@ -46,7 +46,8 @@ export function TextEditorV2({
     {
         return label + "_" + Math.random().toString(10).slice(2, 10) // Generate a random source ID
     }, [label])
-    const ignore_initial_non_updates = useRef(true)
+
+    const content_ref = useRef(initial_content)
 
     const cursor_position_on_blur_to_search = useRef<number | undefined>(undefined)
     const [edit_url_enabled, set_edit_url_enabled] = useState<Selection | undefined>(undefined)
@@ -210,7 +211,7 @@ export function TextEditorV2({
         },
         onUpdate: ({ editor }) =>
         {
-            const json = editor.getJSON()
+            // const json = editor.getJSON()
             let html = editor.getHTML()
             // Replace every double space with space+&nbsp; to preserve multiple spaces visually
             html = html.replace(/ {2}/g, "&nbsp; ")
@@ -219,14 +220,15 @@ export function TextEditorV2({
             // For some reason, tiptap editor emits 3 onUpdate calls on init,
             // even though the content is not changing.  So we add this check
             // that ignores those initial non-updates.
-            if (ignore_initial_non_updates.current)
-            {
-                const no_change = html === initial_content
-                if (no_change) return
-                ignore_initial_non_updates.current = false
-            }
+            // Also even when you place the cursor into the editor, before you
+            // even have a chance to type a letter, it emits another onUpdate
+            // call.  So we need to ignore that as well.
+            const no_change = html === content_ref.current
+            content_ref.current = html
+            // console .debug("TextEditorV2 onUpdate called, no_change =", no_change)
+            if (no_change) return
 
-            on_update?.(html, json)
+            on_update?.(html)
         },
     })
 
