@@ -110,12 +110,14 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     }, [props.on_component_change])
 
 
+    const { id: user_id } = state.user_auth_session.session?.user || {}
     const version_mismatch = get_version_of_data_component(props.data_component) !== get_version_of_data_component(draft_component)
     const saving_in_progress = status === "saving"
     const no_changes_made = !changes_made(draft_component, props.data_component)
     const invalid_data_component = is_data_component_invalid(draft_component)
 
     const saving_disabled = (
+        !user_id ? "Please log in to save changes" :
         version_mismatch ? "Version out of date, please reload" :
         saving_in_progress ? "Saving..." :
         no_changes_made ? "No changes made" :
