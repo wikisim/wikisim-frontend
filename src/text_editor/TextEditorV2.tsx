@@ -60,9 +60,9 @@ export function TextEditorV2({
         editorProps: {
             attributes: {
                 class: `tiptap-content ${editor_unique_id.current} focus:outline-none ${single_line ? "single-line" : ""} ${experimental_code_editor_features ? "is_code" : ""}`,
-                // spellCheck: "false",
-                // autoCorrect: "off",
-                // autoCapitalize: "off",
+                spellCheck: experimental_code_editor_features ? "false" : "true",
+                autoCorrect: "off", // experimental_code_editor_features ? "off" : "on",
+                autoCapitalize: "off", // experimental_code_editor_features ? "off" : "sentences",
             },
             handlePaste(_view, event)
             {
