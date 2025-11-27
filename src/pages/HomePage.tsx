@@ -55,6 +55,10 @@ export function HomePage()
                 you can fix, just click "edit"!
             </p>
 
+            <p>
+                <a href="https://www.youtube.com/watch?v=hjS3WPBBlRA">A video introducing WikiSim (from MathsJam 2025)</a>
+            </p>
+
             <div class="section">
                 <h2>Pages</h2>
                 <div class="data-component-cards">
