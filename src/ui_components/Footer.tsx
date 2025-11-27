@@ -20,7 +20,7 @@ export function Footer()
             {jsx}
             <div />
             <div className="footer-links">
-                <a href="https://bsky.app/profile/wikisim.bsky.social" target="_blank" rel="noopener noreferrer">
+                <a href="https://bsky.app/profile/wikisim.org" target="_blank" rel="noopener noreferrer">
                     <IconBrandBluesky size={18} />
                     BlueSky
                 </a>
