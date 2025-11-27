@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-The `main` branch of this repository will be deployed to wikisim.org.  Please inform us of any vulnerabilities in this branch using the private "[Report a vulnerability](https://github.com/wikisim/wikisim-frontend/security)".
+The `main` branch of this repository will be deployed to wikisim.org.  Please inform us of any vulnerabilities in this branch using the private "[Report a vulnerability](https://github.com/wikisim/wikisim-frontend/security/advisories/new)".
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -10,7 +10,7 @@ The `main` branch of this repository will be deployed to wikisim.org.  Please in
 
 ## Reporting a Vulnerability
 
-To report this vulnerability please use the private "[Report a vulnerability](https://github.com/wikisim/wikisim-frontend/security)"
+To report this vulnerability please use the private "[Report a vulnerability](https://github.com/wikisim/wikisim-frontend/security/advisories/new)"
 
 Thank you for your message; there are no guaranteed response times as the team is currently one unpaid person.
 If you don't receive a response in 5 days please repost.
