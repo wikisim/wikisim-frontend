@@ -343,6 +343,12 @@ export function TextEditorV2({
                 const { from, to } = selection
                 editor.chain().focus().setTextSelection({ from, to }).toggleSuperscript().run()
             }}
+            set_subscript_enabled={selection =>
+            {
+                if (!selection) return
+                const { from, to } = selection
+                editor.chain().focus().setTextSelection({ from, to }).toggleSubscript().run()
+            }}
         />}
 
         {/* <div className="editor-toolbar">
@@ -484,6 +490,7 @@ interface ContextMenuProps
     editor: Editor
     set_edit_url_enabled: (selection: Selection | undefined) => void
     set_superscript_enabled: (selection: Selection | undefined) => void
+    set_subscript_enabled: (selection: Selection | undefined) => void
 }
 function ContextMenu({ editor, ...props }: ContextMenuProps)
 {
@@ -500,6 +507,12 @@ function ContextMenu({ editor, ...props }: ContextMenuProps)
                 style={{ marginRight: 8 }}
             >
                 sup<sup>2</sup>
+            </button>
+            <button
+                onClick={() => props.set_subscript_enabled(editor.state.selection)}
+                style={{ marginRight: 8 }}
+            >
+                sub<sub>2</sub>
             </button>
             {/* ...other buttons */}
         </BubbleMenu>
