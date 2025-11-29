@@ -1,4 +1,5 @@
 import { Button, Menu, Modal, TextInput, Tooltip } from "@mantine/core"
+import IconLogin from "@tabler/icons-react/dist/esm/icons/IconLogin"
 import IconLogout from "@tabler/icons-react/dist/esm/icons/IconLogout"
 import IconNewSection from "@tabler/icons-react/dist/esm/icons/IconNewSection"
 import IconUser from "@tabler/icons-react/dist/esm/icons/IconUser"
@@ -126,7 +127,7 @@ function UserSession(props: { toggle_show_user_options_dropdown: () => void })
                 : status === "logged_out__OTP_sign_in_request_errored" ? "Log in request failed"
                 : <>Loading<Loading /></>}
             </div>
-            <IconUser />
+            {status === "logged_in" ? <IconUser /> : <IconLogin />}
 
             {show_log_in_modal && <LogInModal on_close={() => set_show_log_in_modal(false)} />}
         </div>
