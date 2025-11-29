@@ -4,7 +4,53 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WikiSim</title>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "WikiSim",
+      "url": "https://wikisim.org/",
+      "description": "WikiSim is a collaborative platform for creating, sharing, and exploring data-driven interactive visualisations and simulations of our complex world.  WikiSim hosts community made open source simulations, and “back of the envelope” calculations, to help us to make better sense of our complex world.  Below you can choose a data component or calculation to view, a simulation to play, or contribute your own... this is a Wiki so if you see something you can fix, just click “edit”!",
+      "applicationCategory": "Educational, Simulation, Calculation, Democracy, Data, Wiki, Productivity",
+      "creator": {
+        "@type": "Organization",
+        "name": "WikiSim",
+        "url": "https://wikisim.org/",
+      }
+    }
+    </script>
+
+    <!-- Primary Meta Tags -->
+    <title>WikiSim - Collaborative Knowledge Simulation Platform</title>
+    <meta name="title" content="WikiSim - Collaborative Knowledge Simulation Platform" />
+    <meta name="description" content="WikiSim is a collaborative platform for creating, sharing, and exploring “back of the envelope” calculations, and interactive simulations of our complex world." />
+    <meta name="keywords" content="wikisim, simulation, knowledge sharing, data components, collaborative platform, computational models, interactive simulations, educational tools" />
+    <meta name="author" content="WikiSim" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://wikisim.org/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:url" content="https://wikisim.org/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="WikiSim - Collaborative Knowledge Simulation Platform" />
+    <meta property="og:description" content="WikiSim is a collaborative platform for creating, sharing, and exploring “back of the envelope” calculations, and interactive simulations of our complex world." />
+    <meta property="og:image" content="https://wikisim.org/logo.svg" />
+    <meta property="og:site_name" content="WikiSim" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:domain" content="wikisim.org" />
+    <meta name="twitter:url" content="https://wikisim.org/" />
+    <meta name="twitter:title" content="WikiSim - Collaborative Knowledge Simulation Platform" />
+    <meta name="twitter:description" content="WikiSim is a collaborative platform for creating, sharing, and exploring “back of the envelope” calculations, and interactive simulations of our complex world." />
+    <meta name="twitter:image" content="https://wikisim.org/logo.svg" />
+
+    <!-- Additional SEO -->
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="application-name" content="WikiSim" />
+
 
     <link rel="preload" href="/fonts/exo2/exo2-latin.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
     <link rel="stylesheet" href="/fonts/exo2/exo2.css" />
@@ -12,5 +58,12 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Fallback content for crawlers when JavaScript is disabled -->
+    <noscript>
+      <h1>WikiSim - Collaborative Knowledge Simulation Platform</h1>
+      <p>WikiSim is a collaborative platform for creating, sharing, and exploring “back of the envelope” calculations, and interactive simulations of our complex world.</p>
+      <p>Please enable JavaScript to use WikiSim.</p>
+    </noscript>
   </body>
 </html>
