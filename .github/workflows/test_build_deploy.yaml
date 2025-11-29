@@ -67,5 +67,7 @@ jobs:
           aws s3 cp ./dist s3://wikisim.org/ --recursive
 
       - name: Invalidate CloudFront cache
+        # Invalidate all paths as CloudFront is now configured to return the
+        # /index.html page for 404s from S3
         run: |
-          aws cloudfront create-invalidation --distribution-id E17ZNDUCB1QLKK --paths "/index.html"
+          aws cloudfront create-invalidation --distribution-id E17ZNDUCB1QLKK --paths "/*"
