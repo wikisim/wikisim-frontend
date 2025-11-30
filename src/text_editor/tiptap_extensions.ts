@@ -23,6 +23,7 @@ export function get_tiptap_extensions(single_line: boolean, experimental_code_ed
             code: (experimental_code_editor_features) ? false : undefined,
             codeBlock: (single_line || experimental_code_editor_features) ? false : undefined,
             horizontalRule: single_line ? false : undefined,
+            italic: (experimental_code_editor_features) ? false : undefined,
         }),
         // Add single line extension only when in single line mode
         ...(single_line ? [SingleLineExtension] : []),
