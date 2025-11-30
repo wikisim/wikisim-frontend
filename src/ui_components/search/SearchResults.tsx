@@ -54,16 +54,20 @@ export function SearchResults(props: SearchResultsProps)
         set_selected_result_index(null)
     }, [props.search_term])
 
-    // Allow arrow keys to navigate results
+    // Allow arrow keys to navigate results, and Esc to clear selection
     const number_of_results = data_components.length
     useEffect(() => pub_sub.sub("key_down", data =>
     {
         if (number_of_results === 0) return
 
-        let direction = 0
+        let direction = undefined
         if (data.key === "ArrowDown") direction = 1
         else if (data.key === "ArrowUp") direction = -1
-        else return
+        // The first "Escape" key does not seem to be being captured and sent so
+        // user currently needs to press Escape twice to clear selection.
+        else if (data.key === "Escape") set_selected_result_index(null)
+
+        if (direction === undefined) return
 
         let next_index = (selected_result_index ?? -1) + direction
         if (next_index < 0) next_index = number_of_results - 1
