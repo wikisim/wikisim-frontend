@@ -33,7 +33,7 @@ export function get_tiptap_extensions(single_line: boolean, experimental_code_ed
         // Add single line extension only when in single line mode
         ...(single_line ? [SingleLineExtension] : []),
         Highlight,
-        experimental_code_editor_features ? undefined : Typography.configure({}),
+        ...(experimental_code_editor_features ? [Typography.configure({})] : []),
         Underline,
         CustomReferences,
         Subscript,
