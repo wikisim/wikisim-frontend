@@ -9,7 +9,7 @@ import {
 import { Json } from "core/supabase/interface"
 
 import { extract_selected_data } from "../data_wrangling/extract_selected_data"
-import { GraphViewer } from "../data_wrangling/GraphViewer"
+import { GraphsViewer } from "../data_wrangling/GraphsViewer"
 import {
     get_json_data_handlers,
     JSONViewerEventAndStateHandlers
@@ -31,7 +31,8 @@ type ScenarioResultsDisplayProps =
     set_scenario_row_opened: (opened: boolean | ((o: boolean) => boolean)) => void
 
     scenario: Scenario
-    on_upsert_scenario?: (updated_scenario: Partial<Scenario>) => void
+    on_upsert_scenario: (updated_scenario: Partial<Scenario>) => void
+    editing: boolean
     // on_change_scenario?: (scenario_updater: (current_scenario: Scenario) => Scenario) => void
 } & ({
     selected_tab: ResultsViewType
@@ -106,9 +107,12 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
             extracted_data={extracted_data}
         />}
 
-        {props.scenario_row_opened && selected_tab === "graph" && <GraphViewer
+        {props.scenario_row_opened && selected_tab === "graph" && <GraphsViewer
             data_columns={extracted_data.columns}
             selected_path_names={json_data_handlers.selected_path_names}
+            graphs={props.scenario.graphs}
+            on_upsert_scenario={props.on_upsert_scenario}
+            editing={props.editing}
         />}
     </div>
 }

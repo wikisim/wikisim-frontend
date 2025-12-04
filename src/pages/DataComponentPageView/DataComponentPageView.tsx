@@ -422,6 +422,7 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
                 scenario_row_opened={scenario_row_opened}
                 set_scenario_row_opened={set_scenario_row_opened}
                 on_upsert_scenario={on_upsert_scenario}
+                editing={false}
             />}
         </div>
     </div>

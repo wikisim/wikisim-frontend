@@ -1,0 +1,17 @@
+
+
+.graph_settings
+{
+    opacity: 0.0;
+    transition: opacity 0.3s;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+
+.graph_settings.is_hovered
+{
+    opacity: 1.0;
+}

@@ -84,6 +84,7 @@ export function ScenarioResultsAndExpectations(props: ScenarioResultsAndExpectat
 
             scenario={props.scenario}
             on_upsert_scenario={props.on_upsert_scenario}
+            editing={true}
 
             selected_tab={selected_results_view_tab}
             set_selected_tab={set_selected_results_view_tab}
