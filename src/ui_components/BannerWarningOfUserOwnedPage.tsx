@@ -1,9 +1,12 @@
+import IconCheck from "@tabler/icons-react/dist/esm/icons/IconCheck"
+import IconX from "@tabler/icons-react/dist/esm/icons/IconX"
+
 import type { DataComponent } from "core/data/interface"
 
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
+import "./BannerWarningOfUserOwnedPage.css"
 import { ensure_owner_is_loaded } from "./utils/managing_url_for_user_components"
-
 
 
 export function BannerWarningOfUserOwnedPage(props: { component: DataComponent })
@@ -44,8 +47,10 @@ export const WARNING_TEXT_OWNED_PAGE = <>
     Please be aware that like the rest of the Wiki,
     the <span style={{}}>user pages</span> you
     create are <span style={emphasis_style}>public</span> which means they
-    <ul>
-        <li>can be freely copied by anyone and</li>
-        <li>can not be deleted once created</li>
+    <ul className="list-with-icons">
+        <li><IconCheck /> can be freely copied by anyone</li>
+        <li><IconX /> can not be deleted once created</li>
+        <li><IconCheck /> will show up in search results</li>
+        <li><IconX /> will not show up on the home page or browse results page (correct as of Dec 2025)</li>
     </ul>
 </>
