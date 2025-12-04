@@ -1,6 +1,6 @@
 import { ActionIcon, Modal } from "@mantine/core"
 import IconSettings from "@tabler/icons-react/dist/esm/icons/IconSettings"
-import { ChartData, ChartDataset } from "chart.js"
+import { ChartData, ChartDataset, ChartOptions } from "chart.js"
 import { useMemo, useState } from "preact/hooks"
 import { Line } from "react-chartjs-2"
 
@@ -11,6 +11,13 @@ import { get_line_graph_colour } from "../../constants"
 import { is_mobile_device } from "../../utils/is_mobile_device"
 import { ColumnData } from "./extract_selected_data"
 import "./GraphViewer.css"
+
+
+interface ChartProps
+{
+    data: ChartData<"line", ResultPoint[], unknown>
+    options?: ChartOptions<"line">
+}
 
 
 interface GraphViewerProps
@@ -29,7 +36,7 @@ export function GraphViewer(props: GraphViewerProps)
     const [show_graph_configuration_modal, set_show_graph_configuration_modal] = useState(false)
 
     // Prepare LabelsAndResults for ScenarioResultsDisplayGraphical
-    const graph_props = useMemo<ChartData<"line", ResultPoint[], unknown>>(() => {
+    const chart_props = useMemo<ChartProps>(() => {
         // The data_columns has all the columns having the same length, so
         // unless graph.x_axis_path is set then just use the first one and, for
         // now, use the indexes as labels.
@@ -56,7 +63,20 @@ export function GraphViewer(props: GraphViewerProps)
             })
         })
 
-        return { labels, datasets }
+        const options: ChartOptions<"line"> = {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: x_axis_column
+                            ? props.selected_path_names[JSON.stringify(x_axis_column.path)]
+                            : undefined,
+                    },
+                },
+            }
+        }
+
+        return { data: { labels, datasets }, options }
     }, [graph, data_columns])
 
 
@@ -76,7 +96,7 @@ export function GraphViewer(props: GraphViewerProps)
                 <IconSettings />
             </ActionIcon>
         </div>}
-        <Line data={graph_props} />
+        <Line data={chart_props.data} options={chart_props.options} />
 
         <GraphConfigurationModal
             opened={show_graph_configuration_modal}
