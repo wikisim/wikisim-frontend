@@ -168,7 +168,7 @@ function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONP
         <div>Result:</div>
         <pre style={{ marginTop: 0 }}>
             {/* {stringify(props.parsed_json, { maxLength: 60 })}<br/> */}
-            {props.parsed_json ? <JSONViewer
+            {props.parsed_json !== undefined ? <JSONViewer
                 data={props.parsed_json}
                 initial_collapsed_to_level={2}
                 {...props.json_data_handlers}
