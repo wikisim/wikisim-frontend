@@ -231,8 +231,10 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
         location.route(ROUTES.USER.VIEW(user_id))
     } : undefined
 
-
-    return <>
+    // Have to use these ugly nested divs to fix https://github.com/wikisim/wikisim-frontend/issues/9
+    // Even when the menu has opened=false it still has some area that can be clicked onto
+    return <div style={{ width: 3 }}>
+    <div style={{ display: props.opened ? undefined : "none" }}>
     <Menu
         shadow="md"
         width={200}
@@ -286,7 +288,8 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
         </Menu.Dropdown>
     </Menu>
     <EditUserNameModal opened={opened_edit_user_name} on_close={() => set_opened_edit_user_name(false)} />
-    </>
+    </div>
+    </div>
 }
 
 

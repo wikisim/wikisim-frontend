@@ -11,6 +11,9 @@ import Loading from "./Loading"
 export function EditUserName()
 {
     const state = app_store()
+    const user_id = state.user_auth_session.session?.user.id
+    if (!user_id) return <div className="generic-error-message">You must be logged in to edit your user name</div>
+
     const [user_name, _set_user_name] = useState(state.user_auth_session.user_name ?? "")
 
     const set_user_name = useCallback(debounce(_set_user_name, 400), [])
