@@ -121,7 +121,7 @@ function UserSession(props: { toggle_show_user_options_dropdown: () => void })
         >
             <div className="user-session-status">
                 {status === "logged_in" ? <>{user_auth_session.user_name ? user_auth_session.user_name : <Loading />}</>
-                : status === "logged_out" ? "Log in"
+                : status === "logged_out" ? "Log in / Sign up"
                 : status === "logged_out__requesting_OTP_sign_in" ? <>Requesting login<Loading /></>
                 : status === "logged_out__OTP_sign_in_request_made" ? "Please check your email"
                 : status === "logged_out__OTP_sign_in_request_errored" ? "Log in request failed"
@@ -157,7 +157,7 @@ function LogInModal({ on_close }: { on_close: () => void })
             centered
             size="lg"
         >
-            <h2>Log In</h2>
+            <h2>Log In / Sign Up</h2>
 
             <TextInput
                 label="Email address"
@@ -182,10 +182,10 @@ function LogInModal({ on_close }: { on_close: () => void })
                         set_link_requested(true)
                     }}
                 >
-                    Request log in link
+                    Request log in / sign up link
                 </Button>
                 : (
-                    status === "logged_out__requesting_OTP_sign_in" ? <>Requesting login<Loading /></>
+                    status === "logged_out__requesting_OTP_sign_in" ? <>Requesting log in / sign up link<Loading /></>
                     : status === "logged_out__OTP_sign_in_request_made" ? "Please check your email"
                     : status === "logged_out__OTP_sign_in_request_errored" ? "Log in request failed"
                     : <span></span>
