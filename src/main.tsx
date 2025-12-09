@@ -24,6 +24,7 @@ import { ROUTES } from "./routes"
 import { MentionsClickHandler } from "./text_editor/MentionsClickHandler"
 import { Footer } from "./ui_components/Footer"
 import Header from "./ui_components/Header"
+import { InfoAndErrorMessagesDisplay } from "./ui_components/info_and_errors/InfoAndErrorMessagesDisplay"
 import { SearchModal } from "./ui_components/search/SearchModal"
 import { set_page_title } from "./ui_components/set_page_title"
 
@@ -73,6 +74,7 @@ function App() {
                 zIndex: "var(--z-index-notifications)",
             }}
         />
+        <InfoAndErrorMessagesDisplay />
 
         <WelcomeModal />
         <SearchModal />
