@@ -1,6 +1,7 @@
 import { RootCoreState } from "core/state/interface"
 
 import { DataComponentsState } from "./data_components/interface"
+import { RouteState } from "./route/interface"
 import { UIState } from "./ui_state/interface"
 import { UsersState } from "./users/interface"
 
@@ -8,6 +9,7 @@ import { UsersState } from "./users/interface"
 export interface RootAppState extends RootCoreState
 {
     data_components: DataComponentsState
+    route: RouteState
     users: UsersState
     ui: UIState
 }

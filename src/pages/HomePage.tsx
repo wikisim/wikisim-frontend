@@ -7,14 +7,11 @@ import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { DataComponentCard } from "../ui_components/DataComponentCard"
 import { NewDataComponentButtons } from "../ui_components/NewDataComponentButtons"
-import { set_page_title } from "../ui_components/set_page_title"
 import "./HomePage.css"
 
 
 export function HomePage()
 {
-    useEffect(set_page_title, [])
-
     const store = app_store()
     const {
         data_component_ids_for_home_page,

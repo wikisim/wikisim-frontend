@@ -8,6 +8,7 @@ import { deep_freeze } from "core/utils/deep_freeze"
 import { deep_copy } from "../utils/deep_copy"
 import * as data_components from "./data_components"
 import { RootAppState } from "./interface"
+import * as route from "./route"
 import * as ui_state from "./ui_state"
 import * as users from "./users"
 
@@ -38,6 +39,7 @@ export const get_new_app_store = (dependencies?: AppStoreDependencies) =>
         return {
             data_components: data_components.initial_state(set_state, get_state, dependencies.get_supabase),
             debugging: core_store.getState().debugging,
+            route: route.initial_state(set_state),
             user_auth_session: core_store.getState().user_auth_session,
             users: users.initial_state(set_state, get_state, dependencies.get_supabase),
             ui: ui_state.initial_state(set_state),

@@ -4,10 +4,10 @@ import { Notifications } from "@mantine/notifications"
 import "@mantine/notifications/styles.css"
 import { render } from "preact"
 import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso"
-import { useEffect } from "preact/hooks"
 
 import { Evaluator } from "core/evaluator/browser_sandboxed_javascript"
 
+import { useCallback } from "preact/hooks"
 import "./main.css"
 import "./monkey_patch"
 import { DataComponentPageEdit } from "./pages/DataComponentPageEdit"
@@ -21,6 +21,7 @@ import { WelcomeModal } from "./pages/WelcomeModal"
 import "./pub_sub/publish_key_down_events"
 import "./remove_supabase_hash"
 import { ROUTES } from "./routes"
+import { app_store } from "./state/store"
 import { MentionsClickHandler } from "./text_editor/MentionsClickHandler"
 import { Footer } from "./ui_components/Footer"
 import Header from "./ui_components/Header"
@@ -29,7 +30,14 @@ import { SearchModal } from "./ui_components/search/SearchModal"
 import { set_page_title } from "./ui_components/set_page_title"
 
 
-function App() {
+function App()
+{
+    const state = app_store()
+    const handle_route_changed = useCallback((url: string) =>
+    {
+        set_page_title()
+        state.route.set_route(url)
+    }, [])
 
     return <MantineProvider
         theme={{
@@ -84,7 +92,7 @@ function App() {
             <Header />
             <div className="main-app-container">
                 <ErrorBoundary>
-                    <Router>
+                    <Router onRouteChange={handle_route_changed}>
                         <Route path="/" component={HomePage} />
                         <Route path={ROUTES.USER.VIEW()} component={UserPage} />
 
@@ -159,8 +167,6 @@ interface NotFoundProps
 }
 function NotFound(_props: NotFoundProps)
 {
-    useEffect(set_page_title, [])
-
     return <div>
         <h2>404 Not Found</h2>
         <p>The page you are looking for does not exist.</p>

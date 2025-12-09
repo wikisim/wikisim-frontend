@@ -16,8 +16,6 @@ import "./DataComponentPageVersionHistory.css"
 
 export function DataComponentPageVersionHistory(props: { data_component_id: string, query: Record<string, string> })
 {
-    useEffect(set_page_title, [])
-
     const id = parse_id(props.data_component_id)
     if (id instanceof IdAndVersion) return <DataComponentPageVersionHistoryRedirect id={id} />
 

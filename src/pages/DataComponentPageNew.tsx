@@ -1,5 +1,5 @@
 import { useLocation } from "preact-iso"
-import { useCallback, useEffect, useState } from "preact/hooks"
+import { useCallback, useState } from "preact/hooks"
 
 import { NewDataComponent } from "core/data/interface"
 import { init_new_data_component } from "core/data/modify"
@@ -7,14 +7,11 @@ import { init_new_data_component } from "core/data/modify"
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { LogInInlineText } from "../ui_components/LogInInlineText"
-import { set_page_title } from "../ui_components/set_page_title"
 import { DataComponentEditForm } from "./DataComponentPageEdit/DataComponentEditForm"
 
 
 export function DataComponentPageNew(_props: { query: Record<string, string> })
 {
-    useEffect(set_page_title, [])
-
     const state = app_store()
     const location = useLocation()
 

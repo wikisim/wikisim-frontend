@@ -7,15 +7,12 @@ import { ROUTES } from "../../routes"
 import { get_async_data_component } from "../../state/data_components/accessor"
 import { app_store } from "../../state/store"
 import Loading from "../../ui_components/Loading"
-// import { LogInInlineText } from "../../ui_components/LogInInlineText"
 import { set_page_title } from "../../ui_components/set_page_title"
 import { DataComponentEditForm } from "./DataComponentEditForm"
 
 
 export function DataComponentPageEdit(props: { data_component_id: string, query: Record<string, string> })
 {
-    useEffect(set_page_title, [])
-
     const location = useLocation()
 
     const state1 = app_store()
