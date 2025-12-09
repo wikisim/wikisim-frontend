@@ -12,7 +12,7 @@ import {
 
 import BinButton from "../../buttons/BinButton"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
-import { ErrorMessage } from "../../ui_components/ErrorMessage"
+import { ErrorMessage } from "../../ui_components/info_and_errors/ErrorMessage"
 import OpenCloseSection from "../../ui_components/OpenCloseSection"
 import "./FunctionInputsForm.css"
 

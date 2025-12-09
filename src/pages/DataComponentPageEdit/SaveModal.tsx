@@ -5,7 +5,7 @@ import { DataComponent, is_data_component, NewDataComponent } from "core/data/in
 
 import { app_store } from "../../state/store"
 import { TextEditorV1 } from "../../text_editor/TextEditorV1"
-import { WARNING_TEXT_OWNED_PAGE } from "../../ui_components/BannerWarningOfUserOwnedPage"
+import { WARNING_TEXT_OWNED_PAGE } from "../../ui_components/info_and_errors/BannerWarningOfUserOwnedPage"
 import Loading from "../../ui_components/Loading"
 import { ToggleTwo } from "../../ui_components/ToggleTwo"
 import { debounce } from "../../utils/debounce"

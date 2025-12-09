@@ -3,10 +3,10 @@ import IconX from "@tabler/icons-react/dist/esm/icons/IconX"
 
 import type { DataComponent } from "core/data/interface"
 
-import { ROUTES } from "../routes"
-import { app_store } from "../state/store"
+import { ROUTES } from "../../routes"
+import { app_store } from "../../state/store"
+import { ensure_owner_is_loaded } from "../utils/managing_url_for_user_components"
 import "./BannerWarningOfUserOwnedPage.css"
-import { ensure_owner_is_loaded } from "./utils/managing_url_for_user_components"
 
 
 export function BannerWarningOfUserOwnedPage(props: { component: DataComponent })

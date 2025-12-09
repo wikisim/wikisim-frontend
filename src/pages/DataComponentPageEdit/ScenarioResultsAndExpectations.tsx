@@ -6,7 +6,7 @@ import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandbox
 import { EvaluationResponse } from "core/evaluator/interface"
 import { calculate_if_expectation_met } from "core/expectation/calculate_if_expectation_met"
 
-import { ErrorMessage } from "../../ui_components/ErrorMessage"
+import { ErrorMessage } from "../../ui_components/info_and_errors/ErrorMessage"
 import { ResultsViewType } from "../../ui_components/results_display/interface"
 import { ScenarioResultsDisplay } from "../../ui_components/results_display/ScenarioResultsDisplay"
 import { ScenarioExpectationsForm } from "./ScenarioExpectationsForm"
