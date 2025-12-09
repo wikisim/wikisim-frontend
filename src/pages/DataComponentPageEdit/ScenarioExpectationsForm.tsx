@@ -21,6 +21,8 @@ export function ScenarioExpectationsForm(props: ScenarioGraphProps)
 {
     const has_expectation = !!props.scenario.expected_result
 
+    const not_on_json_view = props.selected_results_view_tab !== "json"
+
     return <div className="row" style={{ justifyContent: "center", alignItems: "center", gap: "var(--vgap-small)" }}>
         {/* <HelpToolTip
             message={<>
@@ -34,8 +36,8 @@ export function ScenarioExpectationsForm(props: ScenarioGraphProps)
             </>}
         > */}
             <Button
-                disabled={!props.latest_result || props.selected_results_view_tab !== "json"}
-                title={props.selected_results_view_tab !== "json" ? "Switch to JSON view to use result as expectation" : undefined}
+                disabled={!props.latest_result || not_on_json_view}
+                title={not_on_json_view ? "Switch to JSON view to use result as expectation" : undefined}
                 size="xs"
                 style={{ marginLeft: "0.5em", marginRight: "0.5em" }}
                 onClick={() =>
@@ -48,6 +50,10 @@ export function ScenarioExpectationsForm(props: ScenarioGraphProps)
         {/* </HelpToolTip> */}
 
         <HelpText message={<>
+            {not_on_json_view && <div style={{ color: "var(--mantine-color-gray-6)" }}>
+                Switch to JSON view to set or update expectations.
+            </div>}
+
             You can save these results as expectations of how function should
             behave with this scenario's input values.
             When set, if the function is edited later,
@@ -60,6 +66,7 @@ export function ScenarioExpectationsForm(props: ScenarioGraphProps)
         </>} />
 
         {has_expectation && <BinButton
+            disabled={not_on_json_view}
             on_click={() => props.on_upsert_scenario({ expected_result: undefined })}
             label="Clear expectations"
         />}
