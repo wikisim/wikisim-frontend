@@ -31,7 +31,7 @@ export function ResultsViewTabs(props: ResultsViewTabsProps)
             variant={selected_tab === "json" ? "primary" : "subtle"}
             onClick={() => on_select_tab("json")}
             size="lg"
-            title="JSON View"
+            title="View the JSON data returned by the function"
         >
             <IconJson />
         </ActionIcon>
