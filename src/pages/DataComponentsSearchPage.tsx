@@ -50,6 +50,17 @@ export function DataComponentsSearchPage()
                 editable={true}
                 initial_content={search_term}
                 on_change={e => set_search_term(e.currentTarget.value)}
+                on_key_down={e =>
+                {
+                    // Without this, pressing down arrow and then Escape or up
+                    // arrow to exit selecting a result, and then pressing Enter
+                    // would cause a result to be selected and navigated to.
+                    if (e.key === "Enter")
+                    {
+                        e.preventDefault()
+                        e.stopImmediatePropagation()
+                    }
+                }}
                 label="Search for..."
                 single_line={true}
                 start_focused="focused_and_text_selected"
