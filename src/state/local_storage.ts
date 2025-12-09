@@ -14,4 +14,16 @@ export const local_storage = {
     {
         return localStorage.getItem("preferred_editor_ruler_columns")?.split(",").map(s => parseInt(s)).filter(n => !isNaN(n)) ?? []
     },
+
+    get_known_error_dismissed: (id: number): boolean =>
+    {
+        const key = `known_error_dismissed_${id}`
+        const str = localStorage.getItem(key)
+        return str === "true"
+    },
+    set_known_error_dismissed: (id: number) =>
+    {
+        const key = `known_error_dismissed_${id}`
+        localStorage.setItem(key, "true")
+    },
 }
