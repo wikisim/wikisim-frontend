@@ -87,7 +87,11 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
     }), [component.id.id])
 
 
-    useEffect(() => set_page_title(component.plain_title), [component.plain_title])
+    // document.title is used to trigger set_page_title when on a user pages
+    // as these pages redirect to the correct URL with the owner's name in it...
+    // and thatt will cause the route_changed event to be fired and clear the
+    // page title, so we need to call set_page_title a second time.
+    useEffect(() => set_page_title(component.plain_title), [component.plain_title, document.title])
 
 
     const value_as_string = format_data_component_value_to_string(component)
