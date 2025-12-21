@@ -148,7 +148,10 @@ function HistoryRow(props: { id: IdAndVersion })
     const { user: editor } = async_editor
 
     return <div className="history-row loaded">
-        <a href={ROUTES.DATA_COMPONENT.VIEW({ id: props.id, owner_id: component.owner_id })}>
+        <a
+            href={ROUTES.DATA_COMPONENT.VIEW({ id: props.id, owner_id: component.owner_id })}
+            title={component.created_at.toUTCString()}
+        >
             Version {props.id.version}: &nbsp; &nbsp;
             {component.comment || " -- "} &nbsp; &nbsp;
             {time_ago_or_date(component.created_at, true)}{" "}
