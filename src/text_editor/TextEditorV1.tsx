@@ -1,7 +1,7 @@
 import { Tooltip } from "@mantine/core"
 import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle"
 import { JSX } from "preact"
-import { useMemo, useRef, useState } from "preact/hooks"
+import { useEffect, useMemo, useRef, useState } from "preact/hooks"
 
 import pub_sub from "../pub_sub"
 import "../ui_components/input_elements.shared.css"
@@ -13,6 +13,7 @@ interface TextEditorV1Props
     editable: boolean
     label: string
     initial_content: string
+    content?: string
     on_change?: (e: JSX.TargetedEvent<HTMLTextAreaElement | HTMLInputElement, Event>) => void
     on_blur?: (e: JSX.TargetedFocusEvent<HTMLTextAreaElement | HTMLInputElement>) => void
     single_line?: boolean
@@ -44,6 +45,7 @@ export function TextEditorV1(all_props: TextEditorV1Props)
         on_key_down,
         invalid_value = false,
         initial_content,
+        content,
         max_height,
         ...props
     } = all_props
@@ -95,6 +97,15 @@ export function TextEditorV1(all_props: TextEditorV1Props)
 
     const [is_focused, set_focused] = useState(false)
     const [value, set_value] = useState(initial_content)
+
+    // Sync external content changes to internal value
+    useEffect(() =>
+    {
+        if (content !== undefined && content !== value)
+        {
+            set_value(content)
+        }
+    }, [content])
 
     const handle_on_change = useMemo(() => (e: JSX.TargetedEvent<HTMLTextAreaElement | HTMLInputElement, Event>) =>
     {
