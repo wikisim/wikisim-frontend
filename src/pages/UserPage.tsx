@@ -2,6 +2,7 @@ import { Button, Checkbox } from "@mantine/core"
 import IconHelpCircle from "@tabler/icons-react/dist/esm/icons/IconHelpCircle"
 import { useEffect, useState } from "preact/hooks"
 
+import { useLocation } from "preact-iso"
 import { TargetedEvent } from "preact/compat"
 import { HelpToolTip } from "../buttons/HelpText"
 import { ROUTES } from "../routes"
@@ -15,6 +16,8 @@ import "./UserPage.css"
 
 export function UserPage(props: { user_id_or_name: string })
 {
+    const location = useLocation()
+
     const state = app_store()
     const async_user = get_async_user(state, props.user_id_or_name)
     const { user, status } = async_user
@@ -34,7 +37,7 @@ export function UserPage(props: { user_id_or_name: string })
     useEffect(() =>
     {
         if (user.name === props.user_id_or_name) return
-        history.replaceState({}, "", ROUTES.USER.VIEW(user.name))
+        location.route(ROUTES.USER.VIEW(user.name), true)
     }, [user.name, props.user_id_or_name])
 
 
