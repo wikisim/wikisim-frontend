@@ -303,7 +303,12 @@ async function request_data_components_for_home_page(
     //     new IdOnly(1008),
     // ]
     // const response_curated = await request_data_components(get_supabase, { page: 0, size: 10, ids: manually_curated_home_page_ids })
-    const response_latest_modified = await request_data_components(get_supabase, { page: 0, size: 12, order_by: "latest_modified" })
+    const response_latest_modified = await request_data_components(get_supabase, {
+        page: 0,
+        size: 12,
+        order_by: "latest_modified",
+        filter_by_owner_id: { type: "only_wiki" },
+    })
 
     set_state(state =>
     {

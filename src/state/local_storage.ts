@@ -4,8 +4,8 @@ export const local_storage = {
     get_account_email_address: () => localStorage.getItem("email_address") || "",
     set_account_email_address: (email: string) => localStorage.setItem("email_address", email),
 
-    get_search_filter_by_user_id: () => localStorage.getItem("search_filter_by_user_id") || "",
-    set_search_filter_by_user_id: (user_id: string) => localStorage.setItem("search_filter_by_user_id", user_id),
+    get_search_only_user_pages: (): boolean => (localStorage.getItem("search_only_user_pages") || "false") === "true",
+    set_search_only_user_pages: (active: boolean) => localStorage.setItem("search_only_user_pages", active ? "true" : "false"),
 
     get_show_option_for_code_editor: () => localStorage.getItem("settings.show_option_for_code_editor") === "true",
     set_show_option_for_code_editor: (show: boolean) => localStorage.setItem("settings.show_option_for_code_editor", show ? "true" : "false"),

@@ -1,7 +1,7 @@
 import { Button } from "@mantine/core"
 import { useEffect, useState } from "preact/hooks"
 
-import { search_data_components } from "core/data/fetch_from_db"
+import { FilterByOwnerId, search_data_components } from "core/data/fetch_from_db"
 import type { DataComponent } from "core/data/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase/browser"
@@ -16,7 +16,7 @@ interface SearchResultsProps
 {
     search_term: string
     use_empty_search_term?: boolean
-    filter_by_owner_id?: string
+    filter_by_owner_id?: FilterByOwnerId
     search_requester_id: string
     on_chosen_search_result: (data: { search_requester_id: string, data_component: DataComponent }) => void
     search_type: "search_page" | "search_modal"
@@ -192,7 +192,7 @@ interface SearchResultsRequest
     page: number
     page_size: number
     use_empty_search_term: boolean
-    filter_by_owner_id: string | undefined
+    filter_by_owner_id?: FilterByOwnerId
     search_requester_id: string
 }
 interface SearchResults
@@ -239,7 +239,11 @@ function search_async_api(request: SearchResultsRequest, set_search_response: Se
 
     let cancel_search = false
 
-    search_data_components(get_supabase, search_term, { page, size: page_size + 1, filter_by_owner_id })
+    search_data_components(get_supabase, search_term, {
+        page,
+        size: page_size + 1,
+        filter_by_owner_id,
+    })
     .then(({ data, error }) =>
     {
         if (cancel_search) return

@@ -1,14 +1,14 @@
 import { useLocation } from "preact-iso"
-import { useCallback, useEffect, useState } from "preact/hooks"
+import { useCallback, useEffect } from "preact/hooks"
+
+import { FilterByOwnerId } from "core/data/fetch_from_db"
 
 import { ROUTES } from "../routes"
 import { local_storage } from "../state/local_storage"
-import { app_store } from "../state/store"
 import { TextEditorV1 } from "../text_editor/TextEditorV1"
-import Loading from "../ui_components/Loading"
 import { SearchResults } from "../ui_components/search/SearchResults"
+import { ToggleFilterByUser } from "../ui_components/search/ToggleFilterByUser"
 import { set_page_title } from "../ui_components/set_page_title"
-import { ToggleTwo } from "../ui_components/ToggleTwo"
 import { debounce } from "../utils/debounce"
 import "./DataComponentsSearchPage.css"
 
@@ -19,28 +19,35 @@ export function DataComponentsSearchPage()
 
     const location = useLocation()
 
-    const initial_search_term = location.query["q"] || ""
-    const initial_user_id = location.query["user_id"] || ""
+    // Update the search term and user filter id when the user uses the browser
+    // navigation buttons to go back/forward.
+    const search_term = location.query["q"] || ""
+    const filter_by_user_id = location.query["user_id"] || ""
 
-    const [search_term, _set_search_term] = useState(initial_search_term)
-    const search_requester_id = "data_components_search_page"
+    local_storage.set_search_only_user_pages(!!filter_by_user_id)
 
-    const [filter_by_user_id, set_filter_by_user_id] = useState<string | undefined>(
-        initial_user_id
-        || local_storage.get_search_filter_by_user_id()
-        || undefined
-    )
-    local_storage.set_search_filter_by_user_id(filter_by_user_id || "")
-    // Update URL to reflect current state
-    history.replaceState({}, "", ROUTES.DATA_COMPONENT.SEARCH({ search_query: search_term, user_id: filter_by_user_id }))
+    const set_filter_by_user_id = useCallback((filter_by_user_id: string) =>
+    {
+        location.route(ROUTES.DATA_COMPONENT.SEARCH({
+            search_query: search_term,
+            user_id: filter_by_user_id,
+        }))
+    }, [location, filter_by_user_id])
 
 
     const set_search_term = useCallback(debounce((search_query: string) =>
     {
-        _set_search_term(search_query)
-        // Update the URL query parameter
-        history.pushState({}, "", ROUTES.DATA_COMPONENT.SEARCH({ search_query }))
-    }, 500), [_set_search_term])
+        location.route(ROUTES.DATA_COMPONENT.SEARCH({
+            search_query,
+            user_id: filter_by_user_id,
+        }))
+    }, 500), [location, filter_by_user_id])
+
+
+    const filter_by_owner_id: FilterByOwnerId = filter_by_user_id
+        ? { type: "only_user", owner_id: filter_by_user_id }
+        // We could use only_wiki here if there's too much unrelated user content
+        : { type: "include_all" }
 
 
     return (
@@ -49,6 +56,7 @@ export function DataComponentsSearchPage()
             <TextEditorV1
                 editable={true}
                 initial_content={search_term}
+                content={search_term}
                 on_change={e => set_search_term(e.currentTarget.value)}
                 on_key_down={e =>
                 {
@@ -79,8 +87,8 @@ export function DataComponentsSearchPage()
             <SearchResults
                 search_term={search_term}
                 use_empty_search_term={true}
-                filter_by_owner_id={filter_by_user_id || undefined}
-                search_requester_id={search_requester_id}
+                filter_by_owner_id={filter_by_owner_id}
+                search_requester_id="data_components_search_page"
                 on_chosen_search_result={data =>
                 {
                     location.route(ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(data.data_component.id.as_IdOnly()))
@@ -89,42 +97,4 @@ export function DataComponentsSearchPage()
             />
         </div>
     )
-}
-
-
-interface ToggleFilterByUserProps
-{
-    filter_by_user_id: string | undefined
-    set_filter_by_user_id: (user_id: string) => void
-}
-function ToggleFilterByUser(props: ToggleFilterByUserProps)
-{
-    const { filter_by_user_id, set_filter_by_user_id } = props
-
-    const state = app_store()
-    const user_signed_in = state.user_auth_session.session?.user
-
-    const toggle_filter_by_user_id = useCallback(() =>
-    {
-        if (filter_by_user_id) set_filter_by_user_id("")
-        else if (user_signed_in?.id) set_filter_by_user_id(user_signed_in.id)
-    }, [filter_by_user_id, set_filter_by_user_id, user_signed_in])
-
-
-    const other_user_id = filter_by_user_id && user_signed_in?.id !== filter_by_user_id ? filter_by_user_id : undefined
-    const async_other_user = other_user_id ? state.users.request_user(other_user_id) : undefined
-
-    const filter_by_user_message = filter_by_user_id
-        ? (user_signed_in?.id === filter_by_user_id
-            ? "Showing only your pages"
-            : <>Showing only pages of {async_other_user?.user?.name || <Loading/>}</>)
-        : "Showing all pages (wiki, yours and other users)"
-
-
-    return <ToggleTwo
-        active={!!filter_by_user_id}
-        disabled={!user_signed_in && !filter_by_user_id}
-        label={() => filter_by_user_message}
-        set_active={toggle_filter_by_user_id}
-    />
 }
