@@ -132,7 +132,7 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
                     {is_function ? "" : value_as_string}
                 </div>
 
-                {is_function && <ReadOnlyFunction component={component} max_height={500} />}
+                {is_function && <ReadOnlyFunction component={component} />}
 
                 {show_calculation && <div className="row">
                     <b>Calculation: </b>

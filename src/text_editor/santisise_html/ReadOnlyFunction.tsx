@@ -8,11 +8,12 @@ import "./ReadOnlyFunction.css"
 import { ReadOnly } from "./sanitise_html"
 
 
-export function ReadOnlyFunction(props: { component: DataComponent | NewDataComponent, max_height?: number })
+const max_height = 150
+
+export function ReadOnlyFunction(props: { component: DataComponent | NewDataComponent })
 {
     const {
         component: { value_type, input_value = "", function_arguments },
-        max_height,
     } = props
 
     if (value_type !== "function")
@@ -38,7 +39,7 @@ export function ReadOnlyFunction(props: { component: DataComponent | NewDataComp
 
     useEffect(() =>
     {
-        if (!max_height || !container_ref.current || show_all) return
+        if (!container_ref.current || show_all) return
 
         const check_overflow = () =>
         {
@@ -64,7 +65,7 @@ export function ReadOnlyFunction(props: { component: DataComponent | NewDataComp
 
     return <div className="row read-only-function" ref={container_ref}>
         <ReadOnly html={function_as_tiptap_html} is_code={true} max_height={show_all ? undefined : max_height} />
-        {max_height !== undefined && has_overflow &&
+        {has_overflow &&
             <div className="end-fade-and-button">
                 <Button
                     variant="subtle"
