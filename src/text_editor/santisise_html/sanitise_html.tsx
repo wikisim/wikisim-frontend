@@ -4,7 +4,15 @@ import { EditorContent } from "@tiptap/react"
 import { get_tiptap_extensions } from "../tiptap_extensions"
 
 
-export function ReadOnly(props: { html: string | undefined, single_line?: boolean, is_code?: boolean, max_height?: number })
+interface ReadOnlyProps
+{
+    html: string | undefined
+    single_line?: boolean
+    is_code?: boolean
+    max_height?: number
+    on_create?: (editor: Editor) => void
+}
+export function ReadOnly(props: ReadOnlyProps)
 {
     if (!props.html) return <></>
 
@@ -21,8 +29,12 @@ export function ReadOnly(props: { html: string | undefined, single_line?: boolea
                 class: `tiptap-content focus:outline-none ${single_line ? "single-line" : ""} ${is_code ? "is_code" : ""}`,
                 style: props.max_height ? `max-height: ${props.max_height}px; overflow-y: scroll;` : "",
             }
-        }
+        },
+        // This currently fires 4 times on load
+        // onCreate: props.on_create,
     })
+    // This currently fires 4 times on load
+    if (props.on_create) editor.on("create", () => props.on_create!(editor))
 
     return <EditorContent editor={editor} className="tiptap-content-parent" />
 }

@@ -36,6 +36,7 @@ import { is_small_screen } from "../../utils/is_mobile_device"
 import { is_pure_number } from "../../utils/is_pure_number"
 import { time_ago_or_date } from "../../utils/time_ago_or_date"
 import "./DataComponentPageView.css"
+import { highlight_text_fragment } from "./highlight_text_fragment"
 
 
 interface DataComponentPageViewProps
@@ -122,7 +123,7 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
             <PlayInteractable component={component} />
 
             {component.plain_description && <div className="section tiptap-content">
-                <ReadOnly html={component.description} />
+                <ReadOnly html={component.description} on_create={highlight_text_fragment} />
             </div>}
 
             {value_as_string && <div className="section">
