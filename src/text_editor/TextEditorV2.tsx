@@ -274,7 +274,7 @@ export function TextEditorV2({
     useEffect(() => factory_handle_copy(editor, editor_unique_id.current), [editor])
 
 
-    const is_focused = editor.isFocused
+    const [is_focused, set_is_focused] = useState(auto_focus)
     const has_value = (editor.getText() || "").trim().length > 0
 
     return <>
@@ -284,8 +284,12 @@ export function TextEditorV2({
             position="bottom"
         >
             <div className={`tiptap-editor-container ${has_value ? "has_value" : ""} ${is_focused ? "is_focused" : ""} ${invalid_value ? "invalid_value" : ""}`}>
-                <div className="editor-content" onClick={() => editor.chain().focus().run()}>
-                    <EditorContent editor={editor} />
+                <div className="editor-content">
+                    <EditorContent
+                        editor={editor}
+                        onFocus={() => set_is_focused(true)}
+                        onBlur={() => set_is_focused(false)}
+                    />
                 </div>
 
                 <label>{label}</label>
