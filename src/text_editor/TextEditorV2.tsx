@@ -2,7 +2,8 @@ import { Tooltip } from "@mantine/core"
 import IconExclamationCircle from "@tabler/icons-react/dist/esm/icons/IconExclamationCircle"
 import { Node as TipTapNode } from "@tiptap/pm/model"
 import { Selection } from "@tiptap/pm/state"
-import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react"
+import { Editor, EditorContent, useEditor } from "@tiptap/react"
+import { BubbleMenu } from "@tiptap/react/menus"
 import { useEffect, useMemo, useRef, useState } from "preact/hooks"
 
 import { preserve_spaces } from "core/rich_text/convert_text_type"
@@ -66,9 +67,6 @@ export function TextEditorV2({
             },
             handlePaste(_view, event)
             {
-                // type guard
-                if (!editor) return false
-
                 // Only handle plain text pastes
                 const clipboard_data = event.clipboardData
                 if (!clipboard_data) return false
@@ -133,9 +131,6 @@ export function TextEditorV2({
             },
             handleKeyDown: (_view, event) =>
             {
-                // type guard
-                if (!editor) return false
-
                 // Prevent new lines in single line mode, does not prevent
                 // content containing new lines from being pasted in.  See
                 // transformPastedHTML and transformPastedText for that behavior.
@@ -233,7 +228,6 @@ export function TextEditorV2({
     })
 
 
-    if (!editor) return null
     editor.setEditable(editable)
 
 
@@ -495,7 +489,7 @@ interface ContextMenuProps
 function ContextMenu({ editor, ...props }: ContextMenuProps)
 {
     return (
-        <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+        <BubbleMenu editor={editor} options={{}}>
             <button
                 onClick={() => props.set_edit_url_enabled(editor.state.selection)}
                 style={{ marginRight: 8 }}

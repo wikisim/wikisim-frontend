@@ -4,7 +4,6 @@ import Link from "@tiptap/extension-link"
 import Subscript from "@tiptap/extension-subscript"
 import Superscript from "@tiptap/extension-superscript"
 import Typography from "@tiptap/extension-typography"
-import Underline from "@tiptap/extension-underline"
 import StarterKit from "@tiptap/starter-kit"
 
 import { CustomReferences } from "./CustomReferences"
@@ -29,12 +28,14 @@ export function get_tiptap_extensions(single_line: boolean, experimental_code_ed
             // For single line mode, keep paragraph but disable block elements
             paragraph: undefined,
             strike: experimental_code_editor_features ? false : undefined,
+            underline: experimental_code_editor_features ? false : undefined,
+            // Disable underline and link in StarterKit so we can add custom ones below
+            link: false,
         }),
         // Add single line extension only when in single line mode
         ...(single_line ? [SingleLineExtension] : []),
         Highlight,
         ...(experimental_code_editor_features ? [Typography.configure({})] : []),
-        Underline,
         CustomReferences,
         Subscript,
         Superscript,
