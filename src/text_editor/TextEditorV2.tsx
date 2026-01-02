@@ -283,7 +283,10 @@ export function TextEditorV2({
             label={invalid_value}
             position="bottom"
         >
-            <div className={`tiptap-editor-container ${has_value ? "has_value" : ""} ${is_focused ? "is_focused" : ""} ${invalid_value ? "invalid_value" : ""}`}>
+            <div
+                className={`tiptap-editor-container ${has_value ? "has_value" : ""} ${is_focused ? "is_focused" : ""} ${invalid_value ? "invalid_value" : ""}`}
+                onClick={() => editor.chain().focus().run()}
+            >
                 <div className="editor-content">
                     <EditorContent
                         editor={editor}

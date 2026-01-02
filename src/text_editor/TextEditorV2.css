@@ -1,4 +1,8 @@
 
+.tiptap-editor-container
+{
+    cursor: text;
+}
 
 .tiptap-editor-container label
 {
@@ -29,7 +33,6 @@
 
 .editor-content {
     padding: var(--padding-text-box);
-    cursor: text;
     /* max-height: 300px;
     overflow: scroll; */
 }
