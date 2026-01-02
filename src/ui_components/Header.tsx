@@ -1,4 +1,4 @@
-import { Button, Menu, Modal, TextInput, Tooltip } from "@mantine/core"
+import { Button, Checkbox, Menu, Modal, TextInput, Tooltip } from "@mantine/core"
 import IconLogin from "@tabler/icons-react/dist/esm/icons/IconLogin"
 import IconLogout from "@tabler/icons-react/dist/esm/icons/IconLogout"
 import IconNewSection from "@tabler/icons-react/dist/esm/icons/IconNewSection"
@@ -7,7 +7,7 @@ import IconUserEdit from "@tabler/icons-react/dist/esm/icons/IconUserEdit"
 import IconUserFilled from "@tabler/icons-react/dist/esm/icons/IconUserFilled"
 import { h } from "preact"
 import { useLocation } from "preact-iso"
-import { useEffect, useRef, useState } from "preact/hooks"
+import { useCallback, useEffect, useRef, useState } from "preact/hooks"
 
 import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
@@ -139,16 +139,30 @@ function LogInModal({ on_close }: { on_close: () => void })
 {
     const { user_auth_session } = app_store()
     const { status } = user_auth_session
-    const [email_address, set_email_address] = useState(local_storage.get_account_email_address())
+
+    const initial_email_address = useRef(local_storage.get_account_email_address().trim())
+    const have_initial_email_address = initial_email_address.current.length > 0
+    const [email_address, set_email_address] = useState(initial_email_address.current)
+    const [remember_me, set_remember_me] = useState(have_initial_email_address)
 
     useEffect(() =>
     {
-        if (!email_address.trim()) return
+        local_storage.set_account_email_address("")
+        if (!email_address.trim() || !remember_me) return
         // Save email address to local storage so it can be pre-filled next time
         local_storage.set_account_email_address(email_address.trim())
-    }, [email_address])
+    }, [email_address, remember_me])
 
     const [link_requested, set_link_requested] = useState(false)
+
+
+    const submit_login_form = useCallback((e: h.JSX.TargetedEvent<HTMLFormElement, Event>) =>
+    {
+        e.preventDefault()
+        user_auth_session.request_OTP_sign_in(email_address)
+        set_link_requested(true)
+    }, [email_address, user_auth_session])
+
 
     return (
         <Modal
@@ -159,45 +173,63 @@ function LogInModal({ on_close }: { on_close: () => void })
         >
             <h2>Log In / Sign Up</h2>
 
-            <TextInput
-                label="Email address"
-                type="email"
-                name="email"
-                autocomplete="email"
-                value={email_address}
-                onChange={(e: h.JSX.TargetedEvent<HTMLInputElement, Event>) =>
-                {
-                    set_email_address(e.currentTarget.value)
-                }}
-                placeholder="your@email.com"
-                required
-            />
-
-            <div style={{ marginTop: "16px", display: "flex", gap: "8px" }}>
-                {!link_requested ? <Button
-                    disabled={!email_address.trim()}
-                    onClick={() =>
+            <form onSubmit={submit_login_form}>
+                <TextInput
+                    label="Email address"
+                    type="email"
+                    name="email"
+                    autocomplete="username"
+                    value={email_address}
+                    onChange={(e: h.JSX.TargetedEvent<HTMLInputElement, Event>) =>
                     {
-                        user_auth_session.request_OTP_sign_in(email_address)
-                        set_link_requested(true)
+                        set_email_address(e.currentTarget.value)
                     }}
-                >
-                    Request log in / sign up link
-                </Button>
-                : (
-                    status === "logged_out__requesting_OTP_sign_in" ? <>Requesting log in / sign up link<Loading /></>
-                    : status === "logged_out__OTP_sign_in_request_made" ? "Please check your email"
-                    : status === "logged_out__OTP_sign_in_request_errored" ? "Log in request failed"
-                    : <span></span>
-                )}
+                    placeholder="your@email.com"
+                    required
+                />
 
-                <Button
-                    onClick={on_close}
-                    variant="outline"
-                >
-                    {!link_requested ? "Cancel" : "Close"}
-                </Button>
-            </div>
+                {remember_me && !have_initial_email_address && <input
+                    type="password"
+                    autocomplete="new-password"
+                    style="position: absolute; left: -10000px; top: -10000px;"
+                    aria-hidden="true"
+                    tabIndex={-1}
+                    value="trigger-save-email-address"
+                />}
+
+                <div class="vertical-gap" />
+
+                <Checkbox
+                    label="Remember me"
+                    checked={remember_me}
+                    onChange={(e: h.JSX.TargetedEvent<HTMLInputElement, Event>) =>
+                    {
+                        set_remember_me(e.currentTarget.checked)
+                    }}
+                />
+
+                <div style={{ marginTop: "16px", display: "flex", gap: "8px" }}>
+                    {!link_requested ? <Button
+                        type="submit"
+                        disabled={!email_address.trim()}
+                    >
+                        Request log in / sign up link
+                    </Button>
+                    : (
+                        status === "logged_out__requesting_OTP_sign_in" ? <>Requesting log in / sign up link<Loading /></>
+                        : status === "logged_out__OTP_sign_in_request_made" ? "Please check your email"
+                        : status === "logged_out__OTP_sign_in_request_errored" ? "Log in request failed"
+                        : <span></span>
+                    )}
+
+                    {/* <Button
+                        onClick={on_close}
+                        variant="outline"
+                    >
+                        {!link_requested ? "Cancel" : "Close"}
+                    </Button> */}
+                </div>
+            </form>
         </Modal>
     )
 }
