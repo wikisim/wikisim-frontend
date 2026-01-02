@@ -101,6 +101,8 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
     const is_number_type = value_type === "number"
     const value_is_pure_number = is_pure_number(browser_convert_tiptap_to_plain(component.input_value || ""))
     const show_calculation = is_number_type && !value_is_pure_number
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    const show_function_lower = 2 > 1 // true for now as we want to experiment this layout of showing the function scenarios first
 
     return <div id="data-component">
 
@@ -126,7 +128,7 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
                 <ReadOnly html={component.description} on_create={highlight_text_fragment} />
             </div>}
 
-            {value_as_string && <div className="section">
+            {value_as_string && (!is_function || !show_function_lower) && <div className="section">
                 <div className="row">
                     <b>{is_function ? "Function:" : "Value:"} </b>
                     {is_function ? "" : value_as_string}
@@ -141,6 +143,14 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
             </div>}
 
             {is_function && <ScenariosReadOnly component={component} />}
+
+            {value_as_string && is_function && show_function_lower && <div className="section">
+                <div className="row">
+                    <b>Function:</b>
+                </div>
+
+                <ReadOnlyFunction component={component} />
+            </div>}
 
         </div>
         <LastEditedBy component={component} />
