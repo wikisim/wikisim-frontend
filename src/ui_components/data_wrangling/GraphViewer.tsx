@@ -1,14 +1,17 @@
 import { ActionIcon, Modal } from "@mantine/core"
 import IconSettings from "@tabler/icons-react/dist/esm/icons/IconSettings"
 import { ChartData, ChartDataset, ChartOptions } from "chart.js"
-import { useMemo, useState } from "preact/hooks"
+import { useEffect, useMemo, useState } from "preact/hooks"
 import { Line } from "react-chartjs-2"
 
 import { MapSelectedPathToName, Scenario, ScenarioGraph } from "core/data/interface"
 import { ResultPoint } from "core/expectation/interface"
 
+import { inverse_lerp, lerp } from "../../../lib/core/src/utils/lerp"
 import { get_line_graph_colour } from "../../constants"
+import pub_sub from "../../pub_sub"
 import { is_mobile_device } from "../../utils/is_mobile_device"
+import { get_screen_characteristics } from "../../utils/screen"
 import { ColumnData } from "./extract_selected_data"
 import "./GraphViewer.css"
 
@@ -35,6 +38,10 @@ export function GraphViewer(props: GraphViewerProps)
     const [hovering, set_hovered] = useState(false)
     const [show_graph_configuration_modal, set_show_graph_configuration_modal] = useState(false)
 
+    const [screen_size, set_screen_size] = useState(get_screen_characteristics())
+    useEffect(() => pub_sub.sub("screen_size_changed", set_screen_size), [])
+    const screen_width_t = inverse_lerp(500, 800, screen.width)
+
     // Prepare LabelsAndResults for ScenarioResultsDisplayGraphical
     const chart_props = useMemo<ChartProps>(() => {
         // The data_columns has all the columns having the same length, so
@@ -58,8 +65,8 @@ export function GraphViewer(props: GraphViewerProps)
                 borderColor: get_line_graph_colour(index),
                 backgroundColor: get_line_graph_colour(index, 0.4),
                 yAxisID: "y",
-                pointRadius: 4,
-                pointHoverRadius: 6,
+                pointRadius: lerp(2, 4, screen_width_t),
+                pointHoverRadius: lerp(3, 6, screen_width_t),
             })
         })
 
@@ -77,10 +84,14 @@ export function GraphViewer(props: GraphViewerProps)
         }
 
         return { data: { labels, datasets }, options }
-    }, [graph, data_columns])
+    }, [graph, data_columns, screen_width_t])
 
 
     const is_hovering_class = (hovering || is_mobile_device()) ? " is_hovered" : ""
+    const options: ChartOptions<"line"> = {
+        aspectRatio: screen_size.width < 500 ? 1.3 : undefined,
+        ...chart_props.options,
+    }
 
 
     return <div
@@ -96,7 +107,13 @@ export function GraphViewer(props: GraphViewerProps)
                 <IconSettings />
             </ActionIcon>
         </div>}
-        <Line data={chart_props.data} options={chart_props.options} />
+        <Line
+            // Use the orientation as part of the key to force re-rendering when
+            // orientation changes
+            key={screen_size.orientation}
+            data={chart_props.data}
+            options={options}
+        />
 
         <GraphConfigurationModal
             opened={show_graph_configuration_modal}

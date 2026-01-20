@@ -1,5 +1,6 @@
 import { DataComponent } from "core/data/interface"
 import { VNode } from "preact"
+import { ScreenCharacteristics } from "../utils/screen"
 
 
 export interface PublishableEvents
@@ -29,6 +30,8 @@ export interface PublishableEvents
         jsx: VNode<unknown> | null
         request_id: number
     }
+
+    screen_size_changed: ScreenCharacteristics
 }
 
 interface KeyDownUp

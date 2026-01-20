@@ -25,7 +25,7 @@ export function GraphsViewer(props: GraphsViewerProps)
         editing={props.editing}
     />
 
-    return <div>
+    return <>
         {graphs.map((graph, index) => (
             <GraphViewer
                 key={index}
@@ -36,5 +36,5 @@ export function GraphsViewer(props: GraphsViewerProps)
                 editing={props.editing}
             />
         ))}
-    </div>
+    </>
 }
