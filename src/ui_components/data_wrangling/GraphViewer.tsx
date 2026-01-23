@@ -56,6 +56,8 @@ export function GraphViewer(props: GraphViewerProps)
         data_columns.forEach((col, index) =>
         {
             if (!col.numeric_values) return
+            // Skip the x-axis column
+            if (JSON.stringify(col.path) === graph?.x_axis_path) return
 
             datasets.push({
                 type: "line",
