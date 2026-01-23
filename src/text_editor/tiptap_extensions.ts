@@ -4,6 +4,7 @@ import Link from "@tiptap/extension-link"
 import Subscript from "@tiptap/extension-subscript"
 import Superscript from "@tiptap/extension-superscript"
 import Typography from "@tiptap/extension-typography"
+import { Youtube } from "@tiptap/extension-youtube"
 import StarterKit from "@tiptap/starter-kit"
 
 import { CustomReferences } from "./CustomReferences"
@@ -45,6 +46,9 @@ export function get_tiptap_extensions(single_line: boolean, experimental_code_ed
             HTMLAttributes: {
                 class: "editor-link",
             },
+        }),
+        Youtube.configure({
+            modestBranding: true,
         }),
     ]
 }
