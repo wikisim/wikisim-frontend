@@ -52,8 +52,17 @@ export function HomePage()
                 you can fix, just click "edit"!
             </p>
 
-            <p>
-                <a href="https://www.youtube.com/watch?v=hjS3WPBBlRA">A video introducing WikiSim (from MathsJam 2025)</a>
+            <p className="intro-video">
+                <div>
+                    <iframe
+                        src="https://www.youtube.com/embed/hjS3WPBBlRA?modestbranding=1&rel=0"
+                        title="A video introducing WikiSim (from MathsJam 2025)"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowFullScreen={true}
+                    />
+                </div>
             </p>
 
             <div class="section">

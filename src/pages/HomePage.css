@@ -28,3 +28,28 @@
     width: fit-content;
     margin: 0 auto;
 }
+
+#home-page .intro-video
+{
+    max-width: 800px;
+    margin: 0 auto;   /* center the video */
+}
+#home-page .intro-video div
+{
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio (9/16 = 0.5625) */
+    height: 0;
+    overflow: hidden;
+}
+#home-page .intro-video iframe
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+
+    border-radius: 8px;
+}
