@@ -377,7 +377,10 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
 {
     const { index, result } = props
     const [scenario, set_scenario] = useState(props.scenario)
-    const [scenario_row_opened, set_scenario_row_opened] = useState(false)
+    // By default, open all scenario rows because whilst the minimal look is nice
+    // I think for now it's important to show readers what the scenarios are doing
+    // without them having to click to open them.
+    const [scenario_row_opened, set_scenario_row_opened] = useState(true)
 
     // We allow updating of the scenario so that people can select different
     // data from a model to view in the table and graph views, without having to
