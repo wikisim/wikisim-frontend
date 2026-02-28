@@ -377,9 +377,12 @@ function ScenarioRowReadOnly(props: ScenarioRowReadOnlyProps)
 {
     const { index, result } = props
     const [scenario, set_scenario] = useState(props.scenario)
+    // 2026-02-28
     // By default, open all scenario rows because whilst the minimal look is nice
     // I think for now it's important to show readers what the scenarios are doing
-    // without them having to click to open them.
+    // without them having to click to open them.  For example for this component:
+    // https://wikisim.org/wiki/1193v1, being able to see what scenario was run
+    // gives a lot more context to what the function is doing.
     const [scenario_row_opened, set_scenario_row_opened] = useState(true)
 
     // We allow updating of the scenario so that people can select different
