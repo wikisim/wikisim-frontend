@@ -1,22 +1,26 @@
 import { Scenario } from "core/data/interface"
 import { EvaluationResponse } from "core/evaluator/interface"
 import { calculate_if_expectation_met } from "core/expectation/calculate_if_expectation_met"
+import { forwardRef } from "preact/compat"
 
 import { HelpToolTip } from "../buttons/HelpText"
 import "./ExpectationMet.css"
 
 
-export function ExpectationMetMessage(props: { met: boolean, on_click?: () => void })
-{
-    const { met } = props
+export const ExpectationMetMessage = forwardRef<HTMLDivElement, { met: boolean, on_click?: () => void }>(
+    (props, ref) =>
+    {
+        const { met } = props
 
-    return <div
-        onClick={props.on_click}
-        className={"expectation-met-message" + (met ? " expectation-met" : " expectation-failed")}
-    >
-        {met ? "Pass" : "Fail"}
-    </div>
-}
+        return <div
+            ref={ref}
+            onClick={props.on_click}
+            className={"expectation-met-message" + (met ? " expectation-met" : " expectation-failed")}
+        >
+            {met ? "Pass" : "Fail"}
+        </div>
+    }
+)
 
 
 export function ExpectationMet(props: { met?: boolean, on_click?: () => void })
