@@ -175,8 +175,8 @@ function ScenarioResultsDisplayPlainJSON(props: ScenarioResultsDisplayPlainJSONP
             /> : "undefined"}
         </pre>
         {props.expectation_met !== undefined && <pre className="make-pre-text-wrap">
-            {props.expectation_met && `Result matched expected result` }
-            {!props.expectation_met && expected_result_str && `Expected = ${expected_result_str}`}<br/>
+            {/* {props.expectation_met && `Result matched expected result` } */}
+            {!props.expectation_met && expected_result_str && `Failed to match expected result of: ${expected_result_str}`}<br/>
         </pre>}
     </div>
 }
