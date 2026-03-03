@@ -4,10 +4,10 @@ import { Notifications } from "@mantine/notifications"
 import "@mantine/notifications/styles.css"
 import { render } from "preact"
 import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso"
+import { useCallback, useEffect } from "preact/hooks"
 
 import { Evaluator } from "core/evaluator/browser_sandboxed_javascript"
 
-import { useCallback } from "preact/hooks"
 import "./main.css"
 import "./monkey_patch"
 import { DataComponentPageEdit } from "./pages/DataComponentPageEdit"
@@ -34,10 +34,24 @@ import { set_page_title } from "./ui_components/set_page_title"
 function App()
 {
     const state = app_store()
-    const handle_route_changed = useCallback((url: string) =>
-    {
+    // GoatCounter pageview trigger
+    const trigger_goat_counter = (path: string) => {
+        // @ts-ignore
+        if (window.goatcounter && typeof window.goatcounter.count === "function") {
+            // @ts-ignore
+            window.goatcounter.count({ path });
+        }
+    }
+
+    const handle_route_changed = useCallback((url: string) => {
         set_page_title()
         state.route.set_route(url)
+        trigger_goat_counter(url)
+    }, [])
+
+    // On initial mount, trigger GoatCounter for the first route
+    useEffect(() => {
+        trigger_goat_counter(window.location.pathname + window.location.search + window.location.hash)
     }, [])
 
     return <MantineProvider
