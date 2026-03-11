@@ -497,24 +497,26 @@ function ContextMenu({ editor, ...props }: ContextMenuProps)
 {
     return (
         <BubbleMenu editor={editor} options={{}}>
-            <button
-                onClick={() => props.set_edit_url_enabled(editor.state.selection)}
-                style={{ marginRight: 8 }}
-            >
-                Add/Edit Link
-            </button>
-            <button
-                onClick={() => props.set_superscript_enabled(editor.state.selection)}
-                style={{ marginRight: 8 }}
-            >
-                sup<sup>2</sup>
-            </button>
-            <button
-                onClick={() => props.set_subscript_enabled(editor.state.selection)}
-                style={{ marginRight: 8 }}
-            >
-                sub<sub>2</sub>
-            </button>
+            <div style={{ zIndex: 100, position: "relative" }}>
+                <button
+                    onClick={() => props.set_edit_url_enabled(editor.state.selection)}
+                    style={{ marginRight: 8 }}
+                >
+                    Add/Edit Link
+                </button>
+                <button
+                    onClick={() => props.set_superscript_enabled(editor.state.selection)}
+                    style={{ marginRight: 8 }}
+                >
+                    sup<sup>2</sup>
+                </button>
+                <button
+                    onClick={() => props.set_subscript_enabled(editor.state.selection)}
+                    style={{ marginRight: 8 }}
+                >
+                    sub<sub>2</sub>
+                </button>
+            </div>
             {/* ...other buttons */}
         </BubbleMenu>
     )

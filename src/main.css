@@ -36,6 +36,7 @@
 
     --colour-link: rgb(25, 118, 210); /* #1976d2 */
 
+    --z-index-context-menu: 100;
     --z-index-header: 200;
     --z-index-modal-save: 301;
     --z-index-modal-search: 302;
