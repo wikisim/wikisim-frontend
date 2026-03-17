@@ -6,7 +6,7 @@ import { is_data_component } from "core/data/interface"
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
 import { DataComponentCard } from "../ui_components/DataComponentCard"
-import { NewDataComponentButtons } from "../ui_components/NewDataComponentButtons"
+import { NewWikiDataComponentButton } from "../ui_components/NewDataComponentButtons"
 import "./HomePage.css"
 
 
@@ -66,7 +66,7 @@ export function HomePage()
             </p>
 
             <div class="section">
-                <h2>Pages</h2>
+                <h2>Recent Changes</h2>
                 <div class="data-component-cards">
                     {!data_components_for_home_page
                         ? <p>Loading...</p>
@@ -75,6 +75,9 @@ export function HomePage()
                         )
                     }
                 </div>
+
+
+                {/* <h2>Potential ideas</h2> */}
 
                 <Button
                     component="a"
@@ -88,9 +91,24 @@ export function HomePage()
 
                 or
 
-                <NewDataComponentButtons />
-
+                <NewWikiDataComponentButton title="Create new page" />
             </div>
         </div>
     )
 }
+
+
+
+// interface ComponentsCarouselProps
+// {
+//     type: "narrative" | "interactable" | "calculation"
+//         | "data_point" | "definition"
+//         | "utility"
+//         | "meta"
+//         | "recently_updated"
+//     state: "concept" | "in_development" | "beta" | "mature"
+// }
+// function ComponentsCarousel(props: ComponentsCarouselProps)
+// {
+
+// }

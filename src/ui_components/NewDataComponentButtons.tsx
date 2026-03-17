@@ -12,15 +12,7 @@ export function NewDataComponentButtons(props: { button_size?: "sm" | "md" | "lg
 
     return <div className="new-data-component-buttons">
         Create page in
-        <Button
-            component="a"
-            href={ROUTES.DATA_COMPONENT.NEW()}
-            className="browse-all-button"
-            size={button_size}
-            variant="primary"
-        >
-            Wiki&nbsp;<IconNewSection />
-        </Button>
+        <NewWikiDataComponentButton button_size={button_size} />
 
         <Button
             component="a"
@@ -32,4 +24,20 @@ export function NewDataComponentButtons(props: { button_size?: "sm" | "md" | "lg
             user space&nbsp;<IconNewSection />
         </Button>
     </div>
+}
+
+
+export function NewWikiDataComponentButton(props: { button_size?: "sm" | "md" | "lg", title?: string } )
+{
+    const { button_size = "lg", title = "Wiki" } = props
+
+    return <Button
+        component="a"
+        href={ROUTES.DATA_COMPONENT.NEW()}
+        className="browse-all-button"
+        size={button_size}
+        variant="primary"
+    >
+        {title}&nbsp;<IconNewSection />
+    </Button>
 }
