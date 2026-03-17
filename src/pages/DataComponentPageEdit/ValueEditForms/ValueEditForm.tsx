@@ -115,7 +115,7 @@ export function ValueEditorForm(props: ValueEditorFormProps)
     const value_type_is_number = value_type === "number"
     const value_type_is_function = value_type === "function"
     // const value_type_is_interactable = value_type === "interactable"
-    const show_units = value_type_is_number
+    const show_units = value_type_is_number || value_type_is_function
 
 
     // Allow user to swap from TipTap editor to Monaco code editor
