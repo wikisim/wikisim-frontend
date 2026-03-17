@@ -84,12 +84,12 @@ a
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    padding-top: var(--header-height);
 }
 
 .page-container
 {
     padding: var(--page-padding);
-    padding-top: calc(var(--page-padding) + var(--header-height));
 }
 
 
