@@ -122,8 +122,9 @@ function App()
                         <Route default component={NotFound} />
                     </Router>
                 </ErrorBoundary>
+                <Footer />
             </div>
-            <Footer />
+
             <MentionsClickHandler />
         </LocationProvider>
 

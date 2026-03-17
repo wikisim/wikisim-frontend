@@ -81,12 +81,15 @@ a
 
 .main-app-container
 {
-    margin-top: var(--header-height);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .page-container
 {
     padding: var(--page-padding);
+    padding-top: calc(var(--page-padding) + var(--header-height));
 }
 
 

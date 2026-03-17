@@ -9,6 +9,9 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    width: 100%;
+    /* Stick to bottom when content is short */
+    margin-top: auto;
 }
 
 #app-footer .footer-links
