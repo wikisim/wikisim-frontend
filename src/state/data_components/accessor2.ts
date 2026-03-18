@@ -4,13 +4,12 @@
 import { useMemo } from "preact/hooks"
 
 import { IdAndVersion, OrderedUniqueIdAndVersionList } from "core/data/id"
-import { DataComponent, NewDataComponent } from "core/data/interface"
+import { AsyncDataComponent, DataComponent, NewDataComponent } from "core/data/interface"
 import {
     browser_get_referenced_ids,
 } from "core/rich_text/browser_get_referenced_ids"
 
 import { RootAppState } from "../interface"
-import { AsyncDataComponent } from "./interface"
 
 
 interface AsyncLoadReferencedDataComponentsResult
