@@ -180,6 +180,18 @@ describe("store.data_components", () =>
         // not already loaded.
         describe("when a data component is requested but not already present locally", () =>
         {
+            // We expected "to" for range to be 0 because it's inclusive and
+            // it is set based on the length of the ids array and because this has
+            // a length of 1, then the "to" should be 0 (0 indexed)
+            // We set the limit / size to be the length of the ids passed into
+            // `request_data_component` because this bug: https://github.com/wikisim/wikisim-frontend/issues/40
+            // resulted from there being 22 components being requested and by
+            // default the limit / size was 20 and there was no built in
+            // pagination to handle this automatically.  In the future when this
+            // automatic pagination is added then we'll be able to revert
+            // "to" to be equal to 19 (i.e. 20 - 1).
+            const supabase_range_to = 0
+
             it(`called with IdOnly should set status to 'loading', then call supabase and add the data to the store`, async () =>
             {
                 const { data_components } = store.getState()
@@ -195,7 +207,7 @@ describe("store.data_components", () =>
                 expect(mocked_supabase.from().select.args).deep.equals([["*"]], "supabase.from().select() should be called")
                 expect(mocked_supabase.from().select().in.args).deep.equals([["id", [-123]]], "supabase.from().select().in() should be called")
                 expect(mocked_supabase.from().select().in().order.args).deep.equals([["id", { ascending: true }]], "supabase.from().select().in().order()")
-                expect(mocked_supabase.from().select().in().order().range.args).deep.equals([[0, 19]], "supabase.range should be called")
+                expect(mocked_supabase.from().select().in().order().range.args).deep.equals([[0, supabase_range_to]], "supabase.range should be called")
 
                 await wait_for(0)
                 const { data_components: data_components3 } = store.getState()
@@ -223,7 +235,7 @@ describe("store.data_components", () =>
                 expect(mocked_supabase.from().select.args).deep.equals([["*"]], "supabase.from().select() should be called")
                 expect(mocked_supabase.from().select().or.args).deep.equals([["and(id.eq.-123,version_number.eq.2)"]], "supabase.from().select().or() should be called")
                 expect(mocked_supabase.from().select().or().order.args).deep.equals([["version_number", { ascending: false }], ["id", { ascending: true }]], "supabase.from().select().or().order() called with version_number and id")
-                expect(mocked_supabase.from().select().or().order().range.args).deep.equals([[0, 19]], "supabase.range should be called")
+                expect(mocked_supabase.from().select().or().order().range.args).deep.equals([[0, supabase_range_to]], "supabase.range should be called")
 
                 await wait_for(0)
                 const { data_components: data_components3 } = store.getState()

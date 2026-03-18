@@ -3,13 +3,25 @@ import {
     request_historical_data_components,
     request_latest_data_component_version,
 } from "core/data/fetch_from_db"
-import { all_are_id_and_version, all_are_id_only, IdAndMaybeVersion, IdAndVersion, IdOnly, parse_id } from "core/data/id"
-import type { DataComponent, NewDataComponent } from "core/data/interface"
+import {
+    all_are_id_and_version,
+    all_are_id_only,
+    IdAndMaybeVersion,
+    IdAndVersion,
+    IdOnly,
+    parse_id,
+} from "core/data/id"
+import type { AsyncDataComponent, DataComponent, NewDataComponent } from "core/data/interface"
 import { insert_data_component, update_data_component } from "core/data/post_to_edge_functions"
 import type { GetSupabase } from "core/supabase/browser"
 
 import { GetAppState, RootAppState, SetAppState } from "../interface"
-import { AsyncDataComponent, AsyncNewDataComponent, CheckIfIdIsLatestResponse, DataComponentsState, UpsertDataComponentResult } from "./interface"
+import {
+    AsyncNewDataComponent,
+    CheckIfIdIsLatestResponse,
+    DataComponentsState,
+    UpsertDataComponentResult,
+} from "./interface"
 
 
 export function initial_state(set_state: SetAppState, get_state: GetAppState, get_supabase: GetSupabase): DataComponentsState
@@ -572,7 +584,7 @@ async function attempt_to_update_data_component(
                 id: data_component.id,
                 component: data_component,
                 status: "error",
-                error: response.error,
+                error: new Error(response.error),
             }
 
             data_component_by_id_and_maybe_version[id_str] = async_data_component
