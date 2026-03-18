@@ -1,8 +1,8 @@
 import { Modal } from "@mantine/core"
 import { useCallback, useEffect, useState } from "preact/hooks"
 
+import { FilterByOwnerId } from "core/data/fetch_from_db"
 
-import { FilterByOwnerId } from "../../../lib/core/src/data/fetch_from_db"
 import pub_sub from "../../pub_sub"
 import { local_storage } from "../../state/local_storage"
 import { app_store } from "../../state/store"

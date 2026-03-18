@@ -6,8 +6,8 @@ import { Line } from "react-chartjs-2"
 
 import { MapSelectedPathToName, Scenario, ScenarioGraph } from "core/data/interface"
 import { ResultPoint } from "core/expectation/interface"
+import { inverse_lerp, lerp } from "core/utils/lerp"
 
-import { inverse_lerp, lerp } from "../../../lib/core/src/utils/lerp"
 import { get_line_graph_colour } from "../../constants"
 import pub_sub from "../../pub_sub"
 import { is_mobile_device } from "../../utils/is_mobile_device"
