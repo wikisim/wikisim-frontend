@@ -2,7 +2,7 @@ import { useEffect, useState } from "preact/hooks"
 
 import { DataComponent, NewDataComponent, Scenario } from "core/data/interface"
 import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_javascript"
-import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
+import { evaluate_code_in_browser_sandbox } from "core/evaluator/implementation/browser_sandboxed_javascript"
 import { EvaluationResponse } from "core/evaluator/interface"
 import { calculate_if_expectation_met } from "core/expectation/calculate_if_expectation_met"
 

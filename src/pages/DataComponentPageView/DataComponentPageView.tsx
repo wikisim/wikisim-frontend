@@ -5,8 +5,8 @@ import { valid_value_type } from "core/data/field_values_with_defaults"
 import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
 import { DataComponent, Scenario } from "core/data/interface"
 import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_javascript"
-import { request_dependencies_and_setup_sandbox } from "core/evaluation/request_dependencies_and_setup_sandbox"
-import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
+import { request_dependencies_and_setup_runtime } from "core/evaluation/request_dependencies_and_setup_runtime"
+import { evaluate_code_in_browser_sandbox } from "core/evaluator/implementation/browser_sandboxed_javascript"
 import { EvaluationResponse } from "core/evaluator/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase/browser"
@@ -270,8 +270,12 @@ function ScenariosReadOnly(props: { component: DataComponent })
         // This will result in the component being reqeuested a second time
         // but as we're likely to load multiple dependent components then it
         // won't make much difference
-        request_dependencies_and_setup_sandbox(get_supabase, component.id, false)
-        .then(response => set_sandbox_error(response.error || false))
+        request_dependencies_and_setup_runtime({ get_supabase, id: component.id, debugging: false })
+        .then(response =>
+        {
+            const errored_response = response.find(r => r.error)
+            set_sandbox_error(errored_response?.error ?? false)
+        })
     })
 
 

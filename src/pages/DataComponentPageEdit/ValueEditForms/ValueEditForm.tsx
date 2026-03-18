@@ -13,7 +13,7 @@ import {
 } from "core/data/interface"
 import { calc_function_arguments_errors } from "core/data/is_data_component_invalid"
 import { calculate_result_value } from "core/evaluator"
-import { evaluate_code_in_browser_sandbox } from "core/evaluator/browser_sandboxed_javascript"
+import { evaluate_code_in_browser_sandbox } from "core/evaluator/implementation/browser_sandboxed_javascript"
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
 import { convert_text_type } from "core/rich_text/convert_text_type"
 import { determine_input_value_text_type } from "core/rich_text/determine_text_type"
@@ -75,7 +75,7 @@ export function ValueEditorForm(props: ValueEditorFormProps)
             component,
             data_components_by_id_and_version,
             convert_tiptap_to_javascript: browser_convert_tiptap_to_javascript,
-            evaluate_code_in_sandbox: evaluate_code_in_browser_sandbox,
+            evaluate_code_in_runtime: evaluate_code_in_browser_sandbox,
         })
         .then(response =>
         {
