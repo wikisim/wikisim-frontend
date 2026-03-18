@@ -18,6 +18,7 @@ import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_con
 import { convert_text_type } from "core/rich_text/convert_text_type"
 import { determine_input_value_text_type } from "core/rich_text/determine_text_type"
 
+import { load_referenced_data_components } from "../../../state/data_components/accessor2"
 import { local_storage } from "../../../state/local_storage"
 import { app_store } from "../../../state/store"
 import { CodeEditor } from "../../../text_editor/CodeEditor"
@@ -30,7 +31,6 @@ import { ErrorMessage } from "../../../ui_components/info_and_errors/ErrorMessag
 import OpenCloseSection from "../../../ui_components/OpenCloseSection"
 import { Select } from "../../../ui_components/Select"
 import { ToggleTwo } from "../../../ui_components/ToggleTwo"
-import { load_referenced_data_components } from "../../../ui_components/utils/load_referenced_data_components"
 import { debounce } from "../../../utils/debounce"
 import { FunctionInputsForm } from "../FunctionInputsForm"
 import { UpdatesFnOrValue } from "../interface"

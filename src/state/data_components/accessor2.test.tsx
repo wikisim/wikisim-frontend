@@ -9,8 +9,8 @@ import { init_data_component } from "core/data/modify"
 import { make_field_validators } from "core/data/validate_fields"
 import { tiptap_mention_chip } from "core/rich_text/tiptap_mention_chip"
 
-import { RootAppState } from "../../state/interface"
-import { load_referenced_data_components } from "./load_referenced_data_components"
+import { RootAppState } from "../interface"
+import { load_referenced_data_components } from "./accessor2"
 
 
 // Test wrapper component to provide Preact context for hooks

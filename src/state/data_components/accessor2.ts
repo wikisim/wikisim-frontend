@@ -6,8 +6,8 @@ import {
     browser_get_referenced_ids,
 } from "core/rich_text/browser_get_referenced_ids"
 
-import { AsyncDataComponent } from "../../state/data_components/interface"
-import { RootAppState } from "../../state/interface"
+import { RootAppState } from "../interface"
+import { AsyncDataComponent } from "./interface"
 
 
 interface AsyncLoadReferencedDataComponentsResult
