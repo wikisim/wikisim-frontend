@@ -47,9 +47,9 @@ export function HomePage()
 
             <p>
                 Below you can choose a calculation to view,
-                a <s>simulation to play</s><sup class="coming-soon">COMING SOON</sup>,
+                a simulation to play<sup class="coming-soon">Now live🎉</sup>,
                 or contribute your own... this is a Wiki so if you see something
-                you can fix, just click "edit"!
+                you can fix, just edit it!
             </p>
 
             <p className="intro-video">
@@ -65,7 +65,21 @@ export function HomePage()
                 </div>
             </p>
 
+            <br />
+            <br />
+
             <div class="section">
+                {/* <h2>Community favourites ⭐️</h2>
+                <div class="data-component-cards">
+                    {!data_components_for_home_page
+                        ? <p>Loading...</p>
+                        : data_components_for_home_page.map(data_component =>
+                            <DataComponentCard key={data_component.id.to_str()} data_component={data_component} />
+                        )
+                    }
+                </div>*/}
+
+
                 <h2>Recent Changes</h2>
                 <div class="data-component-cards">
                     {!data_components_for_home_page
