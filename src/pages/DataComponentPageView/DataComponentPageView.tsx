@@ -5,17 +5,16 @@ import { valid_value_type } from "core/data/field_values_with_defaults"
 import { format_data_component_value_to_string } from "core/data/format/format_data_component_value_to_string"
 import { DataComponent, Scenario } from "core/data/interface"
 import { prepare_scenario_javascript } from "core/evaluation/prepare_scenario_javascript"
-import { request_dependencies_and_setup_runtime } from "core/evaluation/request_dependencies_and_setup_runtime"
+import { setup_runtime } from "core/evaluation/setup_runtime"
 import { evaluate_code_in_browser_sandbox } from "core/evaluator/implementation/browser_sandboxed_javascript"
 import { EvaluationResponse } from "core/evaluator/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
-import { get_supabase } from "core/supabase/browser"
 
 import { IconHistory, IconRepeat, IconUsePreviousResult } from "../../assets/icons"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
 import { ROUTES } from "../../routes"
-import { get_async_data_component } from "../../state/data_components/accessor"
+import { get_async_data_component, get_async_data_component_and_dependencies } from "../../state/data_components/accessor"
 import { CheckIfIdIsLatestResponse } from "../../state/data_components/interface"
 import { app_store } from "../../state/store"
 import { ReadOnlyFunction } from "../../text_editor/santisise_html/ReadOnlyFunction"
@@ -263,20 +262,21 @@ function ScenariosReadOnly(props: { component: DataComponent })
     const [sandbox_error, set_sandbox_error] = useState<null | false | Error>(null)
     const [results, set_results] = useState<{[scenario_index: number]: EvaluationResponse}>({})
 
+    const components = get_async_data_component_and_dependencies(app_store(), component.id.to_str())
+
 
     // Load dependencies
     useEffect(() =>
     {
-        // This will result in the component being reqeuested a second time
-        // but as we're likely to load multiple dependent components then it
-        // won't make much difference
-        request_dependencies_and_setup_runtime({ get_supabase, id: component.id, debugging: false })
+        if (components.error) return set_sandbox_error(components.error)
+        if (!components.all_loaded) return
+
+        setup_runtime({ components, debugging: false })
         .then(response =>
         {
-            const errored_response = response.find(r => r.error)
-            set_sandbox_error(errored_response?.error ?? false)
+            set_sandbox_error(response.error || false)
         })
-    })
+    }, [component.id, components.all_loaded])
 
 
     useEffect(() =>

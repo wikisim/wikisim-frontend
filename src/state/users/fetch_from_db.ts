@@ -1,5 +1,6 @@
 import type { PostgrestError } from "@supabase/supabase-js"
 
+import { DbPaginationOptions } from "core/data/interface"
 import type { GetSupabase } from "core/supabase/browser"
 import type { Database } from "core/supabase/interface"
 import { clamp } from "core/utils/clamp"
@@ -23,7 +24,7 @@ export type RequestUsersReturn =
 export async function request_users(
     get_supabase: GetSupabase,
     ids_or_names: string[] = [],
-    options: { page?: number, size?: number } = {},
+    options: DbPaginationOptions = {},
 ): Promise<RequestUsersReturn>
 {
     limit_ids(ids_or_names)

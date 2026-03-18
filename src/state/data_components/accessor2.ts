@@ -1,3 +1,6 @@
+/**
+ * TODO: merge this with get_async_data_component_and_dependencies
+ */
 import { useMemo } from "preact/hooks"
 
 import { IdAndVersion, OrderedUniqueIdAndVersionList } from "core/data/id"

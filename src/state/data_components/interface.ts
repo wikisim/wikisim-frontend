@@ -1,19 +1,12 @@
 import { IdAndMaybeVersion, IdAndVersion, IdOnly, TempId } from "core/data/id"
-import { DataComponent, NewDataComponent } from "core/data/interface"
+import {
+    AsyncDataComponent,
+    BasicLoadingStatus,
+    DataComponent,
+    NewDataComponent,
+    SavingStatus,
+} from "core/data/interface"
 
-
-type BasicLoadingStatus = "loading" | "error" | "loaded"
-type LoadingStatus = BasicLoadingStatus | "not_found"
-type SavingStatus = "saving" | "error" | "loaded"
-
-export type AsyncDataComponentStatus = LoadingStatus | SavingStatus
-export interface AsyncDataComponent
-{
-    id: IdAndMaybeVersion
-    component: DataComponent | null
-    status: AsyncDataComponentStatus
-    error?: string | Error
-}
 
 export interface AsyncDataComponentIdsForHomePage
 {

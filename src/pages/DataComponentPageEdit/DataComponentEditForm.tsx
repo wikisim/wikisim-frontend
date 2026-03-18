@@ -7,8 +7,16 @@ import { useCallback, useEffect, useState } from "preact/hooks"
 import { z } from "zod"
 
 import { get_id_str_of_data_component, get_version_of_data_component } from "core/data/accessor"
-import { flatten_new_or_data_component_to_json, hydrate_data_component_from_json } from "core/data/convert_between_json"
-import { is_data_component, type DataComponent, type NewDataComponent } from "core/data/interface"
+import {
+    flatten_new_or_data_component_to_json,
+    hydrate_data_component_from_json
+} from "core/data/convert_between_json"
+import {
+    AsyncDataComponentStatus,
+    is_data_component,
+    type DataComponent,
+    type NewDataComponent,
+} from "core/data/interface"
 import { is_data_component_invalid } from "core/data/is_data_component_invalid"
 import { changes_made } from "core/data/modify"
 import { make_field_validators } from "core/data/validate_fields"
@@ -18,12 +26,11 @@ import CloseButton from "../../buttons/CloseButton"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
 import { ROUTES } from "../../routes"
-import type { AsyncDataComponentStatus } from "../../state/data_components/interface"
+import { load_referenced_data_components } from "../../state/data_components/accessor2"
 import { app_store } from "../../state/store"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import Countdown, { CountdownTimer } from "../../ui_components/Countdown"
 import Loading from "../../ui_components/Loading"
-import { load_referenced_data_components } from "../../ui_components/utils/load_referenced_data_components"
 import { debounce } from "../../utils/debounce"
 import "./DataComponentEditForm.css"
 import { SaveModal } from "./SaveModal"

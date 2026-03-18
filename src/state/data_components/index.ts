@@ -175,9 +175,17 @@ async function load_data_components(
     if (data_component_ids_to_load.length === 0) return
     // Request from supabase
     const response = all_are_id_only(data_component_ids_to_load)
-        ? await request_data_components(get_supabase, { ids: data_component_ids_to_load })
+        // PERFORMANCE
+        // This will error when data_component_ids_to_load.length > 1000
+        // and likely not a good idea to request 1000 rows at once but
+        // we'll use this simpler approach for now.
+        ? await request_data_components(get_supabase, { ids: data_component_ids_to_load, size: data_component_ids_to_load.length })
         : all_are_id_and_version(data_component_ids_to_load)
-            ? await request_historical_data_components(get_supabase, data_component_ids_to_load)
+            // PERFORMANCE
+            // This will error when data_component_ids_to_load.length > 1000
+            // and likely not a good idea to request 1000 rows at once but
+            // we'll use this simpler approach for now.
+            ? await request_historical_data_components(get_supabase, data_component_ids_to_load, { page: 0, size: data_component_ids_to_load.length })
             : (() => { throw new Error(`Invalid type, must be all IdOnly or all IdAndVersion: ${data_component_ids_to_load}`) })()
 
     set_state(state =>
