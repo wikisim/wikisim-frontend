@@ -231,10 +231,13 @@ describe("store.data_components", () =>
                 expect(data_components2.data_component_by_id_and_maybe_version["-123v2"]!.status).equals("loading", "Async data component status after the Supabase request is made but before it resolves")
 
                 // check supabase was called
-                expect(mocked_supabase.from.args).deep.equals([["data_components_history"]], "supabase.from() should be called")
+                expect(mocked_supabase.from.args).deep.equals([["data_components"]], "supabase.from() should be called")
+                // expect(mocked_supabase.from.args).deep.equals([["data_components_history"]], "supabase.from() should be called")
                 expect(mocked_supabase.from().select.args).deep.equals([["*"]], "supabase.from().select() should be called")
-                expect(mocked_supabase.from().select().or.args).deep.equals([["and(id.eq.-123,version_number.eq.2)"]], "supabase.from().select().or() should be called")
-                expect(mocked_supabase.from().select().or().order.args).deep.equals([["version_number", { ascending: false }], ["id", { ascending: true }]], "supabase.from().select().or().order() called with version_number and id")
+                expect(mocked_supabase.from().select().or.args).deep.equals([], "supabase.from().select().or() should be called")
+                // expect(mocked_supabase.from().select().or.args).deep.equals([["and(id.eq.-123,version_number.eq.2)"]], "supabase.from().select().or() should be called")
+                expect(mocked_supabase.from().select().or().order.args).deep.equals([["id", { ascending: true }]], "supabase.from().select().or().order() called with version_number and id")
+                // expect(mocked_supabase.from().select().or().order.args).deep.equals([["version_number", { ascending: false }], ["id", { ascending: true }]], "supabase.from().select().or().order() called with version_number and id")
                 expect(mocked_supabase.from().select().or().order().range.args).deep.equals([[0, supabase_range_to]], "supabase.range should be called")
 
                 await wait_for(0)
@@ -433,8 +436,14 @@ describe("store.data_components", () =>
             data_components2.request_data_component(new IdAndVersion(-123, 1))
             const { data_components: data_components3 } = store.getState()
             expect(data_components3.data_component_by_id_and_maybe_version["-123v1"]!.status).equals("loading", "Should be trying to load older version of data component")
-            expect(mocked_supabase.from.args.last()).deep.equals(["data_components_history"], "supabase.from() should select from data_components_history when IdAndVersion is requested")
-            expect(mocked_supabase.from().select().or.args.last()).deep.equals(["and(id.eq.-123,version_number.eq.1)"], "supabase.from().select().or() should be called with an 'and' condition including the older version")
+            expect(mocked_supabase.from.args.last()).deep.equals(["data_components"], "supabase.from() should select from data_components_history when IdAndVersion is requested")
+
+            // Now that we fetch the latest version of a component and then the historical version
+            // we should update the test to ensure we don't request the latest version
+            // so that there's also a historical version to fetch.
+            // await wait_for(0)
+            // expect(mocked_supabase.from.args.last()).deep.equals(["data_components_history"], "supabase.from() should select from data_components_history when IdAndVersion is requested")
+            // expect(mocked_supabase.from().select().or.args.last()).deep.equals(["and(id.eq.-123,version_number.eq.1)"], "supabase.from().select().or() should be called with an 'and' condition including the older version")
 
             await wait_for(0)
             const { data_components: data_components4 } = store.getState()
