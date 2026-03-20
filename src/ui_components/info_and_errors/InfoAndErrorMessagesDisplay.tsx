@@ -90,18 +90,19 @@ interface KnownError
     conditional_display?: (state: RootAppState) => boolean
 }
 
-const known_error: KnownError | undefined = {
-    id: 1,
-    severity: "low",
-    title: "Partial outage affecting interactable component uploads",
-    message: "We are investigating an issue where users are unable to upload files for interactable components.",
-    start_datetime: new Date("2025-12-09T08:15:00Z"),
-    issue_url: "https://github.com/wikisim/wikisim-frontend/issues/20",
-    conditional_display: (state: RootAppState) =>
-    {
-        return state.route.current_path_is_edit_page || state.route.current_path_is_create_page
-    },
-}
+const known_error: KnownError | undefined = undefined
+// {
+//     id: 1,
+//     severity: "low",
+//     title: "Partial outage affecting interactable component uploads",
+//     message: "We are investigating an issue where users are unable to upload files for interactable components.",
+//     start_datetime: new Date("2025-12-09T08:15:00Z"),
+//     issue_url: "https://github.com/wikisim/wikisim-frontend/issues/20",
+//     conditional_display: (state: RootAppState) =>
+//     {
+//         return state.route.current_path_is_edit_page || state.route.current_path_is_create_page
+//     },
+// }
 
 function show_known_error_notification(known_error: KnownError, state: RootAppState, close_in: number)
 {
