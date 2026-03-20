@@ -1,6 +1,7 @@
 import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 
+import type { DataComponent } from "core/data/interface"
 import { CoreStoreDependencies, get_new_core_store } from "core/state/store"
 import { get_supabase } from "core/supabase/browser"
 import { deep_freeze } from "core/utils/deep_freeze"
@@ -64,10 +65,16 @@ export const get_new_app_store = (dependencies?: AppStoreDependencies) =>
             {
                 acc["d" + value.id.to_str()] = value.component
                 return acc
-            }, {} as Record<string, any>)
+            }, {} as Record<string, DataComponent | null>)
 
         const all_debug_state = { ...debug_state, ...by_id }
-        ;(window as any).debug_state = deep_freeze(all_debug_state)
+        const frozen_debug_state = deep_freeze(all_debug_state)
+        ;(window as any).debug_state = frozen_debug_state
+
+        // Expose state on window so that CustomReferences can check to see if
+        // their component is the latest version, and if currently editing content
+        // This is a hacky solution.  Think of a better approach.
+        ;(window as any).shared_state = frozen_debug_state
     })
 
     return app_store

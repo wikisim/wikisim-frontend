@@ -1,9 +1,12 @@
 import Mention from "@tiptap/extension-mention"
 
-import { IdAndMaybeVersion, IdOnly, parse_id } from "core/data/id"
+import { IdAndMaybeVersion, IdAndVersion, IdOnly, parse_id } from "core/data/id"
+import { DataComponent } from "core/data/interface"
 
+import UpdateVersionSVG from "../assets/update_version.svg"
 import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
+import { RootAppState } from "../state/interface"
 import "./CustomReferences.css"
 
 
@@ -64,6 +67,20 @@ const CustomMention = Mention.extend({
             // Use textContent instead of innerHTML to prevent XSS
             dom.textContent = dangerous_str
             dom.href = ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT(parsed_id)
+
+            // Check if component version is latest, if not add a warning icon and tooltip
+            const newer_component = check_if_component_version_is_old(parsed_id)
+            if (newer_component)
+            {
+                const warning_icon = document.createElement("img")
+                warning_icon.src = UpdateVersionSVG
+                warning_icon.alt = "Update Version"
+                warning_icon.title = "A newer version of this component exists"
+                warning_icon.width = 16
+                warning_icon.height = 16
+                warning_icon.style.marginLeft = "4px"
+                dom.appendChild(warning_icon)
+            }
 
             // // label_span.textContent = dangerous_str
             // // dom.appendChild(label_span)
@@ -163,4 +180,30 @@ function parse_id_safely(id_str: string): IdAndMaybeVersion | undefined
     {
         return undefined
     }
+}
+
+
+function check_if_component_version_is_old(component_id: IdAndMaybeVersion): DataComponent | false | undefined
+{
+    if (!(component_id instanceof IdAndVersion)) return undefined
+
+    // window.shared_state allows CustomReferences to check to see if
+    // their component is the latest version
+    // This is a hacky solution.  Think of a better approach.
+    const root_app_state = (window as any).shared_state as (RootAppState | undefined)
+    if (!root_app_state) return undefined
+
+    const components_by_id = root_app_state.data_components.data_component_by_id_and_maybe_version
+
+    const async_component = components_by_id[component_id.to_str_without_version()]
+    if (!async_component) return undefined
+
+    const { component } = async_component
+    const latest_version = component?.id.version
+    if (component && latest_version !== component_id.version)
+    {
+        return component
+    }
+
+    return false
 }

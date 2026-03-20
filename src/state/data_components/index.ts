@@ -1,6 +1,7 @@
 import {
     request_data_components,
     request_historical_data_components,
+    request_latest_and_historical_data_components,
     request_latest_data_component_version,
 } from "core/data/fetch_from_db"
 import {
@@ -197,7 +198,7 @@ async function load_data_components(
             // This will error when data_component_ids_to_load.length > 1000
             // and likely not a good idea to request 1000 rows at once but
             // we'll use this simpler approach for now.
-            ? await request_historical_data_components(get_supabase, data_component_ids_to_load, { page: 0, size: data_component_ids_to_load.length })
+            ? await request_latest_and_historical_data_components(get_supabase, data_component_ids_to_load, { page: 0, size: data_component_ids_to_load.length })
             : (() => { throw new Error(`Invalid type, must be all IdOnly or all IdAndVersion: ${data_component_ids_to_load}`) })()
 
     set_state(state =>

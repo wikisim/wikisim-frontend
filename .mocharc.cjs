@@ -12,7 +12,7 @@ module.exports = {
     ignore: "**/*.browser.test.ts",
     import: "tsx",
     extensions: ["ts", "tsx"],
-    require: ["src/test/setup-register-css.cjs", "src/test/setup.js"],
+    require: ["src/test/setup-register-other-extensions.cjs", "src/test/setup.js"],
     timeout: 0,
     ...(process.argv.slice(2).some(is_test_file) ? {} : {spec}),
 };

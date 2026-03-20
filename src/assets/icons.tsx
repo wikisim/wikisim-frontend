@@ -1,5 +1,6 @@
 import HistoryIconSVG from "./history.svg"
 import RepeatIconSVG from "./repeat.svg"
+import UpdateVersionSVG from "./update_version.svg"
 import UsePreviousResultIconSVG from "./use_previous_result.svg"
 
 export const IconHistory = () => <img
@@ -27,6 +28,19 @@ export const IconRepeat = (props: { disabled?: boolean, no_title?: boolean }) =>
     }}
 />
 
+export const IconUpdateVersion = (props: { no_title?: boolean }) => <img
+    src={UpdateVersionSVG}
+    alt="Update Version"
+    title={props.no_title ? undefined : "Use Newer Version"}
+    width={20}
+    height={20}
+    style={{
+        // verticalAlign: -5,
+        // margin: "0px 5px",
+        // filter: props.disabled ? "brightness(5) contrast(0.7)" : undefined,
+    }}
+/>
+
 export const IconUsePreviousResult = (props: { disabled?: boolean, no_title?: boolean }) => <img
     src={UsePreviousResultIconSVG}
     alt="Use Previous Result"
@@ -39,7 +53,6 @@ export const IconUsePreviousResult = (props: { disabled?: boolean, no_title?: bo
         filter: props.disabled ? "brightness(5) contrast(0.7)" : undefined,
     }}
 />
-
 
 
 export const IconGraph = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" >
