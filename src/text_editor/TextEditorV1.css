@@ -1,7 +1,8 @@
 
 .text-editor-v1
 {
-    margin-top: var(--vgap-small);
+    /* Changed to mid.  See https://github.com/wikisim/wikisim-frontend/issues/46 */
+    margin-top: var(--vgap-mid);
     display: flex;
     flex: 1 1;
 }
