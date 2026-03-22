@@ -147,6 +147,22 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
 
 
     const app_state = app_store()
+
+    // When the initial_content value changes due to an external event, for
+    // example when this feature is used: https://github.com/wikisim/wikisim-frontend/issues/49 ,
+    // we want to force the editor to update its content.
+    useEffect(() =>
+    {
+        if (!input_model_ref.current) return
+        const current_content = input_model_ref.current.getValue()
+        if (props.initial_content === current_content) return
+
+        load_dependencies(app_state, props.initial_content, add_data_component_dependency)
+        input_model_ref.current.setValue(props.initial_content)
+
+    }, [props.initial_content])
+
+
     useEffect(() =>
     {
         load_dependencies(app_state, props.initial_content, add_data_component_dependency)
@@ -203,7 +219,7 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
             input_model_ref.current,
             validation_model_ref.current,
             props.function_arguments ?? [],
-            props.on_update
+            props.on_update,
         )
 
         update_available_globals(data_component_dependencies_by_id, props.function_arguments ?? [])
@@ -334,7 +350,8 @@ function upsert_change_and_sync_handler(
     input_editor: MonacoEditor,
     validation_model: ITextModel,
     function_arguments: FunctionArgument[],
-    on_update: ((text: string) => void) | undefined)
+    on_update: ((text: string) => void) | undefined,
+)
 {
     // console .log("Upserting change and sync handler")
 

@@ -228,6 +228,17 @@ export function TextEditorV2({
     })
 
 
+    // When the initial_content value changes due to an external event, for
+    // example when this feature is used: https://github.com/wikisim/wikisim-frontend/issues/49 ,
+    // we want to force the editor to update its content.
+    useEffect(() =>
+    {
+        if (initial_content !== content_ref.current)
+        // console .log(`Updating editor content due to initial_content change. New initial_content: "${initial_content}", current content_ref: "${content_ref.current}"`)
+        editor.commands.setContent(initial_content)
+    }, [initial_content])
+
+
     editor.setEditable(editable)
 
 
