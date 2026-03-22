@@ -1,3 +1,4 @@
+import { ActionIcon, Tooltip } from "@mantine/core"
 import { useCallback, useEffect, useMemo, useState } from "preact/hooks"
 
 import { DEFAULTS } from "core/data/defaults"
@@ -6,7 +7,9 @@ import {
     format_data_component_value_to_string,
 } from "core/data/format/format_data_component_value_to_string"
 import { format_number_to_string } from "core/data/format/format_number_to_string"
+import { IdAndVersion } from "core/data/id"
 import {
+    AsyncDataComponent,
     DataComponent,
     NewDataComponent,
     NUMBER_DISPLAY_TYPES
@@ -15,9 +18,12 @@ import { calc_function_arguments_errors } from "core/data/is_data_component_inva
 import { calculate_result_value } from "core/evaluator"
 import { evaluate_code_in_browser_sandbox } from "core/evaluator/implementation/browser_sandboxed_javascript"
 import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_convert_tiptap_to_javascript"
+import { browser_get_referenced_ids } from "core/rich_text/browser_get_referenced_ids"
 import { convert_text_type } from "core/rich_text/convert_text_type"
 import { determine_input_value_text_type } from "core/rich_text/determine_text_type"
+import { update_referenced_ids } from "core/rich_text/update_referenced_ids"
 
+import { IconUpdateVersion } from "../../../assets/icons"
 import { load_referenced_data_components } from "../../../state/data_components/accessor2"
 import { local_storage } from "../../../state/local_storage"
 import { app_store } from "../../../state/store"
@@ -176,12 +182,12 @@ export function ValueEditorForm(props: ValueEditorFormProps)
                         experimental_code_editor_features={true}
                     />}
 
-                    {local_storage.get_show_option_for_code_editor() && <ToggleTwo
-                        label={active => active ? "Code Editor" : "Rich Text Editor"}
-                        active={use_code_editor}
-                        set_active={set_use_code_editor}
-                        style={{ padding: "4px 8px" }}
-                    />}
+                    <ValueEditorControls
+                        use_code_editor={use_code_editor}
+                        set_use_code_editor={set_use_code_editor}
+                        input_value={draft_component.input_value}
+                        on_update={debounced_handle_update_input_value}
+                    />
 
                     {show_units && <TextEditorV1
                         label="Units"
@@ -280,4 +286,101 @@ function format_options(_data_component: DataComponent | NewDataComponent)
         const label = `${format_number_to_string(1230.5, 3, type)}`
         return ({ value: type, label })
     })
+}
+
+
+
+interface ValueEditorControlsProps
+{
+    use_code_editor: boolean
+    set_use_code_editor: (use: boolean) => void
+    input_value: string | undefined
+    on_update: (text: string) => void
+}
+function ValueEditorControls(props: ValueEditorControlsProps)
+{
+    const { input_value } = props
+    const state = app_store()
+
+    const referenced_ids = useMemo(() =>
+    {
+        if (!input_value) return []
+
+        return browser_get_referenced_ids({ input_value })
+    }, [input_value])
+
+
+    const components_referencing_older_versions = useMemo(() =>
+    {
+        if (referenced_ids.length === 0) return 0
+
+        const components_by_id_and_version = state.data_components.data_component_by_id_and_maybe_version
+        let count = 0
+        referenced_ids.forEach(id =>
+        {
+            const id_str = id.to_str_without_version()
+            const async_component = components_by_id_and_version[id_str]
+            if (!async_component) return
+            const { component } = async_component
+            if (!component) return
+            if (component.id.version !== id.version) count++
+        })
+        return count
+    }, [referenced_ids, state.data_components.data_component_by_id_and_maybe_version])
+
+
+    const show_code_editor_option = local_storage.get_show_option_for_code_editor()
+    const have_components_referencing_older_versions = components_referencing_older_versions > 0
+
+    if (!(show_code_editor_option || have_components_referencing_older_versions)) return null
+
+    function update_ids()
+    {
+        if (!input_value) return
+        const map_ids = factory_map_ids(state.data_components.data_component_by_id_and_maybe_version)
+        const updated_input_value = update_referenced_ids(input_value, map_ids)
+
+        if (updated_input_value === input_value) return // No change
+        props.on_update(updated_input_value)
+    }
+
+
+    const update_components_label = `Update ${components_referencing_older_versions} component${components_referencing_older_versions > 1 ? "s" : ""} referencing older versions`
+
+    return <div className="value-editor-controls">
+        {show_code_editor_option ? <ToggleTwo
+            label={active => active ? "Code Editor" : "Rich Text Editor"}
+            active={props.use_code_editor}
+            set_active={props.set_use_code_editor}
+            style={{ padding: "4px 8px" }}
+        /> : <div />}
+        {have_components_referencing_older_versions && <Tooltip
+            label={update_components_label}
+            position="bottom"
+        >
+            <ActionIcon
+                // disabled={!!props.disabled}
+                onClick={update_ids}
+                variant="subtle"
+                size="lg"
+            >
+                <IconUpdateVersion no_title={true} />
+            </ActionIcon>
+        </Tooltip>}
+    </div>
+}
+
+
+
+function factory_map_ids(components_by_id_and_maybe_version: Record<string, AsyncDataComponent>)
+{
+    return (id: IdAndVersion): IdAndVersion | undefined =>
+    {
+        const id_str = id.to_str_without_version()
+        const async_component = components_by_id_and_maybe_version[id_str]
+        if (!async_component) return
+        const { component } = async_component
+        if (!component) return
+        return component.id
+    }
 }

@@ -53,3 +53,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.value-editor-container .value-editor-controls
+{
+    margin-top: var(--vgap-small);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
