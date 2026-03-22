@@ -42,7 +42,8 @@ export function get_tiptap_extensions(single_line: boolean, experimental_code_ed
         Superscript,
         Image,
         Link.configure({
-            openOnClick: true,
+            // Set `openOnClick` to false to fix https://github.com/wikisim/wikisim-frontend/issues/50
+            openOnClick: false,
             HTMLAttributes: {
                 class: "editor-link",
             },

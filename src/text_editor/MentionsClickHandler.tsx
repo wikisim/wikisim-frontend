@@ -8,7 +8,8 @@ import { ROUTES } from "../routes"
 
 
 // This component listens for mention clicks and redirects the user to the
-// corresponding page of that data component.
+// corresponding page of that data component but without causing a full page
+// reload which would lose the current data downloaded into this instance of the app.
 export function MentionsClickHandler()
 {
     const location = useLocation()

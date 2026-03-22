@@ -97,7 +97,9 @@ const CustomMention = Mention.extend({
                 // expect it to open in a new tab.  Don't interfere with that default behavior.
                 if (get_currently_pressed_keys().metaKey) return
 
-                // prevent the anchor tag from working as we do our own routing
+                // If we're letting the click event proceed to cause the page
+                // navigation then we need to prevent default behaviour which
+                // would otherwise cause a full page reload.
                 e.preventDefault()
                 pub_sub.pub("mention_clicked", { data_component_id: node.attrs.id as string })
             })
