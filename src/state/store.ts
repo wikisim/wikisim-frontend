@@ -6,6 +6,7 @@ import { CoreStoreDependencies, get_new_core_store } from "core/state/store"
 import { get_supabase } from "core/supabase/browser"
 import { deep_freeze } from "core/utils/deep_freeze"
 
+import { update_shared_app_state } from "../text_editor/CustomReferences_state"
 import { deep_copy } from "../utils/deep_copy"
 import * as data_components from "./data_components"
 import { RootAppState } from "./interface"
@@ -59,22 +60,22 @@ export const get_new_app_store = (dependencies?: AppStoreDependencies) =>
     {
         // Don't run this in a non-browser environment
         if (typeof window === "undefined") return
-        const debug_state = deep_copy(state)
-        const by_id = Object.values(debug_state.data_components.data_component_by_id_and_maybe_version)
+        const copied_app_state = deep_copy(state)
+        const by_id = Object.values(copied_app_state.data_components.data_component_by_id_and_maybe_version)
             .reduce((acc, value) =>
             {
                 acc["d" + value.id.to_str()] = value.component
                 return acc
             }, {} as Record<string, DataComponent | null>)
 
-        const all_debug_state = { ...debug_state, ...by_id }
-        const frozen_debug_state = deep_freeze(all_debug_state)
-        ;(window as any).debug_state = frozen_debug_state
-
-        // Expose state on window so that CustomReferences can check to see if
+        // Share all the application state so that CustomReferences can check if
         // their component is the latest version, and if currently editing content
         // This is a hacky solution.  Think of a better approach.
-        ;(window as any).shared_state = frozen_debug_state
+        update_shared_app_state(deep_freeze(copied_app_state))
+
+        const all_debug_state = { ...copied_app_state, ...by_id }
+        const frozen_debug_state = deep_freeze(all_debug_state)
+        ;(window as any).debug_state = frozen_debug_state
     })
 
     return app_store

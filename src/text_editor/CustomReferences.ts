@@ -6,8 +6,8 @@ import { DataComponent } from "core/data/interface"
 import UpdateVersionSVG from "../assets/update_version.svg"
 import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
-import { RootAppState } from "../state/interface"
 import "./CustomReferences.css"
+import { get_shared_app_state } from "./CustomReferences_state"
 
 
 
@@ -187,10 +187,7 @@ function check_if_component_version_is_old(component_id: IdAndMaybeVersion): Dat
 {
     if (!(component_id instanceof IdAndVersion)) return undefined
 
-    // window.shared_state allows CustomReferences to check to see if
-    // their component is the latest version
-    // This is a hacky solution.  Think of a better approach.
-    const root_app_state = (window as any).shared_state as (RootAppState | undefined)
+    const root_app_state = get_shared_app_state()
     if (!root_app_state) return undefined
 
     const components_by_id = root_app_state.data_components.data_component_by_id_and_maybe_version
