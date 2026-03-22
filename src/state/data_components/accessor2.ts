@@ -1,5 +1,9 @@
 /**
  * TODO: merge this with get_async_data_component_and_dependencies
+ * But this is also stateful to optimise (prematurely?) for rendering React
+ * components.  So either remove this optimisation and merge with
+ * get_async_data_component_and_dependencies, or rename this from
+ * "accessor" to something else which is not synonymous with pure (stateless) functions.
  */
 import { useMemo } from "preact/hooks"
 
@@ -66,7 +70,7 @@ export function load_referenced_data_components(state: RootAppState, data_compon
     {
         // console .log("Requesting all referenced data components", all_referenced_data_component_ids.map(id => id.to_str()).join(", "))
         return state.data_components.request_data_components(all_referenced_data_component_ids)
-    }, [all_referenced_data_component_ids.length, state.data_components.data_component_by_id_and_maybe_version])
+    }, [ids_set.to_str(), state.data_components.data_component_by_id_and_maybe_version])
 
 
     const result2 = process_async_data_components(async_all_referenced_data_components, error)
@@ -77,6 +81,15 @@ export function load_referenced_data_components(state: RootAppState, data_compon
     const loading = async_all_referenced_data_components.filter(async_data_component => async_data_component.status === "loading")
     const loading_count = loading.length
     const status = error ? "error" : (loading_count > 0 ? "loading" : "loaded")
+
+    // // Check that all the references ids are actually present in the _by_id_str object
+    // all_referenced_data_component_ids.forEach(id =>
+    // {
+    //     if (!all_referenced_data_components_by_id_str[id.to_str()])
+    //     {
+    //         console .error(`Data component with id ${id.to_str()} is referenced but not present in the all_referenced_data_components_by_id_str object.`)
+    //     }
+    // })
 
     return {
         status,
