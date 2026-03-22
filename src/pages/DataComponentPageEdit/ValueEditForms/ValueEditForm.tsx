@@ -21,7 +21,7 @@ import { browser_convert_tiptap_to_javascript } from "core/rich_text/browser_con
 import { browser_get_referenced_ids } from "core/rich_text/browser_get_referenced_ids"
 import { convert_text_type } from "core/rich_text/convert_text_type"
 import { determine_input_value_text_type } from "core/rich_text/determine_text_type"
-import { update_referenced_ids } from "core/rich_text/update_referenced_ids"
+import { update_references } from "core/rich_text/update_references"
 
 import { IconUpdateVersion } from "../../../assets/icons"
 import { load_referenced_data_components } from "../../../state/data_components/accessor2"
@@ -338,7 +338,7 @@ function ValueEditorControls(props: ValueEditorControlsProps)
     {
         if (!input_value) return
         const map_ids = factory_map_ids(state.data_components.data_component_by_id_and_maybe_version)
-        const updated_input_value = update_referenced_ids(input_value, map_ids)
+        const updated_input_value = update_references(input_value, map_ids)
 
         if (updated_input_value === input_value) return // No change
         props.on_update(updated_input_value)
@@ -374,13 +374,10 @@ function ValueEditorControls(props: ValueEditorControlsProps)
 
 function factory_map_ids(components_by_id_and_maybe_version: Record<string, AsyncDataComponent>)
 {
-    return (id: IdAndVersion): IdAndVersion | undefined =>
+    return (id: IdAndVersion): DataComponent | undefined =>
     {
         const id_str = id.to_str_without_version()
         const async_component = components_by_id_and_maybe_version[id_str]
-        if (!async_component) return
-        const { component } = async_component
-        if (!component) return
-        return component.id
+        return async_component?.component || undefined
     }
 }
