@@ -5,6 +5,7 @@ import { DataComponent } from "core/data/interface"
 
 import UpdateVersionSVG from "../assets/update_version.svg"
 import pub_sub from "../pub_sub"
+import { get_currently_pressed_keys } from "../pub_sub/publish_key_down_events"
 import { ROUTES } from "../routes"
 import "./CustomReferences.css"
 import { get_shared_app_state } from "./CustomReferences_state"
@@ -90,9 +91,14 @@ const CustomMention = Mention.extend({
 
             // Custom chip click behaviour
             dom.addEventListener("click", e => {
-                e.preventDefault()
-                // prevent the anchor tag from working as we do our own routing
                 e.stopImmediatePropagation()
+
+                // On Mac OS, when a user holds the cmd key and clicks a link, they
+                // expect it to open in a new tab.  Don't interfere with that default behavior.
+                if (get_currently_pressed_keys().metaKey) return
+
+                // prevent the anchor tag from working as we do our own routing
+                e.preventDefault()
                 pub_sub.pub("mention_clicked", { data_component_id: node.attrs.id as string })
             })
 
