@@ -1,5 +1,4 @@
-import { useLocation } from "preact-iso"
-import { useEffect, useMemo, useState } from "preact/hooks"
+import { useEffect, useMemo } from "preact/hooks"
 
 import { IdAndVersion, parse_id } from "core/data/id"
 import { clamp } from "core/utils/clamp"
@@ -11,13 +10,17 @@ import { ReadOnly } from "../text_editor/santisise_html/sanitise_html"
 import Loading from "../ui_components/Loading"
 import { set_page_title } from "../ui_components/set_page_title"
 import { time_ago_or_date } from "../utils/time_ago_or_date"
+import { DataComponentPageRedirectToIdOnly } from "./DataComponentPageRedirectToIdOnly"
 import "./DataComponentPageVersionHistory.css"
 
 
 export function DataComponentPageVersionHistory(props: { data_component_id: string, query: Record<string, string> })
 {
     const id = parse_id(props.data_component_id)
-    if (id instanceof IdAndVersion) return <DataComponentPageVersionHistoryRedirect id={id} />
+    if (id instanceof IdAndVersion) return <DataComponentPageRedirectToIdOnly
+        redirect_to={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY(id.as_IdOnly())}
+        description="history"
+    />
 
     const page = clamp(parseInt(props.query.page || "1", 10) - 1, 0, 1000)
     const page_size = parseInt(props.query.page_size || "20", 10)
@@ -70,9 +73,9 @@ export function DataComponentPageVersionHistory(props: { data_component_id: stri
 
     const max_version = component.id.version
     const number_to_show = clamp(page_size, 0, max_version - (page * page_size))
-    const from_version = max_version - (page * page_size)
-    const to_version = from_version - number_to_show + 1
-    let version_numbers = from_version
+    const to_version = max_version - (page * page_size)
+    const from_version = to_version - number_to_show + 1
+    let version_numbers = to_version
     const row_versions = Array.from(Array(number_to_show)).map(() => version_numbers--)
 
     return (
@@ -85,43 +88,10 @@ export function DataComponentPageVersionHistory(props: { data_component_id: stri
 
             Page {page + 1} showing{" "}
             {/* {number_to_show} of {max_version} from */}
-            versions {to_version} to {from_version}.
+            versions {from_version} to {to_version}.
             {row_versions.map(v => <HistoryRow key={v} id={id.add_version(v)} />)}
         </div>
     )
-}
-
-
-
-function DataComponentPageVersionHistoryRedirect(props: { id: IdAndVersion })
-{
-    const redirect_to = ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY(props.id.as_IdOnly())
-    const location = useLocation()
-    const [seconds, set_seconds] = useState(10)
-
-    useEffect(() =>
-    {
-        const interval = setInterval(() =>
-        {
-            set_seconds(s =>
-            {
-                if (s <= 1)
-                {
-                    location.route(redirect_to)
-                    clearInterval(interval)
-                    return s
-                }
-                return s - 1
-            })
-        }, 1000)
-
-        return () => clearInterval(interval)
-    }, [])
-
-    return <div className="page-container">
-        <p>Click here <a href={redirect_to}>to view the history</a> of this page.</p>
-        <p>Redirecting in {seconds}<Loading /></p>
-    </div>
 }
 
 
