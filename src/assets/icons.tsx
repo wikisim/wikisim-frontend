@@ -1,7 +1,20 @@
+import AlternativeIconSVG from "./alternative.svg"
 import HistoryIconSVG from "./history.svg"
 import RepeatIconSVG from "./repeat.svg"
 import UpdateVersionSVG from "./update_version.svg"
 import UsePreviousResultIconSVG from "./use_previous_result.svg"
+
+
+export const IconAlternative = () => <img
+    src={AlternativeIconSVG}
+    alt="Alternative"
+    width={24}
+    height={24}
+    style={{
+        // verticalAlign: -5,
+        // margin: "0px 5px"
+    }}
+/>
 
 export const IconHistory = () => <img
     src={HistoryIconSVG}
