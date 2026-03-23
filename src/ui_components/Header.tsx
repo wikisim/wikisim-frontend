@@ -243,11 +243,7 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
     const [opened_edit_user_name, set_opened_edit_user_name] = useState(false)
 
 
-    const create_a_new_wiki_page = user_auth_session.session ? () =>
-    {
-        // Navigate to new data component page
-        location.route(ROUTES.DATA_COMPONENT.NEW())
-    } : undefined
+    const allow_create_a_new_wiki_page = !!user_auth_session.session
 
     // const go_to_users_pages = user_auth_session.session ? () =>
     // {
@@ -256,12 +252,10 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
     //     location.route(ROUTES.DATA_COMPONENT.SEARCH({ user_id }))
     // } : undefined
 
-    const go_to_user_page = user_auth_session.session ? () =>
-    {
-        const user_id = user_auth_session.session!.user.id
-        // Navigate to user's profile page
-        location.route(ROUTES.USER.VIEW(user_id))
-    } : undefined
+    // Navigate to user's profile page
+    const route_to_profile = user_auth_session.session
+        ? ROUTES.USER.VIEW(user_auth_session.session.user.id)
+        : undefined
 
     // Have to use these ugly nested divs to fix https://github.com/wikisim/wikisim-frontend/issues/9
     // Even when the menu has opened=false it still has some area that can be clicked onto
@@ -280,12 +274,14 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
         </Menu.Target>
 
         <Menu.Dropdown>
-            {create_a_new_wiki_page && <Menu.Item
-                leftSection={<IconNewSection size={14} />}
-                onClick={create_a_new_wiki_page}
+            {allow_create_a_new_wiki_page && <a
+                href={ROUTES.DATA_COMPONENT.NEW()}
+                style={{ textDecoration: "none", color: "inherit" }}
             >
-                Create a new page
-            </Menu.Item>}
+                <Menu.Item leftSection={<IconNewSection size={14} />}>
+                    Create a new page
+                </Menu.Item>
+            </a>}
 
             {/* {go_to_users_pages && <Menu.Item
                 leftSection={<IconNotebook size={14} />}
@@ -294,12 +290,14 @@ function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) =>
                 Your pages (public)
             </Menu.Item>} */}
 
-            {go_to_user_page && <Menu.Item
-                leftSection={<IconUserFilled size={14} />}
-                onClick={go_to_user_page}
+            {route_to_profile && <a
+                href={route_to_profile}
+                style={{ textDecoration: "none", color: "inherit" }}
             >
-                Profile
-            </Menu.Item>}
+                <Menu.Item leftSection={<IconUserFilled size={14} />}>
+                    Profile
+                </Menu.Item>
+            </a>}
 
             <Menu.Item
                 leftSection={<IconUserEdit size={14} />}
