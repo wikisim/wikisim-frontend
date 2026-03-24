@@ -15,6 +15,7 @@ interface TextEditorV1Props
     initial_content: string
     content?: string
     on_change?: (e: JSX.TargetedEvent<HTMLTextAreaElement | HTMLInputElement, Event>) => void
+    on_focus?: (e: JSX.TargetedFocusEvent<HTMLTextAreaElement | HTMLInputElement>) => void
     on_blur?: (e: JSX.TargetedFocusEvent<HTMLTextAreaElement | HTMLInputElement>) => void
     single_line?: boolean
     start_focused?: false | "focused" | "focused_and_text_selected"
@@ -113,9 +114,10 @@ export function TextEditorV1(all_props: TextEditorV1Props)
         if (props.on_change) props.on_change(e)
     }, [props.on_change])
 
-    const handle_on_focus = useMemo(() => () =>
+    const handle_on_focus = useMemo(() => (e: JSX.TargetedFocusEvent<HTMLTextAreaElement | HTMLInputElement>) =>
     {
         set_focused(true)
+        if (props.on_focus) props.on_focus(e)
     }, [props.start_focused])
 
     const handle_on_blur = useMemo(() => (e: JSX.TargetedFocusEvent<HTMLTextAreaElement | HTMLInputElement>) =>
