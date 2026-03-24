@@ -1,6 +1,6 @@
 
 
-.data-component-metrics
+#data-component-metrics
 {
     display: flex;
     flex-direction: row;
@@ -10,7 +10,7 @@
     height: fit-content;
 }
 
-.alternatives-count
+#data-component-metrics .alternatives
 {
     display: flex;
     flex-direction: row;
@@ -25,7 +25,14 @@
     cursor: pointer;
 }
 
-.alternatives-count img
+#data-component-metrics .alternatives img
 {
     margin: 0;
+}
+
+#data-component-metrics .alternatives-count
+{
+    border-radius: 10px;
+    background-color: #dfdfdf;
+    padding: 0px 6.5px 1px 6.5px;
 }

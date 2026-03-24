@@ -18,17 +18,17 @@ export function DataComponentMetrics(props: { component: DataComponent })
     const alternatives = metrics?.alternative_component_ids.length ?? 0
     const label = `See and create alternatives`
 
-    return <div className="data-component-metrics">
+    return <div id="data-component-metrics">
         <Tooltip label={label} position="bottom">
             <div
-                className="alternatives-count"
+                className="alternatives"
                 onClick={() =>
                 {
                     const route = ROUTES.DATA_COMPONENT.VIEW_ALTERNATIVES(props.component.id.as_IdOnly())
                     location.route(route)
                 }}
             >
-                <IconAlternative /> Fork {alternatives}
+                <IconAlternative /> Fork <span className="alternatives-count">{alternatives}</span>
             </div>
         </Tooltip>
     </div>

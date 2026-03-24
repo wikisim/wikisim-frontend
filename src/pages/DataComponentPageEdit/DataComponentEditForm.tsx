@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "preact/hooks"
 import { z } from "zod"
 
 import { get_id_str_of_data_component, get_version_of_data_component } from "core/data/accessor"
+import { component_is_an_alternative } from "core/data/component_is_an_alternative"
 import {
     flatten_new_or_data_component_to_json,
     hydrate_data_component_from_json
@@ -14,23 +15,26 @@ import {
 import {
     AsyncDataComponentStatus,
     is_data_component,
+    is_new_data_component,
     type DataComponent,
     type NewDataComponent,
 } from "core/data/interface"
 import { is_data_component_invalid } from "core/data/is_data_component_invalid"
 import { changes_made } from "core/data/modify"
 import { make_field_validators } from "core/data/validate_fields"
+import { tiptap_mention_chip } from "core/rich_text/tiptap_mention_chip"
 
 import { ConfirmBinButton } from "../../buttons/BinButton"
 import CloseButton from "../../buttons/CloseButton"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
 import { ROUTES } from "../../routes"
-import { load_referenced_data_components } from "../../state/data_components/accessor2"
+import { load_referenced_data_components, load_referenced_subject_and_according_to_components } from "../../state/data_components/accessor2"
 import { app_store } from "../../state/store"
 import { TextEditorV2 } from "../../text_editor/TextEditorV2"
 import Countdown, { CountdownTimer } from "../../ui_components/Countdown"
 import Loading from "../../ui_components/Loading"
+import { AccordingTo } from "../../ui_components/data_component/AccordingTo"
 import { debounce } from "../../utils/debounce"
 import "./DataComponentEditForm.css"
 import { SaveModal } from "./SaveModal"
@@ -86,11 +90,15 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
     }
 
 
-    const result = load_referenced_data_components(state, draft_component)
-    if (result.status === "loading")
+    const result1 = load_referenced_data_components(state, draft_component)
+    const result2 = load_referenced_subject_and_according_to_components(state, draft_component)
+    if (result1.status === "loading" || result2.status === "loading")
     {
-        const total = result.referenced_data_component_ids.length
-        const remaining = result.loading_count
+        const total = (
+            result1.referenced_data_component_ids.length
+            + result2.subject_and_according_to_ids.length
+        )
+        const remaining = (result1.loading_count + result2.loading_count)
         const loaded = total - remaining
 
         return <div className="page-container">
@@ -184,22 +192,99 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 
     useEffect(() =>
     {
-        // On first render, check the URL parameters for `=is_user_component=true`
-        // and if set, save a draft of the current component with the owner_id
-        // set to the current user id.
+        // On first render, check the URL parameters for:
+        // * `=is_user_component=true` - if set, save a draft of the current
+        //      component with the owner_id set to the current user id.
+        // * `=subject_id=123` - if set, save a draft of the current component
+        //      with the subject_id set to this value
+        // * `=according_to_id=456` - if set, save a draft of the current component
+        //      with the according_to_id set to this value
         // Then clear the URL parameter without reloading the page.
         const params = new URLSearchParams(window.location.search)
         const is_user_component = params.get("is_user_component")
-        if (is_user_component === null) return
+        const subject_id_str = params.get("subject_id")
+        const according_to_id_str = params.get("according_to_id")
+
 
         const user_id = state.user_auth_session.session?.user.id
-        if (is_user_component === "true") set_draft_component({ owner_id: user_id })
-        else set_draft_component({ owner_id: undefined })
+        let component_updates: Partial<DataComponent> = {
+            owner_id: is_user_component === "true" ? user_id : undefined,
+        }
+
+        set_draft_component(component =>
+        {
+            const subject_id = parseInt(subject_id_str || "")
+            const according_to_id = parseInt(according_to_id_str || "")
+            if (!component_is_an_alternative(component) && Number.isInteger(subject_id) && Number.isInteger(according_to_id))
+            {
+                component_updates = {
+                    ...component_updates,
+                    subject_id,
+                    according_to_id,
+                }
+            }
+            return { ...component, ...component_updates }
+        })
 
         params.delete("is_user_component")
+        params.delete("subject_id")
+        params.delete("according_to_id")
         const new_url = window.location.pathname + (params.toString() ? `?${params.toString()}` : "")
         window.history.replaceState({}, "", new_url)
     })
+
+
+    // When the component is an alternative of another component (it has subject_id and
+    // according_to_id set) then if the title is not set, then we want to set it to
+    // be the same as the subject_id component's title and use a tiptap_mention_chip
+    // This will allow for easily updating the title to the newer title of the
+    // subject component by just deleting the current title and having it
+    // automatically re-inserted.
+    useEffect(() =>
+    {
+        if (!component_is_an_alternative(draft_component)) return
+
+        set_draft_component(component =>
+        {
+            if (component.title || !component.subject_id) return component
+
+            const async_subject_component = state.data_components.data_component_by_id_and_maybe_version[component.subject_id]
+            const subject_component = async_subject_component?.component
+            if (!subject_component) return component
+
+            return {
+                ...component,
+                title: tiptap_mention_chip(subject_component),
+            }
+        })
+    }, [draft_component.title, draft_component.subject_id])
+
+
+    // When the component is an alternative of another component and it is first
+    // being edited (it has not been saved before), we default all of its values
+    // to be the same as the subject_id component's values so that the user only
+    // has to change the fields they want to be different.
+    useEffect(() =>
+    {
+        if (!is_new_data_component(draft_component)) return
+
+        set_draft_component(component =>
+        {
+            if (!component_is_an_alternative(component)) return component
+
+            const async_subject_component = state.data_components.data_component_by_id_and_maybe_version[component.subject_id]
+            const subject_component = async_subject_component?.component
+            if (!subject_component) return component
+            const { id: _, ...subject_component_without_id } = subject_component
+
+            const component_with_defined_attributes = Object.fromEntries(Object.entries(component).filter(([_, value]) => value !== null && value !== undefined && value !== "<p></p>"))
+
+            return {
+                ...subject_component_without_id,
+                ...component_with_defined_attributes,
+            }
+        })
+    }, [])
 
 
     return <>
@@ -295,6 +380,8 @@ function DataComponentEditFormInner(props: {
                     on_update={debounced_update_title}
                     label={"Title" + (saving_in_progress ? " saving..." : "")}
                 />
+
+                <AccordingTo component={draft_component} />
 
                 <TextEditorV2
                     editable={editable}

@@ -7,7 +7,7 @@
  */
 import { useMemo } from "preact/hooks"
 
-import { IdAndVersion, OrderedUniqueIdAndVersionList } from "core/data/id"
+import { IdAndVersion, IdOnly, OrderedUniqueIdAndVersionList } from "core/data/id"
 import { AsyncDataComponent, DataComponent, NewDataComponent } from "core/data/interface"
 import {
     browser_get_referenced_ids,
@@ -97,6 +97,48 @@ export function load_referenced_data_components(state: RootAppState, data_compon
         loading_count,
         referenced_data_component_ids: all_referenced_data_component_ids,
         referenced_data_components_by_id_str: all_referenced_data_components_by_id_str,
+    }
+}
+
+
+export function load_referenced_subject_and_according_to_components(state: RootAppState, data_component: DataComponent | NewDataComponent)
+{
+    let error: string | undefined = undefined
+
+    const subject_and_according_to_ids = useMemo(() =>
+    {
+        const ids: IdOnly[] = []
+        if (data_component.subject_id)
+        {
+            ids.push(new IdOnly(data_component.subject_id))
+        }
+        if (data_component.according_to_id)
+        {
+            ids.push(new IdOnly(data_component.according_to_id))
+        }
+        return ids
+    }, [data_component.subject_id, data_component.according_to_id])
+
+
+    const async_subject_and_according_to_components = useMemo(() =>
+    {
+        return state.data_components.request_data_components(subject_and_according_to_ids)
+    }, [subject_and_according_to_ids, state.data_components.data_component_by_id_and_maybe_version])
+
+
+    const result = process_async_data_components(async_subject_and_according_to_components, error)
+    // const { components_by_id_str: subject_and_according_to_components_by_id_str } = result
+    error = result.error
+
+    const loading = async_subject_and_according_to_components.filter(async_data_component => async_data_component.status === "loading")
+    const loading_count = loading.length
+    const status = error ? "error" : (loading_count > 0 ? "loading" : "loaded")
+
+    return {
+        status,
+        error,
+        loading_count,
+        subject_and_according_to_ids,
     }
 }
 

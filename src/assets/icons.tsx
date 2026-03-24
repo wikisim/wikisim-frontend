@@ -5,11 +5,11 @@ import UpdateVersionSVG from "./update_version.svg"
 import UsePreviousResultIconSVG from "./use_previous_result.svg"
 
 
-export const IconAlternative = () => <img
+export const IconAlternative = (props: { size?: number }) => <img
     src={AlternativeIconSVG}
     alt="Alternative"
-    width={24}
-    height={24}
+    width={props.size ?? 24}
+    height={props.size ?? 24}
     style={{
         // verticalAlign: -5,
         // margin: "0px 5px"
