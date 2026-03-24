@@ -47,3 +47,16 @@
 {
     cursor: default;
 }
+
+#data-component #title-and-metrics
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+#data-component #title-and-metrics h2
+{
+    width: fit-content
+}

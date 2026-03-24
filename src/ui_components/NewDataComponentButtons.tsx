@@ -1,7 +1,7 @@
 import { Button } from "@mantine/core"
 import IconNewSection from "@tabler/icons-react/dist/esm/icons/IconNewSection"
 
-import { ROUTES } from "../routes"
+import { NewDataComponentArgs, ROUTES } from "../routes"
 import "./NewDataComponentButtons.css"
 
 
@@ -16,7 +16,7 @@ export function NewDataComponentButtons(props: { button_size?: "sm" | "md" | "lg
 
         <Button
             component="a"
-            href={ROUTES.DATA_COMPONENT.NEW(true)}
+            href={ROUTES.DATA_COMPONENT.NEW({ is_user_component: true })}
             className="browse-all-button"
             size={button_size}
             variant="primary-user"
@@ -27,16 +27,24 @@ export function NewDataComponentButtons(props: { button_size?: "sm" | "md" | "lg
 }
 
 
-export function NewWikiDataComponentButton(props: { button_size?: "sm" | "md" | "lg", title?: string } )
+interface NewWikiDataComponentButtonProps
+{
+    button_size?: "sm" | "md" | "lg"
+    title?: string
+    disabled?: boolean
+    args?: NewDataComponentArgs
+}
+export function NewWikiDataComponentButton(props: NewWikiDataComponentButtonProps)
 {
     const { button_size = "lg", title = "Wiki" } = props
 
     return <Button
         component="a"
-        href={ROUTES.DATA_COMPONENT.NEW()}
+        href={ROUTES.DATA_COMPONENT.NEW(props.args)}
         className="browse-all-button"
         size={button_size}
         variant="primary"
+        disabled={props.disabled}
     >
         {title}&nbsp;<IconNewSection />
     </Button>

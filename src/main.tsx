@@ -10,6 +10,7 @@ import { Evaluator } from "core/evaluator/implementation/browser_sandboxed_javas
 
 import "./main.css"
 import "./monkey_patch"
+import { DataComponentPageAlternatives } from "./pages/DataComponentPageAlternatives"
 import { DataComponentPageEdit } from "./pages/DataComponentPageEdit"
 import { DataComponentPageNew } from "./pages/DataComponentPageNew"
 import { DataComponentPageVersionHistory } from "./pages/DataComponentPageVersionHistory"
@@ -117,6 +118,7 @@ function App()
                         <Route path={ROUTES.DATA_COMPONENT.VIEW_WIKI_COMPONENT()} component={DataComponentPageView} />
                         <Route path={ROUTES.DATA_COMPONENT.VIEW_USER_COMPONENT()} component={DataComponentPageView} />
                         <Route path={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY()} component={DataComponentPageVersionHistory} />
+                        <Route path={ROUTES.DATA_COMPONENT.VIEW_ALTERNATIVES()} component={DataComponentPageAlternatives} />
                         {/* <Route path="/demo/text_editor_demos" component={TextEditorDemos} /> */}
                         {/* <Route path="/demo/json_wrangling" component={DemoJSONWranglingDemo} /> */}
                         <Route default component={NotFound} />

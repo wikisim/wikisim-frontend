@@ -34,6 +34,7 @@ import {
 import { is_small_screen } from "../../utils/is_mobile_device"
 import { is_pure_number } from "../../utils/is_pure_number"
 import { time_ago_or_date } from "../../utils/time_ago_or_date"
+import { DataComponentMetrics } from "./DataComponentMetrics"
 import "./DataComponentPageView.css"
 import { highlight_text_fragment } from "./highlight_text_fragment"
 
@@ -116,9 +117,13 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
                 />
             </div>
 
-            <h2 className="section tiptap-content">
-                <ReadOnly html={component.title} single_line={true} />
-            </h2>
+            <div id="title-and-metrics">
+                <h2 className="section tiptap-content">
+                    <ReadOnly html={component.title} single_line={true} />
+                </h2>
+
+                <DataComponentMetrics component={component} />
+            </div>
 
             <PlayInteractable component={component} />
 

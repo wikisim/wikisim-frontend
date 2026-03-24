@@ -7,12 +7,32 @@ interface SearchArgs
     user_id?: string
 }
 
+export interface NewDataComponentArgs
+{
+    is_user_component?: boolean
+    subject_id?: number
+    according_to_id?: number
+}
+
 export const ROUTES = {
     HOME: "/",
     DATA_COMPONENT:
     {
         SEARCH: (args: SearchArgs = {}) => "/wiki/search" + search_args_to_query_string(args),
-        NEW: (is_user_component?: boolean) => `/new${is_user_component === undefined ? "" :`?is_user_component=${is_user_component}`}`,
+        NEW: (args: NewDataComponentArgs = {}) =>
+        {
+            const arg_strs: Record<string, string> = {}
+            if (args.is_user_component) arg_strs.is_user_component = "true"
+            if (args.subject_id) arg_strs.subject_id = args.subject_id.toString()
+            if (args.according_to_id) arg_strs.according_to_id = args.according_to_id.toString()
+
+            const params = new URLSearchParams(arg_strs)
+            let query_string = params.toString()
+            // e.g.  "?is_user_component=true&subject_id=123&according_to_id=456"
+            query_string = query_string ? `?${query_string}` : ""
+
+            return `/new` + query_string
+        },
         VIEW_WIKI_COMPONENT: (id: IdAndVersion | IdOnly | number | string = ":data_component_id") =>
         {
             const path = typeof id === "string" ? id
@@ -51,6 +71,10 @@ export const ROUTES = {
         VIEW_VERSION_HISTORY: (id: IdOnly | ":data_component_id" = ":data_component_id") =>
         {
             return `/wiki/${typeof id === "string" ? id : id.to_str_without_version()}/history`
+        },
+        VIEW_ALTERNATIVES: (id: IdOnly | ":data_component_id" = ":data_component_id") =>
+        {
+            return `/wiki/${typeof id === "string" ? id : id.to_str_without_version()}/alternatives`
         },
     },
     USER:

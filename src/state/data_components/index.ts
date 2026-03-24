@@ -18,10 +18,11 @@ import type { GetSupabase } from "core/supabase/browser"
 
 import { GetAppState, RootAppState, SetAppState } from "../interface"
 import {
+    AsyncDataComponentMetrics,
     AsyncNewDataComponent,
     CheckIfIdIsLatestResponse,
     DataComponentsState,
-    UpsertDataComponentResult,
+    UpsertDataComponentResult
 } from "./interface"
 
 
@@ -31,6 +32,7 @@ export function initial_state(set_state: SetAppState, get_state: GetAppState, ge
         data_component_ids_for_home_page: undefined,
         new_data_component_by_temp_id: {},
         data_component_by_id_and_maybe_version: {},
+        data_component_metrics_by_id: {},
 
         request_data_component_error: undefined,
         request_data_component: (data_component_id: IdAndMaybeVersion, force_refresh?: boolean) =>
@@ -79,6 +81,12 @@ export function initial_state(set_state: SetAppState, get_state: GetAppState, ge
         update_data_component: (data_component: DataComponent) =>
         {
             return attempt_to_update_data_component(data_component, set_state, get_supabase)
+        },
+
+
+        request_metrics: (data_component_id: IdAndMaybeVersion) =>
+        {
+            return request_data_component_metrics(get_supabase, data_component_id, set_state, get_state)
         },
     }
 }
@@ -597,4 +605,72 @@ async function attempt_to_update_data_component(
     })
 
     return result!
+}
+
+
+function request_data_component_metrics(
+    get_supabase: GetSupabase,
+    data_component_id: IdAndMaybeVersion,
+    set_state: SetAppState,
+    get_state: GetAppState,
+): AsyncDataComponentMetrics
+{
+    const id_str = data_component_id.to_str_without_version()
+
+    set_state(state =>
+    {
+        const { data_component_metrics_by_id } = state.data_components
+
+        let async_data_component_metrics = data_component_metrics_by_id[id_str]
+
+        if (!async_data_component_metrics)
+        {
+            async_data_component_metrics = {
+                status: "loading",
+                error: undefined,
+                metrics: { alternative_component_ids: [] },
+            }
+
+            data_component_metrics_by_id[id_str] = async_data_component_metrics
+
+            process_request_data_component_metrics(get_supabase, data_component_id, set_state)
+        }
+    })
+
+    return get_state().data_components.data_component_metrics_by_id[id_str]!
+}
+
+
+async function process_request_data_component_metrics(
+    get_supabase: GetSupabase,
+    data_component_id: IdAndMaybeVersion,
+    set_state: SetAppState,
+)
+{
+    // Request from supabase
+    const response = await request_data_components(get_supabase, { subject_id: data_component_id.id })
+
+    set_state(state =>
+    {
+        const id_str = data_component_id.to_str_without_version()
+        const async_data_component_metrics = state.data_components.data_component_metrics_by_id[id_str]
+
+        if (!async_data_component_metrics || response.error)
+        {
+            state.data_components.data_component_metrics_by_id[id_str] = {
+                status: "error",
+                error: response.error || new Error("EXCEPTION: No async data component metrics found for ID " + id_str),
+                metrics: { alternative_component_ids: [] },
+            }
+            return
+        }
+
+        mutate_store_state_with_loaded_data_components(response.data, state)
+
+        async_data_component_metrics.status = "loaded"
+        async_data_component_metrics.error = undefined
+        async_data_component_metrics.metrics = {
+            alternative_component_ids: response.data.map(component => component.id)
+        }
+    })
 }

@@ -37,12 +37,26 @@ export interface AsyncNewDataComponent
 
 export type UpsertDataComponentResult = { error: string, id: undefined } | { error: undefined, id: IdAndVersion }
 
+
+export interface DataComponentMetrics
+{
+    alternative_component_ids: IdAndVersion[]
+}
+
+export interface AsyncDataComponentMetrics
+{
+    status: BasicLoadingStatus
+    error: Error | undefined
+    metrics: DataComponentMetrics | undefined
+}
+
 export interface DataComponentsState
 {
     // data_component_ids_to_load: IdAndMaybeVersion[]
     data_component_ids_for_home_page: AsyncDataComponentIdsForHomePage | undefined
     new_data_component_by_temp_id: Record<string, AsyncNewDataComponent>
     data_component_by_id_and_maybe_version: Record<string, AsyncDataComponent>
+    data_component_metrics_by_id: Record<string, AsyncDataComponentMetrics>
 
     request_data_component_error: Error | undefined
     request_data_component: (data_component_id: IdAndMaybeVersion, force_refresh?: boolean) => AsyncDataComponent
@@ -53,4 +67,6 @@ export interface DataComponentsState
 
     insert_data_component: (data_component: NewDataComponent) => Promise<UpsertDataComponentResult>
     update_data_component: (data_component: DataComponent) => Promise<UpsertDataComponentResult>
+
+    request_metrics: (data_component_id: IdAndMaybeVersion) => AsyncDataComponentMetrics
 }
