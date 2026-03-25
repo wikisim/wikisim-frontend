@@ -6,6 +6,7 @@ import type { DataComponent } from "core/data/interface"
 import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_tiptap_to_plain"
 import { get_supabase } from "core/supabase/browser"
 
+import { IconAlternative } from "../../assets/icons"
 import pub_sub from "../../pub_sub"
 import { get_currently_pressed_keys } from "../../pub_sub/publish_key_down_events"
 import { ROUTES } from "../../routes"
@@ -142,6 +143,9 @@ export function SearchResults(props: SearchResultsProps)
                             onPointerMove={() => set_selected_result_index(index)}
                         >
                             {browser_convert_tiptap_to_plain(row.title)}
+                            {row.subject_id !== undefined && <span style={{ padding: "4.5px 0 0 5px" }}>
+                                <IconAlternative size={12} title="Is an alternative of another page" />
+                            </span>}
                             <span style={{ color: "#ccc", fontSize: 13, padding: "4.5px 0 0 5px" }}>
                                 id {row.id.id}
                             </span>
