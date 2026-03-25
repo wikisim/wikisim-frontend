@@ -131,7 +131,7 @@ function ReferencedByRow(props: { id: IdAndVersion, source_id: IdOnly })
 
     return <div className="referenced-by-row loaded">
         <a
-            href={ROUTES.DATA_COMPONENT.VIEW({ id: props.id, owner_id: component.owner_id })}
+            href={ROUTES.DATA_COMPONENT.VIEW({ id: props.id.as_IdOnly(), owner_id: component.owner_id })}
             title={component.created_at.toUTCString()}
         >
             {component.plain_title}

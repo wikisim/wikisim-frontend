@@ -154,7 +154,7 @@ function AlternativeRow(props: { id: IdAndVersion })
 
     return <div className="alternative-row loaded">
         <a
-            href={ROUTES.DATA_COMPONENT.VIEW({ id: props.id, owner_id: component.owner_id })}
+            href={ROUTES.DATA_COMPONENT.VIEW({ id: props.id.as_IdOnly(), owner_id: component.owner_id })}
             title={component.created_at.toUTCString()}
         >
             {according_to_component.plain_title}
