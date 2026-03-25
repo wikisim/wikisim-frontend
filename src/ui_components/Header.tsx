@@ -237,7 +237,6 @@ function LogInModal({ on_close }: { on_close: () => void })
 
 function DropDownMenu(props: { opened: boolean, set_opened: (opened: boolean) => void })
 {
-    const location = useLocation()
     const { user_auth_session } = app_store()
 
     const [opened_edit_user_name, set_opened_edit_user_name] = useState(false)
