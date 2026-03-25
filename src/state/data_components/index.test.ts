@@ -7,7 +7,7 @@ import { IdAndVersion, IdOnly } from "core/data/id"
 import { init_data_component } from "core/data/modify"
 import { make_field_validators } from "core/data/validate_fields"
 import { DBDataComponentRow } from "core/supabase"
-import { create_mock_db_data_component_row } from "core/test/mock_db_data_component_row"
+import { create_mock_db_data_component_row } from "core/test/mock_data_component_row"
 import { create_mocked_supabase, MockedSupabase } from "core/test/mock_supabase_and_session"
 import { deep_equals } from "core/utils/deep_equals"
 
