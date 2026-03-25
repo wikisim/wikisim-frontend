@@ -6,7 +6,7 @@ import { hydrate_data_component_from_json } from "core/data/convert_between_json
 import { IdAndVersion, IdOnly } from "core/data/id"
 import { init_data_component } from "core/data/modify"
 import { make_field_validators } from "core/data/validate_fields"
-import { DBDataComponentRow } from "core/supabase"
+import { DATA_COMPONENT_SELECT_STRING, DBDataComponentRow } from "core/supabase"
 import { create_mock_db_data_component_row } from "core/test/mock_data_component_row"
 import { create_mocked_supabase, MockedSupabase } from "core/test/mock_supabase_and_session"
 import { deep_equals } from "core/utils/deep_equals"
@@ -204,7 +204,7 @@ describe("store.data_components", () =>
 
                 // check supabase was called
                 expect(mocked_supabase.from.args).deep.equals([["data_components"]], "supabase.from() should be called")
-                expect(mocked_supabase.from().select.args).deep.equals([["*"]], "supabase.from().select() should be called")
+                expect(mocked_supabase.from().select.args).deep.equals([[DATA_COMPONENT_SELECT_STRING]], "supabase.from().select() should be called")
                 expect(mocked_supabase.from().select().in.args).deep.equals([["id", [-123]]], "supabase.from().select().in() should be called")
                 expect(mocked_supabase.from().select().in().order.args).deep.equals([["id", { ascending: true }]], "supabase.from().select().in().order()")
                 expect(mocked_supabase.from().select().in().order().range.args).deep.equals([[0, supabase_range_to]], "supabase.range should be called")
@@ -233,7 +233,7 @@ describe("store.data_components", () =>
                 // check supabase was called
                 expect(mocked_supabase.from.args).deep.equals([["data_components"]], "supabase.from() should be called")
                 // expect(mocked_supabase.from.args).deep.equals([["data_components_history"]], "supabase.from() should be called")
-                expect(mocked_supabase.from().select.args).deep.equals([["*"]], "supabase.from().select() should be called")
+                expect(mocked_supabase.from().select.args).deep.equals([[DATA_COMPONENT_SELECT_STRING]], "supabase.from().select() should be called")
                 expect(mocked_supabase.from().select().or.args).deep.equals([], "supabase.from().select().or() should be called")
                 // expect(mocked_supabase.from().select().or.args).deep.equals([["and(id.eq.-123,version_number.eq.2)"]], "supabase.from().select().or() should be called")
                 expect(mocked_supabase.from().select().or().order.args).deep.equals([["id", { ascending: true }]], "supabase.from().select().or().order() called with version_number and id")
