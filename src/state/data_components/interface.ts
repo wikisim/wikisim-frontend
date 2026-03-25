@@ -41,6 +41,7 @@ export type UpsertDataComponentResult = { error: string, id: undefined } | { err
 export interface DataComponentMetrics
 {
     alternative_component_ids: IdAndVersion[]
+    back_reference_component_ids: IdAndVersion[]
 }
 
 export interface AsyncDataComponentMetrics

@@ -125,14 +125,15 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
             </div>
 
             <div id="title-and-metrics">
-                <h2 className="section tiptap-content component-title">
-                    <ReadOnly html={component.title} single_line={true} />
-                </h2>
+                <div>
+                    <h2 className="section tiptap-content component-title">
+                        <ReadOnly html={component.title} single_line={true} />
+                    </h2>
+                    <AccordingTo component={component} />
+                </div>
 
                 <DataComponentMetrics component={component} />
             </div>
-
-            <AccordingTo component={component} />
 
             <div style={{ height: "var(--vgap-large)"}} />
 

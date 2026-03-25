@@ -1,4 +1,5 @@
 import AlternativeIconSVG from "./alternative.svg"
+import BackReferencesIconSVG from "./back_references.svg"
 import HistoryIconSVG from "./history.svg"
 import RepeatIconSVG from "./repeat.svg"
 import UpdateVersionSVG from "./update_version.svg"
@@ -7,6 +8,18 @@ import UsePreviousResultIconSVG from "./use_previous_result.svg"
 
 export const IconAlternative = (props: { title?: string, size?: number }) => <img
     src={AlternativeIconSVG}
+    alt="Alternative"
+    title={props.title}
+    width={props.size ?? 24}
+    height={props.size ?? 24}
+    style={{
+        // verticalAlign: -5,
+        // margin: "0px 5px"
+    }}
+/>
+
+export const IconBackReferences = (props: { title?: string, size?: number }) => <img
+    src={BackReferencesIconSVG}
     alt="Alternative"
     title={props.title}
     width={props.size ?? 24}

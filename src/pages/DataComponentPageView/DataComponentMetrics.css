@@ -3,11 +3,15 @@
 #data-component-metrics
 {
     margin-top: 8px;
-
     height: fit-content;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
 }
 
-#data-component-metrics .alternatives
+#data-component-metrics .metric-row-and-link
 {
     display: flex;
     flex-direction: row;
@@ -25,11 +29,12 @@
     color: inherit;
 }
 
-#data-component-metrics .alternatives img
+#data-component-metrics .metric-row-and-link img
 {
     margin: 0;
 }
 
+#data-component-metrics .back-references-count,
 #data-component-metrics .alternatives-count
 {
     border-radius: 10px;

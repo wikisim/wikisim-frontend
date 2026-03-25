@@ -76,6 +76,10 @@ export const ROUTES = {
         {
             return `/wiki/${typeof id === "string" ? id : id.to_str_without_version()}/alternatives`
         },
+        VIEW_BACK_REFERENCES: (id: IdOnly | ":data_component_id" = ":data_component_id") =>
+        {
+            return `/wiki/${typeof id === "string" ? id : id.to_str_without_version()}/referenced_by`
+        },
     },
     USER:
     {
