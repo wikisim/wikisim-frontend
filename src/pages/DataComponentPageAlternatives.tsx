@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "preact/hooks"
 
 import { IdAndVersion, parse_id } from "core/data/id"
-import { clamp } from "core/utils/clamp"
 
 import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
@@ -25,8 +24,8 @@ export function DataComponentPageAlternatives(props: { data_component_id: string
         description="alternatives"
     />
 
-    const page = clamp(parseInt(props.query.page || "1", 10) - 1, 0, 1000)
-    const page_size = parseInt(props.query.page_size || "20", 10)
+    // const page = clamp(parseInt(props.query.page || "1", 10) - 1, 0, 1000)
+    // const page_size = parseInt(props.query.page_size || "20", 10)
 
     const state = app_store()
     const newest_async_data_component = get_async_data_component(state, props.data_component_id, false)
@@ -76,28 +75,27 @@ export function DataComponentPageAlternatives(props: { data_component_id: string
 
 
     const none = alternative_component_ids.length === 0
-    const max_alternatives = alternative_component_ids.length
-    const number_to_show = clamp(page_size, 0, max_alternatives - (page * page_size))
-    const to_alternative = max_alternatives - (page * page_size)
-    const from_alternative = Math.min(to_alternative, to_alternative - number_to_show + 1)
+    // const max_alternatives = alternative_component_ids.length
+    // const number_to_show = clamp(page_size, 0, max_alternatives - (page * page_size))
+    // const to_alternative = max_alternatives - (page * page_size)
+    // const from_alternative = Math.min(to_alternative, to_alternative - number_to_show + 1)
 
     return (
         <div className="page-container">
-            <h2>{none ? "No a" : "A"}lternatives for
+            <h2>
                 <a href={ROUTES.DATA_COMPONENT.VIEW(component.id.as_IdOnly())}>
                     <ReadOnly html={component.title} single_line={true} />
                 </a>
             </h2>
 
             {none
-            ? <></>
+            ? <>No alternatives yet.</>
             : <>
-                Page {page + 1} showing{" "}
-                {/* {number_to_show} of {max_version} from */}
-                alternatives {from_alternative} to {to_alternative}
-                <br />
                 Alternatives according to:
                 {alternative_component_ids.map(alt_id => <AlternativeRow key={alt_id.to_str()} id={alt_id} />)}
+                <br />
+                {/* Page {page + 1} */}
+                {/* , showing alternatives {from_alternative} to {to_alternative} */}
             </>}
 
             <br />
@@ -161,7 +159,7 @@ function AlternativeRow(props: { id: IdAndVersion })
         >
             {according_to_component.plain_title}
         </a> &nbsp; &nbsp;
-            {time_ago_or_date(component.created_at, true)}{" "}
+            edited {time_ago_or_date(component.created_at, true)}{" "}
             {time_ago_or_date(component.created_at)} by{" "}
             {/* on {component.created_at.toString()} by{" "} */}
             {async_editor.status === "loading" ? <Loading />
@@ -185,7 +183,7 @@ function CreateAlternative(props: CreateAlternativeProps)
     })
 
     return <div className="create-alternative">
-        <h3>Create an alternative for "{props.subject_title}"</h3>
+        <h3>Create a new alternative</h3>
 
         <SelectEntity
             according_to={according_to}
