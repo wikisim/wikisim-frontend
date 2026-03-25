@@ -12,15 +12,15 @@ import Loading from "../ui_components/Loading"
 import { NewWikiDataComponentButton } from "../ui_components/NewDataComponentButtons"
 import { set_page_title } from "../ui_components/set_page_title"
 import { time_ago_or_date } from "../utils/time_ago_or_date"
+import "./DataComponentPageAlternatives.css"
 import { DataComponentPageRedirectToIdOnly } from "./DataComponentPageRedirectToIdOnly"
-import "./DataComponentPageVersionHistory.css"
 
 
 export function DataComponentPageAlternatives(props: { data_component_id: string, query: Record<string, string> })
 {
     const id = parse_id(props.data_component_id)
     if (id instanceof IdAndVersion) return <DataComponentPageRedirectToIdOnly
-        redirect_to={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY(id.as_IdOnly())}
+        redirect_to={ROUTES.DATA_COMPONENT.VIEW_ALTERNATIVES(id.as_IdOnly())}
         description="alternatives"
     />
 
@@ -34,7 +34,7 @@ export function DataComponentPageAlternatives(props: { data_component_id: string
     if (newest_async_data_component.status === "error")
     {
         return <div className="page-container">
-            <div>Error loading alternatives: {newest_async_data_component.error}</div>
+            <div>Error loading page: {newest_async_data_component.error}</div>
         </div>
     }
     else if (newest_async_data_component.status === "not_found" || !component)
