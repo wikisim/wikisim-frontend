@@ -2,9 +2,6 @@
 
 #data-component-metrics
 {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
     margin-top: 8px;
 
     height: fit-content;
@@ -23,6 +20,9 @@
     padding: 2px 6px;
     background-color: var(--colour-background-light);
     cursor: pointer;
+
+    text-decoration: none;
+    color: inherit;
 }
 
 #data-component-metrics .alternatives img

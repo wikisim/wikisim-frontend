@@ -17,7 +17,9 @@ export function AccordingTo(props: { component: { according_to_id?: number }, ma
 
     return <div className="according-to-info" style={{ marginTop: props.margin_top ?? 0 }}>
         <IconAlternative size={15} />
-        According to{" "}
+        <div className="according-to-label">
+            According to{" "}
+        </div>
         <Link component={according_to_component} use_version={false} />
     </div>
 }

@@ -394,7 +394,7 @@ function DataComponentEditFormInner(props: {
                     label={"Title" + (saving_in_progress ? " saving..." : "")}
                 />
 
-                <AccordingTo component={draft_component} />
+                <AccordingTo component={draft_component} margin_top={-18} />
 
                 <TextEditorV2
                     editable={editable}

@@ -5,9 +5,10 @@ import UpdateVersionSVG from "./update_version.svg"
 import UsePreviousResultIconSVG from "./use_previous_result.svg"
 
 
-export const IconAlternative = (props: { size?: number }) => <img
+export const IconAlternative = (props: { title?: string, size?: number }) => <img
     src={AlternativeIconSVG}
     alt="Alternative"
+    title={props.title}
     width={props.size ?? 24}
     height={props.size ?? 24}
     style={{

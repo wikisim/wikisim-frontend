@@ -7,5 +7,17 @@
     gap: 5px;
     font-size: 12px;
     color: var(--text-secondary-color);
-    margin-top: -18px;
+}
+
+.according-to-label
+{
+    white-space: nowrap;
+}
+
+@media (max-width: 600px)
+{
+    .according-to-label
+    {
+        display: none;
+    }
 }

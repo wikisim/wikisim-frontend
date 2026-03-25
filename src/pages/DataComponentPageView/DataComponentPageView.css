@@ -56,7 +56,17 @@
     justify-content: space-between;
     flex-wrap: wrap;
 }
-#data-component #title-and-metrics h2
+#data-component #title-and-metrics h2.component-title
 {
-    width: fit-content
+    width: fit-content;
+    /* No or minimal margin or padding so that the alternatives "fork" and
+    according to labels show directly under the title */
+    margin-bottom: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    padding-top: 10px;
+}
+#data-component #title-and-metrics h2.component-title .mention-chip
+{
+    font-size: 1em;
 }

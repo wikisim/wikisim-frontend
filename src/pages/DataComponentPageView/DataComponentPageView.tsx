@@ -125,7 +125,7 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
             </div>
 
             <div id="title-and-metrics">
-                <h2 className="section tiptap-content">
+                <h2 className="section tiptap-content component-title">
                     <ReadOnly html={component.title} single_line={true} />
                 </h2>
 
@@ -133,6 +133,8 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
             </div>
 
             <AccordingTo component={component} margin_top={-38} />
+
+            <div style={{ height: "var(--vgap-large)"}} />
 
             <PlayInteractable component={component} />
 
