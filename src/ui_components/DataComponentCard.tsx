@@ -23,7 +23,7 @@ export function DataComponentCard({ data_component }: { data_component: DataComp
             // className="data-component-card tiptap-content"
             className="data-component-card"
         >
-            <h3><ReadOnly html={data_component.title} single_line={true} /></h3>
+            <h3><ReadOnly html={data_component.plain_title} single_line={true} /></h3>
             <p>{ellipsis(data_component.plain_description)}</p>
             {value_as_string && <p>{value_as_string}</p>}
 
