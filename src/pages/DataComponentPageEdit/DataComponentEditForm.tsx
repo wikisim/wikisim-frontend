@@ -254,7 +254,20 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 
             return {
                 ...component,
-                title: tiptap_mention_chip(subject_component),
+                title: tiptap_mention_chip({
+                    title: subject_component.plain_title,
+                    // For now we're going to give a reference to the subject
+                    // component in general, rather than a specific version of it.
+                    // This has the downside that if someone makes an alternative of
+                    // a component due to a specific deficiency in that component,
+                    // then it will be harder to identify that specific deficiency
+                    // as there will not be a reference to the specific version.
+                    // However the benefit is that for most use cases, I imagine
+                    // that the alternatives will be more general in that
+                    // the subject version will contain fundamentally different
+                    // content to the alternative.
+                    id: subject_component.id.as_IdOnly(),
+                }),
             }
         })
     }, [draft_component.title, draft_component.subject_id])
