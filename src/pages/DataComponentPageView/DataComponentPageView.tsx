@@ -132,7 +132,7 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
                 <DataComponentMetrics component={component} />
             </div>
 
-            <AccordingTo component={component} margin_top={-38} />
+            <AccordingTo component={component} />
 
             <div style={{ height: "var(--vgap-large)"}} />
 
