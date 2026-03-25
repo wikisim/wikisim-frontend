@@ -10,6 +10,7 @@ import { IconAlternative } from "../../assets/icons"
 import pub_sub from "../../pub_sub"
 import { get_currently_pressed_keys } from "../../pub_sub/publish_key_down_events"
 import { ROUTES } from "../../routes"
+import { app_store } from "../../state/store"
 import Loading from "../../ui_components/Loading"
 import "./SearchResults.css"
 
@@ -104,6 +105,10 @@ export function SearchResults(props: SearchResultsProps)
 
     const main_classname = search_type === "search_page" ? "search-results-page" : "search-results-modal"
 
+
+    const state = app_store()
+
+
     return <div className={main_classname}>
         {(search_term || props.use_empty_search_term) && (search_term !== results?.search_term
             ? <SearchingFor search_term={search_term} />
@@ -118,7 +123,23 @@ export function SearchResults(props: SearchResultsProps)
             (results.data_components.length > 0 ? (
                 <div className="search-results-table">
                     {results.data_components.slice(0, page_size).map((row, index) =>
-                        <a
+                    {
+
+                        let according_to_str = null
+                        if (row.according_to_id)
+                        {
+                            // This implementation will be buggy and will result in
+                            // <123> being shown to the user when the referenced
+                            // component has not yet been loaded client-side.
+                            const according_to_component = state.data_components.data_component_by_id_and_maybe_version[row.according_to_id.toString()]?.component
+                            according_to_str = (
+                                according_to_component?.plain_title
+                                || `<${row.according_to_id}>`
+                            )
+                        }
+
+
+                        return <a
                             key={index}
                             href={ROUTES.DATA_COMPONENT.VIEW({
                                 id: row.id.as_IdOnly(),
@@ -143,14 +164,17 @@ export function SearchResults(props: SearchResultsProps)
                             onPointerMove={() => set_selected_result_index(index)}
                         >
                             {browser_convert_tiptap_to_plain(row.title)}
-                            {row.subject_id !== undefined && <span style={{ padding: "4.5px 0 0 5px" }}>
-                                <IconAlternative size={12} title="Is an alternative of another page" />
+                            {row.subject_id !== undefined && row.according_to_id !== undefined && <span style={{ padding: "4.5px 0 0 5px" }}>
+                                <IconAlternative
+                                    size={12}
+                                    title={`Alternative according to: ${according_to_str}`}
+                                />
                             </span>}
                             <span style={{ color: "#ccc", fontSize: 13, padding: "4.5px 0 0 5px" }}>
                                 id {row.id.id}
                             </span>
                         </a>
-                    )}
+                    })}
                 </div>
             ) : (
                 <p>No results found.</p>
