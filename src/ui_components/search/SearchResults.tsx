@@ -125,16 +125,17 @@ export function SearchResults(props: SearchResultsProps)
                     {results.data_components.slice(0, page_size).map((row, index) =>
                     {
 
-                        let according_to_str = null
+                        let according_to_str = "This is an alternative"
                         if (row.according_to_id)
                         {
                             // This implementation will be buggy and will result in
-                            // <123> being shown to the user when the referenced
-                            // component has not yet been loaded client-side.
+                            // the according to plain_title not always being shown
+                            // to the user because the referenced
+                            // component is not guaranteed to have been loaded client-side.
                             const according_to_component = state.data_components.data_component_by_id_and_maybe_version[row.according_to_id.toString()]?.component
-                            according_to_str = (
-                                according_to_component?.plain_title
-                                || `<${row.according_to_id}>`
+                            const according_to_title = according_to_component?.plain_title
+                            according_to_str += (
+                                according_to_title ? " according to " + according_to_title : "."
                             )
                         }
 
@@ -167,7 +168,7 @@ export function SearchResults(props: SearchResultsProps)
                             {row.subject_id !== undefined && row.according_to_id !== undefined && <span style={{ padding: "4.5px 0 0 5px" }}>
                                 <IconAlternative
                                     size={12}
-                                    title={`Alternative according to: ${according_to_str}`}
+                                    title={`This is an alternative: ${according_to_str}`}
                                 />
                             </span>}
                             <span style={{ color: "#ccc", fontSize: 13, padding: "4.5px 0 0 5px" }}>

@@ -24,6 +24,7 @@ import { changes_made } from "core/data/modify"
 import { make_field_validators } from "core/data/validate_fields"
 import { tiptap_mention_chip } from "core/rich_text/tiptap_mention_chip"
 
+import { IdOnly } from "../../../lib/core/src/data/id"
 import { ConfirmBinButton } from "../../buttons/BinButton"
 import CloseButton from "../../buttons/CloseButton"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
@@ -246,11 +247,14 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
 
         set_draft_component(component =>
         {
-            if (component.title || !component.subject_id) return component
+            if (component.title || !component.subject_id || !component.according_to_id) return component
 
             const async_subject_component = state.data_components.data_component_by_id_and_maybe_version[component.subject_id]
             const subject_component = async_subject_component?.component
             if (!subject_component) return component
+
+            const according_to_component = state.data_components.data_component_by_id_and_maybe_version[component.according_to_id]?.component
+            const according_to_title = according_to_component?.plain_title
 
             return {
                 ...component,
@@ -267,7 +271,12 @@ export function DataComponentEditForm<V extends (DataComponent | NewDataComponen
                     // the subject version will contain fundamentally different
                     // content to the alternative.
                     id: subject_component.id.as_IdOnly(),
-                }),
+                })
+                + " according to "
+                + tiptap_mention_chip({
+                    title: (according_to_title || (" page " + component.according_to_id)),
+                    id: new IdOnly(component.according_to_id),
+                })
             }
         })
     }, [draft_component.title, draft_component.subject_id])
