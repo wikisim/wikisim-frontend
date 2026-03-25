@@ -5,7 +5,7 @@ import { Link } from "../Link"
 import "./AccordingTo.css"
 
 
-export function AccordingTo(props: { component: { according_to_id?: number } })
+export function AccordingTo(props: { component: { according_to_id?: number }, margin_top?: number } )
 {
     const according_to_id = props.component.according_to_id
     if (!according_to_id) return null
@@ -15,7 +15,7 @@ export function AccordingTo(props: { component: { according_to_id?: number } })
     const according_to_component = async_according_to_component?.component
     if (!according_to_component) return <div>Not found: component of id {according_to_id}</div>
 
-    return <div className="according-to-info">
+    return <div className="according-to-info" style={{ marginTop: props.margin_top ?? 0 }}>
         <IconAlternative size={15} />
         According to{" "}
         <Link component={according_to_component} />

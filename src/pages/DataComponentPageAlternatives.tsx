@@ -94,7 +94,9 @@ export function DataComponentPageAlternatives(props: { data_component_id: string
             : <>
                 Page {page + 1} showing{" "}
                 {/* {number_to_show} of {max_version} from */}
-                alternatives {from_alternative} to {to_alternative}.
+                alternatives {from_alternative} to {to_alternative}
+                <br />
+                Alternatives according to:
                 {alternative_component_ids.map(alt_id => <AlternativeRow key={alt_id.to_str()} id={alt_id} />)}
             </>}
 
@@ -128,6 +130,26 @@ function AlternativeRow(props: { id: IdAndVersion })
     {
         return <div className="alternative-row">Alternative {props.id.to_str()} not found.</div>
     }
+    else if (!component.according_to_id)
+    {
+        return <div className="alternative-row">Alternative {props.id.to_str()} has no "according to" reference.</div>
+    }
+
+    const async_according_to = get_async_data_component(state, `${component.according_to_id}`, false)
+    const { component: according_to_component } = async_according_to
+
+    if (async_according_to.status === "loading")
+    {
+        return <div className="alternative-row">Loading "according to" reference for alternative {props.id.to_str()}...</div>
+    }
+    else if (async_according_to.status === "error")
+    {
+        return <div className="alternative-row">Error loading "according to" reference for alternative {props.id.to_str()}: {async_according_to.error}</div>
+    }
+    else if (async_according_to.status === "not_found" || !according_to_component)
+    {
+        return <div className="alternative-row">"According to" reference for alternative {props.id.to_str()} not found.</div>
+    }
 
     const async_editor = state.users.request_user(component.editor_id)
     const { user: editor } = async_editor
@@ -137,14 +159,15 @@ function AlternativeRow(props: { id: IdAndVersion })
             href={ROUTES.DATA_COMPONENT.VIEW({ id: props.id, owner_id: component.owner_id })}
             title={component.created_at.toUTCString()}
         >
-            Alternative {component.plain_title}: &nbsp; &nbsp;
+            {according_to_component.plain_title}
+        </a> &nbsp; &nbsp;
             {time_ago_or_date(component.created_at, true)}{" "}
             {time_ago_or_date(component.created_at)} by{" "}
             {/* on {component.created_at.toString()} by{" "} */}
             {async_editor.status === "loading" ? <Loading />
             : async_editor.status === "loaded" && editor ? editor.name
             : "Error loading editor name"}
-        </a>
+
     </div>
 }
 

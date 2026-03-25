@@ -19,6 +19,7 @@ import { CheckIfIdIsLatestResponse } from "../../state/data_components/interface
 import { app_store } from "../../state/store"
 import { ReadOnlyFunction } from "../../text_editor/santisise_html/ReadOnlyFunction"
 import { ReadOnly } from "../../text_editor/santisise_html/sanitise_html"
+import { AccordingTo } from "../../ui_components/data_component/AccordingTo"
 import { PlayInteractable } from "../../ui_components/data_component/PlayInteractable"
 import { ExpectationsMet } from "../../ui_components/ExpectationMet"
 import { BannerWarningOfUserOwnedPage } from "../../ui_components/info_and_errors/BannerWarningOfUserOwnedPage"
@@ -124,6 +125,8 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
 
                 <DataComponentMetrics component={component} />
             </div>
+
+            <AccordingTo component={component} margin_top={-38} />
 
             <PlayInteractable component={component} />
 
