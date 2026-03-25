@@ -15,6 +15,7 @@ import EditOrSaveButton from "../../buttons/EditOrSaveButton"
 import pub_sub from "../../pub_sub"
 import { ROUTES } from "../../routes"
 import { get_async_data_component, get_async_data_component_and_dependencies } from "../../state/data_components/accessor"
+import { load_referenced_subject_and_according_to_components } from "../../state/data_components/accessor2"
 import { CheckIfIdIsLatestResponse } from "../../state/data_components/interface"
 import { app_store } from "../../state/store"
 import { ReadOnlyFunction } from "../../text_editor/santisise_html/ReadOnlyFunction"
@@ -71,6 +72,11 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
         if (status === "error") return <div>Error loading page.</div>
         return <div>Page not found.</div>
     }
+
+
+    const async_according_to = load_referenced_subject_and_according_to_components(state, component)
+    if (async_according_to.error) return <div>Error loading referenced components: {async_according_to.error}</div>
+    if (async_according_to.status === "loading") return <div>Loading referenced components<Loading /></div>
 
 
     // Don't seem to need this now, seems that `ensure_owner_name_matches_in_url` is sufficient

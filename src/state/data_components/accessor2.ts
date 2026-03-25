@@ -8,7 +8,7 @@
 import { useMemo } from "preact/hooks"
 
 import { IdAndVersion, IdOnly, OrderedUniqueIdAndVersionList } from "core/data/id"
-import { AsyncDataComponent, DataComponent, NewDataComponent } from "core/data/interface"
+import { AsyncDataComponent, BasicLoadingStatus, DataComponent, NewDataComponent } from "core/data/interface"
 import {
     browser_get_referenced_ids,
 } from "core/rich_text/browser_get_referenced_ids"
@@ -18,7 +18,7 @@ import { RootAppState } from "../interface"
 
 interface AsyncLoadReferencedDataComponentsResult
 {
-    status: "loading" | "loaded" | "error"
+    status: BasicLoadingStatus
     error: string | undefined
     loading_count: number
     referenced_data_component_ids: IdAndVersion[]
@@ -132,7 +132,7 @@ export function load_referenced_subject_and_according_to_components(state: RootA
 
     const loading = async_subject_and_according_to_components.filter(async_data_component => async_data_component.status === "loading")
     const loading_count = loading.length
-    const status = error ? "error" : (loading_count > 0 ? "loading" : "loaded")
+    const status: BasicLoadingStatus = error ? "error" : (loading_count > 0 ? "loading" : "loaded")
 
     return {
         status,
