@@ -1,7 +1,8 @@
 import { useEffect } from "preact/hooks"
 
-import { IdAndVersion, parse_id } from "core/data/id"
+import { IdAndVersion, IdOnly, parse_id } from "core/data/id"
 
+import { IconAlternative } from "../assets/icons"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
 import { app_store } from "../state/store"
@@ -89,7 +90,11 @@ export function DataComponentPageBackReferences(props: { data_component_id: stri
             ? <>Not referenced by anything yet.</>
             : <>
                 Referenced by:
-                {back_reference_component_ids.map(alt_id => <ReferenecedByRow key={alt_id.to_str()} id={alt_id} />)}
+                {back_reference_component_ids.map(back_ref_id => <ReferencedByRow
+                    key={back_ref_id.to_str()}
+                    id={back_ref_id}
+                    source_id={id}
+                />)}
                 <br />
                 {/* Page {page + 1} */}
                 {/* Showing alternatives {from_alternative} to {to_alternative} */}
@@ -100,7 +105,7 @@ export function DataComponentPageBackReferences(props: { data_component_id: stri
 
 
 
-function ReferenecedByRow(props: { id: IdAndVersion })
+function ReferencedByRow(props: { id: IdAndVersion, source_id: IdOnly })
 {
     const state = app_store()
     const async_data_component = get_async_data_component(state, props.id.to_str(), false)
@@ -122,13 +127,20 @@ function ReferenecedByRow(props: { id: IdAndVersion })
     const async_editor = state.users.request_user(component.editor_id)
     const { user: editor } = async_editor
 
+    const is_an_alternative = component.subject_id === props.source_id.id
+
     return <div className="referenced-by-row loaded">
         <a
             href={ROUTES.DATA_COMPONENT.VIEW({ id: props.id, owner_id: component.owner_id })}
             title={component.created_at.toUTCString()}
         >
             {component.plain_title}
-        </a> &nbsp; &nbsp;
+            {" "} {is_an_alternative && <IconAlternative
+                size={14}
+                title="Referenced by and is an alternative of this page"
+            />}
+        </a>
+            &nbsp; &nbsp;
             edited {time_ago_or_date(component.created_at, true)}{" "}
             {time_ago_or_date(component.created_at)} by{" "}
             {/* on {component.created_at.toString()} by{" "} */}
