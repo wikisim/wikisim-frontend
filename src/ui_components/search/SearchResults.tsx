@@ -7,6 +7,7 @@ import { browser_convert_tiptap_to_plain } from "core/rich_text/browser_convert_
 import { get_supabase } from "core/supabase/browser"
 
 import pub_sub from "../../pub_sub"
+import { get_currently_pressed_keys } from "../../pub_sub/publish_key_down_events"
 import { ROUTES } from "../../routes"
 import Loading from "../../ui_components/Loading"
 import "./SearchResults.css"
@@ -124,8 +125,13 @@ export function SearchResults(props: SearchResultsProps)
                             })}
                             onClick={e =>
                             {
-                                e.preventDefault()
                                 e.stopImmediatePropagation()
+
+                                // On Mac OS, when a user holds the cmd key and clicks a link, they
+                                // expect it to open in a new tab.  Don't interfere with that default behavior.
+                                if (get_currently_pressed_keys().metaKey) return
+
+                                e.preventDefault()
                                 props.on_chosen_search_result({
                                     search_requester_id: results.search_requester_id,
                                     data_component: row,
