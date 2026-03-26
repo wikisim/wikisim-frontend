@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "preact/hooks"
 
-import { IdAndVersion, parse_id } from "core/data/id"
+import { IdAndVersion, IdOnly, parse_id } from "core/data/id"
 
+import { component_is_an_alternative } from "../../lib/core/src/data/component_is_an_alternative"
+import { IconAlternative } from "../assets/icons"
 import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
@@ -92,7 +94,11 @@ export function DataComponentPageAlternatives(props: { data_component_id: string
             ? <>No alternatives yet.</>
             : <>
                 Alternatives according to:
-                {alternative_component_ids.map(alt_id => <AlternativeRow key={alt_id.to_str()} id={alt_id} />)}
+                {alternative_component_ids.map(alt_id => <AlternativeRow
+                    key={alt_id.to_str()}
+                    id={alt_id}
+                    source_id={id}
+                />)}
                 <br />
                 {/* Page {page + 1} */}
                 {/* , showing alternatives {from_alternative} to {to_alternative} */}
@@ -110,7 +116,7 @@ export function DataComponentPageAlternatives(props: { data_component_id: string
 
 
 
-function AlternativeRow(props: { id: IdAndVersion })
+function AlternativeRow(props: { id: IdAndVersion, source_id: IdOnly })
 {
     const state = app_store()
     const async_data_component = get_async_data_component(state, props.id.to_str(), false)
@@ -152,12 +158,25 @@ function AlternativeRow(props: { id: IdAndVersion })
     const async_editor = state.users.request_user(component.editor_id)
     const { user: editor } = async_editor
 
+    const is_an_alternative = component_is_an_alternative(component)
+    const is_an_alternative_of_this_page = component.subject_id === props.source_id.id
+    const alternative_of_text = is_an_alternative_of_this_page
+        ? "Is an alternative of this page."
+        // This should never be the case but including just in case
+        : is_an_alternative
+        ? "Is an alternative of another page."
+        : ""
+
     return <div className="alternative-row loaded">
         <a
             href={ROUTES.DATA_COMPONENT.VIEW({ id: props.id.as_IdOnly(), owner_id: component.owner_id })}
             title={component.created_at.toUTCString()}
         >
             {according_to_component.plain_title}
+            {" "} {is_an_alternative && <IconAlternative
+                size={14}
+                title={alternative_of_text}
+            />}
         </a> &nbsp; &nbsp;
             edited {time_ago_or_date(component.created_at, true)}{" "}
             {time_ago_or_date(component.created_at)} by{" "}

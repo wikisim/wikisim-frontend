@@ -2,6 +2,7 @@ import { useEffect } from "preact/hooks"
 
 import { IdAndVersion, IdOnly, parse_id } from "core/data/id"
 
+import { component_is_an_alternative } from "../../lib/core/src/data/component_is_an_alternative"
 import { IconAlternative } from "../assets/icons"
 import { ROUTES } from "../routes"
 import { get_async_data_component } from "../state/data_components/accessor"
@@ -127,7 +128,13 @@ function ReferencedByRow(props: { id: IdAndVersion, source_id: IdOnly })
     const async_editor = state.users.request_user(component.editor_id)
     const { user: editor } = async_editor
 
-    const is_an_alternative = component.subject_id === props.source_id.id
+    const is_an_alternative = component_is_an_alternative(component)
+    const is_an_alternative_of_this_page = component.subject_id === props.source_id.id
+    const alternative_of_text = is_an_alternative_of_this_page
+        ? "References and is also an alternative of this page."
+        : is_an_alternative
+        ? "References this page. Is an alternative of another page."
+        : ""
 
     return <div className="referenced-by-row loaded">
         <a
@@ -137,7 +144,7 @@ function ReferencedByRow(props: { id: IdAndVersion, source_id: IdOnly })
             {component.plain_title}
             {" "} {is_an_alternative && <IconAlternative
                 size={14}
-                title="Referenced by and is an alternative of this page"
+                title={alternative_of_text}
             />}
         </a>
             &nbsp; &nbsp;

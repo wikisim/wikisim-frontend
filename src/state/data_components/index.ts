@@ -107,6 +107,7 @@ function get_or_create_async_data_components(
     force_refresh?: boolean,
 ): AsyncDataComponent[]
 {
+    // TODO, replace with factory_partition_ids
     const actual_data_component_only_ids_to_load: IdOnly[] = []
     const actual_data_component_id_and_versions_to_load: IdAndVersion[] = []
     function add_id(id: IdAndMaybeVersion)
