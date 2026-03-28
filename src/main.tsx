@@ -185,11 +185,11 @@ interface NotFoundProps
 	query: Record<string, string>
 	params: Record<string, string>
 }
-function NotFound(_props: NotFoundProps)
+function NotFound(props: NotFoundProps)
 {
     return <div>
         <h2>404 Not Found</h2>
-        <p>The page you are looking for does not exist.</p>
+        <p>The page you are looking for "{props.path}" does not exist.</p>
         <p>Please check the URL or return to the <a href="/">home page</a>.</p>
     </div>
 }
