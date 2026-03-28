@@ -66,6 +66,7 @@ export function HomePage()
                     With simple data and back-of-the-envelope calculations, we can
                     already understand which futures are realistic.{
                         notes(<>As many have already demonstrated<br/>
+                        such as Prof. David MacKay's book<br/>
                         <a href="https://www.withouthotair.com/">Sustainable Energy Without The Hot Air</a></>
                     )} WikiSim is a
                     public space for that work — breaking information out of silos,
