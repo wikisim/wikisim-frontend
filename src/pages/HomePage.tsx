@@ -114,18 +114,19 @@ export function HomePage()
                 the tools to do something about it.
             </p>
 
-            <blockquote style={{ maxWidth, margin: "2em auto 0 auto" }}>
+            <blockquote style={{ maxWidth, margin: "2em auto 0 auto", fontSize: "1.3em" }}>
                 We need to upgrade our tools to upgrade our conversations — and
-                coordinate at scale, across billions of people, over decades. A
+                coordinate at scale, across billions of people, over decades.
+                {/* A
                 plan that doesn't include everyone's experience isn't a plan. It's
-                a guess made by the few.
+                a guess made by the few. */}
             </blockquote>
 
             <p id="invitation-to-contribute" style={{ maxWidth, textAlign: "justify" }}>
-                <div class="subtitle">THIS IS A WIKI</div>
+                <div class="subtitle">THIS IS YOUR WIKI</div>
                 If you see something you can improve, <a href="https://en.wikipedia.org/wiki/Wikipedia:Be_bold">be bold</a> and
                 edit it. Contribute some data, a calculation,
-                build a simulation, add what you know to the part of the
+                build a simulation.  Add whatever you know to the part of the
                 model you understand best. The best plan for our future is one we
                 build together.
             </p>
