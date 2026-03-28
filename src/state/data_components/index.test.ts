@@ -468,6 +468,7 @@ describe("store.data_components", () =>
             expect(data_components2.data_component_by_id_and_maybe_version).to.deep.equal({}, "data_component_by_id_and_maybe_version should remain empty because we don't know what component ids will be returned yet")
 
             await wait_for(0)
+            await wait_for(0)
 
             const { data_components: data_components3 } = store.getState()
             expect(data_components3.data_component_ids_for_home_page?.status).equals("loaded", "data_component_ids_for_home_page.status should be 'loaded' after the request resolves")

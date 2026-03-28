@@ -1,5 +1,6 @@
-import { Button } from "@mantine/core"
-import { useEffect } from "preact/hooks"
+import { Button, Tooltip } from "@mantine/core"
+import { useEffect, useState } from "preact/hooks"
+import { JSX } from "preact/jsx-runtime"
 
 import { is_data_component } from "core/data/interface"
 
@@ -35,22 +36,114 @@ export function HomePage()
         data_component_by_id_and_maybe_version[id.to_str()]
     )
     .map(component => component?.component)
-    .filter(d => is_data_component(d))
+    .filter(is_data_component)
 
+    const curated_ids = data_component_ids_for_home_page?.curated_ids
+    const curated_data_components_for_home_page = !curated_ids ? undefined : curated_ids.map(id =>
+        data_component_by_id_and_maybe_version[id.to_str()]
+    )
+    .map(component => component?.component)
+    .filter(is_data_component)
+    console.log("curated_data_components_for_home_page", curated_data_components_for_home_page?.length, curated_data_components_for_home_page)
+
+
+    const notes = factory_notes()
+    const maxWidth = 700
 
     return (
         <div className="page-container" id="home-page">
-            <h3>
-                Community made open source simulations, and “back of the envelope”
-                calculations, to help us to make better sense of our complex world.
-            </h3>
+            <div style={{ maxWidth, margin: "2em auto 0 auto" }}>
+                <h2 style={{ marginBottom: 0 }}>We need a national plan for our future —</h2>
+                <h2 style={{ marginTop: 0 }}><i>one that actually adds up.</i></h2>
+                <p style={{ maxWidth: 500 }}>
+                    <i>Not wishful thinking or rhetoric but a shared model of reality
+                    we can all contribute to, edit, and buy in to: so we can prosper together.</i>
+                </p>
+            </div>
+
+            <div style={{ maxWidth, margin: "2em auto 0 auto" }}>
+                <p>
+                    With simple data and back-of-the-envelope calculations, we can
+                    already understand which futures are realistic.{
+                        notes(<>As many have already demonstrated<br/>
+                        <a href="https://www.withouthotair.com/">Sustainable Energy Without The Hot Air</a></>
+                    )} WikiSim is a
+                    public space for that work — breaking information out of silos,
+                    synthesising meaning across domains, and wrapping complex
+                    calculations in simulations anyone can explore.
+                </p>
+            </div>
+
+            <div style={{ maxWidth }} class="background-info-box">
+                <div class="info-row">
+                    <div class="info-cell">
+                        <div class="subtitle">THE PROBLEM</div>
+                        Everyone — politicians, journalists, the public — is doing
+                        their best. But <b>we can't
+                        hold planetary-scale or even nation-scale problems in
+                        our heads</b>, because we're not using the right tools, the right mediums.
+                    </div>
+                    <div class="info-cell">
+                        <div class="subtitle">THE OPPORTUNITY</div>
+                        Wikipedia showed millions of people can together bridge the gap to complex
+                        knowledge. <b>Can we do the same for a shared model
+                        of where we are and where we could go?</b>
+                    </div>
+                </div>
+                <div class="info-cell">
+                    <div class="subtitle">KNOWLEDGE IS FRACTAL</div>
+                    No single person holds the full picture. Every individual, every
+                    community, industry, region — has expertise that belongs in the
+                    plan. <b>WikiSim lets people co-locate their knowledge and lived
+                    experience directly in the model</b>, at whatever level of detail
+                    they understand best. The whole emerges from the parts.
+                </div>
+            </div>
+
+            <p style={{ maxWidth, margin: "2em auto 0 auto", textAlign: "justify" }}>
+                Too many political promises are broken, not because the problems were unsolvable,
+                but because there was no realistic plan, the right people weren't in the room,
+                or they weren't listened to.
+            </p>
+
+            <p style={{ maxWidth, margin: "2em auto 0 auto", textAlign: "justify" }}>
+                Societies have always collapsed when they grew too complex to
+                understand, too complex to discuss. We now face civilisation-scale challenges — and
+                the same comprehension breakdown risk — but this time we have
+                the tools to do something about it.
+            </p>
+
+            <blockquote style={{ maxWidth, margin: "2em auto 0 auto" }}>
+                We need to upgrade our tools to upgrade our conversations — and
+                coordinate at scale, across billions of people, over decades. A
+                plan that doesn't include everyone's experience isn't a plan. It's
+                a guess made by the few.
+            </blockquote>
+
+            <p id="invitation-to-contribute" style={{ maxWidth, textAlign: "justify" }}>
+                <div class="subtitle">THIS IS A WIKI</div>
+                If you see something you can improve, edit it. Contribute a calculation,
+                build a simulation, or simply add what you know to the part of the
+                model you understand best. The best plan for our future is one we
+                build together.
+            </p>
+
+
+            {/* <p>
+                WikiSim is a public space for that data and those “back of the envelope”
+                calculations; a place to synthesis meaning from across domains, breaking
+                data out of silos and traditional boundaries.  When
+                those calculations get too complex, they can be
+                wrapped in visualisations and simulations to
+                enable us to make sense of them.
+            </p>
 
             <p>
                 Below you can choose a calculation to view,
                 a simulation to play<sup class="coming-soon">Now live🎉</sup>,
                 or contribute your own... this is a Wiki so if you see something
                 you can fix, just edit it!
-            </p>
+            </p> */}
 
             <p className="intro-video">
                 <div>
@@ -69,15 +162,15 @@ export function HomePage()
             <br />
 
             <div class="section">
-                {/* <h2>Community favourites ⭐️</h2>
+                <h2>Community favourites ⭐️</h2>
                 <div class="data-component-cards">
-                    {!data_components_for_home_page
+                    {!curated_data_components_for_home_page
                         ? <p>Loading...</p>
-                        : data_components_for_home_page.map(data_component =>
+                        : curated_data_components_for_home_page.map(data_component =>
                             <DataComponentCard key={data_component.id.to_str()} data_component={data_component} />
                         )
                     }
-                </div>*/}
+                </div>
 
 
                 <h2>Recent Changes</h2>
@@ -126,3 +219,26 @@ export function HomePage()
 // {
 
 // }
+
+
+function factory_notes()
+{
+    let i = 0
+    const nums = ["¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"]
+
+    return (children: JSX.Element | string) =>
+    {
+        const [force_open, set_force_open] = useState(false)
+
+        return <Tooltip label={children} position="bottom" opened={force_open}>
+            <span
+                style={{ cursor: "pointer" }}
+                onClick={() => set_force_open(force_open => !force_open)}
+                onPointerOver={() => set_force_open(true)}
+                onPointerOut={() => set_force_open(false)}
+            >
+                {nums[i++]}
+            </span>
+        </Tooltip>
+    }
+}

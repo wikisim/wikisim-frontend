@@ -14,6 +14,7 @@ export interface AsyncDataComponentIdsForHomePage
     status: BasicLoadingStatus
     error?: Error
     ids?: IdAndVersion[]
+    curated_ids?: IdAndVersion[]
     // newer_ids?: IdAndVersion[]
 }
 

@@ -328,11 +328,18 @@ async function request_data_components_for_home_page(
         }
     })
 
-    // const manually_curated_home_page_ids: IdOnly[] = [
-    //     new IdOnly(),
-    //     new IdOnly(1008),
-    // ]
-    // const response_curated = await request_data_components(get_supabase, { page: 0, size: 10, ids: manually_curated_home_page_ids })
+    const manually_curated_home_page_ids: IdOnly[] = [
+        new IdOnly(1080),
+        new IdOnly(1013),
+        new IdOnly(1068),
+        new IdOnly(1239),
+    ]
+    const response_curated = await request_data_components(get_supabase, {
+        page: 0,
+        size: 10,
+        ids: manually_curated_home_page_ids,
+    })
+
     const response_latest_modified = await request_data_components(get_supabase, {
         page: 0,
         size: 12,
@@ -354,10 +361,10 @@ async function request_data_components_for_home_page(
             }
         }
 
-        if (response_latest_modified.error)
+        if (response_latest_modified.error || response_curated.error)
         {
             data_component_ids_for_home_page.status = "error"
-            data_component_ids_for_home_page.error = response_latest_modified.error
+            data_component_ids_for_home_page.error = response_latest_modified.error || response_curated.error!
         }
         else
         {
@@ -367,8 +374,10 @@ async function request_data_components_for_home_page(
                 status: "loaded",
                 error: undefined,
                 ids: response_latest_modified.data.map(component => component.id),
+                curated_ids: response_curated.data.map(component => component.id),
             }
             mutate_store_state_with_loaded_data_components(response_latest_modified.data, state)
+            mutate_store_state_with_loaded_data_components(response_curated.data, state)
         }
 
         state.data_components.data_component_ids_for_home_page = data_component_ids_for_home_page
