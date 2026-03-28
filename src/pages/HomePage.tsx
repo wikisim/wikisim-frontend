@@ -122,14 +122,20 @@ export function HomePage()
                 a guess made by the few. */}
             </blockquote>
 
-            <p id="invitation-to-contribute" style={{ maxWidth, textAlign: "justify" }}>
+            <div id="invitation-to-contribute" style={{ maxWidth, textAlign: "justify" }}>
                 <div class="subtitle">THIS IS YOUR WIKI</div>
-                If you see something you can improve, <a href="https://en.wikipedia.org/wiki/Wikipedia:Be_bold">be bold</a> and
-                edit it. Contribute some data, a calculation,
-                build a simulation.  Add whatever you know to the part of the
-                model you understand best. The best plan for our future is one we
-                build together.
-            </p>
+                <p style={{ marginTop: 0 }}>
+                    Below you can view crowd sourced data, back-of-the-envelope calculations, and play
+                    open source simulations.
+                </p>
+                <p>
+                    If you see something you can improve, <a href="https://en.wikipedia.org/wiki/Wikipedia:Be_bold">be bold</a> and
+                    edit it. Contribute some data, a calculation,
+                    build a simulation.  Add whatever you know to the part of the
+                    model you understand best. The best plan for our future is one we
+                    build together.
+                </p>
+            </div>
 
 
             {/* <p>
