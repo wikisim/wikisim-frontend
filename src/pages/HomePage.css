@@ -77,6 +77,17 @@
 {
     border-left: 1px solid #ccc;
 }
+@media (max-width: 600px) {
+    #home-page .background-info-box .info-row
+    {
+        flex-direction: column;
+    }
+    #home-page .background-info-box .info-row > .info-cell:last-child
+    {
+        border-left: none;
+        border-top: 1px solid #ccc;
+    }
+}
 
 #home-page .background-info-box .info-cell
 {
