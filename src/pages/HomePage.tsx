@@ -123,8 +123,9 @@ export function HomePage()
 
             <p id="invitation-to-contribute" style={{ maxWidth, textAlign: "justify" }}>
                 <div class="subtitle">THIS IS A WIKI</div>
-                If you see something you can improve, edit it. Contribute a calculation,
-                build a simulation, or simply add what you know to the part of the
+                If you see something you can improve, <a href="https://en.wikipedia.org/wiki/Wikipedia:Be_bold">be bold</a> and
+                edit it. Contribute some data, a calculation,
+                build a simulation, add what you know to the part of the
                 model you understand best. The best plan for our future is one we
                 build together.
             </p>
