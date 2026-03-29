@@ -199,7 +199,10 @@ function BannerWarningIfOlderVersion({ partial_component }: { partial_component:
     if (latest_version_check_response.error) return null
 
     const url_to_latest = ROUTES.DATA_COMPONENT.VIEW({
-        id: partial_component.id.as_IdOnly(),
+        // We can't use the URL without the ID when we're already viewing the
+        // non-specific version otherwise it does not cause a route change
+        // id: partial_component.id.as_IdOnly(),
+        id: partial_component.id,
         owner_id: partial_component.owner_id,
     })
 
