@@ -202,7 +202,7 @@ function BannerWarningIfOlderVersion({ partial_component }: { partial_component:
         // We can't use the URL without the ID when we're already viewing the
         // non-specific version otherwise it does not cause a route change
         // id: partial_component.id.as_IdOnly(),
-        id: partial_component.id,
+        id: latest_version_check_response.latest_version,
         owner_id: partial_component.owner_id,
     })
 
