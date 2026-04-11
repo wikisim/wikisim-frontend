@@ -1,15 +1,5 @@
-import * as Sentry from "@sentry/react"
-
-Sentry.init({
-    dsn: "https://a07872a5eb879527065c774ca7a8bdc7@o4511203622584320.ingest.de.sentry.io/4511203632087120",
-    // Setting this option to true will send default PII data to Sentry.
-    // For example, automatic IP address collection on events
-    sendDefaultPii: true,
-    enabled: window.location.hostname !== "localhost",
-    tracePropagationTargets: [
-        "localhost", // For local development
-    ],
-})
+import { setup_error_logging } from "./error_logging"
+setup_error_logging()
 
 import { defaultVariantColorsResolver, MantineProvider, VariantColorsResolverInput } from "@mantine/core"
 import "@mantine/core/styles.css"
