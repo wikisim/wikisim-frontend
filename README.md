@@ -37,3 +37,7 @@ Pushing to the `main` branch will automatically trigger a build and deployment
 to production via GitHub Actions.  Currently this deploys to an S3 bucket fronted
 by CloudFront.  A custom error page is configured in CloudFront to route 404s to
 `/index.html` to improve SEO.
+
+### Error Tracking
+
+https://wikisim.sentry.io/issues/errors-outages/?project=4511203632087120
