@@ -74,7 +74,11 @@ function CheckUserNameAvailability({ user_name }: { user_name: string })
             else if (err31) set_error("Sorry this user name is reserved and cannot be used")
             else if (err32) set_error("Sorry this user name partially matches a reserved name and cannot be used")
             else if (users_ERR_dup_key) set_error("This user name is already taken, please choose another")
-            else set_error("Error setting user name, please try again later")
+            else
+            {
+                console.error("Unexpected error setting user name:", error_setting_user_name)
+                set_error("Error setting user name, please try again later")
+            }
 
             set_status("error")
         }
