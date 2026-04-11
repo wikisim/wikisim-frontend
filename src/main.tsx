@@ -1,3 +1,16 @@
+import * as Sentry from "@sentry/react"
+
+Sentry.init({
+    dsn: "https://a07872a5eb879527065c774ca7a8bdc7@o4511203622584320.ingest.de.sentry.io/4511203632087120",
+    // Setting this option to true will send default PII data to Sentry.
+    // For example, automatic IP address collection on events
+    sendDefaultPii: true,
+    enabled: window.location.hostname !== "localhost",
+    tracePropagationTargets: [
+        "localhost", // For local development
+    ],
+})
+
 import { defaultVariantColorsResolver, MantineProvider, VariantColorsResolverInput } from "@mantine/core"
 import "@mantine/core/styles.css"
 import { Notifications } from "@mantine/notifications"
@@ -31,6 +44,7 @@ import Header from "./ui_components/Header"
 import { InfoAndErrorMessagesDisplay } from "./ui_components/info_and_errors/InfoAndErrorMessagesDisplay"
 import { SearchModal } from "./ui_components/search/SearchModal"
 import { set_page_title } from "./ui_components/set_page_title"
+import { InternalSimulateError } from "./ui_components/utils/InternalSimulateError"
 
 
 function App()
@@ -121,6 +135,8 @@ function App()
                         <Route path={ROUTES.DATA_COMPONENT.VIEW_VERSION_HISTORY()} component={DataComponentPageVersionHistory} />
                         <Route path={ROUTES.DATA_COMPONENT.VIEW_ALTERNATIVES()} component={DataComponentPageAlternatives} />
                         <Route path={ROUTES.DATA_COMPONENT.VIEW_BACK_REFERENCES()} component={DataComponentPageBackReferences} />
+
+                        <Route path={ROUTES.INTERNAL_SIMULATE_ERROR} component={InternalSimulateError} />
                         {/* <Route path="/demo/text_editor_demos" component={TextEditorDemos} /> */}
                         {/* <Route path="/demo/json_wrangling" component={DemoJSONWranglingDemo} /> */}
                         <Route default component={NotFound} />
@@ -131,7 +147,6 @@ function App()
 
             <MentionsClickHandler />
         </LocationProvider>
-
     </MantineProvider>
 }
 

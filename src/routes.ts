@@ -88,6 +88,7 @@ export const ROUTES = {
             return `/u/${user_id_or_name}`
         },
     },
+    INTERNAL_SIMULATE_ERROR: "/internal/simulate_error",
 }
 
 

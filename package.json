@@ -16,6 +16,7 @@
         "@mantine/core": "8.3.5",
         "@mantine/hooks": "8.3.5",
         "@mantine/notifications": "8.3.5",
+        "@sentry/react": "10.48.0",
         "@supabase/supabase-js": "2.52.0",
         "@tabler/icons-react": "3.34.0",
         "@tiptap/core": "3.14.0",
