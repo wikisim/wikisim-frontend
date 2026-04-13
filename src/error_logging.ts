@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/react"
+import { PostgrestError } from "@supabase/supabase-js"
 
 
 export function setup_error_logging()
@@ -21,7 +22,7 @@ export function setup_error_logging()
     console.error = function (...args)
     {
         if (args[0] instanceof Error) Sentry.captureException(args[0])
-        else Sentry.captureMessage(args.map(String).join(" "), "error")
+        else Sentry.captureMessage(args.map(to_string).join(" "), "error")
 
         // Log to the console
         original_console_error.apply(console, args)
@@ -29,9 +30,25 @@ export function setup_error_logging()
 
     console.warn = function (...args)
     {
-        Sentry.captureMessage(args.map(String).join(" "), "warning")
+        Sentry.captureMessage(args.map(to_string).join(" "), "warning")
 
         // Log to the console
         original_console_warn.apply(console, args)
+    }
+}
+
+
+function to_string(value: unknown): string
+{
+    if (typeof value === "string") return value
+    if (value instanceof Error) return "Message: " + value.message + ", Stack: " + value.stack
+    if (value instanceof PostgrestError) return `PostgrestError: ${value.message}, details: ${value.details}, hint: ${value.hint}`
+    try
+    {
+        return JSON.stringify(value)
+    }
+    catch
+    {
+        return String(value)
     }
 }
