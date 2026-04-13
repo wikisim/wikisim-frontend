@@ -1,9 +1,9 @@
 import Mention from "@tiptap/extension-mention"
 
+import { component_is_an_alternative } from "core/data/component_is"
 import { IdAndMaybeVersion, IdAndVersion, IdOnly, parse_id } from "core/data/id"
 import { DataComponent } from "core/data/interface"
 
-import { component_is_an_alternative } from "../../lib/core/src/data/component_is_an_alternative"
 import AlternativeSVG from "../assets/alternative.svg"
 import UpdateVersionSVG from "../assets/update_version.svg"
 import pub_sub from "../pub_sub"

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "preact/hooks"
 
+import { component_is_an_alternative } from "core/data/component_is"
 import { IdAndVersion, IdOnly, parse_id } from "core/data/id"
 
-import { component_is_an_alternative } from "../../lib/core/src/data/component_is_an_alternative"
 import { IconAlternative } from "../assets/icons"
 import pub_sub from "../pub_sub"
 import { ROUTES } from "../routes"

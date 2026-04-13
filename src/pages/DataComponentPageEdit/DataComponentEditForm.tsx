@@ -7,11 +7,12 @@ import { useCallback, useEffect, useState } from "preact/hooks"
 import { z } from "zod"
 
 import { get_id_str_of_data_component, get_version_of_data_component } from "core/data/accessor"
-import { component_is_an_alternative } from "core/data/component_is_an_alternative"
+import { component_is_an_alternative } from "core/data/component_is"
 import {
     flatten_new_or_data_component_to_json,
     hydrate_data_component_from_json
 } from "core/data/convert_between_json"
+import { IdOnly } from "core/data/id"
 import {
     AsyncDataComponentStatus,
     is_data_component,
@@ -24,7 +25,6 @@ import { changes_made } from "core/data/modify"
 import { make_field_validators } from "core/data/validate_fields"
 import { tiptap_mention_chip } from "core/rich_text/tiptap_mention_chip"
 
-import { IdOnly } from "../../../lib/core/src/data/id"
 import { ConfirmBinButton } from "../../buttons/BinButton"
 import CloseButton from "../../buttons/CloseButton"
 import EditOrSaveButton from "../../buttons/EditOrSaveButton"
