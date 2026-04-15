@@ -4,7 +4,7 @@ type MonacoEditor = monaco.editor.IStandaloneCodeEditor
 type ITextModel = monaco.editor.ITextModel
 
 import { extract_ids_from_text } from "core/data/id"
-import { DataComponent, DataComponentsById, FunctionArgument } from "core/data/interface"
+import { DataComponent, DataComponentsByIdv, FunctionArgument } from "core/data/interface"
 import { to_javascript_identifier } from "core/data/to_javascript_identifier"
 import { format_function_input_value_string } from "core/evaluator/format_function"
 import { get_global_js_lines, upsert_js_component_const } from "core/rich_text/get_global_js_lines"
@@ -136,7 +136,7 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
     const [setup_or_refresh_part2, set_setup_or_force_refresh_part2] = useState({})
 
 
-    const [data_component_dependencies_by_id, set_deps_by_id] = useState<DataComponentsById>({})
+    const [data_component_dependencies_by_id, set_deps_by_id] = useState<DataComponentsByIdv>({})
     const add_data_component_dependency = useMemo(() => (data_component: DataComponent) =>
     {
         set_deps_by_id(deps => {
@@ -445,7 +445,7 @@ function upsert_change_and_sync_handler(
 }
 
 
-function update_available_globals(data_component_dependencies_by_id: DataComponentsById, function_arguments: FunctionArgument[])
+function update_available_globals(data_component_dependencies_by_id: DataComponentsByIdv, function_arguments: FunctionArgument[])
 {
     const content = get_global_js_lines(data_component_dependencies_by_id, function_arguments).join("\n")
 
