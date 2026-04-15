@@ -162,7 +162,7 @@ export function DataComponentPageView(props: DataComponentPageViewProps)
                 </div>
             </div>}
 
-            {is_function && <ScenariosReadOnly component={component} />}
+            {is_function && <ScenariosReadOnly key={component.id.to_str()} component={component} />}
 
             {value_as_string && is_function && <div className="section">
                 <div className="row">
@@ -285,6 +285,14 @@ function ScenariosReadOnly(props: { component: DataComponent })
     const components = get_async_data_component_and_dependencies(app_store(), component.id.to_str())
 
 
+    // Reset state when component changes
+    useEffect(() =>
+    {
+        set_sandbox_error(null)
+        set_results({})
+    }, [component.id.to_str()])
+
+
     // Load dependencies
     useEffect(() =>
     {
@@ -296,7 +304,7 @@ function ScenariosReadOnly(props: { component: DataComponent })
         {
             set_sandbox_error(response.error || false)
         })
-    }, [component.id, components.all_loaded])
+    }, [component.id.to_str(), components.all_loaded])
 
 
     useEffect(() =>
