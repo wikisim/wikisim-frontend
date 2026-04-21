@@ -24,6 +24,7 @@ import { determine_input_value_text_type } from "core/rich_text/determine_text_t
 import { update_references } from "core/rich_text/update_references"
 
 import { IconUpdateVersion } from "../../../assets/icons"
+import { original_console } from "../../../error_logging"
 import { load_referenced_data_components } from "../../../state/data_components/accessor2"
 import { local_storage } from "../../../state/local_storage"
 import { app_store } from "../../../state/store"
@@ -88,7 +89,8 @@ export function ValueEditorForm(props: ValueEditorFormProps)
             if (!response) return
             if (response.error)
             {
-                console.error("Error calculating result value:", response.error, "\nInput value:", response.js_input_value)
+                // Log to original console to avoid logging to Sentry
+                original_console.error("Error calculating result value:", response.error, "\nInput value:", response.js_input_value)
                 set_evaluation_error(response.error)
                 return
             }
