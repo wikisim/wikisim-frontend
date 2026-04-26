@@ -16,9 +16,6 @@ export function PlayInteractable(props: { component: DataComponent })
 
     if (component.value_type !== "interactable") return null
     if (!component.result_value) return null
-    // There is a bug where the result_value was being set as "undefined":
-    // https://github.com/wikisim/wikisim-frontend/issues/56
-    if (component.result_value === "undefined") return null
 
 
     return <div
