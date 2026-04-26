@@ -1,3 +1,5 @@
+import { Select } from "@mantine/core"
+
 import { valid_value_type } from "core/data/field_values_with_defaults"
 import {
     DataComponent,
@@ -6,7 +8,6 @@ import {
     ValueType,
 } from "core/data/interface"
 
-import { Select } from "@mantine/core"
 import { to_sentence_case } from "../../utils/to_sentence_case"
 
 
@@ -33,7 +34,7 @@ export function ValueTypeDropdown(props: {
 function value_type_options()
 {
     return VALUE_TYPES
-    // For now, only allow number and function types
+    // For now, only allow number, function and interactable types
     .filter(type => type === "number" || type === "function" || type === "interactable")
     .map(type =>
     {
