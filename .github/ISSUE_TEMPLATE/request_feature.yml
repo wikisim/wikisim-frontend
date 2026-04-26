@@ -1,6 +1,6 @@
 name: "🎁 Request feature / improvement"
 description: Suggest an improvement.
-title: "[FEATURE REQUEST]: "
+title: "[FEATURE REQUEST] "
 labels: [enhancement, feedback]
 body:
   - type: textarea

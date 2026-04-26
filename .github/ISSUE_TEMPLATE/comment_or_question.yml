@@ -1,6 +1,6 @@
 name: 💬 Comment or Question
 description: A comment or question
-title: "[COMMENT / QUESTION]: I liked ... / I was curious about ..."
+title: "[COMMENT / QUESTION] I liked ... / I was curious about ..."
 labels: ["comment", "question"]
 body:
   - type: textarea
