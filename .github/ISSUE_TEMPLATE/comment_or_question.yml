@@ -1,0 +1,9 @@
+name: 💬 Comment or Question
+description: A comment or question
+title: "[COMMENT / QUESTION]: I liked ... / I was curious about ..."
+labels: ["comment", "question"]
+body:
+  - type: textarea
+    id: comment_or_question
+    attributes:
+      label: "Your comment or question"

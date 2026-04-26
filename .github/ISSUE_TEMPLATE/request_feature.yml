@@ -1,0 +1,11 @@
+name: "🎁 Request feature / improvement"
+description: Suggest an improvement.
+title: "[FEATURE REQUEST]: "
+labels: [enhancement, feedback]
+body:
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Please provide more details, including why you would or you think others might find this is useful.
+      placeholder: When I use the wiki I would like to be able to ...
