@@ -1,6 +1,6 @@
 import { Button } from "@mantine/core"
 import IconPlayerPlay from "@tabler/icons-react/dist/esm/icons/IconPlayerPlay"
-import { useMemo, useState } from "preact/hooks"
+import { useEffect, useMemo, useState } from "preact/hooks"
 
 import { DataComponent } from "core/data/interface"
 
@@ -27,6 +27,29 @@ export function PlayInteractable(props: { component: DataComponent })
         const decoded = sim_parameters ? decodeURIComponent(sim_parameters) : null
         return decoded ? "?" + decoded : ""
     }, [component.id.to_str()])
+
+
+    // Listen for messages from the iframe
+    useEffect(() =>
+    {
+        function handle_event(event: MessageEvent)
+        {
+            // Update the sim_parameters in the URL
+            if (event.data.type === "UPDATE_SIM_PARAMETERS")
+            {
+                const sim_parameters = event.data.payload.sim_parameters as string
+                if (typeof sim_parameters !== "string") return
+                const encoded = encodeURIComponent(sim_parameters)
+
+                const url = new URL(window.location.href)
+                url.searchParams.set("sim_parameters", encoded)
+                window.history.replaceState(null, "", url.toString())
+            }
+        }
+        window.addEventListener("message", handle_event)
+
+        return () => window.removeEventListener("message", handle_event)
+    }, [])
 
 
     return <div
