@@ -35,6 +35,13 @@ export function PlayInteractable(props: { component: DataComponent })
         function handle_event(event: MessageEvent)
         {
             // Update the sim_parameters in the URL
+
+            // Example of code the iframe should use to update the sim_parameters in the parent window:
+            //     window.parent.postMessage(
+            //         { type: "UPDATE_SIM_PARAMETERS", payload: { sim_parameters: document.location.search.slice(1) } },
+            //         "*"
+            //     )
+
             if (event.data.type === "UPDATE_SIM_PARAMETERS")
             {
                 const sim_parameters = event.data.payload.sim_parameters as string
