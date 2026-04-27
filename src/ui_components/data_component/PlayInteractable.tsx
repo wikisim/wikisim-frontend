@@ -1,6 +1,6 @@
 import { Button } from "@mantine/core"
 import IconPlayerPlay from "@tabler/icons-react/dist/esm/icons/IconPlayerPlay"
-import { useState } from "preact/hooks"
+import { useMemo, useState } from "preact/hooks"
 
 import { DataComponent } from "core/data/interface"
 
@@ -18,6 +18,17 @@ export function PlayInteractable(props: { component: DataComponent })
     if (!component.result_value) return null
 
 
+    const sim_parameters = useMemo(() =>
+    {
+        // Get `sim_parameters` from URL search parameters and pass it to the
+        // iframe as a query parameter
+        const url = new URL(window.location.href)
+        const sim_parameters = url.searchParams.get("sim_parameters")
+        const decoded = sim_parameters ? decodeURIComponent(sim_parameters) : null
+        return decoded ? "?" + decoded : ""
+    }, [component.id.to_str()])
+
+
     return <div
         className={`section play-interactable ${playing ? "playing" : ""}`}
         onClick={() => set_playing(true)}
@@ -28,7 +39,7 @@ export function PlayInteractable(props: { component: DataComponent })
         {playing && <div style={{ width: 130 }}>Loading&nbsp;<Loading /></div>}
         {playing && <>
             <iframe
-                src={`https://wikisim-server.wikisim.deno.net/${component.id.to_str()}/` }
+                src={`https://wikisim-server.wikisim.deno.net/${component.id.to_str()}/${sim_parameters}` }
                 className="play-interactable-iframe"
                 sandbox="allow-scripts allow-same-origin"
             />
