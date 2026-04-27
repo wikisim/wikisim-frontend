@@ -329,10 +329,11 @@ async function request_data_components_for_home_page(
     })
 
     const manually_curated_home_page_ids: IdOnly[] = [
-        new IdOnly(1080),
+        new IdOnly(1272),
+        // new IdOnly(1080),  // Energy explorer
         new IdOnly(1013),
         new IdOnly(1068),
-        new IdOnly(1239),
+        new IdOnly(1239),  // National energy budget for UK
     ]
     const response_curated = await request_data_components(get_supabase, {
         page: 0,
@@ -379,6 +380,10 @@ async function request_data_components_for_home_page(
             mutate_store_state_with_loaded_data_components(response_latest_modified.data, state)
             mutate_store_state_with_loaded_data_components(response_curated.data, state)
         }
+
+        // Arrange in same order as manually_curated_home_page_ids
+        const map_id_to_position = manually_curated_home_page_ids.reduce((acc, id, index) => ({ ...acc, [id.id]: index }), {} as Record<number, number>)
+        data_component_ids_for_home_page.curated_ids?.sort((a, b) => (map_id_to_position[a.id] ?? Number.POSITIVE_INFINITY) - (map_id_to_position[b.id] ?? Number.POSITIVE_INFINITY))
 
         state.data_components.data_component_ids_for_home_page = data_component_ids_for_home_page
     })
