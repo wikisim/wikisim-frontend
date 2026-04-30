@@ -34,6 +34,8 @@ export function PlayInteractable(props: { component: DataComponent })
     {
         function handle_event(event: MessageEvent)
         {
+            if (!event.data || typeof event.data !== "object") return
+
             // Update the sim_parameters in the URL
 
             // Example of code the iframe should use to update the sim_parameters in the parent window:
@@ -41,7 +43,6 @@ export function PlayInteractable(props: { component: DataComponent })
             //         { type: "UPDATE_SIM_PARAMETERS", payload: { sim_parameters: document.location.search.slice(1) } },
             //         "*"
             //     )
-
             if (event.data.type === "UPDATE_SIM_PARAMETERS")
             {
                 const sim_parameters = event.data.payload.sim_parameters as string
@@ -51,6 +52,16 @@ export function PlayInteractable(props: { component: DataComponent })
                 const url = new URL(window.location.href)
                 url.searchParams.set("sim_parameters", encoded)
                 window.history.replaceState(null, "", url.toString())
+            }
+
+            else if (event.data.type === "OPEN_URL" && event.data.url)
+            {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                const url = event.data.url
+                const target = event.data.target as string || "_blank"
+                const allowed_targets = ["_blank", "_self"]
+                if (typeof url !== "string" || !allowed_targets.includes(target)) return
+                window.open(url, target)
             }
         }
         window.addEventListener("message", handle_event)
