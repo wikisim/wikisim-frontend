@@ -44,7 +44,7 @@ export function HomePage()
     )
     .map(component => component?.component)
     .filter(is_data_component)
-    console.log("curated_data_components_for_home_page", curated_data_components_for_home_page?.length, curated_data_components_for_home_page)
+    // console.log("curated_data_components_for_home_page", curated_data_components_for_home_page?.length, curated_data_components_for_home_page)
 
 
     const notes = factory_notes()
