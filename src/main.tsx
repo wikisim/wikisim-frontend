@@ -9,7 +9,7 @@ import { render } from "preact"
 import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso"
 import { useCallback, useEffect } from "preact/hooks"
 
-import { Evaluator } from "core/evaluator/implementation/browser_sandboxed_javascript"
+import { Evaluator } from "core/evaluator/implementation/browser_preact_Evaluator"
 
 import "./main.css"
 import "./monkey_patch"
