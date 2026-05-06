@@ -3,6 +3,7 @@ import { Button } from "@mantine/core"
 
 import { Scenario } from "core/data/interface"
 
+import { calculate_if_expectation_met } from "../../../lib/core/src/expectation/calculate_if_expectation_met"
 import BinButton from "../../buttons/BinButton"
 import HelpText from "../../buttons/HelpText"
 import { ExpectationMetMessage } from "../../ui_components/ExpectationMet"
@@ -20,6 +21,9 @@ interface ScenarioGraphProps
 export function ScenarioExpectationsForm(props: ScenarioGraphProps)
 {
     const has_expectation = !!props.scenario.expected_result
+    const expectation_met = props.scenario.expected_result
+        ? calculate_if_expectation_met(props.latest_result, props.scenario.expected_result)
+        : undefined
 
     const not_on_json_view = props.selected_results_view_tab !== "json"
 
@@ -36,7 +40,7 @@ export function ScenarioExpectationsForm(props: ScenarioGraphProps)
             </>}
         > */}
             <Button
-                disabled={!props.latest_result || not_on_json_view}
+                disabled={!props.latest_result || not_on_json_view || expectation_met === true}
                 title={not_on_json_view ? "Switch to JSON view to use result as expectation" : undefined}
                 size="xs"
                 style={{ marginLeft: "0.5em", marginRight: "0.5em" }}
