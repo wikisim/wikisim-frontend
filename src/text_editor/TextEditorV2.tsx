@@ -233,8 +233,8 @@ export function TextEditorV2({
     // we want to force the editor to update its content.
     useEffect(() =>
     {
-        if (initial_content !== content_ref.current)
-        // console .log(`Updating editor content due to initial_content change. New initial_content: "${initial_content}", current content_ref: "${content_ref.current}"`)
+        if (initial_content === content_ref.current) return
+        // original_console.warn(`Updating editor content due to initial_content change. New initial_content: "${initial_content}", current content_ref: "${content_ref.current}"`)
         editor.commands.setContent(initial_content)
     }, [initial_content])
 

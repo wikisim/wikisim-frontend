@@ -157,6 +157,7 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
         const current_content = input_model_ref.current.getValue()
         if (props.initial_content === current_content) return
 
+        // original_console.warn(`Forcing editor content update due to initial_content change. New initial_content: "${props.initial_content}", current editor content: "${current_content}"`)
         load_dependencies(app_state, props.initial_content, add_data_component_dependency)
         input_model_ref.current.setValue(props.initial_content)
 
