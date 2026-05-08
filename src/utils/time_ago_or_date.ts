@@ -1,3 +1,4 @@
+import { pluralise } from "./string"
 
 
 export function time_ago_or_date(date: Date, text_to_preprend: boolean = false): string
@@ -12,13 +13,14 @@ export function time_ago_or_date(date: Date, text_to_preprend: boolean = false):
 
     if (days > 3) return text_to_preprend ? "on" : date.toDateString()
     if (text_to_preprend) return "about"
-    if (days > 0) return `${pluralise(days, "day")} ago`
-    if (hours > 0) return `${pluralise(hours, "hour")} ago`
-    if (minutes > 0) return `${pluralise(minutes, "minute")} ago`
-    return `${pluralise(seconds, "second")} ago`
+    if (days > 0) return `${value_and_pluralise(days, "day")} ago`
+    if (hours > 0) return `${value_and_pluralise(hours, "hour")} ago`
+    if (minutes > 0) return `${value_and_pluralise(minutes, "minute")} ago`
+    return `${value_and_pluralise(seconds, "second")} ago`
 }
 
-function pluralise(count: number, singular: string): string
+
+function value_and_pluralise(count: number, singular: string): string
 {
-    return `${count} ${singular}${count !== 1 ? "s" : ""}`
+    return `${count} ${pluralise(singular, count)}`
 }
