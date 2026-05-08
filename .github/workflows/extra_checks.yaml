@@ -1,4 +1,4 @@
-name: Tests
+name: Extra checks
 
 on:
   push:
@@ -29,9 +29,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-
-      - name: Run Tests
-        run: pnpm run test
 
       - name: Compile TypeScript
         run: pnpm run check_compile
