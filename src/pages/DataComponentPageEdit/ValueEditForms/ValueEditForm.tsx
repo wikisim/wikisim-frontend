@@ -39,6 +39,7 @@ import OpenCloseSection from "../../../ui_components/OpenCloseSection"
 import { Select } from "../../../ui_components/Select"
 import { ToggleTwo } from "../../../ui_components/ToggleTwo"
 import { debounce } from "../../../utils/debounce"
+import { pluralise } from "../../../utils/string"
 import { FunctionInputsForm } from "../FunctionInputsForm"
 import { UpdatesFnOrValue } from "../interface"
 import { ScenariosForm } from "../ScenariosForm/ScenariosForm"
@@ -347,7 +348,8 @@ function ValueEditorControls(props: ValueEditorControlsProps)
     }
 
 
-    const update_components_label = `Update ${components_referencing_older_versions} component${components_referencing_older_versions > 1 ? "s" : ""} referencing older versions`
+    const count = components_referencing_older_versions
+    const update_components_label = `Update ${count} ${pluralise("component", count)} referencing older ${pluralise("version", count)}`
 
     return <div className="value-editor-controls">
         {show_code_editor_option ? <ToggleTwo
