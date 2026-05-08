@@ -1,10 +1,26 @@
-import { expect } from "chai"
+import { expect } from "chai";
 
 import {
     filter_file_names,
     find_relative_file_path,
     process_file_paths_of_interactable,
-} from "./handle_file_paths_of_interactable"
+} from "./handle_file_paths_of_interactable";
+
+
+// Polyfill for File in Node.js if not already defined
+if (typeof globalThis.File === "undefined") {
+    class File extends Blob {
+        name: string;
+        lastModified: number;
+        constructor(parts: BlobPart[], name: string, options?: BlobPropertyBag & { lastModified?: number }) {
+            super(parts, options);
+            this.name = name;
+            this.lastModified = options?.lastModified ?? Date.now();
+        }
+    }
+    // @ts-ignore
+    globalThis.File = File;
+}
 
 
 describe("filter_file_names", () =>
