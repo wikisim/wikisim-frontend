@@ -20,6 +20,7 @@ interface TextEditorV2Props
 {
     editable: boolean
     initial_content?: string
+    force_update_content?: number
     single_line?: boolean
     auto_focus?: boolean
     on_update?: (html: string) => void
@@ -32,6 +33,10 @@ interface TextEditorV2Props
 export function TextEditorV2({
     editable,
     initial_content = "",
+    // Rather than monitoring for changes to the initial_content value and using
+    // that to trigger a force update, we monitor this explicit prop in an attempt
+    // to resolve: https://github.com/wikisim/wikisim-frontend/issues/58
+    force_update_content = undefined,
     single_line = false,
     auto_focus = false,
     on_update,
@@ -233,10 +238,10 @@ export function TextEditorV2({
     // we want to force the editor to update its content.
     useEffect(() =>
     {
-        if (initial_content === content_ref.current) return
-        // original_console.warn(`Updating editor content due to initial_content change. New initial_content: "${initial_content}", current content_ref: "${content_ref.current}"`)
+        // No need to force an update if this is the first time the text is being mounted
+        if (!force_update_content) return
         editor.commands.setContent(initial_content)
-    }, [initial_content])
+    }, [force_update_content])
 
 
     editor.setEditable(editable)

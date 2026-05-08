@@ -60,6 +60,8 @@ export function ValueEditorForm(props: ValueEditorFormProps)
     const state = app_store()
     const [opened, set_opened] = useState(false)
     const [evaluation_error, set_evaluation_error] = useState<string>()
+    // This is a different way to force updating components text editors when their content changes
+    const [forcing_content_update, set_forcing_content_update] = useState(0)
 
     const async_loading_referenced_data_components = load_referenced_data_components(state, draft_component)
 
@@ -108,10 +110,11 @@ export function ValueEditorForm(props: ValueEditorFormProps)
 
     const formatted_value = format_data_component_value_to_string(draft_component)
 
-    const debounced_handle_update_input_value = useCallback(debounce((value: string) =>
+    const debounced_handle_update_input_value = useCallback(debounce((value: string, force_update = false) =>
     {
         const input_value = value.trim() || undefined
         on_change({ input_value })
+        if (force_update) set_forcing_content_update(new Date().getTime())
     }, 1000)
     , [on_change])
 
@@ -169,6 +172,9 @@ export function ValueEditorForm(props: ValueEditorFormProps)
                     ? <CodeEditor
                         label={value_type_is_number ? "Input Value" : "Function"}
                         initial_content={draft_component.input_value || ""}
+                        // Have not yet seen bug https://github.com/wikisim/wikisim-frontend/issues/58 so will
+                        // not add this yet:
+                        // force_update_content={forcing_content_update}
                         function_arguments={draft_component.function_arguments}
                         on_update={debounced_handle_update_input_value}
                         editable={true}
@@ -177,6 +183,7 @@ export function ValueEditorForm(props: ValueEditorFormProps)
                     : <TextEditorV2
                         label={value_type_is_number ? "Input Value" : "Function"}
                         initial_content={draft_component.input_value ?? ""}
+                        force_update_content={forcing_content_update}
                         on_update={debounced_handle_update_input_value}
                         single_line={false}
                         editable={true}
@@ -298,7 +305,7 @@ interface ValueEditorControlsProps
     use_code_editor: boolean
     set_use_code_editor: (use: boolean) => void
     input_value: string | undefined
-    on_update: (text: string) => void
+    on_update: (text: string, force_update?: boolean) => void
 }
 function ValueEditorControls(props: ValueEditorControlsProps)
 {
@@ -344,7 +351,7 @@ function ValueEditorControls(props: ValueEditorControlsProps)
         const updated_input_value = update_references(input_value, map_ids)
 
         if (updated_input_value === input_value) return // No change
-        props.on_update(updated_input_value)
+        props.on_update(updated_input_value, true)
     }
 
 
