@@ -172,9 +172,7 @@ export function ValueEditorForm(props: ValueEditorFormProps)
                     ? <CodeEditor
                         label={value_type_is_number ? "Input Value" : "Function"}
                         initial_content={draft_component.input_value || ""}
-                        // Have not yet seen bug https://github.com/wikisim/wikisim-frontend/issues/58 so will
-                        // not add this yet:
-                        // force_update_content={forcing_content_update}
+                        force_update_content={forcing_content_update}
                         function_arguments={draft_component.function_arguments}
                         on_update={debounced_handle_update_input_value}
                         editable={true}

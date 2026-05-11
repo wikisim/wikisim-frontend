@@ -46,6 +46,7 @@ interface CodeEditorProps
 {
     editable: boolean
     initial_content: string
+    force_update_content?: number
     function_arguments: FunctionArgument[] | undefined
     // single_line?: boolean
     auto_focus?: boolean
@@ -59,6 +60,11 @@ export function CodeEditor(props: CodeEditorProps)
 {
     const [is_focused, set_is_focused] = useState(props.auto_focus ?? false)
     const [value, set_value] = useState(props.initial_content)
+
+    // Rather than monitoring for changes to the initial_content value and using
+    // that to trigger a force update, we monitor this explicit prop in an attempt
+    // to resolve: https://github.com/wikisim/wikisim-frontend/issues/58
+    const { force_update_content } = props
 
     const on_update = useMemo(() => (value: string) =>
     {
@@ -104,6 +110,7 @@ export function CodeEditor(props: CodeEditorProps)
         }>
             <InnerCodeEditor
                 initial_content={props.initial_content}
+                force_update_content={force_update_content}
                 function_arguments={props.function_arguments}
                 on_update={on_update}
 
@@ -119,6 +126,7 @@ export function CodeEditor(props: CodeEditorProps)
 interface InnerCodeEditorProps
 {
     initial_content: string
+    force_update_content: number | undefined
     function_arguments: FunctionArgument[] | undefined
     on_update?: (text: string) => void
 
@@ -154,14 +162,14 @@ function InnerCodeEditor(props: InnerCodeEditorProps)
     useEffect(() =>
     {
         if (!input_model_ref.current) return
-        const current_content = input_model_ref.current.getValue()
-        if (props.initial_content === current_content) return
+        // No need to force an update if this is the first time the text is being mounted
+        if (!props.force_update_content) return
 
         // original_console.warn(`Forcing editor content update due to initial_content change. New initial_content: "${props.initial_content}", current editor content: "${current_content}"`)
         load_dependencies(app_state, props.initial_content, add_data_component_dependency)
         input_model_ref.current.setValue(props.initial_content)
 
-    }, [props.initial_content])
+    }, [props.force_update_content])
 
 
     useEffect(() =>
