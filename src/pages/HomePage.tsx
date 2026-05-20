@@ -1,8 +1,9 @@
 import { Button, Tooltip } from "@mantine/core"
-import { useEffect, useState } from "preact/hooks"
+import { useCallback, useEffect, useState } from "preact/hooks"
 import { JSX } from "preact/jsx-runtime"
 
 import { is_data_component } from "core/data/interface"
+import { get_is_touch_device } from "core/utils/screen_type"
 
 import { ROUTES } from "../routes"
 import { app_store } from "../state/store"
@@ -247,12 +248,16 @@ function factory_notes()
     {
         const [force_open, set_force_open] = useState(false)
 
+        const is_touch_device = get_is_touch_device()
+        const on_pointer_over = useCallback(() => !is_touch_device && set_force_open(true), [set_force_open])
+        const on_pointer_out = useCallback(() => !is_touch_device && set_force_open(false), [set_force_open])
+
         return <Tooltip label={children} position="bottom" opened={force_open}>
             <span
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", margin: -3, padding: 3 }}
                 onClick={() => set_force_open(force_open => !force_open)}
-                onPointerOver={() => set_force_open(true)}
-                onPointerOut={() => set_force_open(false)}
+                onPointerOver={on_pointer_over}
+                onPointerOut={on_pointer_out}
             >
                 {nums[i++]}
             </span>
