@@ -15,6 +15,7 @@ import { NewWikiDataComponentButton } from "../ui_components/NewDataComponentBut
 import { set_page_title } from "../ui_components/set_page_title"
 import { time_ago_or_date } from "../utils/time_ago_or_date"
 import "./DataComponentPageAlternatives.css"
+import { should_show_create_alternative_button } from "./create_alternative_button_visibility"
 import { DataComponentPageRedirectToIdOnly } from "./DataComponentPageRedirectToIdOnly"
 
 
@@ -209,16 +210,18 @@ function CreateAlternative(props: CreateAlternativeProps)
             set_according_to={set_according_to}
         />
 
-        <br />
+        {should_show_create_alternative_button(according_to.id) && <>
+            <br />
 
-        <NewWikiDataComponentButton
-            title={`Create alternative`}
-            disabled={!according_to.id}
-            args={{
-                subject_id: props.subject_id,
-                according_to_id: according_to.id,
-            }}
-        />
+            <NewWikiDataComponentButton
+                title={`Create alternative`}
+                disabled={!according_to.id}
+                args={{
+                    subject_id: props.subject_id,
+                    according_to_id: according_to.id,
+                }}
+            />
+        </>}
     </div>
 }
 
