@@ -52,12 +52,19 @@ export function HomePage()
 
     return (
         <div className="page-container" id="home-page">
+
+            <h2 style={{ maxWidth, margin: "2em auto 0 auto" }}>
+                Welcome to WikiSim<br/>
+                a public space for empowering us, citizens,<br/>
+                to discover credible plans for our future
+            </h2>
+
             <div style={{ maxWidth, margin: "2em auto 0 auto" }}>
-                <h2 style={{ marginBottom: 0 }}>We need a national plan for our future —</h2>
-                <h2 style={{ marginTop: 0 }}><i>one that actually adds up.</i></h2>
+                <b style={{ marginBottom: 0 }}>We need a national plan for our future —</b>
+                <b style={{ marginTop: 0 }}><i>one that actually adds up.</i></b>
                 <p style={{ maxWidth: 500 }}>
-                    <i>Not wishful thinking or rhetoric but a shared model of reality
-                    we can all contribute to, edit, and buy in to: so we can prosper together.</i>
+                    Not wishful thinking or rhetoric but a shared model of reality
+                    we can all contribute to, edit, and buy in to: so we can prosper together.
                 </p>
             </div>
 
@@ -71,7 +78,8 @@ export function HomePage()
                     )} WikiSim is a
                     public space for that work — breaking information out of silos,
                     synthesising meaning across domains, and wrapping complex
-                    calculations in simulations anyone can explore.
+                    calculations in simulations anyone can play with to quickly explore
+                    credible plans for our future.
                 </p>
             </div>
 
@@ -79,7 +87,7 @@ export function HomePage()
                 <div class="info-row">
                     <div class="info-cell">
                         <div class="subtitle">THE PROBLEM</div>
-                        Everyone — politicians, journalists, the public — is doing
+                        Everyone — politicians, journalists, the public — are doing
                         their best. But <b>we can't
                         hold planetary-scale or even nation-scale problems in
                         our heads</b>, because we're not using the right tools, the right mediums.
