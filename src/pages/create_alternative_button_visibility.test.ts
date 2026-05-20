@@ -15,4 +15,11 @@ describe("should_show_create_alternative_button", () =>
     {
         expect(should_show_create_alternative_button(42)).to.equal(true)
     })
+
+
+    it("should return false for invalid selected ids", () =>
+    {
+        expect(should_show_create_alternative_button(-1)).to.equal(false)
+        expect(should_show_create_alternative_button(3.14)).to.equal(false)
+    })
 })
