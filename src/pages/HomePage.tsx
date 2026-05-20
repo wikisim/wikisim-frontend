@@ -56,7 +56,11 @@ export function HomePage()
 
             <h2 style={{ maxWidth, margin: "2em auto 0 auto" }}>
                 Welcome to WikiSim<br/>
-                a public space for empowering us, citizens,<br/>
+                a public space for empowering us all, as citizens,{notes(<>
+                    We have limited time and resources to<br/>
+                    understand complex problems but want<br/>
+                    to be informed and contribute to solutions.
+                </>)}<br/>
                 to discover credible plans for our future
             </h2>
 
