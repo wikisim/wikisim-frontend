@@ -2,8 +2,8 @@
 import { Button } from "@mantine/core"
 
 import { Scenario } from "core/data/interface"
+import { calculate_if_expectation_met } from "core/expectation/calculate_if_expectation_met"
 
-import { calculate_if_expectation_met } from "../../../lib/core/src/expectation/calculate_if_expectation_met"
 import BinButton from "../../buttons/BinButton"
 import HelpText from "../../buttons/HelpText"
 import { ExpectationMetMessage } from "../../ui_components/ExpectationMet"
