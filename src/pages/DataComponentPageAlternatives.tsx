@@ -85,7 +85,10 @@ export function DataComponentPageAlternatives(props: { data_component_id: string
     return (
         <div className="page-container">
             <h2>
-                <a href={ROUTES.DATA_COMPONENT.VIEW(component.id.as_IdOnly())}>
+                <a
+                    href={ROUTES.DATA_COMPONENT.VIEW(component.id.as_IdOnly())}
+                    style={{ textDecoration: "none" }}
+                >
                     <ReadOnly html={component.title} single_line={true} />
                 </a>
             </h2>
@@ -104,6 +107,8 @@ export function DataComponentPageAlternatives(props: { data_component_id: string
                 {/* , showing alternatives {from_alternative} to {to_alternative} */}
             </>}
 
+            <br />
+            <br />
             <br />
 
             <CreateAlternative
@@ -201,24 +206,28 @@ function CreateAlternative(props: CreateAlternativeProps)
         title: "",
     })
 
+    const show_create_alternative_button = !!according_to.id
+
     return <div className="create-alternative">
-        <h3>Create a new alternative</h3>
+        <b>Create a new alternative</b>
 
         <SelectEntity
             according_to={according_to}
             set_according_to={set_according_to}
         />
 
-        <br />
+        {show_create_alternative_button && <>
+            <br />
 
-        <NewWikiDataComponentButton
-            title={`Create alternative`}
-            disabled={!according_to.id}
-            args={{
-                subject_id: props.subject_id,
-                according_to_id: according_to.id,
-            }}
-        />
+            <NewWikiDataComponentButton
+                title="Create alternative"
+                args={{
+                    subject_id: props.subject_id,
+                    according_to_id: according_to.id,
+                }}
+                button_size="md"
+            />
+        </>}
     </div>
 }
 
