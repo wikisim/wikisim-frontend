@@ -214,7 +214,7 @@ function CreateAlternative(props: CreateAlternativeProps)
             <br />
 
             <NewWikiDataComponentButton
-                title={`Create alternative`}
+                title="Create alternative"
                 args={{
                     subject_id: props.subject_id,
                     according_to_id: according_to.id,
