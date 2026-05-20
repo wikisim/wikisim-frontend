@@ -65,8 +65,8 @@ export function HomePage()
             </h2>
 
             <div style={{ maxWidth, margin: "2em auto 0 auto" }}>
-                <b style={{ marginBottom: 0 }}>We need a national plan for our future —</b>
-                <b style={{ marginTop: 0 }}><i>one that actually adds up.</i></b>
+                <b style={{ marginBottom: 0 }}>We need national plans for our future —</b>
+                <b style={{ marginTop: 0 }}><i>ones that actually add up.</i></b>
                 <p style={{ maxWidth: 500 }}>
                     Not wishful thinking or rhetoric but a shared model of reality
                     we can all contribute to, edit, and buy in to: so we can prosper together.
