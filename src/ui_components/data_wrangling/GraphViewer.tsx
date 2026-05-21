@@ -82,6 +82,16 @@ export function GraphViewer(props: GraphViewerProps)
                             : undefined,
                     },
                 },
+                y: {
+                    grid: {
+                        // darker for origin
+                        color: (context) => context.tick.value === 0 ? "#888" : "#ccc",
+                    },
+                    ticks: {
+                        // darker for origin
+                        color: (context) => context.tick.value === 0 ? "#555" : "#666",
+                    }
+                },
             }
         }
 
