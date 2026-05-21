@@ -98,6 +98,7 @@ export function ScenarioResultsDisplay(props: ScenarioResultsDisplayProps)
             expected_result={props.scenario.expected_result}
             expectation_met={props.scenario.expectation_met}
             json_data_handlers={json_data_handlers}
+            editing={props.editing}
         />
 
         {props.scenario_row_opened && selected_tab === "table" && <TableViewer
@@ -125,6 +126,7 @@ interface ScenarioResultsDisplayInnerProps
     expected_result: string | undefined
     expectation_met: boolean | undefined
     json_data_handlers: JSONViewerEventAndStateHandlers | undefined
+    editing: boolean
 }
 function ScenarioResultsDisplayInner(props: ScenarioResultsDisplayInnerProps)
 {
@@ -140,7 +142,7 @@ function ScenarioResultsDisplayInner(props: ScenarioResultsDisplayInnerProps)
     }
 
     const data = assert_result_json_is_graphable(parsed_json.parsed)
-    if (!data)
+    if (!data || props.editing)
     {
         return <ScenarioResultsDisplayPlainJSON {...props} parsed_json={parsed_json.parsed} />
     }
