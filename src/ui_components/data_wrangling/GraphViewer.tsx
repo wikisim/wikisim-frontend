@@ -12,6 +12,7 @@ import { get_line_graph_colour } from "../../constants"
 import pub_sub from "../../pub_sub"
 import { is_mobile_device } from "../../utils/is_mobile_device"
 import { get_screen_characteristics } from "../../utils/screen"
+import { default_line_options } from "../results_display/ScenarioResultsDisplayGraphical"
 import { ColumnData } from "./extract_selected_data"
 import "./GraphViewer.css"
 
@@ -82,16 +83,7 @@ export function GraphViewer(props: GraphViewerProps)
                             : undefined,
                     },
                 },
-                y: {
-                    grid: {
-                        // darker for origin
-                        color: (context) => context.tick.value === 0 ? "#888" : "#ccc",
-                    },
-                    ticks: {
-                        // darker for origin
-                        color: (context) => context.tick.value === 0 ? "#555" : "#666",
-                    }
-                },
+                y: default_line_options.scales!.y
             }
         }
 

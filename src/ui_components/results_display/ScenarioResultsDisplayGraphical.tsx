@@ -2,6 +2,7 @@ import {
     CategoryScale,
     ChartData,
     Chart as ChartJS,
+    ChartOptions,
     Legend,
     LinearScale,
     LineElement,
@@ -16,6 +17,22 @@ import { result_string_to_graphable } from "core/evaluation/parse_result"
 import { compare_results_to_expectations } from "core/expectation/compare_results_to_expectations"
 import { MergedLabelsAndResults, ResultPoint } from "core/expectation/interface"
 import { colour_actual, colour_expected, colour_mismatch, colour_mismatch_line } from "../../constants"
+
+
+export const default_line_options: ChartOptions<"line"> = {
+    scales: {
+        y: {
+            grid: {
+                // darker for origin
+                color: (context) => context.tick.value === 0 ? "#888" : "#ccc",
+            },
+            ticks: {
+                // darker for origin
+                color: (context) => context.tick.value === 0 ? "#555" : "#666",
+            }
+        },
+    }
+}
 
 
 ChartJS.register(
@@ -72,7 +89,7 @@ export function ScenarioResultsDisplayGraphical(props: ScenarioResultsDisplayGra
 
     return <>
         {/* {props.result} */}
-        <Line data={graph_props} />
+        <Line data={graph_props} options={default_line_options} />
     </>
 }
 
