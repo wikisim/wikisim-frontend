@@ -19,6 +19,7 @@ export function setup_error_logging()
         enabled: window.location.hostname !== "localhost",
         tracePropagationTargets: [
             "localhost", // For local development
+            "wikisim.org",
         ],
     })
 
