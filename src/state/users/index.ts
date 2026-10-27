@@ -59,7 +59,7 @@ async function load_requested_users(
     get_supabase: GetSupabase,
 )
 {
-    let user_ids_or_names_to_load: string[]
+    let user_ids_or_names_to_load: string[] = []
 
     set_state(state =>
     {
@@ -84,7 +84,7 @@ async function load_requested_users(
     })
 
     // Request from supabase
-    const response = await request_users(get_supabase, user_ids_or_names_to_load!)
+    const response = await request_users(get_supabase, user_ids_or_names_to_load)
 
     set_state(state =>
     {
