@@ -334,6 +334,7 @@ async function request_data_components_for_home_page(
         new IdOnly(1013),
         new IdOnly(1068),
         new IdOnly(1239),  // National energy budget for UK
+        new IdOnly(1308),  // Miss rate of penalty takers in European football
     ]
     const response_curated = await request_data_components(get_supabase, {
         page: 0,
